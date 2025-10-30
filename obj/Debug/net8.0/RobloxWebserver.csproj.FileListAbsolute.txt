@@ -30,3 +30,4 @@ C:\Users\Intel\Documents\GitHub\RobloxWebserver\obj\Debug\net8.0\refint\RobloxWe
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\obj\Debug\net8.0\RobloxWebserver.pdb
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\obj\Debug\net8.0\RobloxWebserver.genruntimeconfig.cache
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\obj\Debug\net8.0\ref\RobloxWebserver.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\obj\Debug\net8.0\RobloxWebserver.sourcelink.json
