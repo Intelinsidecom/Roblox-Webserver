@@ -1,0 +1,292 @@
+/* ~/CSS/Base/CSS/Upgrades.css */
+#PaymentMethodsContainer,
+#PaymentContainer,
+#PayPalContainer {
+	background-color: #fff;
+	margin: 0 auto;
+	padding: 20px 80px;
+}
+
+#Legend {
+	margin-top: 10px;
+}
+
+#UpgradeCompleteContainer {
+	background-color: #fff;
+	margin: 0 auto;
+}
+
+#PaymentMethodsContainer .PaymentMethods {
+	border: none;
+	margin: 20px auto;
+	padding: 10px;
+	width: 600px;
+}
+
+#PaymentMethodsHeader {
+	margin: 0 auto;
+	padding-left: 60px;
+	width: 600px;
+}
+
+.PaymentMethodRow {
+	background-color: transparent;
+	color: #090;
+}
+
+.PaymentMethodRow:hover {
+	background-color: #f2f2f2;
+	cursor: pointer;
+	color: #00d900;
+}
+
+.PaymentMethodRowUnavailable a {
+	color: #090;
+}
+
+.PaymentMethodRow td,
+.PaymentMethodRowUnavailable td {
+	border: none;
+	padding: 20px;
+}
+
+#PaymentMethodsContainer .PaymentMethodName {
+	color: #333;
+	font-weight: bold;
+	font-size: medium;
+}
+
+#CurrentBalance {
+	color: #333;
+}
+
+#PaymentMethodsContainer .ExistingSubscription {
+	font-size: 16px;
+	color: Blue;
+	width: 50%;
+	text-align: center;
+}
+
+#ProductAndPricing,
+#ProductAndPricing1 {
+	float: left;
+	width: 865px;
+}
+
+#ProductAndPricing .TotalRowName,
+#ProductAndPricing .TotalRowPrice {
+	font-size: 14px;
+	font-weight: bold;
+	padding-top: 10px;
+}
+
+.SuperchargeProductName,
+.SuperchargeProductPrice {
+	color: #E6B800;
+}
+
+#PaymentDetailsTable {
+	width: 400px;
+}
+
+#UpgradeCompleteContainer {
+	border: 2px solid #6e99c9;
+	margin-bottom: 20px;
+	padding: 10px;
+	background-color: #fff;
+}
+
+.PaymentTextBox {
+	padding: 5px;
+	width: 90%;
+}
+
+#PaymentContainer #Account,
+#PaymentContainer #BillingInfo,
+#PaymentContainer #ProductAndPricing,
+#PaymentContainer #ProductAndPricing1,
+#PaymentContainer #CreditCard,
+#PayPalContainer #ConfirmDetails,
+#PayPalContainer #Notes {
+	margin-bottom: 20px;
+}
+
+#PaymentContainer #Pay,
+#PayPalContainer #Continue {
+	margin: 0 auto;
+	text-align: center;
+}
+
+#PaymentContainer .Label,
+#PayPalContainer .Label {
+	float: left;
+	font-size: 1.25em;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 10px;
+	vertical-align: middle;
+	width: 250px;
+}
+
+#PaymentContainer .BokuLabel {
+	float: none;
+	font-size: 1em;
+	font-weight: bold;
+	height: 20px;
+	line-height: 20px;
+	padding: 0 6px 0 0;
+	vertical-align: middle;
+}
+
+#PaymentContainer .Field,
+#PayPalContainer .Field {
+	float: left;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 10px;
+	vertical-align: middle;
+	width: 400px;
+}
+
+#PaymentContainer .BokuField {
+	float: none;
+	font-size: 1em;
+	height: 20px;
+	line-height: 20px;
+	padding: 0 6px 0 0;
+	;
+	vertical-align: middle;
+}
+
+#PaymentContainer .Button,
+#PayPalContainer .Button {
+	font-size: 16px;
+	margin: 0 3px;
+}
+
+#ConfirmDetails .Detail {
+	background-color: #EEE;
+	border-bottom: solid 1px #CCC;
+	border-top: solid 1px #CCC;
+	height: 40px;
+	line-height: 40px;
+}
+
+.PaymentDropDownList {
+	padding: 5px;
+	width: 95%;
+}
+
+#BokuOrderSummary {
+	font-weight: bold;
+	font-size: 1.25em;
+	padding: 0 20px 0 5px;
+	vertical-align: middle;
+}
+
+#PayPalContainer .PayPalDisallowedMessage {
+	font-size: 16px;
+	padding-bottom: 12px;
+	color: Blue;
+	width: 90%;
+}
+
+.TotalRowName,
+.TotalRowPrice,
+.SuperchargeProductName,
+.SuperchargeProductPrice,
+.ProductName,
+.ProductPrice {
+	float: left;
+	font-weight: bold;
+}
+
+.TotalRowName,
+.SuperchargeProductName,
+.ProductName {
+	width: 640px;
+}
+
+.TotalRowPrice,
+.SuperchargeProductPrice,
+.ProductPrice {
+	width: 200px;
+}
+
+#PaymentDetails #ProductAndPricing .Field,
+#PaymentDetails #Account .Field,
+#PayPalContainer #ConfirmDetails .Field {
+	font-size: 1.25em;
+	font-weight: bold;
+}
+
+#UpgradeCompleteContainer #Message,
+#AccountUpgradesConfirmationContainer #Message {
+	background-color: #eee;
+	border: solid 1px #ccc;
+	margin: 0 auto;
+	margin-top: 15px;
+	padding: 10px;
+	width: 580px;
+}
+
+.PaymentLabel {
+	width: 120px;
+	font-weight: bold;
+}
+
+.PaymentPadding {
+	padding: 5px;
+}
+
+.AutoRecurText {
+	color: Red;
+	display: none;
+}
+
+.PreviewGiftCard,
+.EditGiftCard {
+	color: #00f;
+	text-decoration: underline;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.PreviewGiftCard:hover,
+.EditGiftCard:hover {
+	color: #00d;
+}
+
+.OrderSummary #ThankYou {
+	font: bold 18px Arial, Helvetica, Sans-Serif;
+}
+
+.OrderSummary #SummaryText {
+	margin: 12px 0 18px 10px;
+	line-height: 1.5em;
+}
+
+.OrderSummary #GiftCardContainer {
+	margin: 0 0 10px 10px;
+}
+
+.OrderSummary #GiftCardTable .Header {
+	font-weight: bold;
+}
+
+.OrderSummary .PurchaseAnother {
+	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/btn-purchase_another.png) no-repeat;
+	display: inline-block;
+	width: 219px;
+	height: 50px;
+}
+
+.OrderSummary .PurchaseAnother:hover {
+	background-position: 0 -50px;
+}
+
+.OldStyle .MicroNode {
+	display: block;
+	margin: 15px auto;
+	text-align: center;
+}

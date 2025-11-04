@@ -1,49 +1,38 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
+<link href="~/images/7aee41db80c1071f60377c3575a0ed87.ico" rel="icon">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RobloxWebserver</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/RobloxWebserver.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/CSS/banner-styles.css">
+    <link rel="stylesheet" type="text/css" href="~/CSS/iconochive.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Roblox.css">
+    <link rel="stylesheet" href="~/CSS/RBXCommon.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Footer.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Header.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
+    <link rel="stylesheet" href="~/CSS/Fonts/SourceSansPro-Google.css">
+    <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
+    <link rel="stylesheet" href="~/CSS/Legacy/Modal.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Item.css">
+    <script async src="~/lib/beacon/beacon.js"></script>
+    <script src="~/lib/athena/athena.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/lib/bundle-playback/bundle-playback.js" charset="utf-8"></script>
+    <script type="text/javascript" src="~/lib/wombat/wombat.js" charset="utf-8"></script>
+    <script>window.RufflePlayer=window.RufflePlayer||{};window.RufflePlayer.config={"autoplay":"on","unmuteOverlay":"hidden","showSwfDownload":true};</script>
+    <script type="text/javascript" src="~/lib/ruffle/ruffle.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
+    @RenderSection("Head", required: false)
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RobloxWebserver</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">About</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <partial name="_Header" />
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - RobloxWebserver - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <partial name="_Footer" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

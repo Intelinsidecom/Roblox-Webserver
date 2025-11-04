@@ -76,9 +76,9 @@ end$$;
     locale                   text            null,
     language                 text            null,
     country_iso              text            null,
-    ,constraint chk_users_profile_visibility check (profile_visibility in ('public','friends','private'))
-    ,constraint chk_users_inventory_privacy check (inventory_privacy in ('public','friends','private'))
-    ,constraint chk_users_country_iso_len check (country_iso is null or char_length(country_iso) = 2)
+    constraint chk_users_profile_visibility check (profile_visibility in ('public','friends','private')),
+    constraint chk_users_inventory_privacy check (inventory_privacy in ('public','friends','private')),
+    constraint chk_users_country_iso_len check (country_iso is null or char_length(country_iso) = 2)
  );
 
 -- Helpful indexes

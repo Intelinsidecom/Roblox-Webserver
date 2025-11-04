@@ -1,0 +1,110 @@
+/* ~/CSS/Pages/Login/Login.css */
+div#loginarea {
+	display: block;
+	overflow: hidden;
+}
+
+td {
+	padding-bottom: 20px;
+	padding-right: 0;
+}
+
+div#leftArea {
+	float: left;
+	width: 465px;
+	padding-bottom: 20px;
+	padding-left: 20px;
+}
+
+#signUpPanel {
+	float: none;
+	margin: 0 auto;
+}
+
+div#rightArea {
+	width: 484px;
+	overflow: hidden;
+	padding-bottom: 20px;
+}
+
+div#guestarea {
+	clear: both;
+}
+
+div#guestarea h2 {
+	padding-top: 18px;
+}
+
+div#guestarea p {
+	display: inline-block;
+}
+
+a[roblox-js-oncancel] {
+	display: none;
+}
+
+input[type="text"],
+input[type="password"] {
+	margin-bottom: 0;
+}
+
+#SplashPageConnect {
+	border: none;
+	border-color: #c0c0c0;
+	text-align: center;
+	padding-top: 20px;
+}
+
+a.old-facebook-button,
+a.old-facebook-button:visited {
+	display: inline-block;
+	text-decoration: none;
+	font-weight: normal !important;
+	font-size: 12px !important;
+}
+
+a.old-facebook-button:hover span.left,
+a.old-facebook-button:hover span.middle {
+	background-position: left bottom;
+}
+
+a.old-facebook-button:hover span.right {
+	background-position: right bottom;
+}
+
+a.old-facebook-button span.left,
+a.old-facebook-button span.right,
+a.old-facebook-button span.middle {
+	float: left;
+	height: 25px;
+	line-height: 14px;
+}
+
+a.old-facebook-button span.left {
+	width: 27px;
+	background: url(../../../images/facebook/bg-fblogin_sides.png) left top no-repeat;
+}
+
+a.old-facebook-button span.middle {
+	height: 18px;
+	width: auto;
+	background: url(../../../images/facebook/bg-fblogin_middle.png) left top repeat-x;
+	color: #394f7d;
+	padding: 7px 2px 0 6px;
+}
+
+a.old-facebook-button span.middle span {
+	display: block;
+	color: #fff;
+	position: relative;
+	bottom: 16px;
+}
+
+a.old-facebook-button span.right {
+	width: 5px;
+	background: url(../../../images/facebook/bg-fblogin_sides.png) right top no-repeat;
+}
+
+#Body {
+	width: 970px;
+}

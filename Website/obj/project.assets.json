@@ -909,8 +909,10 @@
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "8.0.10",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.7",
-          "Swashbuckle.AspNetCore": "6.6.2"
+          "Npgsql": "8.0.4",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.8",
+          "Swashbuckle.AspNetCore": "6.6.2",
+          "Users": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Api.dll": {}
@@ -921,6 +923,19 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "Users/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Npgsql": "8.0.4"
+        },
+        "compile": {
+          "bin/placeholder/Users.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Users.dll": {}
+        }
       }
     }
   },
@@ -2556,6 +2571,11 @@
       "type": "project",
       "path": "../Api/Api.csproj",
       "msbuildProject": "../Api/Api.csproj"
+    },
+    "Users/1.0.0": {
+      "type": "project",
+      "path": "../Assemblies/Users/Users.csproj",
+      "msbuildProject": "../Assemblies/Users/Users.csproj"
     }
   },
   "projectFileDependencyGroups": {

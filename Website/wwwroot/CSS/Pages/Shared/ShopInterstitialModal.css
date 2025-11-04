@@ -1,0 +1,110 @@
+/* ~/CSS/Pages/Shared/ShopInterstitialModal.css */
+.shop-modal {
+	background-color: #fff;
+	height: 290px;
+	width: 760px;
+	padding: 0;
+	margin: 0;
+	background-repeat: no-repeat;
+	background-attachment: local;
+	background-image: url(/web/20160430090524im_/https://static.rbxcdn.com/images/Shop/combo.jpg);
+	background-position: right;
+	background-size: 497px 290px;
+}
+
+.shop-modal .shop-modal-item-left {
+	width: 430px;
+	height: 290px;
+	margin: 20px 30px;
+	position: relative;
+	text-align: left;
+}
+
+.shop-modal .shop-modal-item-left h2 {
+	width: 85%;
+	color: #191919;
+	font-size: 30px;
+	font-weight: 600;
+	line-height: 1em;
+}
+
+.shop-modal .shop-modal-item-left .body-text {
+	width: 60%;
+	color: #191919;
+	padding-top: 7px;
+	font-size: 16px;
+	font-weight: 300;
+	line-height: 1em;
+}
+
+.shop-modal .shop-modal-item-left .controls {
+	margin-top: 38px;
+	display: inline-block;
+}
+
+.shop-modal .shop-modal-item-left .controls:before,
+.shop-modal .shop-modal-item-left .controls:after {
+	content: " ";
+	display: table;
+}
+
+.shop-modal .shop-modal-item-left .controls:after {
+	clear: both;
+}
+
+.shop-modal .shop-modal-item-left .controls .btn-continue-shopping {
+	float: left;
+	padding: 7px 8px 3px 8px;
+}
+
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close {
+	padding: 10px 24px;
+	float: right;
+}
+
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close.text-link,
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close.text-link:link,
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close.text-link:visited,
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close.text-link:active {
+	color: #00A2FF;
+	font-size: 16px;
+}
+
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close.text-link:hover,
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close.text-link:focus {
+	text-decoration: underline;
+}
+
+.shop-modal .shop-modal-item-left .controls .btn-shopping-close:hover {
+	text-decoration: underline;
+}
+
+.shop-modal .shop-modal-item-left .fine-print {
+	position: absolute;
+	bottom: 30px;
+	left: 0;
+}
+
+@media(max-width:991px) {
+	.shop-modal .shop-modal-item-left {
+		float: left;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: 300px;
+	}
+}
+
+@media(max-width:767px) {
+	.shop-modal .shop-modal-item-left {
+		width: 30%;
+	}
+}
+
+@media(max-width:543px) {
+	.shop-modal .shop-modal-item-left {
+		width: 100%;
+		display: block;
+		height: auto;
+	}
+}

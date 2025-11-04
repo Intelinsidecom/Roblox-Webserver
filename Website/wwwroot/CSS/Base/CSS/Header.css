@@ -1,0 +1,7 @@
+/* ~/CSS/Base/CSS/Header.css */
+div#testingSitePanelWrapper,
+#BodyWrapper {
+	margin: 0 auto;
+	width: 970px;
+	background: white;
+}

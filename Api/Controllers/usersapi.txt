@@ -1,0 +1,1 @@
+users/account-info returns the needed info for the client to insert into its own spaces i guess, the response either has to be 400 or 200, 200 is for ok, 400 is for unauthorized, if its 400 it drops to login screen. you need to pass the email, user and if it has password set? weird logic. analyze the response with fiddler classic since its in json format

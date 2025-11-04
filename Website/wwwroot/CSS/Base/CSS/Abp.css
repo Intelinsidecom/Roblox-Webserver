@@ -1,0 +1,213 @@
+/* ~/CSS/Base/CSS/Abp.css */
+#AdvertisingLeaderboard {
+	margin: 0 auto;
+	text-align: center;
+	padding-top: 5px;
+	margin-bottom: 10px;
+	width: 728px;
+}
+
+.GPTAd {
+	overflow: hidden;
+	margin: 0 auto;
+	display: block;
+}
+
+.GPTAd.banner {
+	width: 728px;
+	height: 90px;
+}
+
+.GPTAd.skyscraper {
+	width: 160px;
+	height: 600px;
+}
+
+.GPTAd.rectangle {
+	width: 300px;
+	height: 250px;
+}
+
+.GPTAd.narrowskyscraper {
+	width: 120px;
+	width: 600px;
+}
+
+.GPTAd.gutter {
+	width: 400px;
+	height: 1180px;
+}
+
+.GPTAd .opapushdown {
+	width: 970px;
+	height: 96px;
+}
+
+#FloorAd {
+	height: 1px;
+}
+
+.Ads_WideSkyscraper {
+	float: right;
+	text-align: right;
+	width: 160px;
+	height: 611px;
+}
+
+.abp {
+	font-size: 12px;
+	line-height: 1.25;
+	color: #B8B8B8;
+	text-align: center;
+	background-color: transparent;
+	margin: 0 auto;
+}
+
+.abp .ad-annotations {
+	font-size: 12px;
+}
+
+.abp .ad-annotations:before,
+.abp .ad-annotations:after {
+	content: " ";
+	display: table;
+}
+
+.abp .ad-annotations:after {
+	clear: both;
+}
+
+.abp .UpsellAdButton,
+.abp .UpsellAdButton:link,
+.abp .UpsellAdButton:visited,
+.abp .BadAdButton,
+.abp .BadAdButton:link,
+.abp .BadAdButton:visited {
+	color: #B8B8B8;
+}
+
+.abp .ad-identification {
+	float: left;
+}
+
+.abp .ad-identification .UpsellAdButton:hover {
+	color: #00A2FF;
+}
+
+.abp .BadAdButton {
+	float: right;
+}
+
+.abp .BadAdButton:hover {
+	color: #E27676;
+}
+
+.abp .adp-gpt-container {
+	margin: 0 auto;
+}
+
+.leaderboard-abp {
+	min-height: 110px;
+}
+
+.leaderboard-abp .ad-annotations {
+	margin-top: 2px;
+}
+
+@media(max-width:728px) {
+	.leaderboard-abp {
+		display: none;
+	}
+}
+
+.abp-container {
+	float: left;
+}
+
+.left-abp {
+	margin-right: 24px;
+	width: 160px;
+}
+
+.right-abp {
+	margin-left: 24px;
+	width: 160px;
+}
+
+@media(max-width:1358px) {
+	.left-abp {
+		display: none;
+	}
+}
+
+@media(max-width:1174px) {
+
+	.left-abp,
+	.right-abp {
+		display: none;
+	}
+}
+
+.gutter-left,
+.gutter-right {
+	position: fixed;
+	top: 40px;
+	margin: 0;
+}
+
+.gutter-ads {
+	overflow: hidden;
+}
+
+.gutter-ads .container-main,
+.gutter-ads .content {
+	max-width: 970px;
+}
+
+@media(min-width:1688px) {
+	.gutter-ads .rbx-header .rbx-nav-collapse {
+		display: block;
+	}
+
+	.gutter-ads .rbx-header .rbx-navbar-header {
+		max-width: 166px;
+	}
+
+	.gutter-ads .rbx-left-col:not(.nav-show) {
+		width: 0;
+	}
+
+	.gutter-ads .rbx-left-col:not(.nav-show) .rbx-scrollbar {
+		width: 0;
+	}
+}
+
+.gutter-left {
+	text-align: right;
+	margin-right: 497px;
+	right: 50%;
+}
+
+.gutter-right {
+	text-align: left;
+	margin-left: 497px;
+	left: 50%;
+}
+
+@media(max-width:970px) {
+
+	.gutter-left,
+	.gutter-right {
+		display: none;
+	}
+}
+
+.abp-plvu {
+	margin-left: 12px;
+}
+
+@media(max-width:670px) {
+	.abp-plvu {
+		display: none;
+	}
+}

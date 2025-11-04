@@ -905,6 +905,19 @@
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
         }
+      },
+      "Users/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Npgsql": "8.0.4"
+        },
+        "compile": {
+          "bin/placeholder/Users.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Users.dll": {}
+        }
       }
     }
   },
@@ -2535,14 +2548,21 @@
         "system.threading.channels.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "Users/1.0.0": {
+      "type": "project",
+      "path": "../Assemblies/Users/Users.csproj",
+      "msbuildProject": "../Assemblies/Users/Users.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "Microsoft.EntityFrameworkCore >= 8.0.10",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.10",
-      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.7",
-      "Swashbuckle.AspNetCore >= 6.6.2"
+      "Npgsql >= 8.0.4",
+      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.8",
+      "Swashbuckle.AspNetCore >= 6.6.2",
+      "Users >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2576,7 +2596,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -2605,9 +2629,13 @@
             "target": "Package",
             "version": "[8.0.10, )"
           },
+          "Npgsql": {
+            "target": "Package",
+            "version": "[8.0.4, )"
+          },
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
-            "version": "[8.0.7, )"
+            "version": "[8.0.8, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
@@ -2636,17 +2664,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Api depends on Npgsql.EntityFrameworkCore.PostgreSQL (>= 8.0.7) but Npgsql.EntityFrameworkCore.PostgreSQL 8.0.7 was not found. Npgsql.EntityFrameworkCore.PostgreSQL 8.0.8 was resolved instead.",
-      "libraryId": "Npgsql.EntityFrameworkCore.PostgreSQL",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }

@@ -565,11 +565,24 @@
       "Api/1.0.0": {
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "8.0.10",
+          "Npgsql": "8.0.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.8",
-          "Swashbuckle.AspNetCore": "6.6.2"
+          "Swashbuckle.AspNetCore": "6.6.2",
+          "Users": "1.0.0"
         },
         "runtime": {
           "Api.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Users/1.0.0": {
+        "dependencies": {
+          "Npgsql": "8.0.4"
+        },
+        "runtime": {
+          "Users.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -892,6 +905,11 @@
       "hashPath": "system.threading.channels.6.0.0.nupkg.sha512"
     },
     "Api/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Users/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

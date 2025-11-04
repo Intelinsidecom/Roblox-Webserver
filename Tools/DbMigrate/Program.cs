@@ -59,7 +59,10 @@ internal class Program
         Console.WriteLine("1) Migrate/Update database");
         Console.WriteLine("2) List tables");
         Console.WriteLine("3) WIPE database (DROP ALL TABLES) - DANGEROUS");
-        Console.Write("Enter choice (1-3): ");
+        Console.WriteLine("4) Describe users table (columns)");
+        Console.WriteLine("5) List users (id, name, created)");
+        Console.WriteLine("6) View user details (by id or name)");
+        Console.Write("Enter choice (1-6): ");
         var key = Console.ReadKey(intercept: true).KeyChar;
         Console.WriteLine();
 
@@ -117,6 +120,107 @@ internal class Program
                 if (count == 0)
                 {
                     Console.WriteLine("(no tables)");
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return -1;
+            }
+        }
+        else if (key == '4')
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                const string sql = @"select column_name, data_type, is_nullable, column_default
+                                      from information_schema.columns
+                                      where table_schema='public' and table_name='users'
+                                      order by ordinal_position";
+                using var cmd = new NpgsqlCommand(sql, conn);
+                using var reader = cmd.ExecuteReader();
+                int count = 0;
+                Console.WriteLine("public.users columns:");
+                while (reader.Read())
+                {
+                    count++;
+                    var name = reader.GetString(0);
+                    var type = reader.GetString(1);
+                    var nullable = reader.GetString(2);
+                    var def = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    Console.WriteLine($"- {name} :: {type} {(nullable=="YES"?"NULL":"NOT NULL")} {(string.IsNullOrEmpty(def)?"":"default "+def)}");
+                }
+                if (count == 0)
+                {
+                    Console.WriteLine("(table not found or has no columns)");
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return -1;
+            }
+        }
+        else if (key == '5')
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                const string sql = @"select user_id, user_name, user_created from users order by user_id limit 100";
+                using var cmd = new NpgsqlCommand(sql, conn);
+                using var reader = cmd.ExecuteReader();
+                int count = 0;
+                Console.WriteLine("Users:");
+                while (reader.Read())
+                {
+                    count++;
+                    var id = reader.IsDBNull(0) ? (long?)null : reader.GetInt64(0);
+                    var name = reader.IsDBNull(1) ? null : reader.GetString(1);
+                    var created = reader.IsDBNull(2) ? (DateTimeOffset?)null : reader.GetFieldValue<DateTimeOffset>(2);
+                    Console.WriteLine($"- {id} | {name} | {created}");
+                }
+                if (count == 0)
+                {
+                    Console.WriteLine("(no users)");
+                }
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return -1;
+            }
+        }
+        else if (key == '6')
+        {
+            try
+            {
+                Console.Write("Enter user id or user name: ");
+                var input = Console.ReadLine();
+                using var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                bool byId = long.TryParse(input, out var id);
+                var sql = byId ? "select * from users where user_id = @v limit 1" : "select * from users where user_name = @v limit 1";
+                using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("v", byId ? (object)id : (object)(input ?? string.Empty));
+                using var reader = cmd.ExecuteReader();
+                if (!reader.Read())
+                {
+                    Console.WriteLine("(user not found)");
+                    return 0;
+                }
+                int fieldCount = reader.FieldCount;
+                Console.WriteLine("User row:");
+                for (int i = 0; i < fieldCount; i++)
+                {
+                    var col = reader.GetName(i);
+                    object valObj = reader.IsDBNull(i) ? null : reader.GetValue(i);
+                    string val = valObj == null ? "NULL" : Convert.ToString(valObj) ?? string.Empty;
+                    Console.WriteLine($"- {col}: {val}");
                 }
                 return 0;
             }
