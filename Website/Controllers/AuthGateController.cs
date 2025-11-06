@@ -43,5 +43,13 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/home");
             return View("~/Views/Pages/Login.cshtml");
         }
+
+        [HttpGet("home")]
+        public IActionResult Home()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+                return Redirect("/");
+            return View("~/Views/Pages/Home.cshtml");
+        }
     }
 }

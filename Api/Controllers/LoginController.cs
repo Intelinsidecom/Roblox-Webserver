@@ -149,15 +149,24 @@ namespace Api.Controllers
             }
 
             // Set session cookie to the opaque token
+            var isHttps = Request.IsHttps;
+            var cookieDomain = config["Auth:CookieDomain"];
+            var sameSiteConfig = (config["Auth:CookieSameSite"] ?? "Lax").Trim();
+            var sameSite = SameSiteMode.Lax;
+            if (sameSiteConfig.Equals("None", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.None;
+            else if (sameSiteConfig.Equals("Strict", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.Strict;
+            if (sameSite == SameSiteMode.None) isHttps = true;
             Response.Cookies.Append(
                 ".ROBLOSECURITY",
                 token,
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = expires
+                    Secure = isHttps,
+                    SameSite = sameSite,
+                    Expires = expires,
+                    Path = "/",
+                    Domain = string.IsNullOrWhiteSpace(cookieDomain) ? null : cookieDomain
                 }
             );
 

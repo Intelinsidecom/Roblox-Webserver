@@ -3,6 +3,7 @@ using Api.Data;
 using Api.Controllers;
 using System.Security.Claims;
 using Npgsql;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         npgsql => npgsql.MigrationsAssembly("Api")
     )
 );
+// Respect reverse proxy headers (e.g., Cloudflare) so Request.Scheme/IsHttps are accurate
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 var enableRequestLogging = builder.Configuration.GetValue<bool>("Features:EnableRequestLogging");
 if (enableRequestLogging)
 {
@@ -39,6 +47,9 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Apply forwarded headers BEFORE HTTPS redirection/static files/routing
+app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
 
