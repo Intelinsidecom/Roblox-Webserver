@@ -4,38 +4,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
     <meta http-equiv="Content-Language" content="en-us">
     <title>Login</title>
+    @section Head {
+        <script type="text/javascript" src="~/JS/lib/gigya/gigya.js">
+        {
+            bypassCookiePolicy: 'never'
+        }
+        </script>
+    }
     
     
     
 <link rel="stylesheet" href="~/CSS/Pages/IDE/Login.css">
 <link rel="stylesheet" href="~/CSS/Pages/Login/Login.css">
- 
 
-        
-<script type="text/javascript" src="~/lib/ajax/MicrosoftAjax.js"></script>
-<script type="text/javascript">window.Sys || document.write("<script type='text/javascript' src='~/lib/ajax/MicrosoftAjax.js'><\/script>")</script>
-
-    
-    
-            <script type="text/javascript" src="~/lib/gigya/gigya.js">
-            {
-                bypassCookiePolicy: 'never'
-            }
-            </script>
-
-
-    
-    <script type="text/javascript" src="~/JS/6243884ebe241b50d91a4f3faad33832.js"></script>
-
-
-<script type="text/javascript" src="~/JS/a85b3879a3ca6b0561e40aed91e60994.js"></script>
-
-    <script type="text/javascript">Roblox.config.externalResources = [];Roblox.config.paths['Pages.Catalog'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/c14a216bd7773e7b637b4e6c3c2e619d.js';Roblox.config.paths['Pages.CatalogShared'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/962d5b2c17eda7dc135bb442c25afff9.js';Roblox.config.paths['Widgets.AvatarImage'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/6bac93e9bb6716f32f09db749cec330b.js';Roblox.config.paths['Widgets.DropdownMenu'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/7b436bae917789c0b84f40fdebd25d97.js';Roblox.config.paths['Widgets.GroupImage'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/33d82b98045d49ec5a1f635d14cc7010.js';Roblox.config.paths['Widgets.HierarchicalDropdown'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/3368571372da9b2e1713bb54ca42a65a.js';Roblox.config.paths['Widgets.ItemImage'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/8babd891cf420dfe3999b3824a0154cb.js';Roblox.config.paths['Widgets.PlaceImage'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/f2697119678d0851cfaa6c2270a727ed.js';Roblox.config.paths['Widgets.SurveyModal'] = 'https://web.archive.org/web/20160429214141/https://js.rbxcdn.com/d6e979598c460090eafb6d38231159f6.js';</script>
-    
-            <script type="text/javascript" src="~/JS/ddd2148e27e881a38e7b58b66f646923.js"></script>
-
-    
-    
 
     <script type="text/javascript">
         var Roblox = Roblox || {};
@@ -150,7 +131,7 @@
                             <div id="forgotPasswordPanel">
                                 <a class="text-link" href="https://web.archive.org/web/20160429214141/https://www.roblox.com/Login/ResetPasswordRequest.aspx" target="_blank">Forgot your password?</a>
                             </div>
-                            <div id="signInButtonPanel" data-use-apiproxy-signin="False" data-sign-on-api-path="https://api.roblox.com/login/v1">
+                            <div id="signInButtonPanel" data-use-apiproxy-signin="True" data-sign-on-api-path="/login/v1">
                                 <a roblox-js-onclick="" class="btn-medium btn-neutral">Sign In</a>
                                 <a roblox-js-oncancel="" class="btn-medium btn-negative">Cancel</a>
                             </div>
@@ -232,13 +213,6 @@
     </div> 
 </div> 
 
-
-
-
-
-    <script type="text/javascript">function urchinTracker() {}</script>
-
-
 <div id="PlaceLauncherStatusPanel" style="display:none;width:300px" data-new-plugin-events-enabled="True" data-event-stream-for-plugin-enabled="True" data-event-stream-for-protocol-enabled="True" data-is-game-launch-interface-enabled="False" data-is-protocol-handler-launch-enabled="False" data-is-user-logged-in="False" data-os-name="Unknown" data-protocol-name-for-client="roblox-player" data-protocol-name-for-studio="roblox-studio" data-protocol-url-includes-launchtime="true" data-protocol-detection-enabled="true">
     <div class="modalPopup blueAndWhite PlaceLauncherModal" style="min-height: 160px">
         <div id="Spinner" class="Spinner" style="padding:20px 0;">
@@ -305,6 +279,6 @@
     </p>
 </div>
 
-<script type="text/javascript" src="~/JS/1ba208cf31fb5a6a592b902955c8770b.js"></script>
+    <script type="text/javascript" src="~/JS/Login/Login.js"></script>
 
 </body></html>

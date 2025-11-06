@@ -202,6 +202,9 @@
             "projectReferences": {
               "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj": {
                 "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj"
+              },
+              "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj": {
+                "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj"
               }
             }
           }
@@ -232,9 +235,13 @@
               "target": "Package",
               "version": "[8.0.10, )"
             },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[8.0.7, )"
+              "version": "[8.0.8, )"
             }
           },
           "imports": [

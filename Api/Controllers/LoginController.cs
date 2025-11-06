@@ -6,6 +6,9 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Net;
+using NpgsqlTypes;
 
 namespace Api.Controllers
 {
@@ -95,17 +98,66 @@ namespace Api.Controllers
                 return StatusCode(403, new { message = "Credentials" });
             }
 
-            // Set session cookie
-            var cookieValue = $"UserId={userId}";
+            // Create Roblox-style opaque token and persist session
+            static string GenerateRobloxToken()
+            {
+                // Pattern similar to real: _|WARNING:-DO-NOT-SHARE-THIS.--|_ + random
+                Span<byte> bytes = stackalloc byte[48];
+                RandomNumberGenerator.Fill(bytes);
+                var b64 = Convert.ToBase64String(bytes)
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .TrimEnd('=');
+                return "_|WARNING:-DO-NOT-SHARE-THIS.--|_" + b64;
+            }
+
+            var token = GenerateRobloxToken();
+            var expires = DateTimeOffset.UtcNow.AddYears(1);
+
+            try
+            {
+                await using var conn = new NpgsqlConnection(connString);
+                await conn.OpenAsync();
+                // Ensure sessions table exists
+                await using (var createCmd = new NpgsqlCommand(@"create table if not exists sessions (
+                    token text primary key,
+                    user_id bigint not null,
+                    created_at timestamptz not null,
+                    expires_at timestamptz not null,
+                    last_ip inet null
+                );", conn))
+                {
+                    await createCmd.ExecuteNonQueryAsync();
+                }
+
+                await using (var ins = new NpgsqlCommand("insert into sessions(token, user_id, created_at, expires_at, last_ip) values (@t,@uid, now() at time zone 'utc', @exp, @ip)", conn))
+                {
+                    ins.Parameters.AddWithValue("t", token);
+                    ins.Parameters.AddWithValue("uid", userId);
+                    ins.Parameters.AddWithValue("exp", expires.UtcDateTime);
+                    var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+                    if (string.IsNullOrWhiteSpace(ip))
+                        ins.Parameters.AddWithValue("ip", DBNull.Value);
+                    else
+                        ins.Parameters.AddWithValue("ip", NpgsqlDbType.Inet, IPAddress.Parse(ip));
+                    await ins.ExecuteNonQueryAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { errors = new[] { new { code = 8, message = "Session create failed" } }, detail = ex.Message });
+            }
+
+            // Set session cookie to the opaque token
             Response.Cookies.Append(
                 ".ROBLOSECURITY",
-                cookieValue,
+                token,
                 new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None,
-                    Expires = DateTimeOffset.UtcNow.AddYears(1)
+                    Expires = expires
                 }
             );
 

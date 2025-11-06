@@ -224,5 +224,21 @@ Roblox.BootstrapWidgets = function() {
         ToggleSystemMessage: n
     }
 }(), $(function() {
-    Roblox.BootstrapWidgets.SetupTabs(), Roblox.BootstrapWidgets.SetupDropdown(), Roblox.BootstrapWidgets.SetupAccordion(), Roblox.BootstrapWidgets.SetupTooltip(), Roblox.BootstrapWidgets.CloseTooltip(), Roblox.BootstrapWidgets.SetupPopover(), Roblox.BootstrapWidgets.ClosePopover(), Roblox.BootstrapWidgets.SetupScrollbar(), Roblox.BootstrapWidgets.SetupPagination(), typeof Modernizr == "undefined" || Modernizr.input.placeholder || Roblox.BootstrapWidgets.Placeholder(), Roblox.BootstrapWidgets.IsTruncated(), Roblox.BootstrapWidgets.TruncateParagraph(), Roblox.BootstrapWidgets.ToggleParagraph(), Roblox.BootstrapWidgets.SetupCarousel(), Roblox.BootstrapWidgets.SetupToggleButton(), Roblox.BootstrapWidgets.SetupSystemFeedback(), Roblox.BootstrapWidgets.ToggleSystemMessage()
+    Roblox.BootstrapWidgets.SetupTabs(),
+    Roblox.BootstrapWidgets.SetupDropdown(),
+    Roblox.BootstrapWidgets.SetupAccordion(),
+    Roblox.BootstrapWidgets.SetupTooltip(),
+    (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.CloseTooltip == "function" && Roblox.BootstrapWidgets.CloseTooltip()),
+    Roblox.BootstrapWidgets.SetupPopover(),
+    (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.ClosePopover == "function" && Roblox.BootstrapWidgets.ClosePopover()),
+    Roblox.BootstrapWidgets.SetupScrollbar(),
+    Roblox.BootstrapWidgets.SetupPagination(),
+    (typeof Modernizr == "undefined" || Modernizr.input.placeholder || Roblox.BootstrapWidgets.Placeholder()),
+    Roblox.BootstrapWidgets.IsTruncated(),
+    Roblox.BootstrapWidgets.TruncateParagraph(),
+    Roblox.BootstrapWidgets.ToggleParagraph(),
+    Roblox.BootstrapWidgets.SetupCarousel(),
+    Roblox.BootstrapWidgets.SetupToggleButton(),
+    Roblox.BootstrapWidgets.SetupSystemFeedback(),
+    Roblox.BootstrapWidgets.ToggleSystemMessage()
 });

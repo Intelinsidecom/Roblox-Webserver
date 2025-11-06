@@ -144,9 +144,7 @@ C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\RobloxW
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
-C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\scopedcss\bundle\RobloxWebserver.styles.css
-C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\scopedcss\projectbundle\RobloxWebserver.bundle.scp.css
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\staticwebassets.development.json

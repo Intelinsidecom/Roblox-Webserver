@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -13,21 +14,35 @@ namespace Api.Controllers
         [HttpGet("account-info")]
         public IActionResult GetAccountInfo([FromServices] IConfiguration config)
         {
-            var cookie = Request.Cookies[".ROBLOSECURITY"];
-            if (string.IsNullOrWhiteSpace(cookie))
-                return BadRequest();
-
+            // Prefer user id from claims (set by Website middleware from sessions)
             long userId = 0;
-            var idx = cookie.IndexOf("UserId=", StringComparison.OrdinalIgnoreCase);
-            if (idx >= 0)
-            {
-                var val = cookie.Substring(idx + 7);
-                var sep = val.IndexOf(';');
-                if (sep >= 0) val = val.Substring(0, sep);
-                long.TryParse(val, out userId);
-            }
+            var claimVal = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(claimVal))
+                long.TryParse(claimVal, out userId);
+
+            // Fallback: if no claims (e.g., direct call bypassing middleware), try to map cookie -> user id via sessions
             if (userId <= 0)
-                return BadRequest();
+            {
+                var cookie = Request.Cookies[".ROBLOSECURITY"];
+                if (!string.IsNullOrWhiteSpace(cookie))
+                {
+                    try
+                    {
+                        var connString = config.GetConnectionString("Default");
+                        using var conn = new NpgsqlConnection(connString);
+                        conn.Open();
+                        using var cmd = new NpgsqlCommand("select user_id from sessions where token = @t and (expires_at is null or expires_at > now() at time zone 'utc')", conn);
+                        cmd.Parameters.AddWithValue("t", cookie);
+                        var obj = cmd.ExecuteScalar();
+                        if (obj is long uid)
+                            userId = uid;
+                    }
+                    catch { }
+                }
+            }
+
+            if (userId <= 0)
+                return StatusCode(403);
 
             string? username = null;
             string? email = null;
@@ -46,7 +61,7 @@ namespace Api.Controllers
                 using var reader = cmd.ExecuteReader();
                 if (!reader.Read())
                 {
-                    return BadRequest();
+                    return StatusCode(403);
                 }
                 username = reader.IsDBNull(0) ? null : reader.GetString(0);
                 password = reader.IsDBNull(1) ? null : reader.GetString(1);

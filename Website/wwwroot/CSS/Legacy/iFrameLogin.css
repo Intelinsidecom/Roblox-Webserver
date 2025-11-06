@@ -84,7 +84,15 @@ a.old-facebook-button span.right {
 	right: 0;
 	top: 26px;
 	width: 320px;
-	padding: 12px;
+	padding: 0;
+	overflow: hidden;
+}
+
+.rbx-navbar-login-iframe {
+	display: block;
+	width: 100%;
+	height: auto;
+	border: 0;
 }
 
 #facebookSignIn {

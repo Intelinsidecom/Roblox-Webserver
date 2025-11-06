@@ -1,0 +1,306 @@
+/* ~/CSS/Pages/Login/SignupOrLogInModal.css */
+.modal-open {
+    overflow: hidden;
+}
+
+.modal {
+    display: none;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    -webkit-overflow-scrolling: touch;
+    outline: 0;
+}
+
+.modal.fade .modal-dialog {
+    -webkit-transform: translate3d(0, -25%, 0);
+    transform: translate3d(0, -25%, 0);
+    -webkit-transition: -webkit-transform .3s ease-out;
+    -moz-transition: -moz-transform .3s ease-out;
+    -o-transition: -o-transform .3s ease-out;
+    transition: transform .3s ease-out;
+}
+
+.modal.in .modal-dialog {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
+
+.modal-open .modal {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.modal-dialog {
+    position: relative;
+    width: auto;
+    margin: 10px;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+    background-clip: padding-box;
+    outline: 0;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #000;
+}
+
+.modal-backdrop.fade {
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.modal-backdrop.in {
+    opacity: .5;
+    filter: alpha(opacity=50);
+}
+
+.modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+    min-height: 16.42857px;
+}
+
+.modal-header .close {
+    margin-top: -2px;
+}
+
+.modal-title {
+    margin: 0;
+    line-height: 1.42857;
+}
+
+.modal-body {
+    position: relative;
+    padding: 15px;
+}
+
+.modal-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+
+.modal-footer:before,
+.modal-footer:after {
+    content: " ";
+    display: table;
+}
+
+.modal-footer:after {
+    clear: both;
+}
+
+.modal-footer .btn+.btn {
+    margin-left: 5px;
+    margin-bottom: 0;
+}
+
+.modal-footer .btn-group .btn+.btn {
+    margin-left: -1px;
+}
+
+.modal-footer .btn-block+.btn-block {
+    margin-left: 0;
+}
+
+.modal-scrollbar-measure {
+    position: absolute;
+    top: -9999px;
+    width: 50px;
+    height: 50px;
+    overflow: scroll;
+}
+
+@media(min-width:768px) {
+    .modal-dialog {
+        width: 600px;
+        margin: 30px auto;
+    }
+
+    .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-sm {
+        width: 300px;
+    }
+}
+
+@media(min-width:992px) {
+    .modal-lg {
+        width: 900px;
+    }
+}
+
+@media(max-width:767px) {
+    .modal {
+        padding: 12px;
+    }
+}
+
+.modal-open-noscroll {
+    overflow: auto;
+}
+
+.rbx-modal-dialog {
+    min-width: 400px;
+    max-width: 970px;
+    margin: 15% auto;
+}
+
+@media(max-width:767px) {
+    .rbx-modal-dialog {
+        min-width: 296px;
+        width: 100%;
+        margin: 10% auto;
+    }
+}
+
+.rbx-modal-dialog .modal-content {
+    border-radius: 0;
+}
+
+.rbx-modal-dialog .modal-content .modal-header {
+    text-align: left;
+    padding: 12px 15px;
+    border-color: #B8B8B8;
+}
+
+.rbx-modal-dialog .modal-content .modal-header h4 {
+    margin: 0;
+}
+
+.rbx-modal-dialog .modal-content .modal-header .close {
+    margin: 0;
+}
+
+.rbx-modal-dialog .modal-content .modal-body {
+    text-align: left;
+}
+
+.rbx-modal-dialog .modal-content .modal-body .modal-image-container {
+    text-align: center;
+}
+
+.rbx-modal-dialog .modal-content .modal-body .modal-thumb {
+    width: 150px;
+    height: 150px;
+    margin: 12px auto;
+}
+
+@media(max-width:767px) {
+    .rbx-modal-dialog .modal-content .modal-body .modal-thumb {
+        width: 126px;
+        height: 126px;
+    }
+}
+
+.rbx-modal-dialog .modal-content .modal-body p {
+    white-space: pre-line;
+    line-height: 1.5em;
+}
+
+@media(max-width:767px) {
+    .rbx-modal-dialog .modal-content .modal-body p {
+        font-size: 14px;
+        font-weight: 400;
+    }
+}
+
+.rbx-modal-dialog .modal-content .modal-footer {
+    border-top: 0 none;
+    text-align: center;
+}
+
+.rbx-modal-dialog .modal-content .modal-footer-note {
+    border-top: 1px solid #B8B8B8;
+    color: #B8B8B8;
+    margin: 12px auto 0;
+    padding: 5px;
+    text-align: center;
+}
+
+.close {
+    opacity: .2;
+    filter: alpha(opacity=20);
+    float: right;
+}
+
+.close:hover,
+.close:focus {
+    opacity: .5;
+    filter: alpha(opacity=50);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button.close {
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+.signup-or-log-in-modal {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    box-shadow: #191919 0 1px 4px 0;
+    margin: auto;
+    width: 380px;
+    height: auto;
+    background-color: white;
+    padding-left: 10px;
+    padding-right: 10px !important;
+}
+
+.signup-or-log-in-modal h3 {
+    font-weight: 300;
+    text-transform: uppercase;
+}
+
+.signup-or-log-in-modal h3.signup-header,
+.signup-or-log-in-modal .login-header {
+    text-align: left;
+    padding: 5px 10px 20px 10px;
+    margin: 0;
+}
+
+.signup-or-log-in-modal .close-button {
+    position: absolute;
+    right: 15px;
+    top: -0px;
+    font-size: 40px;
+    cursor: pointer;
+    color: #BBB;
+}
+
+.signup-or-log-in-modal .close-button:hover {
+    color: #777;
+}
+
+.signup-or-log-in-modal .rbx-login-partial {
+    box-shadow: none;
+    padding: 12px 5px 5px 5px;
+}

@@ -153,9 +153,13 @@ $(function() {
     });
     e = function(n) {
         var t, i;
-        n.indexOf("resize") != -1 && (t = n.split(","), $("#iframe-login").css({
-            height: t[1]
-        })), n.indexOf("fbRegister") != -1 && (t = n.split("^"), i = "&fbname=" + encodeURIComponent(t[1]) + "&fbem=" + encodeURIComponent(t[2]) + "&fbdt=" + encodeURIComponent(t[3]), window.location.href = "../Login/Default.aspx?iFrameFacebookSync=true" + i)
+        if (n.indexOf("resize") != -1) {
+            t = n.split(",");
+            var h = t[1];
+            $("#iframe-login").css({ height: h });
+            $("#iFrameLogin").css({ height: h });
+        }
+        n.indexOf("fbRegister") != -1 && (t = n.split("^"), i = "&fbname=" + encodeURIComponent(t[1]) + "&fbem=" + encodeURIComponent(t[2]) + "&fbdt=" + encodeURIComponent(t[3]), window.location.href = "../Login/Default.aspx?iFrameFacebookSync=true" + i)
     }, $.receiveMessage(function(n) {
         e(n.data)
     });
@@ -175,7 +179,18 @@ $(function() {
                     },
                     sectionType: Roblox.SignupOrLogin.SectionType.login
                 };
-                Roblox.SignupOrLoginModal.show(t)
+                if (window.Roblox && Roblox.SignupOrLoginModal && typeof Roblox.SignupOrLoginModal.show === "function") {
+                    Roblox.SignupOrLoginModal.show(t)
+                } else {
+                    // Fallback to legacy iframe login toggle: directly toggle #iFrameLogin like y()
+                    $("#iFrameLogin").toggleClass("show");
+                    if ($("#iFrameLogin").hasClass("show")) {
+                        var leftOffset = $("#header-login").offset().left - $("#iFrameLogin").offset().left - 250;
+                        if (leftOffset > 0) {
+                            $("#iFrameLogin").css("left", leftOffset)
+                        }
+                    }
+                }
             }), $("#header-signup").click(function() {
                 var t = {
                     onSignupSuccess: function() {
@@ -190,10 +205,38 @@ $(function() {
             })
         },
         y = function() {
+            function adjustIframeHeight() {
+                try {
+                    var ifr = document.getElementById('iframe-login');
+                    if (ifr && ifr.contentWindow && ifr.contentWindow.document) {
+                        var doc = ifr.contentWindow.document;
+                        var de = doc.documentElement;
+                        var h = Math.max(
+                            doc.body ? doc.body.scrollHeight : 0,
+                            doc.body ? doc.body.offsetHeight : 0,
+                            de ? de.clientHeight : 0,
+                            de ? de.scrollHeight : 0,
+                            de ? de.offsetHeight : 0
+                        );
+                        if (h && h > 0) {
+                            $("#iframe-login").css({ height: h + 'px' });
+                            $("#iFrameLogin").css({ height: h + 'px' });
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }
             $("#head-login").click(function() {
                 if ($("#iFrameLogin").toggleClass("show"), $("#iFrameLogin").hasClass("show")) {
                     var t = $("#head-login").offset().left - $("#iFrameLogin").offset().left - 250;
-                    t > 0 && $("#iFrameLogin").css("left", t)
+                    t > 0 && $("#iFrameLogin").css("left", t);
+                    // same-origin sizing fallback
+                    adjustIframeHeight();
+                    setTimeout(adjustIframeHeight, 50);
+                    setTimeout(adjustIframeHeight, 200);
+                    var ifr = document.getElementById('iframe-login');
+                    if (ifr) {
+                        $(ifr).on('load', function(){ adjustIframeHeight(); });
+                    }
                 }
             })
         },

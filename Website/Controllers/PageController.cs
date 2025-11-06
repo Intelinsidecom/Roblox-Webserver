@@ -2,21 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RobloxWebserver.Controllers
 {
-    public class MainController : Controller
+    public class PageController : Controller
     {
-        [HttpGet("login")]
-        [HttpGet("newlogin")]
-        public IActionResult Login()
+        [HttpGet("upgrades/robux")]
+        public IActionResult Robux()
         {
-            return View("~/Views/Main/Login.cshtml");
+            return View("~/Views/Pages/Robux.cshtml");
         }
 
-        [HttpPost("login")]
-        [HttpPost("newlogin")]
-        public IActionResult LoginPost()
+        [HttpPost("upgrades/robux")]
+        public IActionResult RobuxPost()
         {
             // Accept legacy form POSTs and render the same page.
-            return View("~/Views/Home/Login.cshtml");
+            if (User?.Identity?.IsAuthenticated == true)
+                return Redirect("/home");
+            return View("~/Views/Pages/Robux.cshtml");
         }
     }
 }

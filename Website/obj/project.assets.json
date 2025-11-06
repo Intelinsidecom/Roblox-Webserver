@@ -2583,7 +2583,9 @@
       "Api >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 8.0.10",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.10",
-      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.7"
+      "Npgsql >= 8.0.4",
+      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.8",
+      "Users >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -2620,6 +2622,9 @@
           "projectReferences": {
             "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj"
+            },
+            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj"
             }
           }
         }
@@ -2650,9 +2655,13 @@
             "target": "Package",
             "version": "[8.0.10, )"
           },
+          "Npgsql": {
+            "target": "Package",
+            "version": "[8.0.4, )"
+          },
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
-            "version": "[8.0.7, )"
+            "version": "[8.0.8, )"
           }
         },
         "imports": [
@@ -2677,17 +2686,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "RobloxWebserver depends on Npgsql.EntityFrameworkCore.PostgreSQL (>= 8.0.7) but Npgsql.EntityFrameworkCore.PostgreSQL 8.0.7 was not found. Npgsql.EntityFrameworkCore.PostgreSQL 8.0.8 was resolved instead.",
-      "libraryId": "Npgsql.EntityFrameworkCore.PostgreSQL",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }

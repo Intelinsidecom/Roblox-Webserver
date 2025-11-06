@@ -2880,7 +2880,7 @@ textarea.form-control {
 	-moz-appearance: none;
 	appearance: none;
 	line-height: 18px;
-	background: url(/web/20160430090524im_/https://static.rbxcdn.com/images/Upgrades/Purchase/icon_downarrow.svg) no-repeat scroll 98% 3px #fff;
+	background: url(../../../images/Upgrades/Purchase/icon_downarrow.svg) no-repeat scroll 98% 3px #fff;
 }
 
 .rbx-select-group .rbx-select::-ms-expand {
@@ -2889,7 +2889,7 @@ textarea.form-control {
 
 .rbx-select-group .rbx-select:hover {
 	background-color: #00A2FF;
-	background-image: url(/web/20160430090524im_/https://static.rbxcdn.com/images/Upgrades/Purchase/icon_downarrow_on.svg);
+	background-image: url(../../../images/Upgrades/Purchase/icon_downarrow_on.svg);
 	color: #fff;
 }
 
@@ -3192,7 +3192,7 @@ a:focus {
 }
 
 .icon-facebook {
-	background-image: url(/web/20160430090524im_/https://static.rbxcdn.com/images/NextStyleGuide/facebook.svg);
+	background-image: url(../../../images/NextStyleGuide/facebook.svg);
 	background-repeat: no-repeat;
 	background-size: auto auto;
 	width: 28px;
@@ -3238,9 +3238,16 @@ a:focus {
 	color: #757575;
 }
 
+.rbx-newLogin .log-in-form .form-group:last-child {
+	margin-bottom: 6px;
+}
+.rbx-newLogin .rbx-login-btns {
+	margin-bottom: 6px;
+}
+
 .rbx-newLogin .rbx-login-msg {
 	margin: 6px 0;
-	padding-bottom: 24px;
+	padding-bottom: 12px;
 	border-bottom: 1px solid #B8B8B8;
 }
 
@@ -3255,10 +3262,20 @@ a:focus {
 }
 
 .rbx-newLogin .rbx-login-status {
-	display: none;
-	position: absolute;
-	left: 5%;
-	top: 45%;
+    display: none;
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.rbx-newLogin .rbx-login-status.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
 }
 
 .rbx-newLogin .rbx-login-status img {
@@ -3268,8 +3285,9 @@ a:focus {
 }
 
 .rbx-newLogin .rbx-login-status span {
-	top: -5px;
-	position: relative;
+    position: static;
+    top: auto;
+    line-height: 1.2;
 }
 
 .rbx-newLogin .rbx-social-signin .rbx-facebook-login {
@@ -3295,8 +3313,30 @@ a:focus {
 iframe body {
 	min-width: 240px;
 	body: #fff;
+	margin-bottom: 0 !important;
 }
 
 #iFrameCaptchaControl {
 	margin-left: -10px;
+}
+
+.rbx-newLogin .log-in-form .form-group {
+	margin-left: 0;
+}
+.rbx-newLogin .log-in-form .form-group .input-field {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	margin-left: 0;
+}
+
+iframe body {
+	margin-bottom: 0 !important;
+}
+
+.rbx-newLogin .log-in-form .input-field {
+	height: 45px; /* was 38px */
+	font-size: 20px;
+	line-height: 1.2;
+	padding: 16px;
 }

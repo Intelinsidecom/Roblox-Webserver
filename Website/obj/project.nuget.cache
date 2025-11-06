@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "rJdrEgxtaSk=",
+  "dgSpecHash": "A0t7OzmJPuk=",
   "success": true,
   "projectFilePath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Website\\RobloxWebserver.csproj",
   "expectedPackageFiles": [
@@ -49,18 +49,5 @@
     "C:\\Users\\Intel\\.nuget\\packages\\system.text.encoding.codepages\\6.0.0\\system.text.encoding.codepages.6.0.0.nupkg.sha512",
     "C:\\Users\\Intel\\.nuget\\packages\\system.threading.channels\\6.0.0\\system.threading.channels.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "message": "RobloxWebserver depends on Npgsql.EntityFrameworkCore.PostgreSQL (>= 8.0.7) but Npgsql.EntityFrameworkCore.PostgreSQL 8.0.7 was not found. Npgsql.EntityFrameworkCore.PostgreSQL 8.0.8 was resolved instead.",
-      "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Website\\RobloxWebserver.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Website\\RobloxWebserver.csproj",
-      "libraryId": "Npgsql.EntityFrameworkCore.PostgreSQL",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }

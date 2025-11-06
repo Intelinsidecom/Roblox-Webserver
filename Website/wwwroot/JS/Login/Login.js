@@ -101,5 +101,35 @@ $(function() {
         $("[roblox-js-onsignup]").attr("href", r)
     }), $("#errorBanner").text().trim().length == 0 && $("#errorBanner").hide(), $("#Username").focus(), $("#loginForm").keydown(function(n) {
         if (n.which == 13) return t(), !1
-    })
-});
+    });
+    var $headerForm = $("#LogInForm");
+    if ($headerForm.length) {
+        $headerForm.on("submit", function(ev){
+            ev.preventDefault();
+            var u = $("#LoginUsername").val() || "";
+            var f = $("#LoginPassword").val() || "";
+            var a = $("#signInButtonPanel").attr("data-sign-on-api-path") || "/login/v1";
+            var c = function(){ window.location.href = i + "?nl=true"; };
+            var l = function(xhr){
+                try {
+                    if (xhr && xhr.status === 403) {
+                        var e = JSON.parse(xhr.responseText || "{}");
+                        if (e && e.message === "Credentials") { window.location.href = n + "?failureReason=" + r.credentials; return; }
+                    }
+                } catch(ex){}
+                window.location.href = n;
+            };
+            $.ajax({
+                type: "POST",
+                url: a,
+                data: { username: u, password: f },
+                crossDomain: !0,
+                xhrFields: { withCredentials: !0 },
+                success: c,
+                error: l
+            });
+        });
+    }
+ 
+})
+;

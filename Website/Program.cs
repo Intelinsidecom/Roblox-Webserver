@@ -1,10 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
+using Api.Controllers;
+using System.Security.Claims;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services
+    .AddControllersWithViews()
+    .AddApplicationPart(typeof(LoginController).Assembly);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("Default"),
@@ -55,10 +60,53 @@ if (enableRequestLogging)
     app.UseHttpLogging();
 }
 
+// Translate .ROBLOSECURITY into HttpContext.User by looking up sessions table
+app.Use(async (context, next) =>
+{
+    var cookies = context.Request.Cookies;
+    if (cookies.TryGetValue(".ROBLOSECURITY", out var raw))
+    {
+        var connStr = context.RequestServices.GetRequiredService<IConfiguration>().GetConnectionString("Default");
+        if (!string.IsNullOrWhiteSpace(connStr))
+        {
+            try
+            {
+                await using var conn = new NpgsqlConnection(connStr);
+                await conn.OpenAsync();
+                await using var cmd = new NpgsqlCommand("select user_id from sessions where token = @t and (expires_at is null or expires_at > now() at time zone 'utc')", conn);
+                cmd.Parameters.AddWithValue("t", raw);
+                var obj = await cmd.ExecuteScalarAsync();
+                if (obj is long uid && uid > 0)
+                {
+                    var claims = new[]
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, uid.ToString()),
+                        new Claim(ClaimTypes.Name, $"User_{uid}")
+                    };
+                    var identity = new ClaimsIdentity(claims, "Cookie");
+                    context.User = new ClaimsPrincipal(identity);
+                }
+            }
+            catch { /* ignore lookup errors */ }
+        }
+    }
+    await next();
+});
+
 app.UseAuthorization();
+
+// Enable attribute-routed controllers (e.g., AuthGateController for /, /login, /newlogin)
+app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Pages routing: placed AFTER default so specific controllers (e.g., /login/v1) win first
+app.MapControllerRoute(
+    name: "pages",
+    pattern: "{*path}",
+    defaults: new { controller = "Pages", action = "Route" }
+);
 
 app.Run();
