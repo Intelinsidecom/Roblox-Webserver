@@ -9,6 +9,8 @@ local uploadURL = %uploadUrl%
 local accessKey = %accessKey%
 print(("[%s] Started RenderJob for type '%s' with userId %d ..."):format(jobId, type, userId))
 
+
+
 local HttpService = game:GetService('HttpService')
 HttpService.HttpEnabled = true
 
@@ -21,6 +23,8 @@ local Player = game.Players:CreateLocalPlayer(0)
 Player.CharacterAppearance = ("%s/Asset/CharacterFetch.ashx?userId=%d"):format(baseUrl, userId)
 print(Player.CharacterAppearance)
 Player:LoadCharacter(false)
+
+
 
 game:GetService("RunService"):Run()
 

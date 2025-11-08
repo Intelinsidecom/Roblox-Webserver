@@ -102,10 +102,6 @@ public sealed class ThumbnailService : IThumbnailService
         qb.Append("&userId=").Append(Uri.EscapeDataString(userId.ToString()));
         if (x.HasValue) qb.Append("&x=").Append(x.Value);
         if (y.HasValue) qb.Append("&y=").Append(y.Value);
-        if (!string.IsNullOrWhiteSpace(uploadUrl))
-            qb.Append("&uploadUrl=").Append(Uri.EscapeDataString(uploadUrl));
-        if (!string.IsNullOrWhiteSpace(accessKey))
-            qb.Append("&accessKey=").Append(Uri.EscapeDataString(accessKey));
 
         var requestUri = arbiterUrl.TrimEnd('/') + "/renderavatar?" + qb.ToString();
 
@@ -113,22 +109,58 @@ public sealed class ThumbnailService : IThumbnailService
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();
-        var json = await resp.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
+        // Parse response robustly: accept array/object/string formats
         using var doc = JsonDocument.Parse(json);
-        if (doc.RootElement.ValueKind != JsonValueKind.Array || doc.RootElement.GetArrayLength() == 0)
+        string? innerJson = null;
+
+        if (doc.RootElement.ValueKind == JsonValueKind.Array)
+        {
+            if (doc.RootElement.GetArrayLength() == 0)
+                throw new InvalidOperationException("Unexpected response from Arbiter.");
+
+            string? candidate = null;
+            for (int i = doc.RootElement.GetArrayLength() - 1; i >= 0; i--)
+            {
+                var el = doc.RootElement[i];
+                if (el.ValueKind != JsonValueKind.Object)
+                    continue;
+                var typeProp = el.TryGetProperty("type", out var tEl) ? tEl.GetString() : null;
+                if (!string.Equals(typeProp, "string", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                var val = el.TryGetProperty("value", out var vEl) ? vEl.GetString() : null;
+                if (string.IsNullOrWhiteSpace(val))
+                    continue;
+                var trimmed = val!.TrimStart();
+                if (trimmed.StartsWith("{"))
+                {
+                    candidate = val;
+                    break;
+                }
+                candidate = val;
+            }
+            innerJson = candidate;
+        }
+        else if (doc.RootElement.ValueKind == JsonValueKind.Object)
+        {
+            // Some hosts may return a single formatted object instead of an array
+            var typeProp = doc.RootElement.TryGetProperty("type", out var tEl) ? tEl.GetString() : null;
+            if (string.Equals(typeProp, "string", StringComparison.OrdinalIgnoreCase))
+            {
+                innerJson = doc.RootElement.TryGetProperty("value", out var vEl) ? vEl.GetString() : null;
+            }
+        }
+        else if (doc.RootElement.ValueKind == JsonValueKind.String)
+        {
+            // Raw string body containing the upload response JSON
+            innerJson = doc.RootElement.GetString();
+        }
+
+        if (string.IsNullOrWhiteSpace(innerJson))
             throw new InvalidOperationException("Unexpected response from Arbiter.");
 
-        var first = doc.RootElement[0];
-        var typeProp = first.TryGetProperty("type", out var tEl) ? tEl.GetString() : null;
-        if (!string.Equals(typeProp, "string", StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Arbiter did not return a string body.");
-
-        var valueStr = first.TryGetProperty("value", out var vEl) ? vEl.GetString() : null;
-        if (string.IsNullOrWhiteSpace(valueStr))
-            throw new InvalidOperationException("Empty result from Arbiter.");
-
-        using var inner = JsonDocument.Parse(valueStr);
+        using var inner = JsonDocument.Parse(innerJson!);
         var hash = inner.RootElement.TryGetProperty("hash", out var hEl) ? hEl.GetString() : null;
         if (string.IsNullOrWhiteSpace(hash))
             throw new InvalidOperationException("Upload response missing hash.");
