@@ -13,6 +13,7 @@
           "Microsoft.EntityFrameworkCore.Design": "8.0.10",
           "Npgsql": "8.0.4",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.8",
+          "Thumbnails": "1.0.0",
           "Users": "1.0.0"
         },
         "runtime": {
@@ -579,6 +580,17 @@
           }
         }
       },
+      "Thumbnails/1.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
+        },
+        "runtime": {
+          "Thumbnails.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Users/1.0.0": {
         "dependencies": {
           "Npgsql": "8.0.4"
@@ -907,6 +919,11 @@
       "hashPath": "system.threading.channels.6.0.0.nupkg.sha512"
     },
     "Api/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Thumbnails/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Api\Api.csproj" />
     <ProjectReference Include="..\Assemblies\Users\Users.csproj" />
+    <ProjectReference Include="..\Assemblies\Thumbnails\Thumbnails.csproj" />
   </ItemGroup>
 
 </Project>

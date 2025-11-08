@@ -1,0 +1,326 @@
+================================================================================
+ROBLOX 2016 - GAME JOIN API REQUIREMENTS
+================================================================================
+Document Date: November 7, 2025
+Source Analysis: Roblox 2016 Source Code (f:\roblox-2016-source-code)
+
+This document outlines ALL APIs required for a Windows client to successfully
+join a game server in Roblox 2016.
+
+================================================================================
+1. AUTHENTICATION & SESSION APIS
+================================================================================
+
+1.1 AUTHENTICATION NEGOTIATION
+   Endpoint: /negotiate (or authentication URL)
+   Method: GET
+   Headers: RBXAuthenticationNegotiation: <domain>
+   Purpose: Obtain authentication ticket for game join
+   Returns: Authentication ticket string
+   
+   Source Reference: 
+   - Win/SharedLauncher.cpp:104-169 (authenticate function)
+   - Win/AuthenticationMarshallar.cpp:34-54
+
+   Implementation Notes:
+   - Client sends authentication request with domain header
+   - Server returns ticket that client uses for game connection
+   - Ticket is passed to client executable via command line
+
+================================================================================
+2. ASSET & CONTENT DELIVERY APIS
+================================================================================
+
+2.1 BASE URL CONFIGURATION
+   The client needs to know the base URL for all asset requests.
+   This is set via ContentProvider:SetBaseUrl() and InsertService:SetAssetUrl()
+   
+   Source: App/util/ContentProvider.cpp:186-193
+
+2.2 ASSET DOWNLOAD
+   Endpoint: /Asset/?id={assetId}
+   Method: GET
+   Purpose: Download game assets (meshes, textures, sounds, etc.)
+   Returns: Asset file content
+   
+   Source: App/v8datamodel/InsertService.cpp:22 (AssetUrlPiece)
+   
+   Implementation Notes:
+   - Format: baseUrl + "/Asset/?id=%d"
+   - Used by InsertService:SetAssetUrl()
+   - ContentProvider handles caching and async loading
+
+2.3 ASSET VERSION DOWNLOAD
+   Endpoint: /Asset/?assetversionid={versionId}
+   Method: GET
+   Purpose: Download specific version of an asset
+   Returns: Asset file content
+   
+   Source: App/v8datamodel/InsertService.cpp:23 (AssetVersionUrlPiece)
+
+2.4 CHARACTER APPEARANCE FETCH
+   Endpoint: /Asset/CharacterFetch.ashx?userId={userId}
+   Method: GET
+   Purpose: Get list of character appearance assets
+   Returns: Semicolon-separated list of asset URLs
+   
+   Source: Network/Player.cpp:80-84 (kValidCharacterAppearancePaths)
+   
+   Format Example:
+   http://baseurl/asset/bodycolors.ashx?userId=1;http://baseurl/Asset/?id=123;http://baseurl/Asset/?id=456
+   
+   Implementation Notes:
+   - CRITICAL: This is the URL that's NOT being called in your RCC script!
+   - Player.CharacterAppearance property is set to this URL
+   - Server makes HTTP GET request to this URL
+   - Response is semicolon-delimited list of asset URLs to load
+   - Each URL in the list is then fetched individually
+   
+   Source: Network/Player.cpp:1586-1686 (loadCharacterAppearance function)
+
+2.5 BODY COLORS
+   Endpoint: /Asset/BodyColors.ashx?userId={userId}
+   Method: GET
+   Purpose: Get player's body color configuration
+   Returns: XML with BodyColors instance
+   
+   Expected XML Format:
+   <roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" 
+          version="4">
+       <External>null</External>
+       <External>nil</External>
+       <Item class="BodyColors">
+           <Properties>
+               <int name="HeadColor">1</int>
+               <int name="LeftArmColor">1</int>
+               <int name="LeftLegColor">1</int>
+               <string name="Name">Body Colors</string>
+               <int name="RightArmColor">1</int>
+               <int name="RightLegColor">1</int>
+               <int name="TorsoColor">1</int>
+               <bool name="archivable">true</bool>
+           </Properties>
+       </Item>
+   </roblox>
+
+   Source: Website/Controllers/AssetController.cs:43-97
+
+================================================================================
+3. PLAYER & CHARACTER APIS
+================================================================================
+
+3.1 PLAYER DATA LOAD
+   Endpoint: /Game/LoadPlaceInfo.ashx?PlaceId={placeId}
+   Method: GET
+   Purpose: Load place configuration and settings
+   Returns: JSON with place info
+   
+   Note: May vary based on implementation
+
+3.2 CHARACTER SPAWN
+   The character is spawned server-side when:
+   - Player joins the game
+   - Player:LoadCharacter() is called
+   - Player respawns after death
+   
+   Process:
+   1. Server creates character model
+   2. Server loads character appearance from CharacterFetch URL
+   3. Server applies body colors, clothing, accessories
+   4. Character is replicated to all clients
+   
+   Source: Network/Player.cpp:1760-1783 (luaLoadCharacter)
+           Network/Player.cpp:1925-2118 (loadCharacter implementation)
+
+================================================================================
+4. GAME SERVER APIS (RCC Service)
+================================================================================
+
+4.1 RCC SERVICE SOAP ENDPOINTS
+   Base URL: http://localhost:64989 (configurable)
+   Protocol: SOAP 1.1/1.2
+   Namespace: http://roblox.com/
+   
+   Available Operations:
+   - HelloWorld: Test connectivity
+   - GetVersion: Get RCC version
+   - GetStatus: Get service status
+   - OpenJob: Start a new game server job
+   - OpenJobEx: Extended version of OpenJob
+   - BatchJob: Execute script in isolated environment
+   - BatchJobEx: Extended batch job
+   - Execute: Execute script in existing job
+   - ExecuteEx: Extended execute
+   - RenewLease: Extend job expiration
+   - CloseJob: Terminate a job
+   - GetExpiration: Get job expiration time
+   - GetAllJobs: List all active jobs
+   - CloseExpiredJobs: Clean up expired jobs
+   - CloseAllJobs: Terminate all jobs
+   - Diag: Diagnostic operations
+   - DiagEx: Extended diagnostics
+   
+   Source: RCCService/gSOAP/generated/soapRCCServiceSoapService.h:62-114
+
+4.2 OPENJOB/OPENJOBEX PARAMETERS
+   Job Structure:
+   - id: Unique job identifier
+   - expirationInSeconds: How long job stays alive
+   - category: Job category (0 = default)
+   - cores: CPU cores allocated
+   
+   Script Structure:
+   - name: Script name
+   - script: Lua code to execute
+   
+   Source: RCCService/RCCServiceSoapServiceImpl.cpp:1-300
+
+================================================================================
+5. NETWORK REPLICATION APIS
+================================================================================
+
+5.1 CLIENT-SERVER CONNECTION
+   Protocol: RakNet (UDP-based)
+   Port: Configurable (default varies)
+   
+   Connection Flow:
+   1. Client receives server address and port
+   2. Client connects via RakNet
+   3. ClientReplicator is created
+   4. Initial data replication begins
+   5. Player character is requested
+   6. Character appearance is loaded
+   7. Game state is synchronized
+   
+   Source: Network/ClientReplicator.cpp
+           Network/Client.cpp
+
+5.2 CHARACTER REPLICATION
+   The character is replicated from server to client via:
+   - Player.Character property replication
+   - Instance replication system
+   - Property change notifications
+   
+   Source: Network/Player.cpp:836-899 (setCharacter)
+
+================================================================================
+6. CONTENT PROVIDER CONFIGURATION
+================================================================================
+
+The game server (RCC) must configure these URLs for proper asset loading:
+
+6.1 REQUIRED LUA CONFIGURATION (Server-Side)
+   ```lua
+   game:GetService("InsertService"):SetAssetUrl(baseUrl .. "/asset/?id=%d")
+   game:GetService("InsertService"):SetAssetVersionUrl(baseUrl .. "/Asset/?assetversionid=%d")
+   game:GetService("ContentProvider"):SetBaseUrl(baseUrl)
+   ```
+   
+   Source: Your RenderAvatar.lua script (lines 10-12)
+
+6.2 PLAYER CHARACTER APPEARANCE
+   ```lua
+   Player.CharacterAppearance = baseUrl .. "/Asset/CharacterFetch.ashx?userId=" .. userId
+   ```
+   
+   Source: Your RenderAvatar.lua script (line 16)
+
+================================================================================
+7. CRITICAL FINDINGS - CHARACTER FETCH ISSUE
+================================================================================
+
+PROBLEM IDENTIFIED:
+Your RenderAvatar.lua script sets Player.CharacterAppearance correctly (line 16),
+but the HTTP request to CharacterFetch.ashx is NOT being made.
+
+ROOT CAUSE ANALYSIS:
+
+1. TIMING ISSUE
+   - Player:LoadCharacter() is called on line 18
+   - But loadCharacterAppearance() is only called if certain conditions are met
+   - The function checks: canLoadCharacterAppearance flag
+   - The function checks: Players::backendProcessing(this)
+   
+   Source: Network/Player.cpp:1586-1592
+
+2. BACKEND PROCESSING CHECK
+   The loadCharacterAppearance function has this check:
+   ```cpp
+   if (!Players::backendProcessing(this))
+       throw std::runtime_error("LoadCharacterAppearance can only be called by the backend server");
+   ```
+   
+   This means character appearance loading ONLY works on the server side,
+   NOT in isolated RCC jobs like thumbnail generation!
+
+3. RCC CONTEXT
+   When RCC runs BatchJob or OpenJob:
+   - It creates an isolated DataModel
+   - Players service exists but may not be in "backend processing" mode
+   - The Player object created via CreateLocalPlayer() is NOT a network player
+   - Therefore loadCharacterAppearance() may not execute properly
+
+SOLUTION:
+For RCC thumbnail generation, you need to:
+1. Manually fetch the CharacterFetch.ashx URL
+2. Parse the semicolon-delimited response
+3. Load each asset URL individually
+4. Parent them to the character
+
+Example Fix for RenderAvatar.lua:
+```lua
+local HttpService = game:GetService("HttpService")
+local InsertService = game:GetService("InsertService")
+
+-- Fetch character appearance
+local appearanceUrl = Player.CharacterAppearance
+local success, response = pcall(function()
+    return HttpService:GetAsync(appearanceUrl)
+end)
+
+if success and response then
+    -- Split by semicolon
+    for assetUrl in string.gmatch(response, "[^;]+") do
+        pcall(function()
+            local asset = InsertService:LoadAsset(assetUrl)
+            if asset then
+                for _, item in pairs(asset:GetChildren()) do
+                    item.Parent = Player.Character
+                end
+            end
+        end)
+    end
+end
+```
+
+Note: HttpService may not be available in RCC context. Alternative is to
+use the ContentProvider directly or implement custom HTTP fetching.
+
+================================================================================
+8. SUMMARY OF REQUIRED ENDPOINTS FOR YOUR WEBSERVER
+================================================================================
+
+MINIMUM REQUIRED:
+1. /Asset/CharacterFetch.ashx?userId={userId}
+   - Returns semicolon-delimited asset URLs
+   
+2. /Asset/BodyColors.ashx?userId={userId}
+   - Returns XML with BodyColors instance
+   
+3. /Asset/?id={assetId}
+   - Returns asset file content
+   
+4. /Asset/?assetversionid={versionId}
+   - Returns specific asset version
+
+RECOMMENDED FOR FULL GAME JOIN:
+5. Authentication endpoint (negotiate)
+6. Place info endpoint
+7. Player data endpoints
+8. Game server listing/join endpoints
+
+================================================================================
+END OF DOCUMENT
+================================================================================

@@ -1,0 +1,579 @@
+================================================================================
+CHARACTER FETCH ISSUE - DETAILED ANALYSIS & SOLUTION
+================================================================================
+Document Date: November 7, 2025
+Issue: CharacterFetch.ashx endpoint not being called in RCC avatar rendering
+
+================================================================================
+1. ISSUE SUMMARY
+================================================================================
+
+SYMPTOM:
+When executing RenderAvatar.lua script via RCC BatchJob, the character
+appearance URL is set correctly but NO HTTP request is made to the
+CharacterFetch.ashx endpoint.
+
+EVIDENCE:
+- Line 16 of RenderAvatar.lua sets Player.CharacterAppearance
+- Line 18 calls Player:LoadCharacter(false)
+- Webserver logs show NO requests to /Asset/CharacterFetch.ashx
+- Character renders without appearance (default colors only)
+
+================================================================================
+2. ROOT CAUSE ANALYSIS
+================================================================================
+
+2.1 CODE FLOW IN ROBLOX SOURCE
+
+When Player:LoadCharacter() is called:
+
+Step 1: luaLoadCharacter (Network/Player.cpp:1760-1783)
+   - Validates backend processing
+   - Calls loadCharacter(inGame, preferredSpawn)
+
+Step 2: loadCharacter (Network/Player.cpp:1925-2118)
+   - Creates character model
+   - Adds humanoid
+   - Checks StarterPlayerService.LoadCharacterAppearance flag
+   - If true, calls loadCharacterAppearance()
+
+Step 3: loadCharacterAppearance (Network/Player.cpp:1586-1686)
+   - **CRITICAL CHECK**: if (!Players::backendProcessing(this))
+   - **CRITICAL CHECK**: if(!canLoadCharacterAppearance)
+   - If checks pass, fetches CharacterAppearance URL
+   - Parses semicolon-delimited response
+   - Loads each asset via ContentProvider
+
+2.2 THE BACKEND PROCESSING CHECK
+
+Source: Network/Player.cpp:1589-1590
+```cpp
+if (!Players::backendProcessing(this))
+    throw std::runtime_error("LoadCharacterAppearance can only be called by the backend server");
+```
+
+This check determines if the code is running in a "backend" (server) context.
+
+In RCC BatchJob:
+- DataModel is created in isolated mode
+- Players service exists but is NOT in network server mode
+- Players::backendProcessing() likely returns FALSE
+- loadCharacterAppearance() throws exception or returns early
+- Character appearance is NEVER loaded
+
+2.3 PLAYER CREATION CONTEXT
+
+Your script uses:
+```lua
+local Player = game.Players:CreateLocalPlayer(0)
+```
+
+CreateLocalPlayer creates a LOCAL player, not a network player.
+Local players are used for:
+- Solo mode
+- Thumbnail generation
+- Testing
+- Studio play solo
+
+Local players do NOT trigger full network replication, which means:
+- Backend processing checks may fail
+- Character appearance loading may be skipped
+- Network-dependent features don't work
+
+2.4 CONFIRMATION FROM SOURCE CODE
+
+Network/Player.cpp:1589-1592:
+```cpp
+void Player::loadCharacterAppearance(bool blockingCall)
+{
+    setCharacterAppearanceLoaded(false);
+    if (!Players::backendProcessing(this))
+        throw std::runtime_error("LoadCharacterAppearance can only be called by the backend server");
+    if(!canLoadCharacterAppearance)
+        return;
+    // ... rest of function
+}
+```
+
+The function REQUIRES backend processing mode.
+In RCC BatchJob context, this condition is NOT met.
+
+================================================================================
+3. WHY THE URL IS SET BUT NOT FETCHED
+================================================================================
+
+Timeline of execution in your script:
+
+1. Line 16: Player.CharacterAppearance = "URL"
+   ✓ Property is set successfully
+   ✓ Value is stored in Player object
+   
+2. Line 17: print(Player.CharacterAppearance)
+   ✓ Prints the URL correctly
+   ✓ Confirms property was set
+   
+3. Line 18: Player:LoadCharacter(false)
+   ✓ Function is called
+   ✓ Character model is created
+   ✓ Humanoid is added
+   ✓ Character is parented to Workspace
+   
+4. Inside LoadCharacter → loadCharacterAppearance:
+   ✗ Backend processing check FAILS
+   ✗ Function returns early or throws exception
+   ✗ HTTP request is NEVER made
+   ✗ CharacterAppearance URL is NEVER fetched
+
+Result:
+- Character exists with default appearance
+- No clothing, accessories, or body colors
+- CharacterAppearance property is set but unused
+
+================================================================================
+4. SOLUTION OPTIONS
+================================================================================
+
+4.1 SOLUTION 1: MANUAL HTTP FETCH IN LUA (RECOMMENDED)
+
+Bypass the automatic loading and fetch manually:
+
+```lua
+local jobId = %jobId%
+local type = %type%
+local format = "PNG"
+local x = %x%
+local y = %y%
+local baseUrl = "https://www.freblx.xyz"
+local assetId = %assetId%
+local userId = %userId%  -- IMPORTANT: Add this parameter
+
+print(("[%s] Started RenderJob for type '%s' with assetId %d ..."):format(jobId, type, assetId))
+
+-- Configure services
+game:GetService("InsertService"):SetAssetUrl(baseUrl .. "/asset/?id=%d")
+game:GetService("InsertService"):SetAssetVersionUrl(baseUrl .. "/Asset/?assetversionid=%d")
+game:GetService("ContentProvider"):SetBaseUrl(baseUrl)
+game:GetService("ScriptContext").ScriptsDisabled = true
+
+-- Create player and character
+local Player = game.Players:CreateLocalPlayer(0)
+Player.CharacterAppearance = ("%s/Asset/CharacterFetch.ashx?userId=%d"):format(baseUrl, userId)
+print("CharacterAppearance URL: " .. Player.CharacterAppearance)
+
+Player:LoadCharacter(false)
+game:GetService("RunService"):Run()
+
+-- MANUAL APPEARANCE LOADING
+print("Manually loading character appearance...")
+
+local HttpService = game:GetService("HttpService")
+local InsertService = game:GetService("InsertService")
+local ContentProvider = game:GetService("ContentProvider")
+
+-- Fetch appearance data
+local success, appearanceData = pcall(function()
+    return HttpService:GetAsync(Player.CharacterAppearance, true)
+end)
+
+if success and appearanceData and appearanceData ~= "" then
+    print("Fetched appearance data: " .. appearanceData)
+    
+    -- Parse semicolon-delimited URLs
+    local assetUrls = {}
+    for assetUrl in string.gmatch(appearanceData, "[^;]+") do
+        table.insert(assetUrls, assetUrl)
+        print("Found asset URL: " .. assetUrl)
+    end
+    
+    -- Load each asset
+    for _, assetUrl in ipairs(assetUrls) do
+        local loadSuccess, loadError = pcall(function()
+            -- Try to extract asset ID from URL
+            local id = string.match(assetUrl, "id=(%d+)")
+            
+            if id then
+                print("Loading asset ID: " .. id)
+                local asset = InsertService:LoadAsset(tonumber(id))
+                
+                if asset then
+                    -- Parent all children to character
+                    for _, item in pairs(asset:GetChildren()) do
+                        print("Applying: " .. item.ClassName .. " - " .. item.Name)
+                        
+                        if item:IsA("Accoutrement") or 
+                           item:IsA("Hat") or
+                           item:IsA("Shirt") or 
+                           item:IsA("Pants") or 
+                           item:IsA("ShirtGraphic") or
+                           item:IsA("BodyColors") or
+                           item:IsA("CharacterMesh") then
+                            item.Parent = Player.Character
+                        end
+                    end
+                    asset:Destroy()
+                end
+            elseif string.find(assetUrl, "bodycolors") then
+                -- Handle BodyColors endpoint
+                print("Loading body colors from: " .. assetUrl)
+                local bodyColorData = HttpService:GetAsync(assetUrl, true)
+                -- Parse XML and apply colors
+                -- (XML parsing in Lua is complex, may need to handle server-side)
+            end
+        end)
+        
+        if not loadSuccess then
+            warn("Failed to load asset: " .. assetUrl .. " - " .. tostring(loadError))
+        end
+    end
+    
+    print("Character appearance loaded successfully")
+else
+    warn("Failed to fetch appearance data: " .. tostring(appearanceData))
+end
+
+-- Wait for assets to load
+wait(1)
+
+-- Disable animations
+if Player.Character:FindFirstChild("Animate") then
+    Player.Character.Animate.Disabled = true
+end
+
+if Player.Character:FindFirstChild("Torso") then
+    Player.Character.Torso.Anchored = true
+end
+
+-- Handle gear
+local gear = Player.Backpack:GetChildren()[1]
+if gear then
+    gear.Parent = Player.Character
+    if Player.Character:FindFirstChild("Torso") and 
+       Player.Character.Torso:FindFirstChild("Right Shoulder") then
+        Player.Character.Torso["Right Shoulder"].CurrentAngle = math.rad(90)
+    end
+end
+
+-- Render
+print(("[%s] Rendering ..."):format(jobId))
+local result = game:GetService("ThumbnailGenerator"):Click(format, x, y, true)
+print(("[%s] Done!"):format(jobId))
+
+return result
+```
+
+PROS:
+- Full control over loading process
+- Can add logging and error handling
+- Works in RCC BatchJob context
+- No engine modifications needed
+
+CONS:
+- More complex script
+- Need to handle XML parsing for BodyColors
+- HttpService may have restrictions in RCC
+
+4.2 SOLUTION 2: PRE-FETCH IN C# ARBITER
+
+Fetch appearance data in C# before calling RCC:
+
+```csharp
+public class RenderAvatarEndpoint : ICompiledEndpoint
+{
+    private readonly RCCClient _rccClient;
+    private readonly HttpClient _httpClient;
+    
+    public async Task<IActionResult> Execute(int userId, int assetId)
+    {
+        // Pre-fetch character appearance
+        var appearanceUrl = $"https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId={userId}";
+        string appearanceData;
+        
+        try
+        {
+            appearanceData = await _httpClient.GetStringAsync(appearanceUrl);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Failed to fetch appearance: {ex.Message}");
+        }
+        
+        // Parse asset URLs
+        var assetUrls = appearanceData.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        var assetIds = new List<int>();
+        
+        foreach (var url in assetUrls)
+        {
+            var match = Regex.Match(url, @"id=(\d+)");
+            if (match.Success)
+            {
+                assetIds.Add(int.Parse(match.Groups[1].Value));
+            }
+        }
+        
+        // Generate Lua script with pre-fetched asset IDs
+        var script = GenerateRenderScriptWithAssets(userId, assetId, assetIds);
+        
+        // Execute via RCC
+        var job = new Job
+        {
+            id = $"render_{Guid.NewGuid()}",
+            expirationInSeconds = 60,
+            category = 0,
+            cores = 1.0
+        };
+        
+        var scriptExecution = new ScriptExecution
+        {
+            name = "RenderAvatar",
+            script = script
+        };
+        
+        var result = _rccClient.BatchJob(job, scriptExecution);
+        
+        return File(result[0].Value, "image/png");
+    }
+    
+    private string GenerateRenderScriptWithAssets(int userId, int assetId, List<int> assetIds)
+    {
+        var assetIdsLua = string.Join(",", assetIds);
+        
+        return $@"
+            local jobId = 'render_{Guid.NewGuid()}'
+            local baseUrl = 'https://www.freblx.xyz'
+            local userId = {userId}
+            local assetIds = {{{assetIdsLua}}}
+            
+            -- Configure services
+            game:GetService('InsertService'):SetAssetUrl(baseUrl .. '/asset/?id=%d')
+            game:GetService('ContentProvider'):SetBaseUrl(baseUrl)
+            game:GetService('ScriptContext').ScriptsDisabled = true
+            
+            -- Create player
+            local Player = game.Players:CreateLocalPlayer(0)
+            Player:LoadCharacter(false)
+            game:GetService('RunService'):Run()
+            
+            -- Load pre-fetched assets
+            local InsertService = game:GetService('InsertService')
+            for _, assetId in ipairs(assetIds) do
+                pcall(function()
+                    local asset = InsertService:LoadAsset(assetId)
+                    if asset then
+                        for _, item in pairs(asset:GetChildren()) do
+                            if item:IsA('Accoutrement') or item:IsA('Shirt') or item:IsA('Pants') then
+                                item.Parent = Player.Character
+                            end
+                        end
+                        asset:Destroy()
+                    end
+                end)
+            end
+            
+            wait(1)
+            
+            -- Render
+            Player.Character.Animate.Disabled = true
+            Player.Character.Torso.Anchored = true
+            
+            local result = game:GetService('ThumbnailGenerator'):Click('PNG', 420, 420, true)
+            return result
+        ";
+    }
+}
+```
+
+PROS:
+- Cleaner separation of concerns
+- Better error handling in C#
+- Can cache appearance data
+- Easier to debug
+
+CONS:
+- More complex C# code
+- Two HTTP requests (C# fetch + RCC asset loads)
+- Still need to handle asset loading in Lua
+
+4.3 SOLUTION 3: MODIFY WEBSITE ENDPOINT
+
+Make CharacterFetch.ashx return asset IDs directly:
+
+Current response:
+```
+https://www.freblx.xyz/asset/bodycolors.ashx?userId=1
+```
+
+Modified response (asset IDs only):
+```
+123;456;789
+```
+
+Then in Lua:
+```lua
+local appearanceData = HttpService:GetAsync(Player.CharacterAppearance, true)
+for assetIdStr in string.gmatch(appearanceData, "[^;]+") do
+    local assetId = tonumber(assetIdStr)
+    if assetId then
+        local asset = InsertService:LoadAsset(assetId)
+        -- Apply to character
+    end
+end
+```
+
+PROS:
+- Simplest Lua code
+- No URL parsing needed
+- Faster processing
+
+CONS:
+- Changes API format
+- May break compatibility
+- Doesn't handle BodyColors endpoint
+
+================================================================================
+5. RECOMMENDED IMPLEMENTATION
+================================================================================
+
+STEP 1: Update RenderAvatar.lua (Solution 1)
+Use the manual HTTP fetch approach with full error handling.
+
+STEP 2: Update RenderAvatarEndpoint.cs
+Add userId parameter to the endpoint:
+
+```csharp
+[HttpGet("render")]
+public async Task<IActionResult> RenderAvatar(
+    [FromQuery] int userId,
+    [FromQuery] int assetId,
+    [FromQuery] int width = 420,
+    [FromQuery] int height = 420)
+{
+    // Pass userId to script
+    var script = _scriptProvider.GetScript("RenderAvatar.lua")
+        .Replace("%jobId%", $"render_{Guid.NewGuid()}")
+        .Replace("%type%", "avatar")
+        .Replace("%x%", width.ToString())
+        .Replace("%y%", height.ToString())
+        .Replace("%assetId%", assetId.ToString())
+        .Replace("%userId%", userId.ToString()); // ADD THIS
+    
+    // Execute via RCC
+    var result = await ExecuteRenderJob(script);
+    
+    return File(result, "image/png");
+}
+```
+
+STEP 3: Verify CharacterFetch.ashx Endpoint
+Ensure it returns proper format:
+
+```
+https://www.freblx.xyz/asset/bodycolors.ashx?userId=1;https://www.freblx.xyz/Asset/?id=123
+```
+
+STEP 4: Test
+```
+GET https://your-arbiter/api/render?userId=1&assetId=0&width=420&height=420
+```
+
+Check logs for:
+- "Fetched appearance data: ..."
+- "Loading asset ID: ..."
+- "Applying: ..."
+
+================================================================================
+6. DEBUGGING CHECKLIST
+================================================================================
+
+If character appearance still doesn't load:
+
+□ Verify CharacterFetch.ashx returns data
+  Test: curl https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1
+  
+□ Check RCC can make HTTP requests
+  Test: Add print(HttpService:GetAsync("https://www.freblx.xyz/")) to script
+  
+□ Verify asset IDs are valid
+  Test: Try loading assets manually via InsertService:LoadAsset(123)
+  
+□ Check asset endpoints work
+  Test: curl https://www.freblx.xyz/Asset/?id=123
+  
+□ Review RCC console output
+  Look for: Error messages, HTTP failures, Lua errors
+  
+□ Enable verbose logging
+  Add print statements at each step of appearance loading
+  
+□ Test with simple asset
+  Use known-good asset ID (e.g., classic shirt)
+  
+□ Verify BodyColors endpoint
+  Test: curl https://www.freblx.xyz/Asset/BodyColors.ashx?userId=1
+  Should return valid XML
+
+================================================================================
+7. EXPECTED BEHAVIOR AFTER FIX
+================================================================================
+
+When the fix is implemented correctly:
+
+1. RCC receives render request with userId parameter
+2. Script sets Player.CharacterAppearance URL
+3. Script manually fetches URL via HttpService
+4. Server logs show: GET /Asset/CharacterFetch.ashx?userId=1
+5. Response is parsed (semicolon-delimited URLs)
+6. Each asset URL is fetched:
+   - GET /Asset/BodyColors.ashx?userId=1
+   - GET /Asset/?id=123
+   - GET /Asset/?id=456
+7. Assets are applied to character
+8. Character renders with full appearance
+9. Thumbnail is returned to client
+
+Console output should show:
+```
+[render_xxx] Started RenderJob for type 'avatar' with assetId 0 ...
+CharacterAppearance URL: https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1
+Manually loading character appearance...
+Fetched appearance data: https://www.freblx.xyz/asset/bodycolors.ashx?userId=1;https://www.freblx.xyz/Asset/?id=123
+Found asset URL: https://www.freblx.xyz/asset/bodycolors.ashx?userId=1
+Found asset URL: https://www.freblx.xyz/Asset/?id=123
+Loading asset ID: 123
+Applying: Shirt - Cool Shirt
+Character appearance loaded successfully
+[render_xxx] Rendering ...
+[render_xxx] Done!
+```
+
+================================================================================
+8. ADDITIONAL NOTES
+================================================================================
+
+8.1 HttpService Availability
+In some RCC contexts, HttpService may be restricted. If HttpService:GetAsync()
+fails, you may need to:
+- Use ContentProvider:GetContent() instead
+- Pre-fetch in C# (Solution 2)
+- Enable HttpService in RCC configuration
+
+8.2 XML Parsing for BodyColors
+The BodyColors endpoint returns XML. Parsing XML in Lua is complex.
+Consider:
+- Returning Lua table format instead of XML
+- Parsing XML in C# and passing values to Lua
+- Using a Lua XML parser library
+
+8.3 Asset Caching
+ContentProvider automatically caches assets. Subsequent renders of the same
+user will be faster as assets are cached locally.
+
+8.4 Performance Considerations
+Loading many assets can be slow. Consider:
+- Limiting number of accessories
+- Pre-loading common assets
+- Using asset bundles
+- Implementing timeout for appearance loading
+
+================================================================================
+END OF DOCUMENT
+================================================================================

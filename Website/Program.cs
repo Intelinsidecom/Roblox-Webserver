@@ -4,6 +4,7 @@ using Api.Controllers;
 using System.Security.Claims;
 using Npgsql;
 using Microsoft.AspNetCore.HttpOverrides;
+using Thumbnails;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         npgsql => npgsql.MigrationsAssembly("Api")
     )
 );
+// Thumbnails service
+builder.Services.AddSingleton<IThumbnailService>(sp => new ThumbnailService(sp.GetRequiredService<IConfiguration>()));
 // Respect reverse proxy headers (e.g., Cloudflare) so Request.Scheme/IsHttps are accurate
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

@@ -1,0 +1,629 @@
+================================================================================
+ROBLOX 2016 - RCC SERVICE SETUP & GAME SERVER GUIDE
+================================================================================
+Document Date: November 7, 2025
+Source Analysis: Roblox 2016 Source Code
+
+This document explains how to set up RCC (Roblox Cloud Compute) service for
+hosting game servers and executing server-side scripts.
+
+================================================================================
+1. RCC SERVICE OVERVIEW
+================================================================================
+
+RCC Service is a SOAP-based web service that:
+- Hosts game server instances
+- Executes Lua scripts in isolated environments
+- Generates thumbnails and renders
+- Processes game logic server-side
+
+Architecture:
+- SOAP 1.1/1.2 protocol
+- gSOAP framework
+- Multi-threaded job management
+- DataModel instances per job
+
+Source: RCCService/RCCServiceSoapServiceImpl.cpp
+
+================================================================================
+2. RCC SERVICE CONFIGURATION
+================================================================================
+
+2.1 SERVICE URL
+   Default: http://localhost:64989
+   Configurable in: appsettings.json
+   
+   Your current config:
+   {
+     "RCCService": {
+       "ServiceUrl": "http://localhost:64989",
+       "SoapNamespace": "http://roblox.com/",
+       "Timeout": {
+         "SendMinutes": 10,
+         "ReceiveMinutes": 10
+       }
+     }
+   }
+
+2.2 REQUIRED FILES
+   - RCCService.exe: Main service executable
+   - App.dll: Core Roblox engine
+   - Network.dll: Networking library
+   - Base.dll: Base utilities
+   - GfxRender.dll: Graphics rendering
+   - Various other DLLs (see RCC folder)
+
+2.3 CONTENT FOLDER
+   RCC needs access to:
+   - content/ folder with default assets
+   - PlatformContent/ for platform-specific assets
+   - Scripts for core functionality
+
+================================================================================
+3. RCC JOB TYPES
+================================================================================
+
+3.1 BATCH JOB
+   Purpose: Execute script in isolated, temporary environment
+   Use Cases: Thumbnail generation, one-off processing
+   
+   SOAP Method: BatchJob / BatchJobEx
+   
+   Parameters:
+   - Job:
+     * id: Unique identifier
+     * expirationInSeconds: Job lifetime
+     * category: 0 (default)
+     * cores: CPU allocation (1.0 = 1 core)
+   
+   - Script:
+     * name: Script identifier
+     * script: Lua code to execute
+   
+   Lifecycle:
+   1. Job created
+   2. Script executed
+   3. Results returned
+   4. Job automatically closed
+
+3.2 OPEN JOB
+   Purpose: Create persistent game server
+   Use Cases: Multiplayer games, long-running servers
+   
+   SOAP Method: OpenJob / OpenJobEx
+   
+   Parameters: Same as BatchJob
+   
+   Lifecycle:
+   1. Job created and stays open
+   2. Initial script executed
+   3. Additional scripts can be executed via Execute()
+   4. Job stays alive until:
+      - Manually closed via CloseJob()
+      - Lease expires (use RenewLease() to extend)
+      - Service shuts down
+
+3.3 EXECUTE
+   Purpose: Run additional scripts in existing job
+   Use Cases: Player joins, game events, admin commands
+   
+   SOAP Method: Execute / ExecuteEx
+   
+   Parameters:
+   - jobID: Existing job identifier
+   - Script: Lua code to execute
+
+================================================================================
+4. GAME SERVER SETUP PROCESS
+================================================================================
+
+4.1 STEP 1: START RCC SERVICE
+   ```
+   RCCService.exe
+   ```
+   
+   The service will:
+   - Listen on configured port (64989)
+   - Initialize SOAP endpoints
+   - Load Roblox engine
+   - Wait for job requests
+
+4.2 STEP 2: CREATE GAME SERVER JOB
+   
+   Via SOAP OpenJobEx:
+   
+   ```xml
+   <soap:Envelope>
+     <soap:Body>
+       <OpenJobEx>
+         <job>
+           <id>GameServer_Place123</id>
+           <expirationInSeconds>3600</expirationInSeconds>
+           <category>0</category>
+           <cores>1.0</cores>
+         </job>
+         <script>
+           <name>StartServer</name>
+           <script><![CDATA[
+             -- Server initialization script
+             local baseUrl = "https://www.freblx.xyz"
+             
+             -- Configure services
+             game:GetService("InsertService"):SetAssetUrl(baseUrl .. "/asset/?id=%d")
+             game:GetService("InsertService"):SetAssetVersionUrl(baseUrl .. "/Asset/?assetversionid=%d")
+             game:GetService("ContentProvider"):SetBaseUrl(baseUrl)
+             
+             -- Load place
+             game:Load(baseUrl .. "/asset/?id=PLACEID")
+             
+             -- Configure server settings
+             game:GetService("NetworkServer"):Start(SERVER_PORT, MAX_PLAYERS)
+             
+             print("Game server started!")
+           ]]></script>
+         </script>
+       </OpenJobEx>
+     </soap:Body>
+   </soap:Envelope>
+   ```
+
+4.3 STEP 3: HANDLE PLAYER JOINS
+   
+   When a player connects:
+   1. Client connects to game server port
+   2. Server creates Player instance
+   3. Server sets Player.UserId
+   4. Server sets Player.CharacterAppearance URL
+   5. Server calls Player:LoadCharacter()
+   6. Character appearance is fetched and applied
+   7. Player spawns in game
+
+   Example script to execute when player joins:
+   ```lua
+   local Players = game:GetService("Players")
+   
+   Players.PlayerAdded:Connect(function(player)
+       player.UserId = PLAYER_USER_ID
+       player.CharacterAppearance = "https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=" .. player.UserId
+       
+       wait(1) -- Give time for replication
+       player:LoadCharacter()
+   end)
+   ```
+
+================================================================================
+5. REQUIRED SCRIPTS FOR GAME SERVER
+================================================================================
+
+5.1 SERVER INITIALIZATION SCRIPT
+   File: Scripts/ServerInit.lua
+   
+   Purpose:
+   - Configure base URLs
+   - Load place data
+   - Start network server
+   - Initialize game services
+   
+   ```lua
+   -- ServerInit.lua
+   local baseUrl = "YOUR_BASE_URL"
+   local placeId = PLACE_ID
+   local serverPort = 53640
+   local maxPlayers = 12
+   
+   -- Configure services
+   local insertService = game:GetService("InsertService")
+   insertService:SetAssetUrl(baseUrl .. "/asset/?id=%d")
+   insertService:SetAssetVersionUrl(baseUrl .. "/Asset/?assetversionid=%d")
+   
+   local contentProvider = game:GetService("ContentProvider")
+   contentProvider:SetBaseUrl(baseUrl)
+   
+   -- Load place
+   game:Load(baseUrl .. "/asset/?id=" .. placeId)
+   
+   -- Start server
+   local networkServer = game:GetService("NetworkServer")
+   networkServer:Start(serverPort, maxPlayers)
+   
+   print("[Server] Game server initialized on port " .. serverPort)
+   ```
+
+5.2 PLAYER JOIN HANDLER SCRIPT
+   File: Scripts/PlayerJoinHandler.lua
+   
+   ```lua
+   -- PlayerJoinHandler.lua
+   local Players = game:GetService("Players")
+   local baseUrl = "YOUR_BASE_URL"
+   
+   Players.PlayerAdded:Connect(function(player)
+       print("[Server] Player joined: " .. player.Name)
+       
+       -- Set player properties
+       player.CharacterAppearance = baseUrl .. "/Asset/CharacterFetch.ashx?userId=" .. player.UserId
+       
+       -- Load character after brief delay
+       wait(0.5)
+       player:LoadCharacter(true) -- true = in game
+       
+       print("[Server] Character loaded for: " .. player.Name)
+   end)
+   
+   Players.PlayerRemoving:Connect(function(player)
+       print("[Server] Player left: " .. player.Name)
+   end)
+   ```
+
+5.3 CHARACTER APPEARANCE LOADER (ALTERNATIVE)
+   For RCC contexts where automatic loading doesn't work:
+   
+   ```lua
+   -- ManualAppearanceLoader.lua
+   function loadCharacterAppearance(player)
+       local HttpService = game:GetService("HttpService")
+       local InsertService = game:GetService("InsertService")
+       
+       local appearanceUrl = player.CharacterAppearance
+       if not appearanceUrl or appearanceUrl == "" then
+           return
+       end
+       
+       -- Fetch appearance data
+       local success, response = pcall(function()
+           return HttpService:GetAsync(appearanceUrl, true)
+       end)
+       
+       if not success then
+           warn("[Server] Failed to fetch appearance for " .. player.Name)
+           return
+       end
+       
+       -- Parse semicolon-delimited URLs
+       for assetUrl in string.gmatch(response, "[^;]+") do
+           pcall(function()
+               -- Extract asset ID from URL
+               local assetId = string.match(assetUrl, "id=(%d+)")
+               if assetId then
+                   local asset = InsertService:LoadAsset(tonumber(assetId))
+                   if asset then
+                       for _, item in pairs(asset:GetChildren()) do
+                           if item:IsA("Accoutrement") or 
+                              item:IsA("Shirt") or 
+                              item:IsA("Pants") or 
+                              item:IsA("BodyColors") then
+                               item.Parent = player.Character
+                           end
+                       end
+                       asset:Destroy()
+                   end
+               end
+           end)
+       end
+       
+       print("[Server] Appearance loaded for " .. player.Name)
+   end
+   ```
+
+================================================================================
+6. RCC ARBITER INTEGRATION
+================================================================================
+
+Your Arbiter project acts as a middleware between your web application and RCC.
+
+6.1 CURRENT ARBITER STRUCTURE
+   - RCCClient.cs: SOAP client wrapper
+   - Endpoints/: HTTP endpoints that call RCC
+   - Scripts/: Lua scripts to execute
+   - appsettings.json: Configuration
+
+6.2 REQUIRED ARBITER ENDPOINTS
+
+   6.2.1 START GAME SERVER
+   Endpoint: POST /api/gameserver/start
+   
+   Request Body:
+   ```json
+   {
+     "placeId": 123,
+     "maxPlayers": 12,
+     "port": 53640
+   }
+   ```
+   
+   Implementation:
+   ```csharp
+   public async Task<IActionResult> StartGameServer([FromBody] StartServerRequest request)
+   {
+       var jobId = $"GameServer_Place{request.PlaceId}_{Guid.NewGuid()}";
+       
+       var job = new Job
+       {
+           id = jobId,
+           expirationInSeconds = 3600,
+           category = 0,
+           cores = 1.0
+       };
+       
+       var script = new ScriptExecution
+       {
+           name = "StartServer",
+           script = GenerateServerStartScript(request.PlaceId, request.Port, request.MaxPlayers)
+       };
+       
+       var result = _rccClient.OpenJobEx(job, script);
+       
+       return Ok(new { jobId, port = request.Port });
+   }
+   ```
+
+   6.2.2 PLAYER JOIN
+   Endpoint: POST /api/gameserver/{jobId}/player/join
+   
+   Request Body:
+   ```json
+   {
+     "userId": 1,
+     "username": "Player1"
+   }
+   ```
+   
+   Implementation:
+   ```csharp
+   public async Task<IActionResult> PlayerJoin(string jobId, [FromBody] PlayerJoinRequest request)
+   {
+       var script = new ScriptExecution
+       {
+           name = "PlayerJoin",
+           script = $@"
+               local Players = game:GetService('Players')
+               local player = Players:CreateLocalPlayer({request.UserId})
+               player.Name = '{request.Username}'
+               player.CharacterAppearance = 'https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId={request.UserId}'
+               player:LoadCharacter(true)
+           "
+       };
+       
+       var result = _rccClient.Execute(jobId, script);
+       
+       return Ok();
+   }
+   ```
+
+   6.2.3 RENDER AVATAR (EXISTING)
+   Your current RenderAvatarEndpoint.cs handles this.
+   
+   Fix needed: See section 7 below.
+
+================================================================================
+7. FIXING THE CHARACTER FETCH ISSUE
+================================================================================
+
+PROBLEM:
+Your RenderAvatar.lua script sets Player.CharacterAppearance but the URL
+is never fetched because:
+1. RCC BatchJob runs in isolated context
+2. Player:LoadCharacter() doesn't trigger appearance loading in this context
+3. The backend processing check fails
+
+SOLUTION 1: Manual HTTP Fetch in Lua
+```lua
+-- Modified RenderAvatar.lua
+local jobId = %jobId%
+local type = %type%
+local format = "PNG"
+local x = %x%
+local y = %y%
+local baseUrl = "https://www.freblx.xyz"
+local assetId = %assetId%
+local userId = %userId%  -- Add this parameter
+
+print(("[%s] Started RenderJob for type '%s' with assetId %d ..."):format(jobId, type, assetId))
+
+-- Configure services
+game:GetService("InsertService"):SetAssetUrl(baseUrl .. "/asset/?id=%d")
+game:GetService("InsertService"):SetAssetVersionUrl(baseUrl .. "/Asset/?assetversionid=%d")
+game:GetService("ContentProvider"):SetBaseUrl(baseUrl)
+game:GetService("ScriptContext").ScriptsDisabled = true
+
+-- Create player
+local Player = game.Players:CreateLocalPlayer(0)
+Player.CharacterAppearance = ("%s/Asset/CharacterFetch.ashx?userId=%d"):format(baseUrl, userId)
+print("CharacterAppearance URL: " .. Player.CharacterAppearance)
+
+-- Load character
+Player:LoadCharacter(false)
+game:GetService("RunService"):Run()
+
+-- MANUAL APPEARANCE LOADING
+local HttpService = game:GetService("HttpService")
+local InsertService = game:GetService("InsertService")
+
+local success, appearanceData = pcall(function()
+    return HttpService:GetAsync(Player.CharacterAppearance, true)
+end)
+
+if success and appearanceData then
+    print("Fetched appearance data: " .. appearanceData)
+    
+    -- Parse semicolon-delimited URLs
+    for assetUrl in string.gmatch(appearanceData, "[^;]+") do
+        print("Loading asset: " .. assetUrl)
+        pcall(function()
+            -- Try to extract asset ID
+            local id = string.match(assetUrl, "id=(%d+)")
+            if id then
+                local asset = InsertService:LoadAsset(tonumber(id))
+                if asset then
+                    for _, item in pairs(asset:GetChildren()) do
+                        item.Parent = Player.Character
+                    end
+                    asset:Destroy()
+                end
+            end
+        end)
+    end
+else
+    warn("Failed to fetch appearance: " .. tostring(appearanceData))
+end
+
+-- Disable animations
+Player.Character.Animate.Disabled = true
+Player.Character.Torso.Anchored = true
+
+-- Handle gear
+local gear = Player.Backpack:GetChildren()[1]
+if gear then
+    gear.Parent = Player.Character
+    Player.Character.Torso["Right Shoulder"].CurrentAngle = math.rad(90)
+end
+
+-- Render
+print(("[%s] Rendering ..."):format(jobId))
+local result = game:GetService("ThumbnailGenerator"):Click(format, x, y, true)
+print(("[%s] Done!"):format(jobId))
+
+return result
+```
+
+SOLUTION 2: Pre-fetch in C# Arbiter
+```csharp
+// In RenderAvatarEndpoint.cs
+public async Task<IActionResult> RenderAvatar(int userId, int assetId)
+{
+    // Pre-fetch character appearance
+    var appearanceUrl = $"https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId={userId}";
+    string appearanceData;
+    
+    using (var httpClient = new HttpClient())
+    {
+        appearanceData = await httpClient.GetStringAsync(appearanceUrl);
+    }
+    
+    // Parse asset IDs
+    var assetUrls = appearanceData.Split(';');
+    var assetIds = new List<int>();
+    
+    foreach (var url in assetUrls)
+    {
+        var match = Regex.Match(url, @"id=(\d+)");
+        if (match.Success)
+        {
+            assetIds.Add(int.Parse(match.Groups[1].Value));
+        }
+    }
+    
+    // Generate Lua script with asset IDs
+    var script = GenerateRenderScriptWithAssets(userId, assetId, assetIds);
+    
+    // Execute via RCC
+    var result = _rccClient.BatchJob(job, script);
+    
+    return File(result, "image/png");
+}
+```
+
+================================================================================
+8. TESTING RCC SETUP
+================================================================================
+
+8.1 TEST 1: RCC Service Connectivity
+   ```csharp
+   var client = new RCCClient("http://localhost:64989");
+   var version = client.GetVersion();
+   Console.WriteLine($"RCC Version: {version}");
+   ```
+
+8.2 TEST 2: Simple Batch Job
+   ```csharp
+   var job = new Job
+   {
+       id = "test_" + Guid.NewGuid(),
+       expirationInSeconds = 60,
+       category = 0,
+       cores = 1.0
+   };
+   
+   var script = new ScriptExecution
+   {
+       name = "Test",
+       script = "print('Hello from RCC!'); return 'Success'"
+   };
+   
+   var result = client.BatchJob(job, script);
+   ```
+
+8.3 TEST 3: Character Fetch
+   Test your CharacterFetch endpoint:
+   ```
+   GET https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1
+   ```
+   
+   Expected response:
+   ```
+   https://www.freblx.xyz/asset/bodycolors.ashx?userId=1
+   ```
+   
+   Or with multiple assets:
+   ```
+   https://www.freblx.xyz/asset/bodycolors.ashx?userId=1;https://www.freblx.xyz/Asset/?id=123;https://www.freblx.xyz/Asset/?id=456
+   ```
+
+================================================================================
+9. COMMON ISSUES & TROUBLESHOOTING
+================================================================================
+
+9.1 "Character appearance not loading"
+   - Check if CharacterFetch.ashx returns valid response
+   - Verify URLs in response are accessible
+   - Check RCC logs for HTTP errors
+   - Ensure ContentProvider:SetBaseUrl() is called
+
+9.2 "RCC service not responding"
+   - Verify RCCService.exe is running
+   - Check port 64989 is not blocked
+   - Review RCC service logs
+   - Ensure all DLL dependencies are present
+
+9.3 "Assets not loading"
+   - Verify /Asset/?id= endpoint works
+   - Check asset files exist
+   - Ensure proper MIME types
+   - Review ContentProvider cache
+
+9.4 "Player not spawning"
+   - Check if Player:LoadCharacter() is called
+   - Verify spawn locations exist in place
+   - Check for Lua errors in server scripts
+   - Ensure NetworkServer is started
+
+================================================================================
+10. RECOMMENDED ARBITER ENDPOINTS TO ADD
+================================================================================
+
+Based on source code analysis, add these endpoints to your Arbiter:
+
+1. POST /api/gameserver/start
+   - Start a new game server instance
+   
+2. POST /api/gameserver/{jobId}/stop
+   - Stop a running game server
+   
+3. POST /api/gameserver/{jobId}/player/join
+   - Handle player join event
+   
+4. POST /api/gameserver/{jobId}/player/leave
+   - Handle player leave event
+   
+5. POST /api/gameserver/{jobId}/execute
+   - Execute arbitrary Lua script in game server
+   
+6. GET /api/gameserver/{jobId}/status
+   - Get game server status
+   
+7. GET /api/gameserver/list
+   - List all active game servers
+
+================================================================================
+END OF DOCUMENT
+================================================================================

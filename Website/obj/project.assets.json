@@ -924,6 +924,19 @@
           "Microsoft.AspNetCore.App"
         ]
       },
+      "Thumbnails/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Thumbnails.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Thumbnails.dll": {}
+        }
+      },
       "Users/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
@@ -2572,6 +2585,11 @@
       "path": "../Api/Api.csproj",
       "msbuildProject": "../Api/Api.csproj"
     },
+    "Thumbnails/1.0.0": {
+      "type": "project",
+      "path": "../Assemblies/Thumbnails/Thumbnails.csproj",
+      "msbuildProject": "../Assemblies/Thumbnails/Thumbnails.csproj"
+    },
     "Users/1.0.0": {
       "type": "project",
       "path": "../Assemblies/Users/Users.csproj",
@@ -2585,6 +2603,7 @@
       "Microsoft.EntityFrameworkCore.Design >= 8.0.10",
       "Npgsql >= 8.0.4",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.8",
+      "Thumbnails >= 1.0.0",
       "Users >= 1.0.0"
     ]
   },
@@ -2622,6 +2641,9 @@
           "projectReferences": {
             "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj"
+            },
+            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Thumbnails\\Thumbnails.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Thumbnails\\Thumbnails.csproj"
             },
             "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj"

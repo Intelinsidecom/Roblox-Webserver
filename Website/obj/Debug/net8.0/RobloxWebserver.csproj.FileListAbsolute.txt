@@ -155,3 +155,5 @@ C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\refint\
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\RobloxWebserver.pdb
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\RobloxWebserver.genruntimeconfig.cache
 C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\obj\Debug\net8.0\ref\RobloxWebserver.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\bin\Debug\net8.0\Thumbnails.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Website\bin\Debug\net8.0\Thumbnails.pdb
