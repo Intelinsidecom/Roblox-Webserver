@@ -111,61 +111,85 @@ public sealed class ThumbnailService : IThumbnailService
         resp.EnsureSuccessStatusCode();
         var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        // Parse response robustly: accept array/object/string formats
         using var doc = JsonDocument.Parse(json);
-        string? innerJson = null;
 
         if (doc.RootElement.ValueKind == JsonValueKind.Array)
         {
-            if (doc.RootElement.GetArrayLength() == 0)
-                throw new InvalidOperationException("Unexpected response from Arbiter.");
+            var len = doc.RootElement.GetArrayLength();
+            if (len == 0)
+                throw new InvalidOperationException("Unexpected response from Arbiter. Raw: " + Trunc(json));
 
-            string? candidate = null;
-            for (int i = doc.RootElement.GetArrayLength() - 1; i >= 0; i--)
+            for (int i = len - 1; i >= 0; i--)
             {
                 var el = doc.RootElement[i];
-                if (el.ValueKind != JsonValueKind.Object)
-                    continue;
-                var typeProp = el.TryGetProperty("type", out var tEl) ? tEl.GetString() : null;
-                if (!string.Equals(typeProp, "string", StringComparison.OrdinalIgnoreCase))
-                    continue;
-                var val = el.TryGetProperty("value", out var vEl) ? vEl.GetString() : null;
+                string? val = null;
+                if (el.ValueKind == JsonValueKind.Object)
+                {
+                    if (el.TryGetProperty("value", out var vEl) && vEl.ValueKind == JsonValueKind.String)
+                        val = vEl.GetString();
+                }
+                else if (el.ValueKind == JsonValueKind.String)
+                {
+                    val = el.GetString();
+                }
                 if (string.IsNullOrWhiteSpace(val))
                     continue;
-                var trimmed = val!.TrimStart();
-                if (trimmed.StartsWith("{"))
+                try
                 {
-                    candidate = val;
-                    break;
+                    using var innerTry = JsonDocument.Parse(val!);
+                    var hashTry = innerTry.RootElement.TryGetProperty("hash", out var hElTry) ? hElTry.GetString() : null;
+                    if (!string.IsNullOrWhiteSpace(hashTry))
+                        return hashTry!;
                 }
-                candidate = val;
+                catch (JsonException)
+                {
+                }
             }
-            innerJson = candidate;
+            throw new InvalidOperationException("Unexpected response from Arbiter. Raw: " + Trunc(json));
         }
         else if (doc.RootElement.ValueKind == JsonValueKind.Object)
         {
-            // Some hosts may return a single formatted object instead of an array
-            var typeProp = doc.RootElement.TryGetProperty("type", out var tEl) ? tEl.GetString() : null;
-            if (string.Equals(typeProp, "string", StringComparison.OrdinalIgnoreCase))
+            if (doc.RootElement.TryGetProperty("hash", out var hEl) && hEl.ValueKind == JsonValueKind.String)
             {
-                innerJson = doc.RootElement.TryGetProperty("value", out var vEl) ? vEl.GetString() : null;
+                var direct = hEl.GetString();
+                if (!string.IsNullOrWhiteSpace(direct))
+                    return direct!;
             }
+            if (doc.RootElement.TryGetProperty("value", out var vEl) && vEl.ValueKind == JsonValueKind.String)
+            {
+                var val = vEl.GetString();
+                if (!string.IsNullOrWhiteSpace(val))
+                {
+                    try
+                    {
+                        using var inner = JsonDocument.Parse(val!);
+                        var hash = inner.RootElement.TryGetProperty("hash", out var hEl2) ? hEl2.GetString() : null;
+                        if (!string.IsNullOrWhiteSpace(hash))
+                            return hash!;
+                    }
+                    catch (JsonException)
+                    {
+                    }
+                }
+            }
+            throw new InvalidOperationException("Unexpected response from Arbiter. Raw: " + Trunc(json));
         }
         else if (doc.RootElement.ValueKind == JsonValueKind.String)
         {
-            // Raw string body containing the upload response JSON
-            innerJson = doc.RootElement.GetString();
+            var val = doc.RootElement.GetString();
+            if (!string.IsNullOrWhiteSpace(val))
+            {
+                using var inner = JsonDocument.Parse(val!);
+                var hash = inner.RootElement.TryGetProperty("hash", out var hEl) ? hEl.GetString() : null;
+                if (!string.IsNullOrWhiteSpace(hash))
+                    return hash!;
+            }
+            throw new InvalidOperationException("Unexpected response from Arbiter. Raw(inner): " + Trunc(val ?? string.Empty));
         }
-
-        if (string.IsNullOrWhiteSpace(innerJson))
-            throw new InvalidOperationException("Unexpected response from Arbiter.");
-
-        using var inner = JsonDocument.Parse(innerJson!);
-        var hash = inner.RootElement.TryGetProperty("hash", out var hEl) ? hEl.GetString() : null;
-        if (string.IsNullOrWhiteSpace(hash))
-            throw new InvalidOperationException("Upload response missing hash.");
-
-        return hash!;
+        else
+        {
+            throw new InvalidOperationException("Unexpected response from Arbiter. Raw: " + Trunc(json));
+        }
     }
 
     private string ResolveOutputDirectory(string? overrideOutputDirectory)
@@ -179,6 +203,12 @@ public sealed class ThumbnailService : IThumbnailService
 
         // Fallback: ./thumbnails relative to current process
         return Path.Combine(AppContext.BaseDirectory, "thumbnails");
+    }
+
+    private static string Trunc(string s, int max = 1000)
+    {
+        if (s == null) return string.Empty;
+        return s.Length <= max ? s : s.Substring(0, max);
     }
 }
 
