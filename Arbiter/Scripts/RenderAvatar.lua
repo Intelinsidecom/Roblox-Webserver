@@ -1,12 +1,10 @@
 local jobId = %jobId%
 local type = %type%
-local format = "JPG"
+local format = "PNG"
 local x = %x%
 local y = %y%
 local baseUrl = "http://www.freblx.xyz"
 local userId = %userId%
-local uploadURL = %uploadUrl%
-local accessKey = %accessKey%
 print(("[%s] Started RenderJob for type '%s' with userId %d ..."):format(jobId, type, userId))
 
 

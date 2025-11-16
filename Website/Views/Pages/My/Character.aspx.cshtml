@@ -1,0 +1,384 @@
+@{ Layout = "_Layout"; }
+@{
+    var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
+}
+@section Head {
+    
+    
+    <script type="text/ng-template" id="avatar-item-card">
+        <div class="item-card-container">
+            <a ng-href="{{item.Item && item.Item.AbsoluteUrl || item.link}}" class="item-card-link">
+                <div class="item-card-thumb-container">
+                    <img ng-src="{{(item.Thumbnail && item.Thumbnail.Url) || item.thumbnailUrl}}" class="item-card-thumb">
+                    <span ng-if="item.AssetRestrictionIcon" ng-class="'icon-'+item.AssetRestrictionIcon.CssTag+'-label'"></span>
+                </div>
+            </a>
+            <div class="item-card-caption">
+                <a ng-href="{{item.Item && item.Item.AbsoluteUrl || item.link}}" class="item-card-name-link">
+                    <div class="text-overflow item-card-name">{{item.name || (item.Item && item.Item.Name)}}</div>
+                </a>
+            </div>
+        </div>
+    </script>
+    <link rel="stylesheet" href="~/CSS/Pages/Avatar/Character.css">
+}
+
+<link rel="stylesheet" href="~/CSS/2017/Base/CSS/jquery.mCustomScrollbar.css">
+<link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
+<link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
+<link rel="stylesheet" href="~/CSS/Pages/IDE/Login.css">
+<link rel="stylesheet" href="~/CSS/Pages/Avatar/Avatar.css">
+<link rel="stylesheet" href="~/CSS/Pages/Shared/ThumbnailLoader.css">
+
+<script type="text/javascript" src="~/JS/3D/three.js"></script>
+<script type="text/javascript" src="~/JS/3D/tween.js"></script>
+<script type="text/javascript" src="~/JS/3D/OrbitControls.js"></script>
+<script type="text/javascript" src="~/JS/3D/SimpleOBJMTLLoader.js"></script>
+<script type="text/javascript" src="~/JS/AvatarCustomize2017.js"></script>
+<script type="text/javascript" src="~/JS/AvatarCustomizer2017-2.js"></script>
+<script type="text/javascript" src="~/JS/Thumbnails/ThumbnailSpinner.js"></script>
+
+<script type="text/javascript">
+    window.Roblox = window.Roblox || {};
+    Roblox.uiBootstrap = Roblox.uiBootstrap || {
+      modalBackdropTemplateLink: "/templates/modal/backdrop.html",
+      modalWindowTemplateLink: "/templates/modal/window.html"
+    };
+  </script>
+  <script type="text/ng-template" id="/templates/modal/backdrop.html">
+    <div class="modal-backdrop fade in"></div>
+  </script>
+  <script type="text/ng-template" id="/templates/modal/window.html">
+    <div class="modal-dialog" ng-class="{ 'modal-sm': size == 'sm', 'modal-lg': size == 'lg' }">
+      <div class="modal-content" modal-transclude></div>
+    </div>
+  </script>
+  <script type="text/javascript" src="~/JS/viewapp/common/modal.js"></script>
+
+<script type="text/javascript">
+  window.Roblox = window.Roblox || {};
+  Roblox.AvatarData = Roblox.AvatarData || {};
+  Roblox.AvatarData.avatarDomain = "";
+</script>
+
+  <script>
+    (function(){
+      try {
+        if (location.hash) {
+          history.replaceState(null, '', location.pathname + location.search);
+        }
+      } catch(e) {}
+      try { if (typeof window.scrollTo === 'function') { window.scrollTo(0, 0); } } catch(e) {}
+    })();
+  </script>
+
+  <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/cursorPagination.js"></script>
+  <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/services/cursorPaginationService.js"></script>
+  <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/directives/cursorPaginationDirective.js"></script>
+
+  <script type="text/javascript" src="~/JS/viewapp/pages/avatar/avatar.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/constants/avatarConstants.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/constants/avatarUrlConstants.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/avatarController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/avatarItemsController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/avatarScaleController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/avatarTypeController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/bodyColorsController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/outfitsController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/controllers/recentItemsController.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/directives/avatarItemsDirective.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/directives/onBlurDirective.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/directives/onInputFinishedDirective.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/directives/pageFocusDirective.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/filters/percentageFilter.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/filters/roundFilter.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/pages/avatar/services/avatarService.js"></script>
+
+<script type="text/javascript" src="~/JS/My/Avatar.js"></script>
+<script type="text/javascript" src="~/JS/My/avatarBodyColorDifference.js"></script>
+
+
+<script type="text/javascript" src="~/JS/extensions/ThreeDeeThumbnails.js"></script>
+<script type="text/javascript" src="~/JS/Thumbnails/ThumbnailView.js"></script>
+
+
+
+<div class="avatar-editor-page" ng-app="avatar">
+    <div id="tab-content-top"></div>
+    <script type="text/ng-template" id="update-outfit-modal">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="close()">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5>Update Outfit</h5>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to update this outfit? This will overwrite the outfit with your avatar's current appearance.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="purchaseConfirm" class="btn-secondary-md btn-fixed-width" ng-click="submit()">Update</button>
+                <button type="button" class="btn-fixed-width btn-control-md btn-fixed-width" ng-click="close()">Cancel</button>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="loading-animated">
+        <div class="loading-animated"><div><div></div><div></div><div></div></div></div>
+    </script>
+
+    <script type="text/ng-template" id="avatar-items-list">
+        <div class="items-list">
+            <ul class="hlist item-cards-stackable">
+                <li ng-repeat="item in items" class="list-item item-card">
+                    <div ng-include="'avatar-item-card'"></div>
+                </li>
+            </ul>
+        </div>
+        <div ng-show="loading" ng-include="'loading-animated'"></div>
+        <div ng-show="!loading && items.length===0" class="col-xs-12 section-content-off">{{emptyMessage}}</div>
+    </script>
+
+    <script type="text/ng-template" id="body-colors-list">
+        <div class="breadcrumb-container skin-tones-header">
+            <span class="text-label">Body &gt; Skin Tone</span>
+        </div>
+
+        <div class="section-content">
+            <div class="body-colors-container">
+                <div class="skin-tones-content">
+                    <div class="bodycolors-list">
+                        <div ng-repeat="color in colorsPalette" 
+                             class="color-dot" 
+                             ng-class="{'active': isColorSelected(color)}"
+                             ng-style="{'background-color': color.hexColor}"
+                             ng-click="onColorDotClicked(color)">
+                        </div>
+                    </div>
+                    <a href="javascript:void(0)" class="advanced-link" ng-click="openAdvancedBodyColors()">Advanced</a>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="avatar-editor-tabs">
+        <div ng-mouseleave="mouseLeftTabMenu()" class="tab-wrapper">
+            <div class="rbx-tabs-horizontal">
+                <ul id="horizontal-tabs" class="nav nav-tabs" role="tablist">
+                    <li blur-target="tab" on-blur="onTabBlur(tab)" class="rbx-tab" ng-repeat="tab in tabs" ng-class="{'active':((tab===selectedTab && !(tabWithOpenMenu && tabWithOpenMenu.active)) || tab.active)}">
+                        <a ng-mouseover="onTabHover(tab)" ng-click="onTabClick(tab)" class="rbx-tab-heading" id="{{tab.label|lowercase}}-dropdown">
+                            <span class="text-lead">{{tab.label}}<span ng-hide="(tab.menus.length===0)" class="icon-down"></span></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div ng-show="isMenuOpen && tabWithOpenMenu!==null && (tabWithOpenMenu.menus.length>0 || tabWithOpenMenu.rows.length>0)" class="rbx-tab-horizontal-submenu section-content">
+                <div ng-if="tabWithOpenMenu.menuType==='Nested'" ng-repeat="row in tabWithOpenMenu.rows" class="submenu-row">
+                    <div class="text-label">{{row.title}}</div>
+                    <ul>
+                        <li ng-repeat="menu in row.menus" ng-click="onMenuClick(tabWithOpenMenu,menu)" ng-class="{'active':(menu===selectedMenu)}">{{menu.label}}</li>
+                    </ul>
+                </div>
+                <div ng-if="tabWithOpenMenu.menuType!=='Nested'">
+                    <ul>
+                        <li ng-repeat="menu in tabWithOpenMenu.menus" ng-click="onMenuClick(tabWithOpenMenu,menu)" ng-class="{'active':(menu===selectedMenu)}">{{menu.label}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </script>
+    
+    <script type="text/ng-template" id="advanced-accessories-double-check-modal">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="close()">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5>Accessories Change</h5>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to override your current look?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="purchaseConfirm" class="btn-secondary-md btn-fixed-width" ng-click="submit()">Save</button>
+                <button type="button" class="btn-fixed-width btn-control-md btn-fixed-width" ng-click="close()">Cancel</button>
+            </div>
+        </div>
+    </script>
+    
+    <script type="text/ng-template" id="advanced-body-colors-modal">
+        <div id="advanced-body-colors" class="advanced-modal modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="close()">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5>Skin Tone by Body Parts</h5>
+            </div>
+            <div class="modal-body">
+                <div class="bodycolors-radio-list">
+                    <div class="radio" ng-repeat="bodyPart in params.bodyParts" ng-class="{ 'selected': params.selectedBodyPart === bodyPart }">
+                        <label>
+                            <input type="radio"
+                                   ng-checked="params.selectedBodyPart === bodyPart"
+                                   ng-click="params.setSelectedBodyPart(bodyPart)" />
+                            <span class="bodypart-radio-indicator"></span>
+                            {{bodyPart.label}}
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bodycolors-list-sm">
+                    <div ng-repeat="color in params.colorsPalette"
+                         class="color-dot"
+                         ng-class="{ 'active': params.isColorSelected(color) }"
+                         ng-style="{ 'background-color': color.hexColor }"
+                         ng-click="params.onColorDotClicked(color)">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn-control-md btn-fixed-width"
+                        ng-click="params.onApply(submit)"
+                        ng-disabled="params.isSaving">
+                    {{ params.isSaving ? 'Saving...' : 'Done' }}
+                </button>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="outfit-delete-modal">
+        <div class="modal-content ">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="close()">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5>Delete Outfit</h5>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this outfit?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="purchaseConfirm" class="btn-alert-md btn-fixed-width" ng-click="submit()">Delete</button>
+                <button type="button" class="btn-fixed-width btn-control-md btn-fixed-width" ng-click="close()">Cancel</button>
+            </div>
+        </div>
+    </script>
+
+    <div class="avatar-editor-header">
+        <h1 class="avatar-header-text">Avatar Editor</h1>
+        <div class="catalog-header">
+            <div>Explore the catalog to find more clothes!</div>
+            <a href="https://www.roblox.com/catalog" type="button" class="btn-primary-md">Get More</a>
+        </div>
+    </div>
+
+    <div class="avatar-content">
+        <div class="avatar-left-panel">
+            <div class="section-content">
+                <div class="avatar-back-extended">
+                    <div class="avatar-section">
+                        <div ng-controller="avatarTypeController" ng-class="{ 'invisible': !pageLoaded }" class="avatar-type-toggle pill-toggle" data-toggle="tooltip" data-original-title="Switch between classic R6 avatar and more expressive next generation R15 avatar">
+                            <input type="radio" ng-model="avatarType" id="radio-R6" value="R6" ng-change="updateAvatarType()" disabled="disabled">
+                            <label for="radio-R6">R6</label>
+                            <input type="radio" ng-model="avatarType" id="radio-R15" value="R15" ng-change="updateAvatarType()" disabled="disabled">
+                            <label for="radio-R15">R15</label>
+                        </div>
+                        <div ng-show="(selectedMenu.name === 'Hat')" class="hat-slots">
+                            <div title="You can wear up to 3 hats" ng-repeat="slot in hatSlots" class="hat-slot">
+                                <img ng-if="!slot.empty" ng-click="onHatSlotClicked(slot)" ng-src="{{slot.thumbnail.Url}}">
+                            </div>
+                        </div>
+                        <div ng-click="defaultClothingOverlayVisible = false" class="default-clothing-overlay" ng-class="{'active': defaultClothingOverlayVisible }">
+                            {{defaultClothingMessage}}
+                        </div>
+                        <div class="avatar-thumbnail" ng-class="{'slots-visible': (selectedMenu.name === 'Hat')}">
+                            <div id="UserAvatar" class="thumbnail-holder" data-reset-enabled-every-page data-3d-thumbs-enabled="true"
+                                 data-url="/thumbnail/user-avatar?userId=@userId&thumbnailFormatId=124&width=277&height=277"
+                                 style="width:277px;height:277px">
+                                <span class="thumbnail-span"
+                                      data-3d-url="/avatar-thumbnail-3d/user-avatar?userId=@userId&width=277&height=277"
+                                      data-js-files="/js/3d/three.js,/js/3d/tween.js,/js/3d/OrbitControls.js,/js/3d/SimpleOBJMTLLoader.js"></span>
+                            </div>
+                            <a class="enable-three-dee disabled" href="javascript:void(0)" disabled="disabled" aria-disabled="true">3D</a>
+                        </div>
+                    </div>
+                    
+                    <div class="scaling-section">
+                        <div class="scaling-header-container">
+                            <h1 class="scaling-header">Scaling</h1>
+                        </div>
+                        <div>
+                            <div class="scale-container">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="text-label">Height</span>
+                                    <span class="scale-label" id="height-percentage">95%</span>
+                                </div>
+                                <input type="range" class="slider-input" min="0.9" max="1.05" step="0.01" value="0.95" disabled
+                                       oninput="updateScale('height', this.value)" onchange="applyScale('height', this.value)">
+                            </div>
+                            
+                            <div class="scale-container">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="text-label">Width</span>
+                                    <span class="scale-label" id="width-percentage">70%</span>
+                                </div>
+                                <input type="range" class="slider-input" min="0.7" max="1" step="0.01" value="0.7" disabled
+                                       oninput="updateScale('width', this.value)" onchange="applyScale('width', this.value)">
+                            </div>
+                            
+                            <div class="scale-container">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="text-label">Head</span>
+                                    <span class="scale-label" id="head-percentage">95%</span>
+                                </div>
+                                <input type="range" class="slider-input" min="0.95" max="1" step="0.01" value="0.95" disabled
+                                       oninput="updateScale('head', this.value)" onchange="applyScale('head', this.value)">
+                            </div>
+                            
+                            <div class="scale-container">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="text-label">Proportion</span>
+                                    <span class="scale-label" id="proportion-percentage">65%</span>
+                                </div>
+                                <input type="range" class="slider-input" min="0" max="1" step="0.01" value="0.65" disabled
+                                       oninput="updateScale('proportion', this.value)" onchange="applyScale('proportion', this.value)">
+                            </div>
+                            
+                            <div class="scale-container">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span class="text-label">Body Type</span>
+                                    <span class="scale-label" id="bodytype-percentage">100%</span>
+                                </div>
+                                <input type="range" class="slider-input" min="0" max="1" step="0.01" value="1" disabled
+                                       oninput="updateScale('bodytype', this.value)" onchange="applyScale('bodytype', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="redraw-container">
+                <span>Avatar isn't updated?</span>
+                <button class="redraw-btn" onclick="refetchAvatar()">Refetch</button>
+            </div>
+            
+            <div class="redraw-container">
+                <span>Avatar isn't loading correctly?</span>
+                <button class="redraw-btn" onclick="redrawAvatar()">Redraw</button>
+            </div>
+        </div>
+
+        <div class="avatar-right-panel" ng-controller="avatarController">
+            <div ng-include="'avatar-editor-tabs'"></div>
+            <div class="avatar-content-area" ng-controller="avatarItemsController">
+                <div ng-show="selectedMenu && selectedMenu.name === 'BodyColors'" ng-controller="bodyColorsController">
+                    <div ng-include="'body-colors-list'"></div>
+                </div>
+                <div ng-show="!selectedMenu || selectedMenu.name !== 'BodyColors'">
+                    <div avatar-items></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

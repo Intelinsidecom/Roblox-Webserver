@@ -4,23 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using RCCArbiter.Scripting;
 using RCCArbiter.Endpoints;
 using System.Reflection;
-using Microsoft.AspNetCore.Hosting;
+using System.Net.Sockets;
 
 namespace RCCArbiter
 {
-    class Program
+    partial class Program
     {
         private static RCCClient? _rccClient;
         private static IConfiguration? _configuration;
+        private static RCCProcessManager? _renderingRCC;
+        private static RenderingRccManager? _renderMgr;
 
         static void Main(string[] args)
         {
@@ -33,25 +37,80 @@ namespace RCCArbiter
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            // Get RCC Service URL from config or command line
-            string rccUrl = _configuration["RCCService:ServiceUrl"] ?? "http://localhost:53640";
-            
-            if (args.Length > 0 && !args[0].StartsWith("--"))
-            {
-                rccUrl = args[0];
-            }
-
-            Console.WriteLine($"Connecting to RCC Service at: {rccUrl}");
-            Console.WriteLine();
+            // Determine RCC URL based on mode
+            string rccUrl;
+            bool autoStartRCC = false;
 
             // HTTP server mode if --http flag is present OR config enables it; otherwise interactive console
             bool httpFlag = args.Any(a => string.Equals(a, "--http", StringComparison.OrdinalIgnoreCase));
             bool httpEnabledInConfig = string.Equals(_configuration["HttpServer:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
+            
             if (httpFlag || httpEnabledInConfig)
             {
+                // HTTP mode: check if we should auto-start Rendering RCC
+                autoStartRCC = string.Equals(_configuration["Rendering:AutoStart"], "true", StringComparison.OrdinalIgnoreCase);
+                
+                if (autoStartRCC)
+                {
+                    try
+                    {
+                        _renderingRCC = new RCCProcessManager(_configuration, "Rendering");
+                        _renderingRCC.Start();
+                        rccUrl = _renderingRCC.ServiceUrl;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to start Rendering RCC: {ex.Message}");
+                        Console.WriteLine("Falling back to configured RCC Service URL...");
+                        Console.WriteLine();
+                        rccUrl = _configuration["RCCService:ServiceUrl"] ?? "http://localhost:53640";
+                    }
+                }
+                else
+                {
+                    rccUrl = _configuration["RCCService:ServiceUrl"] ?? "http://localhost:53640";
+                    if (args.Length > 0 && !args[0].StartsWith("--"))
+                    {
+                        rccUrl = args[0];
+                    }
+                }
+                
+                Console.WriteLine($"HTTP Mode - Connecting to RCC Service at: {rccUrl}");
+                Console.WriteLine();
                 StartHttpServer(rccUrl);
                 return;
             }
+            
+            // Interactive mode: use Rendering RCC configuration
+            autoStartRCC = string.Equals(_configuration["Rendering:AutoStart"], "true", StringComparison.OrdinalIgnoreCase);
+            
+            if (autoStartRCC)
+            {
+                try
+                {
+                    _renderingRCC = new RCCProcessManager(_configuration, "Rendering");
+                    _renderingRCC.Start();
+                    rccUrl = _renderingRCC.ServiceUrl;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to start Rendering RCC: {ex.Message}");
+                    Console.WriteLine("Falling back to configured RCC Service URL...");
+                    Console.WriteLine();
+                    rccUrl = _configuration["RCCService:ServiceUrl"] ?? "http://localhost:53640";
+                }
+            }
+            else
+            {
+                rccUrl = _configuration["RCCService:ServiceUrl"] ?? "http://localhost:53640";
+                if (args.Length > 0 && !args[0].StartsWith("--"))
+                {
+                    rccUrl = args[0];
+                }
+            }
+            
+            Console.WriteLine($"Interactive Mode - Connecting to RCC Service at: {rccUrl}");
+            Console.WriteLine();
 
             // Interactive console mode
             try
@@ -142,6 +201,15 @@ namespace RCCArbiter
                     Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
                 }
             }
+            finally
+            {
+                // Clean up RCC process if we started it
+                if (_renderingRCC != null)
+                {
+                    Console.WriteLine();
+                    _renderingRCC.Dispose();
+                }
+            }
         }
 
         // HTTP server removed; interactive console mode only
@@ -155,13 +223,22 @@ namespace RCCArbiter
             {
                 builder.WebHost.UseUrls(urls);
             }
+            
+            // Register shutdown handler to clean up RCC process
+            builder.Services.AddHostedService<RCCCleanupService>();
+            
             var app = builder.Build();
 
             var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
             var provider = new FileScriptProvider(scriptsRoot);
             var renderer = new ScriptRenderer();
 
+            // Initialize scalable Rendering RCC manager
+            _renderMgr = new RenderingRccManager(builder.Configuration);
+
             app.MapGet("/health", () => Results.Ok(new { ok = true }));
+
+            // Use RenderingRccManager to acquire URL per request if triggered
 
             // Register all functions from registry as POST/GET /{name}
             foreach (var kv in Functions.Registry)
@@ -174,10 +251,24 @@ namespace RCCArbiter
                 {
                     try
                     {
-                        var parameters = await Functions.ExtractParametersAsync(req, fn);
-                        var results = Functions.Run(rccUrl, provider, renderer, fn, parameters);
-                        var formatted = FormatLuaValues(results);
-                        return Results.Json(formatted);
+                        string urlToUse = rccUrl;
+                        IDisposable? lease = null;
+                        if (_renderMgr != null)
+                        {
+                            var acquired = _renderMgr.AcquireIfTriggered(name);
+                            if (acquired.HasValue)
+                            {
+                                urlToUse = acquired.Value.url;
+                                lease = acquired.Value.lease;
+                            }
+                        }
+                        using (lease)
+                        {
+                            var parameters = await Functions.ExtractParametersAsync(req, fn);
+                            var results = Functions.Run(urlToUse, provider, renderer, fn, parameters);
+                            var formatted = FormatLuaValues(results);
+                            return Results.Json(formatted);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -189,10 +280,24 @@ namespace RCCArbiter
                 {
                     try
                     {
-                        var parameters = await Functions.ExtractParametersAsync(req, fn);
-                        var results = Functions.Run(rccUrl, provider, renderer, fn, parameters);
-                        var formatted = FormatLuaValues(results);
-                        return Results.Json(formatted);
+                        string urlToUse = rccUrl;
+                        IDisposable? lease = null;
+                        if (_renderMgr != null)
+                        {
+                            var acquired = _renderMgr.AcquireIfTriggered(name);
+                            if (acquired.HasValue)
+                            {
+                                urlToUse = acquired.Value.url;
+                                lease = acquired.Value.lease;
+                            }
+                        }
+                        using (lease)
+                        {
+                            var parameters = await Functions.ExtractParametersAsync(req, fn);
+                            var results = Functions.Run(urlToUse, provider, renderer, fn, parameters);
+                            var formatted = FormatLuaValues(results);
+                            return Results.Json(formatted);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -212,10 +317,24 @@ namespace RCCArbiter
                         return Results.NotFound(new { error = $"Function '{name}' not found" });
                     }
 
-                    var parameters = await Functions.ExtractParametersAsync(req, fn);
-                    var results = Functions.Run(rccUrl, provider, renderer, fn, parameters);
-                    var formatted = FormatLuaValues(results);
-                    return Results.Json(formatted);
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered(name);
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        var parameters = await Functions.ExtractParametersAsync(req, fn);
+                        var results = Functions.Run(urlToUse, provider, renderer, fn, parameters);
+                        var formatted = FormatLuaValues(results);
+                        return Results.Json(formatted);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -248,11 +367,26 @@ namespace RCCArbiter
                         if (!provider.TryGetScript(endpoint.ScriptName, out var template))
                             return Results.NotFound(new { error = $"Script '{endpoint.ScriptName}.lua' not found" });
 
-                        using var client = new RCCClient(rccUrl);
-                        var runner = new ScriptRunner(client, renderer);
-                        var results = runner.RunScript(endpoint.ScriptName, template, mapped);
-                        var formatted = FormatLuaValues(results);
-                        return Results.Json(formatted);
+                        // Treat compiled endpoint route as trigger route
+                        string urlToUse = rccUrl;
+                        IDisposable? lease = null;
+                        if (_renderMgr != null)
+                        {
+                            var acquired = _renderMgr.AcquireIfTriggered(route);
+                            if (acquired.HasValue)
+                            {
+                                urlToUse = acquired.Value.url;
+                                lease = acquired.Value.lease;
+                            }
+                        }
+                        using (lease)
+                        {
+                            using var client = new RCCClient(urlToUse);
+                            var runner = new ScriptRunner(client, renderer);
+                            var results = runner.RunScript(endpoint.ScriptName, template, mapped);
+                            var formatted = FormatLuaValues(results);
+                            return Results.Json(formatted);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -296,5 +430,35 @@ namespace RCCArbiter
         }
 
         // Removed console print utilities; HTTP responses still use FormatLuaValues
+    }
+
+    /// <summary>
+    /// Background service to clean up RCC process when HTTP server shuts down
+    /// </summary>
+    public class RCCCleanupService : IHostedService
+    {
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            // Clean up RCC process when server stops
+            if (Program.GetRenderingRCC() != null)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Shutting down HTTP server...");
+                Program.GetRenderingRCC()?.Dispose();
+            }
+            Program.GetRenderingManager()?.Dispose();
+            return Task.CompletedTask;
+        }
+    }
+
+    partial class Program
+    {
+        public static RCCProcessManager? GetRenderingRCC() => _renderingRCC;
+        public static RenderingRccManager? GetRenderingManager() => _renderMgr;
     }
 }

@@ -1,0 +1,77 @@
+avatar-rules endpoint (Website/Controllers/AvatarV1Controller.cs)
+
+Path(s):
+- /v1/avatar/avatar-rules  (attribute-routed under [Route("v1/avatar")])
+- /v1/avatar-rules         (absolute route for legacy JS)
+
+Returned JSON (what the legacy avatar JS expects):
+
+1) wearableAssetTypes
+   - Array of objects: { id: number, name: string, maxNumber: number }
+   - id        = Roblox asset type ID (same IDs as live Roblox)
+   - name      = human-readable asset type name
+   - maxNumber = how many items of this asset type the user can wear at the same time
+
+   Current list in code:
+   - 2  = T-Shirt          (maxNumber = 1)  -> user can wear at most 1 T-Shirt
+   - 8  = Hat              (maxNumber = 3)  -> up to 3 hats at once (hat slots UI)
+   - 11 = Shirt            (maxNumber = 1)
+   - 12 = Pants            (maxNumber = 1)
+   - 17 = Head             (maxNumber = 1)
+   - 18 = Face             (maxNumber = 1)
+   - 19 = Gear             (maxNumber = 1)
+   - 27 = Torso            (maxNumber = 1)
+   - 28 = Right Arm        (maxNumber = 1)
+   - 29 = Left Arm         (maxNumber = 1)
+   - 30 = Left Leg         (maxNumber = 1)
+   - 31 = Right Leg        (maxNumber = 1)
+   - 41 = Hair Accessory   (maxNumber = 1)
+   - 42 = Face Accessory   (maxNumber = 1)
+   - 43 = Neck Accessory   (maxNumber = 1)
+   - 44 = Shoulder Accessory (maxNumber = 1)
+   - 45 = Front Accessory  (maxNumber = 1)
+   - 46 = Back Accessory   (maxNumber = 1)
+   - 47 = Waist Accessory  (maxNumber = 1)
+   - 48 = Climb Animation  (maxNumber = 1)
+   - 50 = Fall Animation   (maxNumber = 1)
+   - 51 = Idle Animation   (maxNumber = 1)
+   - 52 = Jump Animation   (maxNumber = 1)
+   - 53 = Run Animation    (maxNumber = 1)
+   - 54 = Swim Animation   (maxNumber = 1)
+   - 55 = Walk Animation   (maxNumber = 1)
+
+   In avatarController.js:
+   - The rules response is stored in variable `v`.
+   - A synthetic entry { id: 32, name: "Package", maxCount: 0 } is pushed at runtime.
+   - A lookup table `wt[id] = wearableAssetTypes[i]` is built to map assetTypeId -> rule.
+   - bi(id) uses wt[id].maxNumber to enforce wear limits.
+
+2) scales
+   - Object with numeric ranges for scale sliders:
+       scales.height = { min, max, increment }
+       scales.width  = { min, max, increment }
+       scales.head   = { min, max, increment }
+
+   - The legacy scale controller only uses `min` and `max`:
+       avatarScaleController: o(ruleScale, vmScale) => vmScale.min = ruleScale.min * 100; vmScale.max = ruleScale.max * 100;
+   - increment is provided for completeness but is not used by this JS.
+
+3) bodyColorsPalette / basicBodyColorsPalette
+   - Both are arrays of: { brickColorId: number, hexColor: string, name: string }
+   - bodyColorsPalette  = full skin tone palette (used for advanced view and for DeltaE math).
+   - basicBodyColorsPalette = smaller palette used for the main Skin Tone grid.
+
+   Usage:
+   - bodyColorsController listens to avatarRulesLoaded and does:
+       colorsPalette  = rules.basicBodyColorsPalette
+       advancedPalette = rules.bodyColorsPalette
+   - avatarController uses v.bodyColorsPalette to map BrickColorId -> RGB, then calls
+       Roblox.AvatarBodyColorDifference.DeltaE() and compares against minimumDeltaEBodyColorDifference.
+
+4) minimumDeltaEBodyColorDifference
+   - Single number indicating how similar two body colors can be before they are treated as "too close".
+   - Used by avatarController.yt() to decide if default clothing should be auto-equipped / shown.
+
+If you need to change limits or asset types:
+- Update wearableAssetTypes list in AvatarV1Controller.GetAvatarRules().
+- Keep ids in sync with Roblox asset type IDs so the existing JS (which uses id -> name lookups) continues to work.

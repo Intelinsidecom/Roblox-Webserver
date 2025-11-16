@@ -1,0 +1,79 @@
+/* ~/CSS/Pages/Notifications/Notifications.css */
+.feedification {
+    overflow: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.feedification-icon {
+    float: left;
+    margin-right: 13px;
+    width: 60px;
+    height: 70px;
+}
+
+.feedification-icon img {
+    position: relative;
+    top: 1px;
+    left: -1px;
+}
+
+.pagification {
+    overflow: hidden;
+    padding: 10px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.pagification-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    margin: 10px;
+}
+
+.pagification-icon .icon-logo-r {
+    background-image: url("/images/Logo/landing_page_icon_12192016.svg");
+    background-size: 58px 58px;
+    height: 58px;
+    width: 58px;
+}
+
+.pagification-body {
+    float: left;
+    overflow: hidden;
+    margin-left: 68px;
+}
+
+.BuildPageContent .pagification-body {
+    width: 530px;
+}
+
+.pagification-message {
+    overflow: hidden;
+}
+
+.pagification-showall {
+    display: none;
+}
+
+.pagification-collapse {
+    display: inline;
+}
+
+.collapsed .pagification-message {
+    height: 2.6em;
+}
+
+.collapsed .pagification-showall {
+    display: inline;
+}
+
+.collapsed .pagification-collapse {
+    display: none;
+}
+
+.pagification-links {
+    text-align: right;
+}

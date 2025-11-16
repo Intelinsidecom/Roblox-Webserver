@@ -1,0 +1,22 @@
+/* ~/CSS/Pages/Shared/ThumbnailLoader.css */
+.thumbnail-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 5px;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumbnail-loader .loading-animated {
+    width: 100px;
+}
+
+/* Avatar editor: visually center loader within the taller avatar card
+   by nudging it slightly downward relative to the 277x277 thumbnail area. */
+.avatar-thumbnail .thumbnail-span .thumbnail-loader {
+    transform: translateY(5px);
+}

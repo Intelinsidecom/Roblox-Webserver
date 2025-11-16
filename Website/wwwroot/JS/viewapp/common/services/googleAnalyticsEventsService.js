@@ -18,6 +18,14 @@ robloxAppService.factory("googleAnalyticsEventsService", function() {
         fireEvent: function(t, i, r, u) {
             var f = n(t, i, r, u);
             GoogleAnalyticsEvents.FireEvent(f)
+        },
+        viewVirtual: function(t) {
+            try {
+                if (window.GoogleAnalyticsEvents && typeof GoogleAnalyticsEvents.ViewVirtual === "function") {
+                    GoogleAnalyticsEvents.ViewVirtual(t)
+                }
+            } catch (e) {
+            }
         }
     }
 });

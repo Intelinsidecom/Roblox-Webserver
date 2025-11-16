@@ -41,10 +41,11 @@ namespace RCCArbiter
             // 2) Pipe separated in ?params=val1|val2|...
             if (req.Query.TryGetValue("params", out var pipeVals) && pipeVals.Count > 0)
             {
-                var pieces = pipeVals[0].Split('|', StringSplitOptions.None);
+                var raw = pipeVals[0] ?? string.Empty;
+                var pieces = raw.Split('|', StringSplitOptions.None);
                 for (int i = 0; i < pieces.Length && i < fn.ParamKeys.Length; i++)
                 {
-                    parameters[fn.ParamKeys[i]] = pieces[i];
+                    parameters[fn.ParamKeys[i]] = pieces[i] ?? string.Empty;
                 }
             }
 
@@ -58,7 +59,7 @@ namespace RCCArbiter
                     {
                         foreach (var prop in doc.RootElement.EnumerateObject())
                         {
-                            parameters[prop.Name] = prop.Value.ToString();
+                            parameters[prop.Name] = prop.Value.ToString() ?? string.Empty;
                         }
                     }
                 }

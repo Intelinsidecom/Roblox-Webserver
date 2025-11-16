@@ -23,6 +23,46 @@ public class ThumbnailCompatController : ControllerBase
         _thumbnailService = thumbnailService;
     }
 
+    // GET /thumbnail/user-avatar?userId=123&thumbnailFormatId=124&width=352&height=352
+    // This endpoint is used by Character.aspx via data-url on .thumbnail-holder and
+    // is loaded with jQuery .load(), so it must return an HTML snippet.
+    [HttpGet("user-avatar")]
+    public IActionResult UserAvatar(
+        [FromQuery] long userId,
+        [FromQuery] int? thumbnailFormatId,
+        [FromQuery] int? width,
+        [FromQuery] int? height)
+    {
+        if (userId <= 0)
+            return BadRequest(new { error = "userId is required" });
+
+        var w = width.GetValueOrDefault(352);
+        var h = height.GetValueOrDefault(352);
+        const string format = "png";
+
+        // Prefer Url.Action to generate the correct path to bust-thumbnail/image
+        var imageUrl = Url.Action(
+                           action: nameof(ThumbnailsController.Bust).Replace("Async", string.Empty),
+                           controller: "Thumbnails",
+                           values: new { userId = userId, width = w, height = h, format = format }
+                       )
+                       ?? $"/bust-thumbnail/image?userId={userId}&width={w}&height={h}&format={format}";
+
+        // Mirror the structure expected by ThumbnailView.js and ThreeDeeThumbnails.js:
+        // - .thumbnail-holder with data-url so reloadThumbnail() can work
+        // - inner .thumbnail-span with data-js-files and data-3d-url so 3D toggle can load scripts
+        //   and call /avatar-thumbnail-3d/user-avatar.
+        var selfUrl = $"/thumbnail/user-avatar?userId={userId}&thumbnailFormatId={thumbnailFormatId}&width={w}&height={h}";
+        var threeJsFiles = "/JS/3D/three.js,/JS/3D/tween.js,/JS/3D/RobloxOrbitControls.js,/JS/3D/OBJMTLLoader.js,/JS/3D/MTLLoader.js";
+        var threeDeeUrl = $"/avatar-thumbnail-3d/user-avatar?userId={userId}&width={w}&height={h}";
+
+        var html = $"<div class=\"thumbnail-holder\" data-reset-enabled-every-page data-3d-thumbs-enabled=\"true\" data-url=\"{selfUrl}\" style=\"width:{w}px;height:{h}px\">" +
+                   $"<span class=\"thumbnail-span\" data-js-files=\"{threeJsFiles}\" data-3d-url=\"{threeDeeUrl}\"><img src=\"{imageUrl}\" alt=\"User avatar\" /></span>" +
+                   "</div>";
+
+        return Content(html, "text/html");
+    }
+
     // GET /thumbnail/avatar-headshot?userId=123
     [HttpGet("avatar-headshot")]
     public async Task<IActionResult> AvatarHeadshot([FromQuery] long userId)

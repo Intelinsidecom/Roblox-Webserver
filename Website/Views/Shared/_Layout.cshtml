@@ -14,159 +14,16 @@
     <link rel="stylesheet" href="~/CSS/Legacy/Modal.css">
     <link rel="stylesheet" href="~/CSS/Base/CSS/Item.css">
     <script async src="~/JS/lib/beacon/beacon.js"></script>
-    <script src="~/JS/lib/athena/athena.js" type="text/javascript"></script>
-    <script type="text/javascript" src="~/JS/lib/jquery/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="~/JS/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="~/JS/roblox.js"></script>
-    <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
-    <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
-    <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    <!-- Now we import the roblox js scripts, there is plenty of them -->
+    <!-- dependencies other scripts may use or not, angular, ajax and so on -->
+    <script type="text/javascript" src="~/js/site.bundle.js"></script>
     <script type="text/javascript">
       window.Roblox = window.Roblox || {};
       if (Roblox.EventStream && Roblox.EventStream.Init) {
-        Roblox.EventStream.Init("", "", "", "");
+        // Provide safe non-empty defaults so EventStream beacon code doesn't crash
+        Roblox.EventStream.Init("/images/signup/e.png", "/images/signup/e.png", "/pe?t=studio", "/pe?t=diagnostic");
       }
     </script>
-    <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
-    <!-- Now we import the roblox js scripts, there is plenty of them -->
-    <!-- dependencies other scripts may use or not, angular, ajax and so on -->
-    <script type="text/javascript" src="~/JS/angular/angular.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
-    <script type="text/javascript" src="~/JS/lib/gigya/gigya.js"></script>
-
-    <script type="text/javascript" src="~/JS/Bootstrap/CaptchaModal.js"></script>
-    <script type="text/javascript" src="~/JS/Bootstrap/GenericConfirmation.js"></script>
-
-    <script type="text/javascript" src="~/JS/common/forms.js"></script>
-
-    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
-    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
-
-    <script type="text/javascript" src="~/JS/extensions/string.js"></script>
-    <script type="text/javascript" src="~/JS/extensions/ThreeDeeThumbnails.js"></script>
-    <script type="text/javascript" src="~/JS/extensions/Thumbnails.js"></script>
-
-    <script type="text/javascript" src="~/JS/Game/GamePlayEvents.js"></script>
-
-    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
-
-    <script type="text/javascript" src="~/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
-
-    <script type="text/javascript" src="~/JS/Landing/RollerCoaster/RollerCoaster.js"></script>
-
-    <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
-
-    <script type="text/javascript" src="~/JS/Login/Login.js"></script>
-    <script type="text/javascript" src="~/JS/Login/SignupOrLogIn.js"></script>
-    <script type="text/javascript" src="~/JS/Login/SignupOrLoginContainer.js"></script>
-
-    <script type="text/javascript" src="~/JS/polyfill/ie7localStorage.js"></script>
-
-    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
-
-    <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailView.js"></script>
-
-    <script type="text/javascript" src="~/JS/Tracking/AsyncGoogleOnScript.js"></script>
-    <script type="text/javascript" src="~/JS/Tracking/FormEvents.js"></script>
-    <script type="text/javascript" src="~/JS/Tracking/SignupTrackingScript.js"></script>
-
-    <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
-    <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
-    <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
-
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/formEvents.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/signupOrLogin.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formContext.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidation.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidationRedactInput.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/imagesService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/localStorageService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/numericCodeService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/performanceService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/realtimeService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/helpers.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/captchaController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/loginController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupOrLoginController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/showSection.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validBirthday.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validPassword.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validPasswordConfirm.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validUsername.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/captchaService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/displayService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/loginService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/signupService.js"></script>
-
-    
-    <!-- Folders are done and it was pretty hard, its gonna be even harder now, why does roblox injected so many scripts anyways? -->
-
-    <script type="text/javascript" src="~/JS/ABPlaceLauncher.js"></script>
-    <script type="text/javascript" src="~/JS/AjaxAvatarThumbnail.js"></script>
-    <script type="text/javascript" src="~/JS/CharacterSelect.js"></script>
-    <script type="text/javascript" src="~/JS/ClientInstaller.js"></script>
-    <script type="text/javascript" src="~/JS/CookieUpgrader.js"></script>
-    <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
-    <script type="text/javascript" src="~/JS/DropDownNav.js"></script>
-    <script type="text/javascript" src="~/JS/EventTracker.js"></script>
-    <script type="text/javascript" src="~/JS/FormValidator.js"></script>
-    <script type="text/javascript" src="~/JS/GenericConfirmation.js"></script>
-    <script type="text/javascript" src="~/JS/GenericModal.js"></script>
-    <script type="text/javascript" src="~/JS/GoogleEventListener.js"></script>
-    <script type="text/javascript" src="~/JS/GPTAdScript.js"></script>
-    <script type="text/javascript" src="~/JS/IEMetroInstructions.js"></script>
-    <script type="text/javascript" src="~/JS/IframeEventListener.js"></script>
-    <script type="text/javascript" src="~/JS/iFrameLogin.js"></script>
-    <script type="text/javascript" src="~/JS/InstallationInstructions.js"></script>
-    <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
-    <script type="text/javascript" src="~/JS/jquery.ba-postmessage.min.js"></script>
-    
-    <script type="text/javascript" src="~/JS/jquery.simplemodal-1.3.5.js"></script>
-    <script type="text/javascript" src="~/JS/jquery.tipsy.js"></script>
-    <script type="text/javascript" src="~/JS/jquery.validate.js"></script>
-    <script type="text/javascript" src="~/JS/jquery.validate.unobtrusive.js"></script>
-    <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
-    <script type="text/javascript" src="~/JS/json2.min.js"></script>
-    <script type="text/javascript" src="~/JS/Linkify.js"></script>
-    <script type="text/javascript" src="~/JS/MadStatus.js"></script>
-    <script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
-    <script type="text/javascript" src="~/JS/PlaceLauncher.js"></script>
-    
-    <script type="text/javascript" src="~/JS/ShopInterstitialModal.js"></script>
-    <script type="text/javascript" src="~/JS/SignupFormValidatorGeneric.js"></script>
-    <script type="text/javascript" src="~/JS/SiteTouchEvent.js"></script>
-    <script type="text/javascript" src="~/JS/SocialLogin.js"></script>
-    <script type="text/javascript" src="~/JS/StringTruncator.js"></script>
-    <script type="text/javascript" src="~/JS/TwoStepVerificationModal.js"></script>
-    <script type="text/javascript" src="~/JS/UpsellAdModal.js"></script>
-    <script type="text/javascript" src="~/JS/VideoPreRoll.js"></script>
-    <script type="text/javascript" src="~/JS/lib/ajax/MicrosoftAjax.js"></script>
-    <script type="text/javascript" src="~/JS/lib/ajax/MicrosoftAjaxWebForms.js"></script>
-    <script type="text/javascript" src="~/JS/webkit.js"></script>
-    <script type="text/javascript" src="~/JS/XsrfToken.js"></script>
 
 
 

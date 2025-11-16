@@ -17,6 +17,50 @@ namespace Users
             public int LeftLegColorId { get; set; }
         }
 
+        public async Task<BodyColors> GetBodyColorsAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select head_color, torso_color, right_arm_color, left_arm_color, right_leg_color, left_leg_color
+from bodycolors
+where user_id = @uid";
+
+            using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("uid", userId);
+                using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    return new BodyColors
+                    {
+                        HeadColorId = reader.GetInt32(0),
+                        TorsoColorId = reader.GetInt32(1),
+                        RightArmColorId = reader.GetInt32(2),
+                        LeftArmColorId = reader.GetInt32(3),
+                        RightLegColorId = reader.GetInt32(4),
+                        LeftLegColorId = reader.GetInt32(5)
+                    };
+                }
+            }
+
+            // Fallback to defaults defined in schema (all 1) if row does not exist
+            return new BodyColors
+            {
+                HeadColorId = 1,
+                TorsoColorId = 1,
+                RightArmColorId = 1,
+                LeftArmColorId = 1,
+                RightLegColorId = 1,
+                LeftLegColorId = 1
+            };
+        }
+
         public async Task SetBodyColorsAsync(string connectionString, long userId, BodyColors colors, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Thumbnails;
 using Microsoft.AspNetCore.Authentication;
 using Website.Auth;
+using WebOptimizer;
+using Website.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 // Thumbnails service
 builder.Services.AddSingleton<IThumbnailService>(sp => new ThumbnailService(sp.GetRequiredService<IConfiguration>()));
+
+// WebOptimizer bundling/minification moved to extension for clarity
+builder.Services.AddWebOptimizerPipeline();
 
 // Minimal auth: use the ClaimsPrincipal you set from .ROBLOSECURITY as the auth source
 builder.Services.AddAuthentication(options =>
@@ -66,6 +71,9 @@ if (!app.Environment.IsDevelopment())
 app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
+
+// Optimize and serve bundled/minified assets
+app.UseWebOptimizer();
 
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 // Add mapping for .file extension

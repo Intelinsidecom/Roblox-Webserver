@@ -9,6 +9,8 @@
       "RobloxWebserver/1.0.0": {
         "dependencies": {
           "Api": "1.0.0",
+          "Avatar": "1.0.0",
+          "LigerShark.WebOptimizer.Core": "3.0.477",
           "Microsoft.EntityFrameworkCore": "8.0.10",
           "Microsoft.EntityFrameworkCore.Design": "8.0.10",
           "Npgsql": "8.0.4",
@@ -25,6 +27,17 @@
           "lib/net6.0/Humanizer.dll": {
             "assemblyVersion": "2.14.0.0",
             "fileVersion": "2.14.1.48190"
+          }
+        }
+      },
+      "LigerShark.WebOptimizer.Core/3.0.477": {
+        "dependencies": {
+          "NUglify": "1.21.15"
+        },
+        "runtime": {
+          "lib/net8.0/WebOptimizer.Core.dll": {
+            "assemblyVersion": "3.0.477.0",
+            "fileVersion": "3.0.477.0"
           }
         }
       },
@@ -206,7 +219,7 @@
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
           "Microsoft.CodeAnalysis.Common": "4.5.0",
           "System.Composition": "6.0.0",
-          "System.IO.Pipelines": "6.0.3",
+          "System.IO.Pipelines": "9.0.0",
           "System.Threading.Channels": "6.0.0"
         },
         "runtime": {
@@ -457,6 +470,14 @@
           }
         }
       },
+      "NUglify/1.21.15": {
+        "runtime": {
+          "lib/net5.0/NUglify.dll": {
+            "assemblyVersion": "1.21.15.0",
+            "fileVersion": "1.21.15.0"
+          }
+        }
+      },
       "Swashbuckle.AspNetCore/6.6.2": {
         "dependencies": {
           "Microsoft.Extensions.ApiDescription.Server": "6.0.5",
@@ -593,7 +614,14 @@
           }
         }
       },
-      "System.IO.Pipelines/6.0.3": {},
+      "System.IO.Pipelines/9.0.0": {
+        "runtime": {
+          "lib/net8.0/System.IO.Pipelines.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
+        }
+      },
       "System.Reflection.Metadata/6.0.1": {
         "dependencies": {
           "System.Collections.Immutable": "6.0.0"
@@ -605,10 +633,32 @@
           "System.Runtime.CompilerServices.Unsafe": "6.0.0"
         }
       },
-      "System.Text.Encodings.Web/8.0.0": {},
-      "System.Text.Json/8.0.4": {
+      "System.Text.Encodings.Web/9.0.0": {
+        "runtime": {
+          "lib/net8.0/System.Text.Encodings.Web.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/browser/lib/net8.0/System.Text.Encodings.Web.dll": {
+            "rid": "browser",
+            "assetType": "runtime",
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
+        }
+      },
+      "System.Text.Json/9.0.0": {
         "dependencies": {
-          "System.Text.Encodings.Web": "8.0.0"
+          "System.IO.Pipelines": "9.0.0",
+          "System.Text.Encodings.Web": "9.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/System.Text.Json.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
         }
       },
       "System.Threading.Channels/6.0.0": {},
@@ -627,12 +677,24 @@
           }
         }
       },
+      "Avatar/1.0.0": {
+        "dependencies": {
+          "Npgsql": "8.0.4",
+          "Users": "1.0.0"
+        },
+        "runtime": {
+          "Avatar.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "Thumbnails/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
           "Npgsql": "8.0.4",
           "System.Drawing.Common": "6.0.0",
-          "System.Text.Json": "8.0.4"
+          "System.Text.Json": "9.0.0"
         },
         "runtime": {
           "Thumbnails.dll": {
@@ -666,6 +728,13 @@
       "sha512": "sha512-lQKvtaTDOXnoVJ20ibTuSIOf2i0uO0MPbDhd1jm238I+U/2ZnRENj0cktKZhtchBMtCUSRQ5v4xBCUbKNmyVMw==",
       "path": "humanizer.core/2.14.1",
       "hashPath": "humanizer.core.2.14.1.nupkg.sha512"
+    },
+    "LigerShark.WebOptimizer.Core/3.0.477": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-md8zBJMIur8Hnb5jn7krSfe9I0BZUGqCxwh2A5Y1MTR7wtY6v9gYuyW5EFNCYzQCvaaAZxlTynUk8ZsIsrBXsg==",
+      "path": "ligershark.weboptimizer.core/3.0.477",
+      "hashPath": "ligershark.weboptimizer.core.3.0.477.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
       "type": "package",
@@ -856,6 +925,13 @@
       "path": "npgsql.entityframeworkcore.postgresql/8.0.8",
       "hashPath": "npgsql.entityframeworkcore.postgresql.8.0.8.nupkg.sha512"
     },
+    "NUglify/1.21.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Vxwg0EjbM/gmILPtzfmzlf0MDu9a17OQb8b57oTgoHoRsZNHWIFQFa00Izcvuam3Hbw2eH272TfczDRHSXgSlA==",
+      "path": "nuglify/1.21.15",
+      "hashPath": "nuglify.1.21.15.nupkg.sha512"
+    },
     "Swashbuckle.AspNetCore/6.6.2": {
       "type": "package",
       "serviceable": true,
@@ -947,12 +1023,12 @@
       "path": "system.drawing.common/6.0.0",
       "hashPath": "system.drawing.common.6.0.0.nupkg.sha512"
     },
-    "System.IO.Pipelines/6.0.3": {
+    "System.IO.Pipelines/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ryTgF+iFkpGZY1vRQhfCzX0xTdlV3pyaTTqRu2ETbEv+HlV7O6y7hyQURnghNIXvctl5DuZ//Dpks6HdL/Txgw==",
-      "path": "system.io.pipelines/6.0.3",
-      "hashPath": "system.io.pipelines.6.0.3.nupkg.sha512"
+      "sha512": "sha512-eA3cinogwaNB4jdjQHOP3Z3EuyiDII7MT35jgtnsA4vkn0LUrrSHsU0nzHTzFzmaFYeKV7MYyMxOocFzsBHpTw==",
+      "path": "system.io.pipelines/9.0.0",
+      "hashPath": "system.io.pipelines.9.0.0.nupkg.sha512"
     },
     "System.Reflection.Metadata/6.0.1": {
       "type": "package",
@@ -975,19 +1051,19 @@
       "path": "system.text.encoding.codepages/6.0.0",
       "hashPath": "system.text.encoding.codepages.6.0.0.nupkg.sha512"
     },
-    "System.Text.Encodings.Web/8.0.0": {
+    "System.Text.Encodings.Web/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ==",
-      "path": "system.text.encodings.web/8.0.0",
-      "hashPath": "system.text.encodings.web.8.0.0.nupkg.sha512"
+      "sha512": "sha512-e2hMgAErLbKyUUwt18qSBf9T5Y+SFAL3ZedM8fLupkVj8Rj2PZ9oxQ37XX2LF8fTO1wNIxvKpihD7Of7D/NxZw==",
+      "path": "system.text.encodings.web/9.0.0",
+      "hashPath": "system.text.encodings.web.9.0.0.nupkg.sha512"
     },
-    "System.Text.Json/8.0.4": {
+    "System.Text.Json/9.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-bAkhgDJ88XTsqczoxEMliSrpijKZHhbJQldhAmObj/RbrN3sU5dcokuXmWJWsdQAhiMJ9bTayWsL1C9fbbCRhw==",
-      "path": "system.text.json/8.0.4",
-      "hashPath": "system.text.json.8.0.4.nupkg.sha512"
+      "sha512": "sha512-js7+qAu/9mQvnhA4EfGMZNEzXtJCDxgkgj8ohuxq/Qxv+R56G+ljefhiJHOxTNiw54q8vmABCWUwkMulNdlZ4A==",
+      "path": "system.text.json/9.0.0",
+      "hashPath": "system.text.json.9.0.0.nupkg.sha512"
     },
     "System.Threading.Channels/6.0.0": {
       "type": "package",
@@ -997,6 +1073,11 @@
       "hashPath": "system.threading.channels.6.0.0.nupkg.sha512"
     },
     "Api/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Avatar/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

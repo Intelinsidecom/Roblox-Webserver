@@ -1,0 +1,59 @@
+avatar endpoint (Website/Controllers/AvatarV1Controller.cs)
+
+Path:
+- /v1/avatar  (attribute-routed under [Route("v1/avatar")])
+
+HTTP method:
+- GET (requires authentication)
+
+Behavior:
+- Resolves the current logged-in user from the authentication ticket (ClaimTypes.NameIdentifier).
+- Uses the Default connection string to read avatar data from the database via Avatar.AvatarRepository.
+- Currently, only body colors are persisted in the database; scales and assets are returned with safe defaults.
+
+Returned JSON (what the legacy avatar JS currently uses):
+
+1) bodyColors
+   - Object with the user's current BrickColor IDs for each body part:
+       bodyColors = {
+         headColorId:   number,
+         torsoColorId:  number,
+         rightArmColorId: number,
+         leftArmColorId:  number,
+         rightLegColorId: number,
+         leftLegColorId:  number
+       }
+   - Values are loaded from the bodycolors table (0002_create_bodycolors.sql) through Users.BodyColorsRepository.
+
+2) scales
+   - Object describing the avatar scale multipliers:
+       scales = {
+         height: number,
+         width:  number,
+         head:   number
+       }
+   - At the moment there is no dedicated scales table in the database, so the endpoint returns conservative defaults:
+       height = 1.0
+       width  = 1.0
+       head   = 1.0
+   - avatarScaleController multiplies these by 100 when initializing the sliders.
+
+3) assets
+   - Array of currently worn assets:
+       assets = [
+         {
+           id:   number,      // assetId
+           name: string,      // display name
+           assetType: {
+             id:   number,    // asset type id (e.g. 8 = Hat)
+             name: string     // asset type name (e.g. "Hat")
+           }
+         },
+         ...
+       ]
+   - For now this implementation returns an empty array because no wearing-assets table exists in the schema yet.
+   - The avatarController and related JS handle the empty case by simply not marking any items as worn until the user makes changes.
+
+Notes:
+- If you later add tables for avatar scales, avatar type, or worn assets, extend Avatar.AvatarRepository.GetAvatarAsync to load them and populate AvatarState.Scales / AvatarState.Assets accordingly.
+- Keep the field names and shapes in sync with the legacy avatar JS expectations (see Website/wwwroot/JS/viewapp/pages/avatar/controllers/avatarController.js and avatarScaleController.js).

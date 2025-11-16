@@ -24,7 +24,11 @@
                     visibility: "hidden",
                     display: "block"
                 }).prependTo(document.body);
-                var i = n.extend({}, this.$element.offset(), {
+                var elementOffset = this.$element.offset();
+                if (!elementOffset) {
+                    return; // Element is detached or hidden, cannot show tooltip
+                }
+                var i = n.extend({}, elementOffset, {
                         width: this.$element[0].offsetWidth,
                         height: this.$element[0].offsetHeight
                     }),
@@ -151,9 +155,11 @@
     }, n.fn.tipsy.elementOptions = function(t, i) {
         return n.metadata ? n.extend({}, i, n(t).metadata()) : i
     }, n.fn.tipsy.autoNS = function() {
-        return n(this).offset().top > n(document).scrollTop() + n(window).height() / 2 ? "s" : "n"
+        var offset = n(this).offset();
+        return offset && offset.top > n(document).scrollTop() + n(window).height() / 2 ? "s" : "n"
     }, n.fn.tipsy.autoWE = function() {
-        return n(this).offset().left > n(document).scrollLeft() + n(window).width() / 2 ? "e" : "w"
+        var offset = n(this).offset();
+        return offset && offset.left > n(document).scrollLeft() + n(window).width() / 2 ? "e" : "w"
     }, n.fn.tipsy.autoBounds = function(t, i) {
         return function() {
             var r = {
@@ -162,8 +168,12 @@
                 },
                 f = n(document).scrollTop() + t,
                 e = n(document).scrollLeft() + t,
-                u = n(this);
-            return u.offset().top < f && (r.ns = "n"), u.offset().left < e && (r.ew = "w"), n(window).width() + n(document).scrollLeft() - u.offset().left < t && (r.ew = "e"), n(window).height() + n(document).scrollTop() - u.offset().top < t && (r.ns = "s"), r.ns + (r.ew ? r.ew : "")
+                u = n(this),
+                uOffset = u.offset();
+            if (!uOffset) {
+                return r.ns + (r.ew ? r.ew : ""); // Return default if element is detached
+            }
+            return uOffset.top < f && (r.ns = "n"), uOffset.left < e && (r.ew = "w"), n(window).width() + n(document).scrollLeft() - uOffset.left < t && (r.ew = "e"), n(window).height() + n(document).scrollTop() - uOffset.top < t && (r.ns = "s"), r.ns + (r.ew ? r.ew : "")
         }
     }
 })(jQuery);

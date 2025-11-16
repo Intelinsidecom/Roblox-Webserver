@@ -6,15 +6,20 @@ function MoveMagicLine(n) {
         var i = 0,
             r = 0,
             u = $(document).scrollTop();
-        if (u < $("#WhatsRobloxContainer").offset().top - $(".navbar-landing").height()) {
+        var whatsRobloxOffset = $("#WhatsRobloxContainer").offset();
+        var navbarHeight = $(".navbar-landing").height() || 0;
+        if (whatsRobloxOffset && u < whatsRobloxOffset.top - navbarHeight) {
             if (i = $("#PlayLink").position().left, r = $("#PlayLink").width(), t.data("curtab") == 1 && !n) return;
             t.data("curtab", 1)
-        } else if (u < $("#RobloxDeviceText").offset().top - $(".navbar-landing").height()) {
-            if (i = $("#AboutLink").position().left, r = $("#AboutLink").width(), t.data("curtab") == 2 && !n) return;
-            t.data("curtab", 2)
         } else {
-            if (i = $("#PlatformLink").position().left, r = $("#PlatformLink").width(), t.data("curtab") == 3 && !n) return;
-            t.data("curtab", 3)
+            var robloxDeviceOffset = $("#RobloxDeviceText").offset();
+            if (robloxDeviceOffset && u < robloxDeviceOffset.top - navbarHeight) {
+                if (i = $("#AboutLink").position().left, r = $("#AboutLink").width(), t.data("curtab") == 2 && !n) return;
+                t.data("curtab", 2)
+            } else {
+                if (i = $("#PlatformLink").position().left, r = $("#PlatformLink").width(), t.data("curtab") == 3 && !n) return;
+                t.data("curtab", 3)
+            }
         }
         t.animate({
             queue: "link-magic-line",
@@ -40,12 +45,19 @@ function scrollTo(n, t) {
         case 3:
             i = $("#PlatformLink").position().left, r = $("#PlatformLink").width()
     }
-    return f.animate({
+    f.animate({
         left: i,
         width: r
-    }), u = $(t).offset().top, $("html, body").animate({
+    });
+    var targetOffset = $(t).offset();
+    if (!targetOffset) {
+        return !1; // Element not found or detached, cannot scroll
+    }
+    u = targetOffset.top;
+    $("html, body").animate({
         scrollTop: u
-    }, 600), !1
+    }, 600);
+    return !1
 }
 
 function validateLogin() {

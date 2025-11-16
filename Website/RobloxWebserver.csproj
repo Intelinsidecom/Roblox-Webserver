@@ -14,12 +14,14 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
     <PackageReference Include="Npgsql" Version="8.0.4" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.477" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Api\Api.csproj" />
     <ProjectReference Include="..\Assemblies\Users\Users.csproj" />
     <ProjectReference Include="..\Assemblies\Thumbnails\Thumbnails.csproj" />
+    <ProjectReference Include="..\Assemblies\Avatar\Avatar.csproj" />
   </ItemGroup>
 
 </Project>

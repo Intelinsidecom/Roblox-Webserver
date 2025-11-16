@@ -55,23 +55,64 @@ typeof Roblox == "undefined" && (Roblox = {}), Roblox.ThumbnailView = function()
                 t = $(".enable-three-dee");
             i(n), t.css("visibility", "visible");
             t.on("click", function() {
-                t.hasClass("disabled") || (n == !1 ? GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnails", "Enable 3D Button Clicked"]) : GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnails", "Disable 3D Button Clicked"]), n = !n, s(n), n === !1 ? f() : y(), i(n))
+                // Always allow toggling; ignore the 'disabled' class so users can still
+                // switch between 2D and 3D even if a previous 3D load failed.
+                n == !1 ? GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnails", "Enable 3D Button Clicked"]) : GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnails", "Disable 3D Button Clicked"]),
+                n = !n,
+                s(n),
+                // When enabling 3D, explicitly show a thumbnail spinner over the
+                // avatar thumbnail so the user always sees loading feedback,
+                // even if the backend 3D endpoint is slow or failing.
+                n === !0 && window.Roblox && Roblox.ThumbnailSpinner && (function() {
+                    var u = $(".avatar-thumbnail .thumbnail-span");
+                    u.length && Roblox.ThumbnailSpinner.show(u);
+                })(),
+                n === !1 ? f() : y(),
+                // When toggling back to 2D, hide any spinner that might be
+                // lingering on the avatar thumbnail.
+                n === !1 && window.Roblox && Roblox.ThumbnailSpinner && (function() {
+                    var u = $(".avatar-thumbnail .thumbnail-span");
+                    u.length && Roblox.ThumbnailSpinner.hide(u);
+                })(),
+                i(n)
             })
         }
     }
 
     function it() {
         if (r) {
+            // Reload only the thumbnail-holder content so we don't wipe out
+            // overlay controls (e.g., the 2D/3D toggle button) that live
+            // alongside the holder in the parent container.
             var f = n.find(i),
                 u = f.data("url");
-            u = u + "&_=" + $.now(), n.load(u, function() {
-                t = n.find(o), p()
+
+            // If the page defines a global showAvatarSpinner/hideAvatarSpinner
+            // helper (Avatar editor), use it to show a loading spinner while
+            // the thumbnail markup is being refreshed.
+            try {
+                if (typeof showAvatarSpinner === "function") {
+                    showAvatarSpinner();
+                }
+            } catch (e) {}
+
+            u = u + "&_=" + $.now(), f.load(u, function() {
+                t = f.find(o), p();
+
+                // Once the new thumbnail markup has been loaded, clear the
+                // avatar spinner if the helper exists so it never stays stuck
+                // on screen.
+                try {
+                    if (typeof hideAvatarSpinner === "function") {
+                        hideAvatarSpinner();
+                    }
+                } catch (e) {}
             })
         }
     }
 
     function p() {
-        h() && l() && c() ? (y(), v()) : (f(), v())
+        h() && l() && c() ? v() : (f(), v())
     }
 
     function y() {

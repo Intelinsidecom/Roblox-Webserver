@@ -1,0 +1,75 @@
+================================================================================
+QUICK MIGRATION GUIDE - Multi-Version RCC Support
+================================================================================
+
+Your current RCC files are in: Arbiter\RCC\
+
+To use the new multi-version system, follow these steps:
+
+STEP 1: Create Year Directory
+------------------------------
+Open PowerShell in the Arbiter directory and run:
+
+    mkdir RCC\2016
+
+STEP 2: Move Existing RCC Files
+--------------------------------
+Move all RCC files to the year directory:
+
+    move RCC\*.exe RCC\2016\
+    move RCC\*.dll RCC\2016\
+    move RCC\*.xml RCC\2016\
+    move RCC\*.txt RCC\2016\
+    move RCC\content RCC\2016\
+    move RCC\platformcontent RCC\2016\
+    move RCC\shaders RCC\2016\
+    move RCC\Microsoft.VC90.* RCC\2016\
+
+STEP 3: Verify Configuration
+-----------------------------
+Your appsettings.json already has the correct configuration:
+
+    "Rendering": {
+      "Year": "2016",
+      "Port": 64989,
+      "Executable": "RCCService.exe",
+      "Arguments": "-console",
+      "AutoStart": true
+    }
+
+STEP 4: Test
+------------
+Run the Arbiter:
+
+    dotnet run
+
+You should see:
+    Starting RCC (2016)...
+    RCC (2016) started with PID: XXXXX
+    Interactive Mode - Connecting to RCC Service at: http://localhost:64989
+
+ALTERNATIVE: Keep Current Setup
+--------------------------------
+If you want to keep RCC files in RCC\ directly, set AutoStart to false:
+
+    "Rendering": {
+      "AutoStart": false
+    }
+
+Then manually start RCC before running the Arbiter.
+
+FUTURE: Adding More RCC Versions
+---------------------------------
+To add a 2017 RCC version:
+
+1. Create directory: mkdir RCC\2017
+2. Copy 2017 RCC files to RCC\2017\
+3. Change config to use it:
+   
+   "Rendering": {
+     "Year": "2017",
+     "Port": 64990,
+     ...
+   }
+
+================================================================================

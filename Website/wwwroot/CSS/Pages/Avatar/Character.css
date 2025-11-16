@@ -1,0 +1,162 @@
+.avatar-editor-page {
+  padding-top: var(--wm-toolbar-height, 70px);
+  margin-top: 16px;
+  padding-bottom: 48px;
+  min-height: calc(100vh - 160px);
+}
+
+.avatar-editor-header {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.avatar-header-text {
+  font-size: 36px;
+  font-weight: 500;
+  padding: 15px 0;
+  margin: 0;
+  margin-left: 30px;
+}
+
+.catalog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.catalog-header > div {
+  flex: 1 1 auto;
+}
+
+.avatar-content {
+  display: flex;
+}
+
+.avatar-left-panel {
+  width: 277px;
+  margin-left: 30px;
+  margin-right: 24px;
+}
+
+.avatar-back-extended {
+  width: 277px;
+  margin-left: -15px;
+  margin-top: -15px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-section {
+  background-image: url(/images/Avatar/avatar-upsell-background.svg);
+  background-size: cover;
+  padding: 15px;
+  margin-bottom: 0;
+}
+
+.scaling-section {
+  background: white;
+  padding: 15px;
+  padding-top: 15px;
+}
+
+.scaling-header-container {
+  text-align: start;
+  font-size: 21px;
+  padding: 15px 0px 13px 0;
+  margin: 0;
+}
+
+.scaling-header {
+  margin: 0;
+  color: #393B3D;
+}
+
+.slider-input {
+  width: 100%;
+}
+
+.scale-container {
+  margin-bottom: 15px;
+}
+
+.text-label {
+  color: #393B3D;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.scale-label {
+  color: #393B3D;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.redraw-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.redraw-btn {
+  padding: 4px;
+  font-size: 14px;
+  line-height: 100%;
+  background-color: #fff;
+  border: 1px solid #B8B8B8;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.avatar-right-panel {
+  flex: 1;
+}
+
+.avatar-right-panel .section-content {
+  margin-left: 24px;
+  max-width: 700px;
+}
+
+.avatar-tabs-container {
+  position: relative;
+  user-select: none;
+}
+
+.avatar-content-area {
+  margin-top: 9px;
+}
+
+.advanced-link {
+  width: 100%;
+  display: inline-block;
+  user-select: none;
+  text-align: right;
+  color: #00A2FF;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.advanced-link:hover {
+  text-decoration: underline;
+}
+
+.outfits-container {
+  margin: 9px 0 6px 0;
+}
+
+.outfits-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.outfits-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

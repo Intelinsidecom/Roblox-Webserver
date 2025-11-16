@@ -1,0 +1,69 @@
+.box {
+}
+
+.boxOther {
+
+}
+
+.boxSelf {
+
+}
+
+.messageBoxOther {
+    background: var(--background-color);
+    border-radius: 3px;
+    padding: 4px;
+    color: var(--text-color-primary);
+    margin: 4px 4px 4px 4px;
+    width: 100%;
+}
+
+.messageBoxSelf {
+    width: 75%;
+    background: var(--primary-color);
+    border-radius: 3px;
+    padding: 4px;
+    color: var(--text-color-primary);
+    margin: 4px 4px 4px 25%;
+}
+
+.headshot {
+
+}
+
+.message {
+    margin-bottom: 0;
+}
+
+.messageOtherHeadshot {
+    width: 50px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.messageOther {
+    width: calc(75% - 50px);
+    display: inline-block;
+}
+
+.date {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.dateLabel {
+    color: var(--text-color-primary);
+    text-align: center;
+    font-weight: 600;
+
+
+    display: block;
+    margin: 0 auto;
+
+}
+
+.dateSpan {
+    background: var(--text-color-secondary);
+    padding: 4px 4px;
+    border-radius: 4px;
+}

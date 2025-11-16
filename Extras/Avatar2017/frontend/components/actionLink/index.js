@@ -1,0 +1,67 @@
+import { useState } from "react";
+import { createUseStyles } from "react-jss";
+import useButtonStyles from "../../styles/buttonStyles";
+import Link from "../link";
+
+const useBuyButtonStyles = createUseStyles({
+    btn: {
+        textAlign: 'center',
+        padding: '1px 13px 3px 13px',
+        //padding: '9px',
+        fontSize: '20px',
+        color: 'white',
+        border: '1px solid transparent',
+        margin: '0 auto',
+        display: 'block',
+        fontWeight: 'normal',
+        userSelect: 'none',
+        lineHeight: 'normal',
+        '&:disabled': {
+            opacity: '0.5',
+        },
+    },
+    wrapper: {
+        width: '100%',
+        border: '1px solid #a7a7a7',
+        background: '#e1e1e1',
+    },
+    defaultBg: {
+        background: 'linear-gradient(0deg, rgba(0,113,0,1) 0%, rgba(64,193,64,1) 100%)', // 40c140 #007100
+        '&:hover': {
+            background: 'linear-gradient(0deg, rgba(71,232,71,1) 0%, rgba(71,232,71,1) 100%)', // 47e847 02a101
+        },
+    },
+});
+
+/**
+ * Action button, but using next link!
+ * @param {{
+ * href: string;
+ * disabled?: boolean;
+ * buttonStyle?: string;
+ * divClassName?: string;
+ * className?: string;
+ * label?: any;
+ * children?: any;
+ * }} props
+ * @returns
+ */
+const ActionLink = props => {
+    const s2 = useBuyButtonStyles();
+    const s = useButtonStyles();
+    const bg = props.buttonStyle || s.buyButton;
+    const disabled = props.disabled || false;
+    
+    return <div className={props.divClassName}>
+        <Link
+            //className={`${s2.btn} ${props.className} ${bg}`}
+            href={props?.href || '#'}
+        >
+            <a className={`${s2.btn} ${props.className} ${bg}`}>
+                {props.label || props.children || 'Buy'}
+            </a>
+        </Link>
+    </div>
+}
+
+export default ActionLink;

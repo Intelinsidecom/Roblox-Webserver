@@ -7,6 +7,9 @@ using System.Security.Claims;
 using Npgsql;
 using Users;
 using System.IO;
+using Avatar;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Website.Controllers;
 
@@ -98,34 +101,6 @@ public class ThumbnailsController : ControllerBase
         }
     }
 
-    // POST v1/avatar/set-body-colors
-    [Authorize]
-    [HttpPost("v1/avatar/set-body-colors")]
-    public async Task<IActionResult> SetBodyColors([FromBody] BodyColorsModel bodyColorsModel, CancellationToken cancellationToken)
-    {
-        var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var userId) || userId <= 0)
-            return Unauthorized(new { error = "Authentication required" });
-
-        var connStr = _configuration.GetConnectionString("Default");
-        if (string.IsNullOrWhiteSpace(connStr))
-            return Problem("Database not configured");
-
-        var repo = new BodyColorsRepository();
-        var colors = new BodyColorsRepository.BodyColors
-        {
-            HeadColorId = bodyColorsModel.headColorId,
-            TorsoColorId = bodyColorsModel.torsoColorId,
-            RightArmColorId = bodyColorsModel.rightArmColorId,
-            LeftArmColorId = bodyColorsModel.leftArmColorId,
-            RightLegColorId = bodyColorsModel.rightLegColorId,
-            LeftLegColorId = bodyColorsModel.leftLegColorId
-        };
-        await repo.SetBodyColorsAsync(connStr, userId, colors, cancellationToken);
-
-        return Ok(new { success = true });
-    }
-
     // GET /headshot-thumbnail/image
     [HttpGet("headshot-thumbnail/image")]
     public async Task<IActionResult> Headshot([FromQuery] long userId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, CancellationToken cancellationToken)
@@ -165,109 +140,113 @@ public class ThumbnailsController : ControllerBase
     }
 
     // GET /bust-thumbnail/image
+    // Always re-renders the avatar via Arbiter using the requested width/height
+    // and updates the user's headshot_url before redirecting to the CDN URL.
     [HttpGet("bust-thumbnail/image")]
     public async Task<IActionResult> Bust([FromQuery] long userId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, CancellationToken cancellationToken)
     {
         if (userId <= 0) return BadRequest(new { error = "userId is required" });
-        string? hash = null;
-        string? existingUrl = null;
-        // Try to use existing thumbnail_url to avoid re-rendering
-        var connStrCheck = _configuration.GetConnectionString("Default");
-        if (!string.IsNullOrWhiteSpace(connStrCheck))
-        {
-            try
-            {
-                var exists = await UserQueries.UserExistsAsync(connStrCheck, userId, cancellationToken);
-                if (!exists)
-                    return NotFound(new { error = "User not found" });
 
-                var s = await ThumbnailQueries.GetUserHeadshotUrlAsync(connStrCheck, userId, cancellationToken);
-                if (!string.IsNullOrWhiteSpace(s))
-                {
-                    existingUrl = s;
-                    // Expect URLs like <cdn>/<hash>.png
-                    var file = Path.GetFileName(new Uri(s, UriKind.Absolute).AbsolutePath);
-                    if (!string.IsNullOrWhiteSpace(file))
-                    {
-                        var dot = file.IndexOf('.');
-                        hash = dot > 0 ? file.Substring(0, dot) : file;
-                    }
-                }
-            }
-            catch { /* ignore and fall back */ }
-        }
-        // If no existing hash, render once to create base image
-        if (string.IsNullOrWhiteSpace(hash))
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        var exists = await UserQueries.UserExistsAsync(connStr, userId, cancellationToken);
+        if (!exists)
+            return NotFound(new { error = "User not found" });
+
+        // Resolve target size for Arbiter. Default to 420x420 if not specified.
+        var targetWidth = width.GetValueOrDefault(420);
+        var targetHeight = height.GetValueOrDefault(420);
+        // Build a canonical avatar configuration JSON for global caching
+        var avatarRepository = new AvatarRepository();
+        var avatarStateFull = await avatarRepository.GetAvatarAsync(connStr, userId, cancellationToken);
+
+        var wornIds = avatarStateFull.Assets ?? Array.Empty<Avatar.AvatarAssetState>();
+        var wornAssetIds = wornIds
+            .Select(a => a.id)
+            .OrderBy(id => id)
+            .ToArray();
+
+        var configObject = new
         {
-            var save = await _thumbnailService.RenderAvatarAsync("avatar", userId, cancellationToken: cancellationToken);
-            hash = save.Hash;
-            // Persist the actual base URL for future lookups
-            var baseUrlNew = GetCdnBaseUrl();
-            var fullUrlNew = CombineUrl(baseUrlNew, save.FileName);
-            try
+            renderType = "avatar",
+            width = targetWidth,
+            height = targetHeight,
+            bodyColors = new
             {
-                var connStrPersist = _configuration.GetConnectionString("Default");
-                if (!string.IsNullOrWhiteSpace(connStrPersist))
-                {
-                    await using var conn = new NpgsqlConnection(connStrPersist);
-                    await conn.OpenAsync(cancellationToken);
-                    await using var cmd = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
-                    cmd.Parameters.AddWithValue("u", fullUrlNew);
-                    cmd.Parameters.AddWithValue("id", userId);
-                    await cmd.ExecuteNonQueryAsync(cancellationToken);
-                    existingUrl = fullUrlNew;
-                }
-            }
-            catch { /* best effort */ }
+                head = avatarStateFull.BodyColors.headColorId,
+                torso = avatarStateFull.BodyColors.torsoColorId,
+                rightArm = avatarStateFull.BodyColors.rightArmColorId,
+                leftArm = avatarStateFull.BodyColors.leftArmColorId,
+                rightLeg = avatarStateFull.BodyColors.rightLegColorId,
+                leftLeg = avatarStateFull.BodyColors.leftLegColorId
+            },
+            wornAssetIds = wornAssetIds
+        };
+
+        var json = JsonSerializer.Serialize(configObject);
+        string configHash;
+        using (var sha = SHA256.Create())
+        {
+            var bytes = Encoding.UTF8.GetBytes(json);
+            var digest = sha.ComputeHash(bytes);
+            var hashSb = new StringBuilder(digest.Length * 2);
+            foreach (var b in digest)
+                hashSb.Append(b.ToString("x2"));
+            configHash = hashSb.ToString();
         }
 
-        // Resolve output directory where base thumbnails are saved
-        var outputDir = _configuration["Thumbnails:OutputDirectory"];
-        if (string.IsNullOrWhiteSpace(outputDir))
+        // Global cache lookup by configuration hash
+        try
         {
-            // Fallback: ./thumbnails relative to current process
-            outputDir = Path.Combine(AppContext.BaseDirectory, "thumbnails");
+            var cacheRepo = new AvatarThumbnailCacheRepository();
+            var (found, fileName) = await cacheRepo.TryGetAsync(connStr, configHash, cancellationToken);
+            if (found && !string.IsNullOrWhiteSpace(fileName))
+            {
+                var baseCachedUrl = GetCdnBaseUrl();
+                var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
+                return Redirect(cachedFullUrl);
+            }
         }
-        Directory.CreateDirectory(outputDir);
-
-        // Base file may be .png or .jpg
-        var pngPath = Path.Combine(outputDir, hash + ".png");
-        var jpgPath = Path.Combine(outputDir, hash + ".jpg");
-        var baseFile = System.IO.File.Exists(pngPath) ? pngPath : (System.IO.File.Exists(jpgPath) ? jpgPath : pngPath);
-        // If no resizing/format requested, just redirect to base PNG on CDN
-        var targetWidth = width.GetValueOrDefault(0);
-        var targetHeight = height.GetValueOrDefault(0);
-        var fmt = (format ?? "png").Trim().ToLowerInvariant();
-        if (targetWidth <= 0 || targetHeight <= 0)
+        catch
         {
-            // If only format specified (e.g., jpg), convert base PNG without resizing
-            if (!string.IsNullOrWhiteSpace(format))
-            {
-                // If base doesn't exist but we had an existing URL, prefer redirecting to it to avoid rendering work
-                if (!System.IO.File.Exists(baseFile) && !string.IsNullOrWhiteSpace(existingUrl))
-                {
-                    return Redirect(existingUrl);
-                }
-                var convPath = await ThumbnailDerivatives.EnsureConvertedAsync(outputDir, hash, "bust", fmt, cancellationToken);
-                var convName = Path.GetFileName(convPath);
-                var convUrl = CombineUrl(GetCdnBaseUrl(), convName);
-                return Redirect(convUrl);
-            }
-
-            // No format requested; if we have existing URL and base file missing, redirect to existing URL
-            if (!System.IO.File.Exists(baseFile) && !string.IsNullOrWhiteSpace(existingUrl))
-            {
-                return Redirect(existingUrl);
-            }
-            // Redirect to the actual base file name if we can infer extension
-            var baseName = System.IO.File.Exists(jpgPath) ? (hash + ".jpg") : (hash + ".png");
-            var url = CombineUrl(GetCdnBaseUrl(), baseName);
-            return Redirect(url);
+            // Cache is best-effort; fall back to rendering on errors.
         }
-        var derivedPath = await ThumbnailDerivatives.EnsureDerivedAsync(outputDir, hash, "bust", targetWidth, targetHeight, fmt, cancellationToken);
-        var derivedName = Path.GetFileName(derivedPath);
-        var derivedUrl = CombineUrl(GetCdnBaseUrl(), derivedName);
-        return Redirect(derivedUrl);
+
+        // Render a fresh avatar thumbnail directly at the requested size.
+        var save = await _thumbnailService.RenderAvatarAsync("avatar", userId, targetWidth, targetHeight, cancellationToken);
+
+        // Compose full CDN URL for the rendered file.
+        var baseUrl = GetCdnBaseUrl();
+        var fullUrl = CombineUrl(baseUrl, save.FileName);
+
+        // Store in global avatar thumbnail cache (best-effort)
+        try
+        {
+            var cacheRepo = new AvatarThumbnailCacheRepository();
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, cancellationToken);
+        }
+        catch
+        {
+        }
+
+        // Persist the URL as the user's headshot_url for compatibility.
+        try
+        {
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken);
+            await using var cmd = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
+            cmd.Parameters.AddWithValue("u", fullUrl);
+            cmd.Parameters.AddWithValue("id", userId);
+            await cmd.ExecuteNonQueryAsync(cancellationToken);
+        }
+        catch
+        {
+            // Best-effort persistence; continue even if update fails.
+        }
+
+        return Redirect(fullUrl);
     }
 
     // GET /outfit-thumbnail/image

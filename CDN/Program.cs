@@ -48,6 +48,9 @@ app.MapGet("/{**path}", (HttpContext http, string? path) =>
         var provider = new FileExtensionContentTypeProvider();
         if (!provider.TryGetContentType(directFile, out var ctDirect)) ctDirect = "application/octet-stream";
         http.Response.Headers.CacheControl = "public,max-age=31536000,immutable";
+        http.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        http.Response.Headers["Access-Control-Allow-Methods"] = "GET, OPTIONS";
+        http.Response.Headers["Access-Control-Allow-Headers"] = "*";
         return Results.File(directFile, contentType: ctDirect, enableRangeProcessing: true);
     }
 
@@ -61,6 +64,9 @@ app.MapGet("/{**path}", (HttpContext http, string? path) =>
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(match, out var ct)) ct = "application/octet-stream";
             http.Response.Headers.CacheControl = "public,max-age=31536000,immutable";
+            http.Response.Headers["Access-Control-Allow-Origin"] = "*";
+            http.Response.Headers["Access-Control-Allow-Methods"] = "GET, OPTIONS";
+            http.Response.Headers["Access-Control-Allow-Headers"] = "*";
             return Results.File(match, contentType: ct, enableRangeProcessing: true);
         }
     }
