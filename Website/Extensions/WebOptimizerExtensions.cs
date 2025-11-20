@@ -113,12 +113,12 @@ namespace Website.Extensions
                         "JS/viewapp/common/signupOrLogin/services/displayService.js",
                         "JS/viewapp/common/signupOrLogin/services/loginService.js",
                         "JS/viewapp/common/signupOrLogin/services/signupService.js",
-			"JS/viewapp/common/helpers.js"
-			"JS/viewapp/common/services/robloxService.js"
-			"JS/viewapp/common/services/httpService.js"
-			"JS/viewapp/common/services/cacheService.js"
-			"JS/viewapp/common/services/googleAnalyticsEventsService.js"
-			"JS/angular/ui-bootstrap-0.11.2.js"
+			"JS/viewapp/common/helpers.js",
+			"JS/viewapp/common/services/robloxService.js",
+			"JS/viewapp/common/services/httpService.js",
+			"JS/viewapp/common/services/cacheService.js",
+			"JS/viewapp/common/services/googleAnalyticsEventsService.js",
+			"JS/angular/ui-bootstrap-0.11.2.js",
                         // remaining root scripts
                         "JS/ABPlaceLauncher.js",
                         "JS/AjaxAvatarThumbnail.js",
