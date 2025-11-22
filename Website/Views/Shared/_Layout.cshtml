@@ -16,14 +16,68 @@
     <script async src="~/JS/lib/beacon/beacon.js"></script>
     <!-- Now we import the roblox js scripts, there is plenty of them -->
     <!-- dependencies other scripts may use or not, angular, ajax and so on -->
-    <script type="text/javascript" src="~/js/site.bundle.js"></script>
+    <script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="~/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.js"></script>
+    <script type="text/javascript" src="~/JS/templateApp.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
     <script type="text/javascript">
       window.Roblox = window.Roblox || {};
+      Roblox.Lang = Roblox.Lang || {};
+      Roblox.Intl = Roblox.Intl || function () {
+        this.f = function (template, params) {
+          if (!template || !params || typeof params !== "object") {
+            return template || "";
+          }
+          return template.replace(/\{(\w+)\}/g, function (_, key) {
+            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : "{" + key + "}";
+          });
+        };
+      };
+      Roblox.TranslationResource = Roblox.TranslationResource || function (nameSpace) {
+        this.nameSpace = nameSpace;
+        this.get = function (key, fallback) {
+          var ns = Roblox.Lang && Roblox.Lang[nameSpace];
+          if (ns && Object.prototype.hasOwnProperty.call(ns, key)) {
+            return ns[key];
+          }
+          return fallback || "";
+        };
+      };
+    </script>
+    <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
+    <script type="text/javascript">
+
+      window.Roblox = window.Roblox || {};
+      Roblox.EnvironmentUrls = Roblox.EnvironmentUrls || {};
+      
+      Roblox.EnvironmentUrls.websiteUrl = Roblox.EnvironmentUrls.websiteUrl || "http://localhost:5077";
+      Roblox.EnvironmentUrls.notificationApi = Roblox.EnvironmentUrls.notificationApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.chatApi = Roblox.EnvironmentUrls.chatApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.presenceApi = Roblox.EnvironmentUrls.presenceApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.friendsApi = Roblox.EnvironmentUrls.friendsApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.thumbnailsApi = Roblox.EnvironmentUrls.thumbnailsApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.gamesApi = Roblox.EnvironmentUrls.gamesApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.followingsApi = Roblox.EnvironmentUrls.followingsApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.metricsApi = Roblox.EnvironmentUrls.metricsApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.localeApi = Roblox.EnvironmentUrls.localeApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.accountSettingsApi = Roblox.EnvironmentUrls.accountSettingsApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.gameInternationalizationApi = Roblox.EnvironmentUrls.gameInternationalizationApi || "http://localhost:5077";
+      Roblox.EnvironmentUrls.domain = Roblox.EnvironmentUrls.domain || "localhost:5077";
+      
       if (Roblox.EventStream && Roblox.EventStream.Init) {
-        // Provide safe non-empty defaults so EventStream beacon code doesn't crash
         Roblox.EventStream.Init("/images/signup/e.png", "/images/signup/e.png", "/pe?t=studio", "/pe?t=diagnostic");
       }
     </script>
+    <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Notifications_NotificationStreamResources_en_us_standard.js"></script>
+    <script type="text/javascript" src="~/JS/dist/js/notificationStream.bundle.min.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
 
 
 

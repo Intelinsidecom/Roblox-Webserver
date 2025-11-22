@@ -1,6 +1,6 @@
 // ~/viewapp/common/filters.js
 "use strict";
-angular.module("robloxApp.filters", []).filter("getPercentage", function() {
+var robloxFilters = angular.module("robloxApp.filters", []).filter("getPercentage", function() {
     return function(n, t) {
         var i = n + t;
         return n * 100 / i + "%"

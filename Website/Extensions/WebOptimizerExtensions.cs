@@ -16,6 +16,7 @@ namespace Website.Extensions
                         "JS/lib/athena/athena.js",
                         "JS/lib/jquery/jquery-1.11.1.min.js",
                         "JS/lib/jquery/jquery-migrate-1.2.1.min.js",
+                        "JS/jquery.ba-postmessage.min.js",
                         "JS/roblox.js",
                         "JS/jquery.cookie.js",
                         "JS/RobloxCookies.js",
@@ -138,7 +139,7 @@ namespace Website.Extensions
                         "JS/iFrameLogin.js",
                         "JS/InstallationInstructions.js",
                         "JS/JavaScriptEndpoints.js",
-                        "JS/jquery.ba-postmessage.min.js",
+                        // "JS/jquery.ba-postmessage.min.js", // Moved to top
                         "JS/jquery.simplemodal-1.3.5.js",
                         "JS/jquery.tipsy.js",
                         "JS/jquery.validate.js",

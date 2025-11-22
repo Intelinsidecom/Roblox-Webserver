@@ -2,16 +2,7 @@
 <!DOCTYPE html>
 <html xml:lang=en xmlns:fb=http://www.facebook.com/2008/fbml>
 
-<head data-machine-id=WEB972>
-    <title>Develop - Roblox</title>
-    <meta http-equiv=X-UA-Compatible content="IE=edge,requiresActiveX=true">
-    <meta charset=UTF-8>
-    <meta name=viewport content="width=device-width, initial-scale=1">
-    <meta name=author content="Roblox Corporation">
-    <meta name=description content="Roblox is a global platform that brings people together through play.">
-    <meta name=keywords content="free games,online games,building games,virtual worlds,free mmo,gaming cloud,physics engine">
-    <meta name=apple-itunes-app content="app-id=431946152">
-    <meta name=google-site-verification content=KjufnQUaDv5nXJogvDMey4G-Kb7ceUVxTdzcMaP9pCY>
+@section Head {
     <script type=application/ld+json>
         {
             "@@context": "http://schema.org",
@@ -28,12 +19,11 @@
     <meta name=page-meta data-internal-page-name=Create>
    
 
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript" src="~/JS/Microsoft/MicrosoftAjax.js"></script>
 <script type="text/javascript" src="~/JS/roblox.js"></script>
+<script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/app.js"></script>
 <script type="text/javascript" src="~/JS/common/constants.js"></script>
-<script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
 <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
 <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
 <script type="text/javascript" src="~/JS/utilities/minifyTestFile.js"></script>
@@ -83,19 +73,6 @@
 <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
 <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
 <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
-<script type="text/javascript" src="~/JS/Reference/widget.js"></script>
-<script type="text/javascript" src="~/JS/CookieUpgrader.js"></script>
-<script type="text/javascript" src="~/JS/Game/GamePlayEvents.js"></script>
-<script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
-<script type="text/javascript" src="~/JS/common/robloxError.js"></script>
-<script type="text/javascript" src="~/JS/common/localeSwitcher.js"></script>
-<script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_CommonUI_ControlsResources_en_us_standard.js"></script>
-<script type="text/javascript" src="~/JS/vendors/babel/polyfill.min.js"></script>
-<script type="text/javascript" src="~/JS/services/presenceService.js"></script>
-<script type="text/javascript" src="~/JS/Thumbnails/thumbnailMetrics.js"></script>
-<script type="text/javascript" src="~/JS/jquery.tipsy.js"></script>
-<script type="text/javascript" src="~/JS/extensions/string.js"></script>
-<script type="text/javascript" src="~/JS/StringTruncator.js"></script>
 <script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
 <script type="text/javascript" src="~/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
 <script type="text/javascript" src="~/JS/jquery.simplemodal-1.3.5.js"></script>
@@ -111,9 +88,11 @@
 <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Feature_GameLaunchGuestModeResources_en_us_standard.js"></script>
 <script type="text/javascript" src="~/JS/GameLauncher.js"></script>
 <script type="text/javascript" src="~/JS/GameLaunchLogger.js"></script>
+<script type="text/javascript" src="~/JS/EventTracker.js"></script>
 <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Common_VisitGameResources_en_us_standard.js"></script>
 <script type="text/javascript" src="~/JS/ProtocolHandlerClientInterface.js"></script>
 <script type="text/javascript" src="~/JS/GameLaunchAdRefresher.js"></script>
+<script type="text/javascript" src="~/JS/Game/GamePlayEvents.js"></script>
 <script type="text/javascript" src="~/JS/Interstitial.js"></script>
 <script type="text/javascript" src="~/JS/webkit.js"></script>
 <script type="text/javascript" src="~/JS/DropDownNav.js"></script>
@@ -123,32 +102,6 @@
 
 <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
 
-<script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/DropdownMenu.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/GroupImage.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/ItemImage.js"></script>
-
-<script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
-
-<script type="text/javascript" src="~/JS/dist/js/coreUtilities.bundle.min.js"></script>
-
-<script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
-<script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
-<script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
-<script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.js"></script>
-<script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
-<script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/app.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/common/services/cacheService.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/common/services/errorMessageService.js"></script>
@@ -221,24 +174,78 @@
 <script type="text/javascript" src="~/JS/viewapp/common/filters/translateParams.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/common/filters/localNumberFormat.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/common/filters/datetime.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
+
+<script type="text/javascript" src="~/JS/Develop/Develop.js"></script>
+<script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
+<script type="text/javascript" src="~/JS/utilities/robloxAds.js"></script>
+<script type="text/javascript" src="~/JS/history.js/jquery.history.js"></script>
+<script type="text/javascript" src="~/JS/widgets/tabs.js"></script>
+<script type="text/javascript" src="~/JS/jPlayer/jPlayerControls.js"></script>
+<script type="text/javascript" src="~/JS/Events/AjaxPageLoadEvent.js"></script>
+<script type="text/javascript" src="~/JS/jquery.filter_input.js"></script>
+<script type="text/javascript" src="~/JS/jquery.ba-postmessage.min.js"></script>
+<script type="text/javascript" src="~/JS/DataPager.js"></script>
+<script type="text/javascript" src="~/JS/Build/BuildPage.js"></script>
+<script type="text/javascript" src="~/JS/GenericModal.js"></script>
+<script type="text/javascript" src="~/JS/js/Build/UniverseLoader.js"></script>
+<script type="text/javascript" src="~/JS/Events/DownloadStudioButtonClickEvent.js"></script>
+<script type="text/javascript" src="~/JS/Universes/PlaceSelectorModal.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/utilities/dialog.js"></script>
+<script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Feature_ShopDialogResources_en_us_standard.js"></script>
+<script type="text/javascript" src="~/JS/utilities/popover.js"></script>
+<script type="text/javascript" src="~/JS/Navigation/ShopAmazon.js"></script>
+<script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_CommonUI_FeaturesResources_en_us_standard.js"></script>
+<script type="text/javascript" src="~/JS/GenericConfirmation.js"></script>
+<script type="text/javascript" src="~/JS/common/deviceMeta.js"></script>
+<script type="text/javascript" src="~/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+
+<script type="text/javascript" src="~/JS/dist/js/legacyStyleGuide.bundle.min.js"></script>
+
+<script type="text/javascript" src="~/JS/dist/js/chat.bundle.min.js"></script>
+
+<script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Feature_ChatResources_en_us_standard.js"></script>
+
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+
+<link rel="stylesheet" href="~/CSS/YUIReset.css">
+<link rel="stylesheet" href="~/CSS/LeanBaseStyle.css">
+<link rel="stylesheet" href="~/CSS/RBXCommon.css">
+<link rel="stylesheet" href="~/CSS/SeiteStyle.css">
+<link rel="stylesheet" data-bundlename="LegacyStyleGuide" href="~/CSS/dist/css/ldegacyStyleGuide.css">
+<link rel="stylesheet" data-bundlename="NotificationStream" href="~/CSS/dist/css/notificationStream.css">
+<link rel="stylesheet" data-bundlename="Chat" href="~/CSS/dist/css/chat.css">
+<link rel="stylesheet" href="~/CSS/Pages/Build/Develop.css">
+<link rel="stylesheet" href="~/CSS/Pages/Build/BuildPage.css">
+<link rel="stylesheet" href="~/CSS/Pages/Build/StudioWidget.css">
+<link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
+
+}
 
 
-
+<script type="text/javascript" src="~/JS/GameLauncher.js"></script>
+<script type="text/javascript">
+    // Global wrapper for editGameInStudio used by BuildPage.js
+    function editGameInStudio(placeId, universeId, allowUpload) {
+        Roblox.GameLauncher.editGameInStudio(placeId, universeId, allowUpload);
+    }
+</script>
 
     <link rel=canonical href=https://www.roblox.com/develop>
     <link href=https://images.rbxcdn.com/23421382939a9f4ae8bbe60dbe2a3e7e.ico.gzip rel=icon>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet href=https://static.rbxcdn.com/css/MainCSS___f4948a5439ec56700ef5e24d93b9c249_m.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=LegacyStyleGuide href=https://static.rbxcdn.com/css/afdcab9fa313ccc1130b005a312d6a8c5134347b53d085fa88215fe5bc71a067.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=NotificationStream href=https://static.rbxcdn.com/css/8e03cf8e84202810e737631ed5ee4dae790b444bf7607217cccc44be5c36133a.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet href=https://static.rbxcdn.com/css/page___0e68b651b048542ab589918dbfb33de1_m.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=Chat href=https://static.rbxcdn.com/css/9d46ec11b9b7390ccf413684c834e0611c399e4cc18ba0d5f9368e4f01cb0ca9.css/fetch>
+    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet href=https://sstatic.rbxcdn.com/css/MainCSS___f4948a5439ec56700ef5e24d93b9c249_m.css/fetch>
+    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=LegacyStyleGuide href=https://sstatic.rbxcdn.com/css/afdcab9fa313ccc1130b005a312d6a8c5134347b53d085fa88215fe5bc71a067.css/fetch>
+    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=NotificationStream href=https://sstatic.rbxcdn.com/css/8e03cf8e84202810e737631ed5ee4dae790b444bf7607217cccc44be5c36133a.css/fetch>
+    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet href=https://sstatic.rbxcdn.com/css/page___0e68b651b048542ab589918dbfb33de1_m.css/fetch>
+    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=Chat href=https://sstatic.rbxcdn.com/css/9d46ec11b9b7390ccf413684c834e0611c399e4cc18ba0d5f9368e4f01cb0ca9.css/fetch>
     <script>
         if (Roblox && Roblox.EventStream) {
             Roblox.EventStream.Init("//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/pe?t=studio", "//ecsv2.roblox.com/pe?t=diagnostic");
@@ -260,8 +267,7 @@
         Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
         Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
     </script>
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=angular src=https://js.rbxcdn.com/4b547f435344ed539d69e9cdec6ef1bc.js.gzip></script>
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=page src=https://js.rbxcdn.com/c5827143734572fa7bd8fcc79c3c126b.js.gzip></script>
+    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=angular src=https://jsd.rbxcdn.com/4b547f435344ed539d69e9cdec6ef1bc.js.gzip></script>
     <script>
         $(function() {
             Roblox.JSErrorTracker.initialize({
@@ -310,17 +316,13 @@
         };
     </script>
 
-</head>
 <body id=rbx-body data-performance-relative-value=0.005 data-internal-page-name=Create data-send-event-percentage=0>
     <div id=roblox-linkify data-enabled=true data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9-]{2,}\.)*(((m|de|www|web|api|blog|wiki|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com)|help\.roblox\.com(?![A-Za-z0-9\/.]*\/attachments\/))(?!\/[A-Za-z0-9-+&amp;@@#\/=~_|!:,.;]*%)((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(?=\s|\b))" data-regex-flags=gm data-as-http-regex=(([^.]help|polls)\.roblox\.com)></div>
     <div id=image-retry-data data-image-retry-max-times=10 data-image-retry-timer=1500 data-ga-logging-percent=10></div>
     <div id=http-retry-data data-http-retry-max-timeout=0 data-http-retry-base-timeout=0 data-http-retry-max-times=1></div>
     <div ng-modules=baseTemplateApp>
-        <script src=https://js.rbxcdn.com/cbd9a121217c4887264ffe32686ecd52.js.gzip></script>
+        <script src=~/JS/Develop-Page.js></script>
     </div>
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=LegacyStyleGuide src=https://js.rbxcdn.com/a13fafcb53acc57d58ac84c11b54225bf2c0112a336bca9609549f911880e4ca.js></script>
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=NotificationStream src=https://js.rbxcdn.com/8247b4782d09fc937d74cfd74b7e524b8ca057239d691ce1af2a488392df0499.js></script>
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=Chat src=https://js.rbxcdn.com/b370565804766f8983e68af55f79eea838e96f54c1b96af766ae87c9ea7266e3.js></script>
     <div ng-modules=pageTemplateApp>
         <script>
             "use strict";
@@ -361,7 +363,7 @@
                                                 <input data-val=true data-val-required="The IsTgaUploadEnabled field is required." id=isTgaUploadEnabled name=isTgaUploadEnabled type=hidden value=True>
                                                 <table id=build-page data-asset-type-id=0 data-showcases-enabled=true data-edit-opens-studio=True>
                                                     <tr>
-                                                        <td class="menu-area divider-right"><a href="https://web.roblox.com/develop?Page=universes" class="tab-item tab-item-selected">Games</a> <a href="https://web.roblox.com/develop?View=9" class=tab-item>Places</a> <a href="https://web.roblox.com/develop?View=10" class=tab-item>Models</a> <a href="https://web.roblox.com/develop?View=13" class=tab-item>Decals</a> <a href="https://web.roblox.com/develop?View=21" class=tab-item>Badges</a> <a href="https://web.roblox.com/develop?Page=game-passes" class=tab-item>Game Passes</a> <a href="https://web.roblox.com/develop?View=3" class=tab-item>Audio</a> <a href="https://web.roblox.com/develop?View=24" class=tab-item>Animations</a> <a href="https://web.roblox.com/develop?View=40" class=tab-item>Meshes</a> <a href="https://web.roblox.com/develop?Page=ads" class=tab-item>User Ads</a> <a href="https://web.roblox.com/develop?Page=sponsored-games" class=tab-item>Sponsored Games</a> <a href="https://web.roblox.com/develop?View=11" class=tab-item>Shirts</a> <a href="https://web.roblox.com/develop?View=2" class=tab-item>T-Shirts</a> <a href="https://web.roblox.com/develop?View=12" class=tab-item>Pants</a> <a href="https://web.roblox.com/develop?View=38" class=tab-item>Plugins</a>
+                                                        <td class="menu-area divider-right"><a href="/develop?Page=universes" class="tab-item tab-item-selected">Games</a> <a href="https://web.roblox.com/develop?View=9" class=tab-item>Places</a> <a href="https://web.roblox.com/develop?View=10" class=tab-item>Models</a> <a href="https://web.roblox.com/develop?View=13" class=tab-item>Decals</a> <a href="https://web.roblox.com/develop?View=21" class=tab-item>Badges</a> <a href="https://web.roblox.com/develop?Page=game-passes" class=tab-item>Game Passes</a> <a href="https://web.roblox.com/develop?View=3" class=tab-item>Audio</a> <a href="https://web.roblox.com/develop?View=24" class=tab-item>Animations</a> <a href="https://web.roblox.com/develop?View=40" class=tab-item>Meshes</a> <a href="https://web.roblox.com/develop?Page=ads" class=tab-item>User Ads</a> <a href="https://web.roblox.com/develop?Page=sponsored-games" class=tab-item>Sponsored Games</a> <a href="https://web.roblox.com/develop?View=11" class=tab-item>Shirts</a> <a href="https://web.roblox.com/develop?View=2" class=tab-item>T-Shirts</a> <a href="/develop?View=12" class=tab-item>Pants</a> <a href="https://web.roblox.com/develop?View=38" class=tab-item>Plugins</a>
                                                             <div id=StudioWidget>
                                                                 <div class=widget-name>
                                                                     <h3>Developer Resources</h3>
@@ -390,82 +392,7 @@
                                                                         </div>
                                                             </table>
                                                             <div class=items-container>
-                                                                <table class=item-table data-item-id=876572098 data-rootplace-id=2482121160 data-in-showcase=true data-configure-url="https://web.roblox.com/universes/configure?id=876572098" data-configure-localization-url=https://web.roblox.com/localization/games/876572098/configure data-create-badge-url="https://web.roblox.com/develop?selectedPlaceId=2482121160&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop?selectedPlaceId=2482121160&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2482121160/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2482121160&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/876572098/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/876572098/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=876572098" class=game-image> <img src=https://t4.rbxcdn.com/353ea2f32b01b5fc1240d3ac867c8e1b alt="Body Mix-Up"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=876572098">Body Mix-Up</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2482121160/Body-Mix-Up>Body Mix-Up</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=876572098">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=852280870 data-rootplace-id=2423450821 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=852280870" data-configure-localization-url=https://web.roblox.com/localization/games/852280870/configure data-create-badge-url="https://web.roblox.com/develop?selectedPlaceId=2423450821&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop?selectedPlaceId=2423450821&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2423450821/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2423450821&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/852280870/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/852280870/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=852280870" class=game-image> <img src=https://t3.rbxcdn.com/c7e424c195e2713e132944ef01dcce04 alt="Boxcar Racer"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=852280870">Boxcar Racer</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2423450821/Boxcar-Racer>Boxcar Racer</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-inactive href="https://web.roblox.com/universes/configure?id=852280870">Private</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                              
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=457430302 data-rootplace-id=1106344179 data-in-showcase=true data-configure-url="https://web.roblox.com/universes/configure?id=457430302" data-configure-localization-url=https://web.roblox.com/localization/games/457430302/configure data-create-badge-url="https://web.roblox.com/develop?selectedPlaceId=1106344179&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop?selectedPlaceId=1106344179&amp;View=34" data-developerstats-url=https://web.roblox.com/places/1106344179/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=1106344179&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/457430302/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/457430302/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=457430302" class=game-image> <img src=https://t4.rbxcdn.com/0e89bf5be2642c5698baa3ec72ba7cdc alt="#### ###### tix, obc"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=457430302">#### ###### tix, obc</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/1106344179/tix-obc>#### ###### tix, obc</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=457430302">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=334215093 data-rootplace-id=771979528 data-in-showcase=true data-configure-url="https://web.roblox.com/universes/configure?id=334215093" data-configure-localization-url=https://web.roblox.com/localization/games/334215093/configure data-create-badge-url="https://web.roblox.com/develop?selectedPlaceId=771979528&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop?selectedPlaceId=771979528&amp;View=34" data-developerstats-url=https://web.roblox.com/places/771979528/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=771979528&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/334215093/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/334215093/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=334215093" class=game-image> <img src=https://t3.rbxcdn.com/f841d97c4e99cb0044ac639e5188bc80 alt="[Moving] Race Beta"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=334215093">[Moving] Race Beta</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/771979528/Moving-Race-Beta>[Moving] Race Beta</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=334215093">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
+                                                               
                                                                 <div class=separator></div>
                                                             </div>
                                                             <div class=build-loading-container style=display:none>
@@ -619,139 +546,7 @@
                                                                                 <input type=checkbox>Show Public Only</label>
                                                                         </div>
                                                             </table>
-                                                            <div class=items-container>
-                                                                <table class=item-table data-item-id=1223647187 data-rootplace-id=3432851058 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=1223647187" data-configure-localization-url=https://web.roblox.com/localization/games/1223647187/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=3432851058&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=3432851058&amp;View=34" data-developerstats-url=https://web.roblox.com/places/3432851058/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=3432851058&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/1223647187/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/1223647187/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=1223647187" class=game-image> <img src=https://t0.rbxcdn.com/ba69c921804ad469a6eeaf61685d6d57 alt="Game Dev Tycoon"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=1223647187">Game Dev Tycoon</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/3432851058/Game-Dev-Tycoon>Game Dev Tycoon</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=1223647187">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=947291207 data-rootplace-id=2637576256 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=947291207" data-configure-localization-url=https://web.roblox.com/localization/games/947291207/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2637576256&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2637576256&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2637576256/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2637576256&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/947291207/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/947291207/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=947291207" class=game-image> <img src=https://t6.rbxcdn.com/13acb0b63f8456dbd83b248ce9ef3f2c alt="Arcade Tycoon"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=947291207">Arcade Tycoon</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2637576256/Arcade-Tycoon>Arcade Tycoon</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-inactive href="https://web.roblox.com/universes/configure?id=947291207">Private</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=935783172 data-rootplace-id=2608659161 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=935783172" data-configure-localization-url=https://web.roblox.com/localization/games/935783172/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2608659161&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2608659161&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2608659161/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2608659161&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/935783172/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/935783172/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=935783172" class=game-image> <img src=https://t6.rbxcdn.com/458aa0590885fd38869736e91e560c14 alt="Roblox Movies"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=935783172">Roblox Movies</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2608659161/Roblox-Movies>Roblox Movies</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=935783172">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=934936607 data-rootplace-id=2606601793 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=934936607" data-configure-localization-url=https://web.roblox.com/localization/games/934936607/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2606601793&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2606601793&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2606601793/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2606601793&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/934936607/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/934936607/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=934936607" class=game-image> <img src=https://t2.rbxcdn.com/103a04b2f8c0d53c7e2048103983815f alt=Tester> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=934936607">Tester</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2606601793/Tester>Tester</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=934936607">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=882202448 data-rootplace-id=2497777178 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=882202448" data-configure-localization-url=https://web.roblox.com/localization/games/882202448/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2497777178&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2497777178&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2497777178/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2497777178&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/882202448/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/882202448/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=882202448" class=game-image> <img src=https://t2.rbxcdn.com/3a9b8b6eb00737955c696d3e4d32b27c alt="Fun Obby"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=882202448">Fun Obby</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2497777178/Fun-Obby>Fun Obby</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=882202448">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=852276721 data-rootplace-id=2423439818 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=852276721" data-configure-localization-url=https://web.roblox.com/localization/games/852276721/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2423439818&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2423439818&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2423439818/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2423439818&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/852276721/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/852276721/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=852276721" class=game-image> <img src=https://t6.rbxcdn.com/ddd2b51003110fa68178da7dc8c3f006 alt="###### Ball"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=852276721">###### Ball</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2423439818/Ball>###### Ball</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-active href="https://web.roblox.com/universes/configure?id=852276721">Public</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
-                                                                <div class=separator></div>
-                                                                <table class=item-table data-item-id=840966745 data-rootplace-id=2398018599 data-in-showcase=false data-configure-url="https://web.roblox.com/universes/configure?id=840966745" data-configure-localization-url=https://web.roblox.com/localization/games/840966745/configure data-create-badge-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2398018599&amp;View=21" data-create-gamepass-url="https://web.roblox.com/develop/groups/4436366?selectedPlaceId=2398018599&amp;View=34" data-developerstats-url=https://web.roblox.com/places/2398018599/stats data-advertise-url="https://web.roblox.com/My/NewUserAd.aspx?targetId=2398018599&amp;targettype=Asset" data-activate-universe-url=https://develop.roblox.com/v1/universes/840966745/activate data-deactivate-universe-url=https://develop.roblox.com/v1/universes/840966745/deactivate data-type=universes>
-                                                                    <tr>
-                                                                        <td class="image-col universe-image-col" style=text-align:center>
-                                                                            <a href="https://web.roblox.com/universes/configure?id=840966745" class=game-image> <img src=https://t6.rbxcdn.com/cb97f2b297168c835870df3cb7ee1285 alt="Loganh4005's Studio Poll Alpha"> </a>
-                                                                        <td class=universe-name-col><a class="title notranslate" href="https://web.roblox.com/universes/configure?id=840966745">Loganh4005&#39;s Studio Poll Alpha</a>
-                                                                            <table class=details-table>
-                                                                                <tr>
-                                                                                    <td class=item-universe><span>Start Place:</span> <a class="title notranslate start-place-url" href=https://web.roblox.com/games/2398018599/Loganh4005s-Studio-Poll-Alpha>Loganh4005&#39;s Studio Poll Alpha</a>
-                                                                                <tr class=activate-cell>
-                                                                                    <td><a class=place-inactive href="https://web.roblox.com/universes/configure?id=840966745">Private</a>
-                                                                                </tr>
-                                                                            </table>
-                                                                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href=javascript:>Edit</a>
-                                                                        <td class=menu-col>
-                                                                            <div class=gear-button-wrapper>
-                                                                                <a href=# class=gear-button></a>
-                                                                            </div>
-                                                                </table>
+                                                           
                                                                 <div class=separator></div>
                                                             </div>
                                                             <div class=build-loading-container style=display:none>
@@ -915,7 +710,5 @@
             };
         </script>
     </div>
- 
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=pageEnd src=https://js.rbxcdn.com/499518cf4a7b9bccc47f3f036ccb7160.js.gzip></script>
 </body>
 </html>

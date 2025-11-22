@@ -53,7 +53,22 @@
       <div class="modal-content" modal-transclude></div>
     </div>
   </script>
-  <script type="text/javascript" src="~/JS/viewapp/common/modal.js"></script>
+<!-- Load Angular dependencies for avatar module -->
+<script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/common/services/cacheService.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+<script type="text/javascript" src="~/JS/viewapp/common/modal.js"></script>
+
+<script type="text/javascript">
+window.Roblox = window.Roblox || {};
+Roblox.Endpoints = Roblox.Endpoints || {
+  addCrossDomainOptionsToAllRequests: false,
+  Urls: {}  
+};
+</script>
+<script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
 
 <script type="text/javascript">
   window.Roblox = window.Roblox || {};
@@ -76,6 +91,7 @@
   <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/services/cursorPaginationService.js"></script>
   <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/directives/cursorPaginationDirective.js"></script>
 
+  <script type="text/javascript" src="~/JS/viewapp/common/helpers.js"></script>
   <script type="text/javascript" src="~/JS/viewapp/pages/avatar/avatar.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/pages/avatar/constants/avatarConstants.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/pages/avatar/constants/avatarUrlConstants.js"></script>
