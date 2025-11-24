@@ -1,0 +1,9 @@
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\bin\Debug\netstandard2.0\Thumbnails.deps.json
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\bin\Debug\netstandard2.0\Thumbnails.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\bin\Debug\netstandard2.0\Thumbnails.pdb
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\obj\Debug\netstandard2.0\Thumbnails.csproj.AssemblyReference.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\obj\Debug\netstandard2.0\Thumbnails.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\obj\Debug\netstandard2.0\Thumbnails.csproj.CoreCompileInputs.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\obj\Debug\netstandard2.0\Thumbnails.sourcelink.json
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\obj\Debug\netstandard2.0\Thumbnails.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\obj\Debug\netstandard2.0\Thumbnails.pdb

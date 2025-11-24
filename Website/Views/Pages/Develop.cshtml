@@ -1,4 +1,61 @@
 @{ Layout = "_Layout"; }
+@{
+    var viewParam = Context.Request.Query["view"].ToString();
+    if (string.IsNullOrEmpty(viewParam))
+    {
+        viewParam = Context.Request.Query["View"].ToString();
+    }
+
+    // Default to T-Shirts tab when no view is specified
+    if (string.IsNullOrEmpty(viewParam))
+    {
+        viewParam = "2";
+    }
+
+    var viewName = "Games";
+    if (!string.IsNullOrEmpty(viewParam))
+    {
+        switch (viewParam)
+        {
+            case "9":
+                viewName = "Places";
+                break;
+            case "10":
+                viewName = "Models";
+                break;
+            case "13":
+                viewName = "Decals";
+                break;
+            case "21":
+                viewName = "Badges";
+                break;
+            case "3":
+                viewName = "Audio";
+                break;
+            case "24":
+                viewName = "Animations";
+                break;
+            case "40":
+                viewName = "Meshes";
+                break;
+            case "11":
+                viewName = "Shirts";
+                break;
+            case "2":
+                viewName = "T-Shirts";
+                break;
+            case "12":
+                viewName = "Pants";
+                break;
+            case "38":
+                viewName = "Plugins";
+                break;
+            default:
+                viewName = "Games";
+                break;
+        }
+    }
+}
 <!DOCTYPE html>
 <html xml:lang=en xmlns:fb=http://www.facebook.com/2008/fbml>
 
@@ -227,6 +284,18 @@
 <link rel="stylesheet" href="~/CSS/Pages/Build/BuildPage.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/StudioWidget.css">
 <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
+<style>
+    #MyCreationsTab .separator { display: none; }
+    /* Hide Group Creations tab by default; JS will show it if the API is available */
+    #GroupCreationsTabLink,
+    #GroupCreationsTab { display: none; }
+    /* Visually disable tabs except ones we want active */
+    .tab-item.tab-item-disabled {
+        color: #a7a7a760;
+        pointer-events: none;
+        cursor: default;
+    }
+</style>
 
 }
 
@@ -363,7 +432,23 @@
                                                 <input data-val=true data-val-required="The IsTgaUploadEnabled field is required." id=isTgaUploadEnabled name=isTgaUploadEnabled type=hidden value=True>
                                                 <table id=build-page data-asset-type-id=0 data-showcases-enabled=true data-edit-opens-studio=True>
                                                     <tr>
-                                                        <td class="menu-area divider-right"><a href="/develop?Page=universes" class="tab-item tab-item-selected">Games</a> <a href="https://web.roblox.com/develop?View=9" class=tab-item>Places</a> <a href="https://web.roblox.com/develop?View=10" class=tab-item>Models</a> <a href="https://web.roblox.com/develop?View=13" class=tab-item>Decals</a> <a href="https://web.roblox.com/develop?View=21" class=tab-item>Badges</a> <a href="https://web.roblox.com/develop?Page=game-passes" class=tab-item>Game Passes</a> <a href="https://web.roblox.com/develop?View=3" class=tab-item>Audio</a> <a href="https://web.roblox.com/develop?View=24" class=tab-item>Animations</a> <a href="https://web.roblox.com/develop?View=40" class=tab-item>Meshes</a> <a href="https://web.roblox.com/develop?Page=ads" class=tab-item>User Ads</a> <a href="https://web.roblox.com/develop?Page=sponsored-games" class=tab-item>Sponsored Games</a> <a href="https://web.roblox.com/develop?View=11" class=tab-item>Shirts</a> <a href="https://web.roblox.com/develop?View=2" class=tab-item>T-Shirts</a> <a href="/develop?View=12" class=tab-item>Pants</a> <a href="https://web.roblox.com/develop?View=38" class=tab-item>Plugins</a>
+                                                        <td class="menu-area divider-right">
+                                                            <a href="/develop?Page=universes" class="tab-item tab-item-disabled @(string.IsNullOrEmpty(viewParam) ? "tab-item-selected" : string.Empty)">Games</a>
+                                                            <a href="/develop?view=9" class="tab-item tab-item-disabled @(viewParam == "9" ? "tab-item-selected" : string.Empty)">Places</a>
+                                                            <a href="/develop?view=10" class="tab-item tab-item-disabled @(viewParam == "10" ? "tab-item-selected" : string.Empty)">Models</a>
+                                                            <a href="/develop?view=13" class="tab-item tab-item-disabled @(viewParam == "13" ? "tab-item-selected" : string.Empty)">Decals</a>
+                                                            <a href="/develop?view=21" class="tab-item tab-item-disabled @(viewParam == "21" ? "tab-item-selected" : string.Empty)">Badges</a>
+                                                            <a href="/develop?Page=game-passes" class="tab-item tab-item-disabled">Game Passes</a>
+                                                            <a href="/develop?view=3" class="tab-item tab-item-disabled @(viewParam == "3" ? "tab-item-selected" : string.Empty)">Audio</a>
+                                                            <a href="/develop?view=24" class="tab-item tab-item-disabled @(viewParam == "24" ? "tab-item-selected" : string.Empty)">Animations</a>
+                                                            <a href="/develop?view=40" class="tab-item tab-item-disabled @(viewParam == "40" ? "tab-item-selected" : string.Empty)">Meshes</a>
+                                                            <a href="/develop?Page=ads" class="tab-item tab-item-disabled">User Ads</a>
+                                                            <a href="/develop?Page=sponsored-games" class="tab-item tab-item-disabled">Sponsored Games</a>
+                                                            <a href="/develop?view=11" class="tab-item tab-item-disabled @(viewParam == "11" ? "tab-item-selected" : string.Empty)">Shirts</a>
+                                                            <a href="/develop?view=2" class="tab-item @(viewParam == "2" ? "tab-item-selected" : string.Empty)">T-Shirts</a>
+                                                            <a href="/develop?view=12" class="tab-item tab-item-disabled @(viewParam == "12" ? "tab-item-selected" : string.Empty)">Pants</a>
+                                                            <a href="/develop?view=38" class="tab-item tab-item-disabled @(viewParam == "38" ? "tab-item-selected" : string.Empty)">Plugins</a>
+
                                                             <div id=StudioWidget>
                                                                 <div class=widget-name>
                                                                     <h3>Developer Resources</h3>
@@ -381,20 +466,8 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        <td class=content-area><a href=https://web.roblox.com/places/create id=CreatePlace class="create-new-button btn-medium btn-primary">Create New Game</a>
-                                                            <table class=section-header>
-                                                                <tr>
-                                                                    <td class=content-title>
-                                                                        <div>
-                                                                            <h2 class=header-text>Games</h2><span class=aside-text data-active-count=16 data-max-active-count=200></span>
-                                                                            <label class="checkbox-label active-only-checkbox">
-                                                                                <input type=checkbox>Show Public Only</label>
-                                                                        </div>
-                                                            </table>
-                                                            <div class=items-container>
-                                                               
-                                                                <div class=separator></div>
-                                                            </div>
+                                                        <td class=content-area>
+                                                            <div class=items-container></div>
                                                             <div class=build-loading-container style=display:none>
                                                                 <div class=buildpage-loading-container><img alt=^_^ src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif></div>
                                                             </div>
@@ -710,5 +783,108 @@
             };
         </script>
     </div>
+<script>
+    // Auto-load games list for My Creations tab and remove initial separator
+    // Also probe group games endpoint and hide Group Creations tab if it 404s
+    $(function () {
+        // Ensure the gray separator is removed/hid immediately
+        $('#MyCreationsTab .separator').remove();
+
+        function showEmptyMessage($container) {
+            $container.html('<div class="no-games-text">You have no games yet. Create one with the "Create New Game" button!</div>');
+        }
+
+        let currentView = '@viewParam';
+        function getEndpointForView(viewId) {
+            switch (viewId) {
+                case '9': return '/develop/asset-list/9'; // Places
+                case '10': return '/develop/asset-list/10'; // Models
+                case '13': return '/develop/asset-list/13'; // Decals
+                case '21': return '/develop/asset-list/21'; // Badges
+                case '3': return '/develop/asset-list/3'; // Audio
+                case '24': return '/develop/asset-list/24'; // Animations
+                case '40': return '/develop/asset-list/40'; // Meshes
+                case '11': return '/develop/asset-list/11'; // Shirts
+                case '2': return '/develop/asset-list/2'; // T-Shirts
+                case '12': return '/develop/asset-list/12'; // Pants
+                case '38': return '/develop/asset-list/38'; // Plugins
+                default: return '/develop/games-list'; // Games (default)
+            }
+        }
+
+        function loadMyItems() {
+            var $itemsContainer = $('#MyCreationsTab .items-container');
+
+            // Show loading spinner
+            var $loading = $('<div class=\'buildpage-loading-container\'><img alt=\'Loading...\' src=\'https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif\'></div>');
+            $itemsContainer.empty().append($loading);
+
+            $.ajax({
+                url: getEndpointForView(currentView),
+                dataType: 'html'
+            }).done(function (data) {
+                $loading.remove();
+                if (data && $.trim(data).length) {
+                    $itemsContainer.html(data);
+                    // Initialize thumbnail retries if helper exists
+                    if ($.fn.loadRobloxThumbnails) {
+                        $itemsContainer.find('a[data-retry-url]').loadRobloxThumbnails();
+                    }
+                } else {
+                    showEmptyMessage($itemsContainer);
+                }
+            }).fail(function (xhr) {
+                $loading.remove();
+                if (xhr.status === 404) {
+                    showEmptyMessage($itemsContainer);
+                } else {
+                    $itemsContainer.text('Failed to load games. Please try again later.');
+                }
+            });
+        }
+
+        function probeGroupCreations() {
+            // Lightweight HEAD/GET just to see if endpoint exists
+            $.ajax({
+                url: '/develop/groups/games-list',
+                type: 'GET',
+                dataType: 'html'
+            }).done(function (data) {
+                if (data && $.trim(data).length) {
+                    // API is available and returned content; show the tab and content area
+                    $('#GroupCreationsTabLink').show();
+                    $('#GroupCreationsTab').show();
+                }
+            });
+        }
+
+        loadMyItems();
+
+        // Intercept tab clicks within My Creations menu so we can AJAX-load
+        $('#MyCreationsTab .menu-area').on('click', 'a.tab-item', function (evt) {
+            if (!/view=\d+/i.test($(this).attr('href'))) {
+                return; // let default navigation occur for non-view tabs
+            }
+            const href = $(this).attr('href') || '';
+            const match = href.match(/view=(\d+)/i);
+            currentView = match ? match[1] : '';
+
+            // Visually update selected tab
+            $(this).siblings('.tab-item').removeClass('tab-item-selected');
+            $(this).addClass('tab-item-selected');
+
+            // Update header title
+            const headerText = $(this).text();
+            $('#MyCreationsTab .header-text').text(headerText);
+
+            // Load new items for selected view
+            loadMyItems();
+
+            // Prevent full page reload
+            evt.preventDefault();
+        });
+        probeGroupCreations();
+    });
+</script>
 </body>
 </html>

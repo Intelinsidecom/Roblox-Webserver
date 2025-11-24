@@ -1,0 +1,16 @@
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\bin\Debug\net8.0\Avatar.deps.json
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\bin\Debug\net8.0\Avatar.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\bin\Debug\net8.0\Avatar.pdb
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\bin\Debug\net8.0\Users.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\bin\Debug\net8.0\Users.pdb
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.csproj.AssemblyReference.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.AssemblyInfoInputs.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.AssemblyInfo.cs
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.csproj.CoreCompileInputs.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.sourcelink.json
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.csproj.Up2Date
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\refint\Avatar.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\Avatar.pdb
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Avatar\obj\Debug\net8.0\ref\Avatar.dll

@@ -32,5 +32,12 @@ namespace RobloxWebserver.Controllers
             var result = await UserQueries.DoesUsernameExistAsync(connStr, username);
             return Json(result);
         }
+
+        // Legacy endpoint used by TosModalCheck.js; always indicate no modal is required.
+        [HttpGet("show-tos")]
+        public IActionResult ShowTos([FromQuery] bool isLicensingTermsCheckNeeded)
+        {
+            return Json(new { partialViewName = string.Empty });
+        }
     }
 }
