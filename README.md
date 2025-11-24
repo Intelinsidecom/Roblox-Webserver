@@ -2,6 +2,12 @@
 
 Webserver designed to work nicely with all Roblox Clients (Hosting, Joining and more) and to be as close to how roblox looked during 2016/2017 Era, be Documented on All Apis, how everything works.
 
+## This Repo is consisted of:
+1. Completed And Incomplete Core Logic
+2. Additional Logic
+3. Supported clients
+4. How to Set it up for Myself
+
 ## Completed And Incomplete Core Logic:
 
 - [X] Users, Database Stuff, Signup/Login.
@@ -22,6 +28,8 @@ Webserver designed to work nicely with all Roblox Clients (Hosting, Joining and 
 
 ## Supported Clients:
  None.
+
+Documentation will be made in gitub Wiki Form.
 
 P.S. UWP 2016 gets to login, is able to login, sign out and loads some Apis for Info Like Balance, User Info, device/initialize not fixed as it still isnt analyzed as to what it expects for response.
 
