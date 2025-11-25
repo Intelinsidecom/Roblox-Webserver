@@ -336,6 +336,201 @@ div#ErrorPage .divideTitleAndBackButtons {
 	border-top: 1px solid #ccc;
 }
 
+.SetListDropDown {
+	position: relative;
+	z-index: 9;
+	left: 0;
+	top: 0;
+	*top: -14px;
+}
+
+.ItemOptions .SetListDropDown {
+	*top: 0;
+}
+
+.SetList.SetOptions {
+	z-index: 1;
+}
+
+.ItemOptions .SetListDropDown {
+	left: -102px;
+}
+
+.SetListDropDownList.invisible,
+.NewVersionAvailableBanner.invisible,
+.SetList.ItemOptions.invisible {
+	display: none;
+}
+
+.ui-autocomplete {
+	padding: 0;
+	background-color: #e1e1e1;
+	border: 1px solid #777;
+	font: 12px normal Arial, Helvetica, sans-serif;
+	width: 201px;
+}
+
+.ui-autocomplete .ui-menu-item {
+	list-style: none;
+	display: block;
+}
+
+.ui-autocomplete .ui-menu-item a {
+	display: block;
+	text-decoration: none;
+	color: #000;
+	padding: 2px 8px;
+	margin: 4px 0;
+}
+
+.product-promo-dropdown {
+	width: 200px;
+	margin: 5px;
+}
+
+#PlaceProductPromotionSelectionPanel .PurchaseModalMessage {
+	height: 100%;
+}
+
+.Navigation {
+	height: 35px;
+	z-index: 1022;
+}
+
+.Navigation ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	width: 930px;
+	margin: 0 auto;
+}
+
+.Navigation ul li {
+	float: left;
+	position: relative;
+}
+
+.Navigation ul li a,
+.Navigation ul li a:visited {
+	display: inline-block;
+	color: #FFF;
+	padding: 0 9px;
+	border-left: 1px solid #FFF;
+	font-size: 18px;
+}
+
+.Navigation ul li a h1,
+.Navigation ul li a h2 {
+	cursor: pointer;
+}
+
+.Navigation ul li:first-child a {
+	border-left: none;
+}
+
+.clear {
+	overflow: hidden;
+	width: 100%;
+	font-size: 0;
+	clear: both;
+}
+
+.alignCenter {
+	text-align: center;
+}
+
+.hidden {
+	display: none;
+}
+
+.videoURL {
+	width: 380px;
+	height: 250px;
+}
+
+.FeaturedGameButton {
+	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/buttons/btn-playnow_big2.png) no-repeat;
+	height: 214px;
+	width: 214px;
+	height: 214px;
+	overflow: hidden;
+}
+
+.FeaturedGameButton:hover {
+	background-position: 0 -214px;
+}
+
+div.testingSitePanel {
+	margin: 5px auto 8px;
+	width: 870px;
+	text-align: center;
+	border: 3px #FFE066 solid;
+	padding: 10px 5px;
+	background: white;
+}
+
+div#Body div#GamesContainer {
+	padding-top: 5px;
+}
+
+div#Body #BrowseContainer {
+	padding: 5px 20px;
+}
+
+img#over13icon {
+	float: left;
+	padding-left: 7px;
+	padding-top: 1px;
+	position: relative;
+	top: 18px;
+	height: 11px;
+	width: 20px;
+}
+
+a.logoutButton {
+	margin-left: -2px;
+	padding-top: 2px;
+	position: static;
+	top: auto;
+}
+
+div#ErrorPage {
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+div#ErrorPage pre {
+	text-align: left;
+	font: normal 12pt Courier;
+}
+
+div#ErrorPage h1 {
+	font-size: 40px;
+	font-weight: bold;
+	color: #363636;
+	letter-spacing: -2px;
+	margin-bottom: 10px;
+	display: block;
+}
+
+img.ErrorAlert {
+	display: block;
+	margin: 25px auto 10px;
+}
+
+div#ErrorPage h3 {
+	color: #363636;
+	font-weight: bold;
+	font-size: 16px;
+}
+
+div#ErrorPage .divideTitleAndBackButtons {
+	margin: 20px auto;
+	height: 1px;
+	width: 55%;
+	border-top: 1px solid #ccc;
+}
+
 div#ErrorPage div.CenterNavigationButtonsForFloat {
 	width: 253px;
 	margin: 0 auto;
@@ -343,4 +538,24 @@ div#ErrorPage div.CenterNavigationButtonsForFloat {
 
 .fbSplashPageConnect {
 	margin: 5px 0;
+}
+
+/* Noscript alert responsive padding */
+.noscript-alert {
+	padding-top: 40px;
+	/* Default for mobile */
+}
+
+@media (min-width: 768px) {
+	.noscript-alert {
+		padding-top: 4px;
+		/* Tablet and up */
+	}
+}
+
+@media (min-width: 992px) {
+	.noscript-alert {
+		padding-top: 40px;
+		/* Desktop */
+	}
 }

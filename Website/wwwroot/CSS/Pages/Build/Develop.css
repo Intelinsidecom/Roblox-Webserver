@@ -398,3 +398,18 @@ body .nav-container #MasterContainer #BodyWrapper {
 #Body {
   padding-top: 50px;
 }
+
+#MyCreationsTab .separator {
+  display: none;
+}
+
+#GroupCreationsTabLink,
+#GroupCreationsTab {
+  display: none;
+}
+
+.tab-item.tab-item-disabled {
+  color: #a7a7a760;
+  pointer-events: none;
+  cursor: default;
+}

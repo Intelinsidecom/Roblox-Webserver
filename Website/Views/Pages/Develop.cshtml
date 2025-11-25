@@ -94,7 +94,8 @@
 <script type="text/javascript" src="~/JS/utilities/ExponentialBackoffSpecification.js"></script>
 <script type="text/javascript" src="~/JS/Reference/themeUpdate.js"></script>
 
-<script type="text/javascript" src="~/JS/dist/js/realTime.bundle.min.js"></script>
+<!-- Disabled real-time notifications via SignalR -->
+<!-- <script type="text/javascript" src="~/JS/dist/js/realTime.bundle.min.js"></script> -->
 
 <script type="text/javascript" src="~/JS/dist/js/crossTabCommunication.bundle.min.js"></script>
 
@@ -247,7 +248,7 @@
 <script type="text/javascript" src="~/JS/js/Build/UniverseLoader.js"></script>
 <script type="text/javascript" src="~/JS/Events/DownloadStudioButtonClickEvent.js"></script>
 <script type="text/javascript" src="~/JS/Universes/PlaceSelectorModal.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+<!-- <script type="text/javascript" src="~/JS/TosModalCheck.js"></script> -->
 <script type="text/javascript" src="~/JS/utilities/dialog.js"></script>
 <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Feature_ShopDialogResources_en_us_standard.js"></script>
 <script type="text/javascript" src="~/JS/utilities/popover.js"></script>
@@ -263,15 +264,6 @@
 
 <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Feature_ChatResources_en_us_standard.js"></script>
 
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
 
 <link rel="stylesheet" href="~/CSS/YUIReset.css">
 <link rel="stylesheet" href="~/CSS/LeanBaseStyle.css">
@@ -284,47 +276,27 @@
 <link rel="stylesheet" href="~/CSS/Pages/Build/BuildPage.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/StudioWidget.css">
 <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
-<style>
-    #MyCreationsTab .separator { display: none; }
-    /* Hide Group Creations tab by default; JS will show it if the API is available */
-    #GroupCreationsTabLink,
-    #GroupCreationsTab { display: none; }
-    /* Visually disable tabs except ones we want active */
-    .tab-item.tab-item-disabled {
-        color: #a7a7a760;
-        pointer-events: none;
-        cursor: default;
-    }
-</style>
 
 }
 
 
 <script type="text/javascript" src="~/JS/GameLauncher.js"></script>
 <script type="text/javascript">
-    // Global wrapper for editGameInStudio used by BuildPage.js
     function editGameInStudio(placeId, universeId, allowUpload) {
         Roblox.GameLauncher.editGameInStudio(placeId, universeId, allowUpload);
     }
 </script>
-
-    <link rel=canonical href=https://www.roblox.com/develop>
-    <link href=https://images.rbxcdn.com/23421382939a9f4ae8bbe60dbe2a3e7e.ico.gzip rel=icon>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet href=https://sstatic.rbxcdn.com/css/MainCSS___f4948a5439ec56700ef5e24d93b9c249_m.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=LegacyStyleGuide href=https://sstatic.rbxcdn.com/css/afdcab9fa313ccc1130b005a312d6a8c5134347b53d085fa88215fe5bc71a067.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=NotificationStream href=https://sstatic.rbxcdn.com/css/8e03cf8e84202810e737631ed5ee4dae790b444bf7607217cccc44be5c36133a.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet href=https://sstatic.rbxcdn.com/css/page___0e68b651b048542ab589918dbfb33de1_m.css/fetch>
-    <link onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) rel=stylesheet data-bundlename=Chat href=https://sstatic.rbxcdn.com/css/9d46ec11b9b7390ccf413684c834e0611c399e4cc18ba0d5f9368e4f01cb0ca9.css/fetch>
     <script>
         if (Roblox && Roblox.EventStream) {
             Roblox.EventStream.Init("//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/pe?t=studio", "//ecsv2.roblox.com/pe?t=diagnostic");
         }
     </script>
-    <script>
+    <!-- <script>
         if (Roblox && Roblox.PageHeartbeatEvent) {
             Roblox.PageHeartbeatEvent.Init([2, 8, 20, 60]);
         }
     </script>
+    -->
     <script>
         Roblox.config.externalResources = [];
         Roblox.config.paths['Pages.Catalog'] = '/JS/modules/Pages/Catalog.js';
@@ -353,12 +325,6 @@
             accept: "Upgrade Now",
             decline: "No, thanks"
         };
-    </script>
-    <script>
-        Roblox.XsrfToken.setToken('YWAAzch9I3Qm');
-    </script>
-    <script>
-        Roblox.FixedUI.gutterAdsEnabled = false;
     </script>
     <script>
         var Roblox = Roblox || {};
@@ -409,11 +375,6 @@
             })();
         </script>
        
-                        <div class=alert-container>
-                            <noscript>
-                                <div class=alert-info>Please enable Javascript to use all the features on this site.</div>
-                            </noscript>
-                        </div>
                         <div id=BodyWrapper>
                             <div id=RepositionBody>
                                 <div id=Body class=body-width>
@@ -424,7 +385,6 @@
                                         <div id=GroupCreationsTabLink data-url=/develop/groups data-default-get-url=/build/buildview>Group Creations</div>
                                         <div id=LibraryTabLink data-url=/develop/library data-library-get-url="/catalog/contents?CatalogContext=DevelopOnly&amp;Category=Models">Library</div>
                                     </div>
-                                    <div>
                                         <div id=MyCreationsTab class=tab-active>
                                             <div class=BuildPageContent data-groupid="">
                                                 <div class="creation-context-filters-and-sorts" data-fetchplaceurl="/develop/games-list" data-universeid="0" data-fetchuniverseplaces="false"></div>
@@ -784,8 +744,6 @@
         </script>
     </div>
 <script>
-    // Auto-load games list for My Creations tab and remove initial separator
-    // Also probe group games endpoint and hide Group Creations tab if it 404s
     $(function () {
         // Ensure the gray separator is removed/hid immediately
         $('#MyCreationsTab .separator').remove();
@@ -808,7 +766,7 @@
                 case '2': return '/develop/asset-list/2'; // T-Shirts
                 case '12': return '/develop/asset-list/12'; // Pants
                 case '38': return '/develop/asset-list/38'; // Plugins
-                default: return '/develop/games-list'; // Games (default)
+                default: return '/develop/games-list'; 
             }
         }
 
