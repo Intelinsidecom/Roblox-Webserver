@@ -71,6 +71,17 @@ namespace RobloxWebserver.Controllers
             return Content(html, "text/html");
         }
         /// <summary>
+        /// Placeholder endpoint for group creations games list expected by legacy develop page.
+        /// </summary>
+        [HttpGet("groups/games-list")]
+        public IActionResult GroupGamesList()
+        {
+            // TODO: Replace with real data once group database implemented
+            const string html = @"<div class='items-container-inner'><div class='no-games-text'>This group has no games yet.</div></div>";
+            return Content(html, "text/html");
+        }
+
+        /// <summary>
         /// Generic asset list endpoint used by various view tabs.
         /// Returns a simple placeholder fragment for now based on asset type id.
         /// </summary>

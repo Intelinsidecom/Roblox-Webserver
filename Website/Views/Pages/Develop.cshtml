@@ -74,7 +74,6 @@
     <meta name=locale-data data-language-code=en_us data-language-name=English data-locale-api-url=https://locale.roblox.com>
     <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
     <meta name=page-meta data-internal-page-name=Create>
-   
 
 <script type="text/javascript" src="~/JS/Microsoft/MicrosoftAjax.js"></script>
 <script type="text/javascript" src="~/JS/roblox.js"></script>
@@ -383,12 +382,13 @@
                                     <div id=DevelopTabs class=tab-container>
                                         <div id=MyCreationsTabLink class=tab-active data-url=/develop>My Creations</div>
                                         <div id=GroupCreationsTabLink data-url=/develop/groups data-default-get-url=/build/buildview>Group Creations</div>
-                                        <div id=LibraryTabLink data-url=/develop/library data-library-get-url="/catalog/contents?CatalogContext=DevelopOnly&amp;Category=Models">Library</div>
+                                        <div id=LibraryTabLink data-url=/develop/library data-library-get-url="/catalog/contents?CatalogContext=DevelopOnly&amp;Category=Models" style="display:none">Library</div>
                                     </div>
                                         <div id=MyCreationsTab class=tab-active>
                                             <div class=BuildPageContent data-groupid="">
                                                 <div class="creation-context-filters-and-sorts" data-fetchplaceurl="/develop/games-list" data-universeid="0" data-fetchuniverseplaces="false"></div>
                                                 <input id=assetTypeId name=assetTypeId type=hidden value=0>
+
                                                 <input data-val=true data-val-required="The IsTgaUploadEnabled field is required." id=isTgaUploadEnabled name=isTgaUploadEnabled type=hidden value=True>
                                                 <table id=build-page data-asset-type-id=0 data-showcases-enabled=true data-edit-opens-studio=True>
                                                     <tr>
@@ -427,7 +427,58 @@
                                                                 </div>
                                                             </div>
                                                         <td class=content-area>
-                                                            <div class=items-container></div>
+                                                            <div class=items-container>
+                                                                <a href="https://web.roblox.com/places/create" id="CreatePlace" class="create-new-button btn-medium btn-primary">Create New Game</a>
+                                                                <table class="section-header">
+                                                                    <tr>
+                                                                        <td class="content-title">
+                                                                            <div>
+                                                                                <h2 class="header-text">Games</h2>
+                                                                                <span class="aside-text" data-active-count="1" data-max-active-count="200"></span>
+                                                                                <label class="checkbox-label active-only-checkbox">
+                                                                                    <input type="checkbox" />Show Public Only
+                                                                                </label>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                                <div class="items-container-inner">
+                                                                    <table class="item-table" data-item-id="1" data-rootplace-id="1" data-type="universes">
+                                                                        <tr>
+                                                                            <td class="image-col universe-image-col" style="text-align:center;">
+                                                                                <a href="/universes/configure?id=1" class="game-image">
+                                                                                    <img src="https://t7.rbxcdn.com/33d7dc233c34b71e4cb3cfe0b98f92f4" alt="My First Game" />
+                                                                                </a>
+                                                                            </td>
+                                                                            <td class="universe-name-col">
+                                                                                <a class="title notranslate" href="/universes/configure?id=1">My First Game</a>
+                                                                                <table class="details-table">
+                                                                                    <tr>
+                                                                                        <td class="item-universe">
+                                                                                            <span>Start Place:</span>
+                                                                                            <a class="title notranslate start-place-url" href="/games/1/My-First-Game">My First Game</a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr class="activate-cell">
+                                                                                        <td>
+                                                                                            <a class="place-active" href="/universes/configure?id=1">Public</a>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </table>
+                                                                            </td>
+                                                                            <td class="edit-col">
+                                                                                <a class="roblox-edit-button btn-control btn-control-large" href="javascript:">Edit</a>
+                                                                            </td>
+                                                                            <td class="menu-col">
+                                                                                <div class="gear-button-wrapper">
+                                                                                    <a href="#" class="gear-button"></a>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                    <div class="separator"></div>
+                                                                </div>
+                                                            </div>
                                                             <div class=build-loading-container style=display:none>
                                                                 <div class=buildpage-loading-container><img alt=^_^ src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif></div>
                                                             </div>
@@ -537,7 +588,7 @@
                                                 };
                                             </script>
                                         </div>
-                                        <div id=GroupCreationsTab>
+                                        <div id=GroupCreationsTab style=display:none>
                                             <div class=BuildPageContent data-groupid=4436366>
                                                 <div class="creation-context-filters-and-sorts" data-fetchplaceurl="/develop/groups/games-list" data-universeid="0" data-fetchuniverseplaces="false"></div>
                                                 <input id=assetTypeId name=assetTypeId type=hidden value=0>
@@ -632,65 +683,6 @@
                                                 </script>
                                             </div>
                                             <div class=Ads_WideSkyscraper></div>
-                                            <script>
-                                                if (typeof Roblox === "undefined") {
-                                                    Roblox = {};
-                                                }
-                                                if (typeof Roblox.BuildPage === "undefined") {
-                                                    Roblox.BuildPage = {};
-                                                }
-                                                Roblox.BuildPage.Resources = {
-                                                    active: "Public",
-                                                    inactive: "Private",
-                                                    activatePlace: "Make Place Public",
-                                                    editGame: "Edit Game",
-                                                    ok: "OK",
-                                                    robloxStudio: "ROBLOX Studio",
-                                                    openIn: "To edit this game, open to this page in ",
-                                                    placeInactive: "Make Place Private",
-                                                    toBuileHere: "To build here, please activate this place by clicking the ",
-                                                    inactiveButton: "inactive button. ",
-                                                    createModel: "Create Model",
-                                                    toCreate: "To create models, please use ",
-                                                    makeActive: "Make Public",
-                                                    makeInactive: "Make Private",
-                                                    purchaseComplete: "Purchase Complete!",
-                                                    youHaveBid: "You have successfully bid ",
-                                                    confirmBid: "Confirm the Bid",
-                                                    placeBid: "Place Bid",
-                                                    cancel: "Cancel",
-                                                    errorOccurred: "Error Occurred",
-                                                    adDeleted: "Ad Deleted",
-                                                    theAdWasDeleted: "The Ad has been deleted.",
-                                                    confirmDelete: "Confirm Deletion",
-                                                    areYouSureDelete: "Are you sure you want to delete this Ad?",
-                                                    bidRejected: "Your bid was Rejected",
-                                                    bidRange: "Bid value must be a number between ",
-                                                    bidRange2: "Bid value must be a number greater than ",
-                                                    and: " and ",
-                                                    yourRejected: "Your bid was Rejected",
-                                                    estimatorExplanation: "This estimator uses data from ads run yesterday to guess how many impressions your ad will recieve.",
-                                                    estimatedImpressions: "Estimated Impressions ",
-                                                    makeAdBid: "Make Ad Bid",
-                                                    wouldYouLikeToBid: "Would you like to bid ",
-                                                    verify: "Verify",
-                                                    emailVerifiedTitle: "Verify Your Email",
-                                                    emailVerifiedMessage: "You must verify your email before you can work on your place. You can verify your email on the <a href='https://web.roblox.com/my/account?confirmemail=1'>Account</a> page.",
-                                                    continueText: "Continue",
-                                                    profileRemoveTitle: "Remove from profile?",
-                                                    profileRemoveMessage: "This game is private and listed on your profile, do you wish to remove it?",
-                                                    profileAddTitle: "Add to profile?",
-                                                    profileAddMessage: "This game is public, but not listed on your profile, do you wish to add it?",
-                                                    deactivateTitle: "Make Game Private",
-                                                    deactivateBody: "This will shut down any running games <br /><br />Do you still want to make this game private?",
-                                                    deactivateButton: "Make Private",
-                                                    questionmarkImgUrl: "https://static.rbxcdn.com/images/Buttons/questionmark-12x12.png",
-                                                    activationRequestFailed: "Request to make game public failed. Please retry in a few minutes!",
-                                                    deactivationRequestFailed: "Request to make game private failed. Please retry in a few minutes!",
-                                                    tooManyActiveMessage: "You have reached the maximum number of public places for your membership level. Make one of your existing places private before making this place public.",
-                                                    activeSlotsMessage: "{0} of {1} public slots used"
-                                                };
-                                            </script>
                                         </div>
                                         <div id=LibraryTab>
                                             <div class=loading id=LibraryLoadingIndicatorContainer><img id=LibraryLoadingIndicator src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif alt=Progress></div>
@@ -745,104 +737,58 @@
     </div>
 <script>
     $(function () {
+        console.log('[Develop.cshtml] jQuery ready fired');
+
         // Ensure the gray separator is removed/hid immediately
+        console.log('[Develop.cshtml] Before separator removal, separators found:', $('#MyCreationsTab .separator').length);
         $('#MyCreationsTab .separator').remove();
+        console.log('[Develop.cshtml] After separator removal, separators found:', $('#MyCreationsTab .separator').length);
 
-        function showEmptyMessage($container) {
-            $container.html('<div class="no-games-text">You have no games yet. Create one with the "Create New Game" button!</div>');
-        }
+        // This /develop view is the personal "My Creations" page.
+        // Remove the in-page GroupCreationsTab panel so its spinner/content
+        // cannot interfere with the default My Creations view.
+        console.log('[Develop.cshtml] GroupCreationsTab exists on load?', $('#GroupCreationsTab').length);
+        $('#GroupCreationsTab').remove();
+        console.log('[Develop.cshtml] GroupCreationsTab exists after remove?', $('#GroupCreationsTab').length);
 
-        let currentView = '@viewParam';
-        function getEndpointForView(viewId) {
-            switch (viewId) {
-                case '9': return '/develop/asset-list/9'; // Places
-                case '10': return '/develop/asset-list/10'; // Models
-                case '13': return '/develop/asset-list/13'; // Decals
-                case '21': return '/develop/asset-list/21'; // Badges
-                case '3': return '/develop/asset-list/3'; // Audio
-                case '24': return '/develop/asset-list/24'; // Animations
-                case '40': return '/develop/asset-list/40'; // Meshes
-                case '11': return '/develop/asset-list/11'; // Shirts
-                case '2': return '/develop/asset-list/2'; // T-Shirts
-                case '12': return '/develop/asset-list/12'; // Pants
-                case '38': return '/develop/asset-list/38'; // Plugins
-                default: return '/develop/games-list'; 
-            }
-        }
-
-        function loadMyItems() {
-            var $itemsContainer = $('#MyCreationsTab .items-container');
-
-            // Show loading spinner
-            var $loading = $('<div class=\'buildpage-loading-container\'><img alt=\'Loading...\' src=\'https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif\'></div>');
-            $itemsContainer.empty().append($loading);
-
-            $.ajax({
-                url: getEndpointForView(currentView),
-                dataType: 'html'
-            }).done(function (data) {
-                $loading.remove();
-                if (data && $.trim(data).length) {
-                    $itemsContainer.html(data);
-                    // Initialize thumbnail retries if helper exists
-                    if ($.fn.loadRobloxThumbnails) {
-                        $itemsContainer.find('a[data-retry-url]').loadRobloxThumbnails();
-                    }
-                } else {
-                    showEmptyMessage($itemsContainer);
-                }
-            }).fail(function (xhr) {
-                $loading.remove();
-                if (xhr.status === 404) {
-                    showEmptyMessage($itemsContainer);
-                } else {
-                    $itemsContainer.text('Failed to load games. Please try again later.');
-                }
-            });
-        }
-
-        function probeGroupCreations() {
-            // Lightweight HEAD/GET just to see if endpoint exists
-            $.ajax({
-                url: '/develop/groups/games-list',
-                type: 'GET',
-                dataType: 'html'
-            }).done(function (data) {
-                if (data && $.trim(data).length) {
-                    // API is available and returned content; show the tab and content area
-                    $('#GroupCreationsTabLink').show();
-                    $('#GroupCreationsTab').show();
-                }
-            });
-        }
-
-        loadMyItems();
-
-        // Intercept tab clicks within My Creations menu so we can AJAX-load
-        $('#MyCreationsTab .menu-area').on('click', 'a.tab-item', function (evt) {
-            if (!/view=\d+/i.test($(this).attr('href'))) {
-                return; // let default navigation occur for non-view tabs
-            }
-            const href = $(this).attr('href') || '';
-            const match = href.match(/view=(\d+)/i);
-            currentView = match ? match[1] : '';
-
-            // Visually update selected tab
-            $(this).siblings('.tab-item').removeClass('tab-item-selected');
-            $(this).addClass('tab-item-selected');
-
-            // Update header title
-            const headerText = $(this).text();
-            $('#MyCreationsTab .header-text').text(headerText);
-
-            // Load new items for selected view
-            loadMyItems();
-
-            // Prevent full page reload
-            evt.preventDefault();
+        // Make the Group Creations tab link navigate to the dedicated group route
+        // instead of toggling an in-page panel.
+        console.log('[Develop.cshtml] Wiring GroupCreationsTabLink click handler');
+        $('#GroupCreationsTabLink').on('click', function () {
+            var url = $(this).data('url') || '/develop/groups';
+            console.log('[Develop.cshtml] GroupCreationsTabLink clicked, navigating to', url);
+            window.location = url;
         });
-        probeGroupCreations();
+
+        // Ensure My Creations tab/link is visibly active on this page
+        console.log('[Develop.cshtml] MyCreationsTabLink before addClass tab-active?', $('#MyCreationsTabLink').hasClass('tab-active'));
+        console.log('[Develop.cshtml] MyCreationsTab before addClass tab-active?', $('#MyCreationsTab').hasClass('tab-active'), 'display:', $('#MyCreationsTab').css('display'));
+        $('#MyCreationsTabLink').addClass('tab-active');
+        $('#MyCreationsTab').addClass('tab-active').show();
+        $('#GroupCreationsTabLink').removeClass('tab-active');
+        console.log('[Develop.cshtml] MyCreationsTabLink after addClass tab-active?', $('#MyCreationsTabLink').hasClass('tab-active'));
+        console.log('[Develop.cshtml] MyCreationsTab after addClass tab-active?', $('#MyCreationsTab').hasClass('tab-active'), 'display:', $('#MyCreationsTab').css('display'));
+        console.log('[Develop.cshtml] GroupCreationsTabLink has tab-active after remove?', $('#GroupCreationsTabLink').hasClass('tab-active'));
+
+        // Remove loading spinner from My Creations, but do NOT replace server-rendered content
+        console.log('[Develop.cshtml] MyCreationsTab build-loading-container count before remove:', $('#MyCreationsTab .build-loading-container').length);
+        $('#MyCreationsTab .build-loading-container').remove();
+        console.log('[Develop.cshtml] MyCreationsTab build-loading-container count AFTER remove:', $('#MyCreationsTab .build-loading-container').length);
+
+        // Also remove the Library tab's standalone loading spinner so no global spinner is visible
+        console.log('[Develop.cshtml] LibraryLoadingIndicatorContainer exists?', $('#LibraryLoadingIndicatorContainer').length);
+        $('#LibraryLoadingIndicatorContainer').remove();
+        console.log('[Develop.cshtml] LibraryLoadingIndicatorContainer exists after remove?', $('#LibraryLoadingIndicatorContainer').length);
+
+        // Let the existing tab wiring (tabs.js + Develop.js + BuildPage.js) populate
+        // My Creations the same way it does when you manually click the tab.
+        // We just simulate that click once on load.
+        setTimeout(function () {
+            console.log('[Develop.cshtml] Auto-triggering MyCreationsTabLink click on load');
+            $('#MyCreationsTabLink').trigger('click');
+        }, 0);
     });
 </script>
+
 </body>
 </html>
