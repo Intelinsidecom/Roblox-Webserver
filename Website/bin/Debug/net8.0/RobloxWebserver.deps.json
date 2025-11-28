@@ -9,6 +9,7 @@
       "RobloxWebserver/1.0.0": {
         "dependencies": {
           "Api": "1.0.0",
+          "Assets": "1.0.0",
           "Avatar": "1.0.0",
           "LigerShark.WebOptimizer.Core": "3.0.477",
           "Microsoft.EntityFrameworkCore": "8.0.10",
@@ -677,6 +678,18 @@
           }
         }
       },
+      "Assets/1.0.0": {
+        "dependencies": {
+          "Npgsql": "8.0.4",
+          "System.Drawing.Common": "6.0.0"
+        },
+        "runtime": {
+          "Assets.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Avatar/1.0.0": {
         "dependencies": {
           "Npgsql": "8.0.4",
@@ -1073,6 +1086,11 @@
       "hashPath": "system.threading.channels.6.0.0.nupkg.sha512"
     },
     "Api/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Assets/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

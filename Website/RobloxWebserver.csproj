@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Assemblies\Users\Users.csproj" />
     <ProjectReference Include="..\Assemblies\Thumbnails\Thumbnails.csproj" />
     <ProjectReference Include="..\Assemblies\Avatar\Avatar.csproj" />
+    <ProjectReference Include="..\Assemblies\Assets\Assets.csproj" />
   </ItemGroup>
 
 </Project>

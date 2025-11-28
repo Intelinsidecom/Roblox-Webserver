@@ -1,0 +1,9 @@
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\obj\Debug\netstandard2.0\Assets.csproj.AssemblyReference.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\obj\Debug\netstandard2.0\Assets.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\obj\Debug\netstandard2.0\Assets.csproj.CoreCompileInputs.cache
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\obj\Debug\netstandard2.0\Assets.sourcelink.json
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\bin\Debug\netstandard2.0\Assets.deps.json
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\bin\Debug\netstandard2.0\Assets.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\bin\Debug\netstandard2.0\Assets.pdb
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\obj\Debug\netstandard2.0\Assets.dll
+C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Assets\obj\Debug\netstandard2.0\Assets.pdb

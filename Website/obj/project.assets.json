@@ -1053,6 +1053,20 @@
           "Microsoft.AspNetCore.App"
         ]
       },
+      "Assets/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Npgsql": "8.0.4",
+          "System.Drawing.Common": "6.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Assets.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Assets.dll": {}
+        }
+      },
       "Avatar/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
@@ -2944,6 +2958,11 @@
       "path": "../Api/Api.csproj",
       "msbuildProject": "../Api/Api.csproj"
     },
+    "Assets/1.0.0": {
+      "type": "project",
+      "path": "../Assemblies/Assets/Assets.csproj",
+      "msbuildProject": "../Assemblies/Assets/Assets.csproj"
+    },
     "Avatar/1.0.0": {
       "type": "project",
       "path": "../Assemblies/Avatar/Avatar.csproj",
@@ -2963,6 +2982,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Api >= 1.0.0",
+      "Assets >= 1.0.0",
       "Avatar >= 1.0.0",
       "LigerShark.WebOptimizer.Core >= 3.0.477",
       "Microsoft.EntityFrameworkCore >= 8.0.10",
@@ -3007,6 +3027,9 @@
           "projectReferences": {
             "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj"
+            },
+            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Assets\\Assets.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Assets\\Assets.csproj"
             },
             "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Avatar\\Avatar.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Avatar\\Avatar.csproj"

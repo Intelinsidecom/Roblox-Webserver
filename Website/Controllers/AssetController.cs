@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Users;
@@ -8,7 +10,7 @@ using Users;
 namespace Website.Controllers
 {
     [ApiController]
-    [Route("Asset")]
+    [Route("asset")]
     public class AssetController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -16,6 +18,63 @@ namespace Website.Controllers
         public AssetController(IConfiguration configuration)
         {
             _configuration = configuration;
+        }
+
+        // GET /Asset?id={assetId}
+        // Looks up the asset record and streams the underlying file from the CDN Assets directory.
+        [HttpGet]
+        public async Task<IActionResult> GetAsset([FromQuery] long? id)
+        {
+            if (!id.HasValue || id.Value <= 0)
+                return BadRequest(new { error = "id is required" });
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, "Database connection string is not configured.");
+
+            string? hash = null;
+            string? ext = null;
+            string? contentType = null;
+
+            try
+            {
+                await using var conn = new NpgsqlConnection(connStr);
+                await conn.OpenAsync().ConfigureAwait(false);
+
+                const string sql = @"select content_hash, file_extension, content_type from assets where asset_id = @id";
+                await using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("id", id.Value);
+
+                await using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+                if (await reader.ReadAsync().ConfigureAwait(false))
+                {
+                    hash = reader.IsDBNull(0) ? null : reader.GetString(0);
+                    ext = reader.IsDBNull(1) ? null : reader.GetString(1);
+                    contentType = reader.IsDBNull(2) ? null : reader.GetString(2);
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Failed to query asset record.");
+            }
+
+            if (string.IsNullOrWhiteSpace(hash))
+                return NotFound(new { error = "Asset not found" });
+
+            var assetsRoot = _configuration["Assets:Directory"];
+            if (string.IsNullOrWhiteSpace(assetsRoot))
+                return StatusCode(500, "Assets directory is not configured.");
+
+            var assetFolder = Path.Combine(assetsRoot, "asset");
+            var fileName = string.IsNullOrWhiteSpace(ext) ? hash : hash + ext;
+            var fullPath = Path.Combine(assetFolder, fileName);
+
+            if (!System.IO.File.Exists(fullPath))
+                return NotFound(new { error = "Asset file not found" });
+
+            var ct = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType;
+            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+            return File(stream, ct);
         }
 
         // GET /Asset/characterfetch.ashx?player={id}
@@ -108,7 +167,7 @@ namespace Website.Controllers
             return Content(xml, "application/xml", Encoding.UTF8);
         }
 
-        // Accepts /Asset/id?=123 or /Asset/id?id=123 (we don't use the value yet)  <int name="HeadColor">{head}</int>
+        // Legacy stub: Accepts /Asset/id?=123 or /Asset/id?id=123. Kept for compatibility; returns empty body for now.
         [HttpGet("id")]
         public IActionResult AssetById()
         {

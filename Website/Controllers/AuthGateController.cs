@@ -51,5 +51,21 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/");
             return View("~/Views/Pages/Home.cshtml");
         }
+
+                [HttpGet("develop")]
+        public IActionResult Develop()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+                return Redirect("/");
+            return View("~/Views/Pages/Develop.cshtml");
+        }
+
+        [HttpPost("develop")]
+        public IActionResult DevelopPost()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+                return Redirect("/");
+            return View("~/Views/Pages/Develop.cshtml");
+        }
     }
 }

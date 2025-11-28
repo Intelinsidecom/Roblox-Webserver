@@ -74,7 +74,7 @@ insert into users (
                     cmd.Parameters.AddWithValue("password", (object)p.Password ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("birthday", (object)p.Birthday ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("gender", (object)p.Gender ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("user_created", (object)p.UserCreated ?? DateTimeOffset.UtcNow);
+                    cmd.Parameters.AddWithValue("user_created", (object?)p.UserCreated ?? DateTimeOffset.UtcNow);
                     cmd.Parameters.AddWithValue("locale", (object)p.Locale ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("language", (object)p.Language ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("country_iso", (object)p.CountryIso ?? DBNull.Value);
