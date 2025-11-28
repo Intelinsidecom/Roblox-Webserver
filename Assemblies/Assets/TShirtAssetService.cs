@@ -92,7 +92,7 @@ namespace Assets
     <External>nil</External>
     <Item class=""ShirtGraphic"">
         <Properties>
-            <Content name=""Graphic"">{graphicBaseUrl}/asset/?id={imageAssetId}</Content>
+            <Content name=""Graphic"">rbxassetid://{imageAssetId}</Content>
             <string name=""Name"">{System.Security.SecurityElement.Escape(name)}</string>
             <bool name=""archivable"">true</bool>
         </Properties>

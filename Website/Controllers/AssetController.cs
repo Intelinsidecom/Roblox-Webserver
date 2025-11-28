@@ -23,7 +23,8 @@ namespace Website.Controllers
         // GET /Asset?id={assetId}
         // Looks up the asset record and streams the underlying file from the CDN Assets directory.
         [HttpGet]
-        public async Task<IActionResult> GetAsset([FromQuery] long? id)
+        // Accept optional serverplaceid param (ignored) so /asset/?id=123&serverplaceid=X works
+        public async Task<IActionResult> GetAsset([FromQuery] long? id, [FromQuery(Name = "serverplaceid")] long? serverPlaceId = null)
         {
             if (!id.HasValue || id.Value <= 0)
                 return BadRequest(new { error = "id is required" });
@@ -98,7 +99,7 @@ namespace Website.Controllers
             var body = string.Join(';', new[]
             {
                 $"{baseUrl}/asset/bodycolors.ashx?userId={pid}",
-                $"{baseUrl}/asset/?id=13" // hardcoded test ShirtGraphic asset
+                $"{baseUrl}/asset/?id=15" // hardcoded test ShirtGraphic asset
             });
 
             return Content(body, "text/plain");
