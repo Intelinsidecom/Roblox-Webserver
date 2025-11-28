@@ -1,4 +1,3 @@
-local jobId = 1
 local type = headshot
 local format = "PNG"
 local x = 400
@@ -17,7 +16,7 @@ game:GetService("ContentProvider"):SetBaseUrl(baseUrl)
 game:GetService("ScriptContext").ScriptsDisabled = true
 
 local Player = game.Players:CreateLocalPlayer(0)
-Player.CharacterAppearance = ("http://www.freblx.xyz/asset/?id=4")
+Player.CharacterAppearance = ("http://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1")
 print(Player.CharacterAppearance)
 Player:LoadCharacter(false)
 
@@ -35,8 +34,6 @@ if gear then
 end
 
 
-print(("[%s] Rendering ..."):format(jobId))
+print(" Rendering ...")
 local result = game:GetService("ThumbnailGenerator"):Click(format, x, y, true)
-print(("[%s] Done!"):format(jobId))
-
-return result
+print(result)

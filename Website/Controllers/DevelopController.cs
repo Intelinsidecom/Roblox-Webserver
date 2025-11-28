@@ -287,9 +287,14 @@ limit 50;";
             var thumbnailsRoot = _configuration["Thumbnails:OutputDirectory"];
             var thumbnailBaseUrl = _configuration["Thumbnails:ThumbnailUrl"];
             var tshirtTemplatePath = _configuration["Thumbnails:TshirtTemplatePath"];
+            var publicAssetBaseUrl = _configuration["Assets:PublicBaseUrl"];
 
             try
             {
+                var scheme = string.IsNullOrEmpty(Request.Scheme) ? "http" : Request.Scheme;
+                var host = Request.Host.HasValue ? Request.Host.Value : "localhost";
+                var baseUrl = $"{scheme}://{host}";
+
                 _ = await _tshirtService.CreateTShirtAsync(
                     connStr,
                     userId,
@@ -301,6 +306,8 @@ limit 50;";
                     thumbnailsRoot ?? string.Empty,
                     thumbnailBaseUrl ?? string.Empty,
                     tshirtTemplatePath ?? string.Empty,
+                    baseUrl,
+                    publicAssetBaseUrl,
                     cancellationToken).ConfigureAwait(false);
             }
             catch (Exception)

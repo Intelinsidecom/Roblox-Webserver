@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RobloxWebserver")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5505bb2afd87750e71e65573ad36bae8c5cf49ac")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de6d3d6cd4be305137c947a761a31b0290d068b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("RobloxWebserver")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RobloxWebserver")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

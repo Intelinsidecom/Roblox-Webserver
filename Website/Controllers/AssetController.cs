@@ -98,6 +98,7 @@ namespace Website.Controllers
             var body = string.Join(';', new[]
             {
                 $"{baseUrl}/asset/bodycolors.ashx?userId={pid}",
+                $"{baseUrl}/asset/?id=13" // hardcoded test ShirtGraphic asset
             });
 
             return Content(body, "text/plain");
