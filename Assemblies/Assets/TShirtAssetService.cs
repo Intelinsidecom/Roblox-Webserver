@@ -90,9 +90,9 @@ namespace Assets
 <roblox xmlns:xmime=""http://www.w3.org/2005/05/xmlmime"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xsi:noNamespaceSchemaLocation=""http://www.roblox.com/roblox.xsd"" version=""4"">
     <External>null</External>
     <External>nil</External>
-    <Item class=""ShirtGraphic"">
+    <Item class=""ShirtGraphic"" referent=""RBX0"">
         <Properties>
-            <Content name=""Graphic"">rbxassetid://{imageAssetId}</Content>
+            <Content name=""Graphic""><url>{graphicBaseUrl.TrimEnd('/', '\\')}/asset/?id={imageAssetId}</url></Content>
             <string name=""Name"">{System.Security.SecurityElement.Escape(name)}</string>
             <bool name=""archivable"">true</bool>
         </Properties>
@@ -110,7 +110,7 @@ namespace Assets
                 xmlHash = sb.ToString();
             }
 
-            var xmlExtension = ".rbxmx";
+            var xmlExtension = ".rbxm";
             var xmlFileName = xmlHash + xmlExtension;
             var xmlFullPath = Path.Combine(assetFolder, xmlFileName);
             File.WriteAllText(xmlFullPath, xml, new UTF8Encoding(false));

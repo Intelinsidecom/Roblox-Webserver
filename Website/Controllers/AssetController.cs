@@ -99,13 +99,12 @@ namespace Website.Controllers
             var body = string.Join(';', new[]
             {
                 $"{baseUrl}/asset/bodycolors.ashx?userId={pid}",
-                $"{baseUrl}/asset/?id=15" // hardcoded test ShirtGraphic asset
+                $"{baseUrl}/asset/?id=19" // hardcoded test ShirtGraphic asset
             });
 
             return Content(body, "text/plain");
         }
 
-        // Minimal stubs to avoid 404 if the engine requests these URLs
         [HttpGet("BodyColors.ashx")]
         public async Task<IActionResult> BodyColors([FromQuery] long? userId)
         {
@@ -169,11 +168,9 @@ namespace Website.Controllers
             return Content(xml, "application/xml", Encoding.UTF8);
         }
 
-        // Legacy stub: Accepts /Asset/id?=123 or /Asset/id?id=123. Kept for compatibility; returns empty body for now.
         [HttpGet("id")]
         public IActionResult AssetById()
         {
-            // Return empty 200; extend later to serve actual asset data
             return Content(string.Empty, "text/plain");
         }
     }

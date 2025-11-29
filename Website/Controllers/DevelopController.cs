@@ -163,11 +163,18 @@ namespace RobloxWebserver.Controllers
                             await using var conn = new NpgsqlConnection(connStr);
                             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                            var sql = @"select a.asset_id, a.name, ua.created_at, a.thumbnail_url
-from user_assets ua
-join assets a on a.asset_id = ua.asset_id
-where ua.user_id = @uid and a.asset_type_id = 2
-order by ua.created_at desc, a.asset_id desc
+                            var sql = @"select t.asset_id as tshirt_asset_id,
+       t.name,
+       ua_t.created_at,
+       t.thumbnail_url,
+       i.asset_id as image_asset_id
+from user_assets ua_t
+join assets t on t.asset_id = ua_t.asset_id and t.asset_type_id = 2
+left join assets i on i.owner_user_id = t.owner_user_id
+                  and i.asset_type_id = 1
+                  and i.name = t.name || ' Image'
+where ua_t.user_id = @uid
+order by ua_t.created_at desc, t.asset_id desc
 limit 50;";
 
                             await using var cmd = new NpgsqlCommand(sql, conn);
@@ -183,10 +190,11 @@ limit 50;";
                             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
                                 hasAny = true;
-                                var assetId = reader.GetInt64(0);
+                                var assetId = reader.GetInt64(0); // T-Shirt asset id (.rbxm)
                                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                                 var createdAt = reader.GetDateTime(2);
                                 var thumbUrl = reader.IsDBNull(3) ? null : reader.GetString(3);
+                                var imageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4); // Image asset id
                                 var createdDateString = createdAt.ToString("M/d/yyyy");
 
                                 sb.Append(@"            <table class='item-table' data-item-id='");
@@ -207,8 +215,12 @@ limit 50;";
                                 sb.Append(@"                                <td class='item-universe'><span>Created:</span> ");
                                 sb.Append(createdDateString);
                                 sb.Append(@" (ID: ");
-                                sb.Append(assetId);
-                                sb.Append(@")</td>");
+                                var idToShow = imageAssetId ?? assetId;
+                                sb.Append(@"<a href='/asset/?id=");
+                                sb.Append(idToShow);
+                                sb.Append(@"'>");
+                                sb.Append(idToShow);
+                                sb.Append(@"</a>)</td>");
                                 sb.Append(@"                            </tr>");
                                 sb.Append(@"                        </table>");
                                 sb.Append(@"                    </td>");
