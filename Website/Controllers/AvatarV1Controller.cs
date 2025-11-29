@@ -292,6 +292,33 @@ public class AvatarV1Controller : ControllerBase
         };
         await repo.SetBodyColorsAsync(connStr, userId, colors, cancellationToken);
 
+        // Update avatar_state_hash so caches and diagnostics can
+        // detect that the avatar configuration has changed.
+        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
+
+        return Ok(new { success = true });
+    }
+
+    [Authorize]
+    [HttpPost("set-wearing-assets")]
+    public async Task<IActionResult> SetWearingAssets([FromBody] SetWearingAssetsModel model, CancellationToken cancellationToken)
+    {
+        var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "Authentication required" });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        var repo = new AvatarWornAssetsRepository();
+        var ids = model.assetIds ?? Array.Empty<long>();
+        await repo.SetWornAssetIdsAsync(connStr, userId, ids, cancellationToken);
+
+        // Keep avatar_state_hash in sync with current body colors and
+        // worn assets so downstream systems can see configuration changes.
+        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
+
         return Ok(new { success = true });
     }
 
@@ -311,5 +338,10 @@ public class AvatarV1Controller : ControllerBase
         public int leftArmColorId { get; set; }
         public int rightLegColorId { get; set; }
         public int leftLegColorId { get; set; }
+    }
+
+    public sealed class SetWearingAssetsModel
+    {
+        public long[] assetIds { get; set; } = Array.Empty<long>();
     }
 }

@@ -28,4 +28,17 @@ typeof Roblox == typeof undefined && (Roblox = {}), Roblox.Endpoints = Roblox.En
 }, Roblox.Endpoints.getAbsoluteUrl = function(n) {
     var t, r, i, u;
     return typeof Roblox.Endpoints.Urls == typeof undefined ? n : n.length === 0 || Roblox.Endpoints.isAbsolute(n) ? n : (n.indexOf("/") !== 0 && (t = window.location.pathname, r = t.slice(0, t.lastIndexOf("/") + 1), n = r + n), i = Roblox.Endpoints.Urls[n.toLowerCase()], i === undefined) ? (u = window.location.protocol + "//" + window.location.hostname, u + n) : i
+},
+// Minimal catalog URL helper used by legacy avatar JS. The original site
+// supported nice SEO slugs based on name; for this recreation we only need
+// a stable link that points at the right asset id.
+Roblox.Endpoints.getCatalogItemUrl = function(id, name) {
+    try {
+        // Prefer whatever base URL is configured, if present
+        var path = "/catalog/" + id;
+        return Roblox.Endpoints.generateAbsoluteUrl(path);
+    } catch (e) {
+        // Fall back to a simple relative URL if anything goes wrong
+        return "/catalog/" + id;
+    }
 }, $.ajaxPrefilter(Roblox.Endpoints.ajaxPrefilter);

@@ -80,26 +80,62 @@ namespace Website.Controllers
 
         // GET /Asset/characterfetch.ashx?player={id}
         [HttpGet("characterfetch.ashx")]
-        public IActionResult CharacterFetchAshx([FromQuery] string? userId)
+        public async Task<IActionResult> CharacterFetchAshx([FromQuery] string? userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
                 return BadRequest(new { error = "userId is required" });
-            return CharacterFetchInternal(userId);
+            return await CharacterFetchInternal(userId);
         }
 
-        private IActionResult CharacterFetchInternal(string? userId)
+        private async Task<IActionResult> CharacterFetchInternal(string? userId)
         {
             var pid = string.IsNullOrWhiteSpace(userId) ? "0" : userId;
             var scheme = string.IsNullOrEmpty(Request.Scheme) ? "http" : Request.Scheme;
             var host = Request.Host.HasValue ? Request.Host.Value : "localhost";
             var baseUrl = $"{scheme}://{host}";
 
+            long.TryParse(pid, out var uid);
+
+            long? tShirtAssetId = null;
+            var connStr = _configuration.GetConnectionString("Default");
+            if (!string.IsNullOrWhiteSpace(connStr) && uid > 0)
+            {
+                try
+                {
+                    await using var conn = new NpgsqlConnection(connStr);
+                    await conn.OpenAsync().ConfigureAwait(false);
+
+                    const string sql = @"select awa.asset_id
+from avatar_worn_assets awa
+join assets a on a.asset_id = awa.asset_id
+where awa.user_id = @uid and a.asset_type_id = 2
+order by awa.asset_id
+limit 1";
+
+                    await using var cmd = new NpgsqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("uid", uid);
+                    var obj = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (obj != null && obj != DBNull.Value)
+                    {
+                        tShirtAssetId = Convert.ToInt64(obj);
+                    }
+                }
+                catch
+                {
+                    // Ignore DB errors and fall back to hardcoded asset below
+                }
+            }
+
+            var tShirtUrl = tShirtAssetId.HasValue
+                ? $"{baseUrl}/asset/?id={tShirtAssetId.Value}"
+                : $"{baseUrl}/asset/?id=19"; // fallback ShirtGraphic asset
+
             // Response format (semicolon-separated URLs), per request:
-            // http://your.url.here/Asset/bodycolors.ashx;http://your.url.here/Asset/id?=PLAYER;http://your.url.here/Asset/id?=PLAYER
+            // http://your.url.here/Asset/bodycolors.ashx;http://your.url.here/Asset/?id=TSHIRT
             var body = string.Join(';', new[]
             {
                 $"{baseUrl}/asset/bodycolors.ashx?userId={pid}",
-                $"{baseUrl}/asset/?id=19" // hardcoded test ShirtGraphic asset
+                tShirtUrl
             });
 
             return Content(body, "text/plain");

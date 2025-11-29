@@ -1,0 +1,13 @@
+<div class="item-card-container">
+    <a href="" class="item-card-link" ng-click="onItemClicked(item, $event)">
+        <div class="item-card-thumb-container">
+            <img ng-src="{{(item.Thumbnail && item.Thumbnail.Url) || item.thumbnailUrl}}" class="item-card-thumb">
+            <span ng-if="item.AssetRestrictionIcon" ng-class="'icon-'+item.AssetRestrictionIcon.CssTag+'-label'"></span>
+        </div>
+    </a>
+    <div class="item-card-caption">
+        <a href="" class="item-card-name-link" ng-click="onItemClicked(item, $event)">
+            <div class="text-overflow item-card-name">{{item.name || (item.Item && item.Item.Name)}}</div>
+        </a>
+    </div>
+</div>

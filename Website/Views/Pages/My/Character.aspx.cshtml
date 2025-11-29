@@ -5,21 +5,6 @@
 @section Head {
     
     
-    <script type="text/ng-template" id="avatar-item-card">
-        <div class="item-card-container">
-            <a ng-href="{{item.Item && item.Item.AbsoluteUrl || item.link}}" class="item-card-link">
-                <div class="item-card-thumb-container">
-                    <img ng-src="{{(item.Thumbnail && item.Thumbnail.Url) || item.thumbnailUrl}}" class="item-card-thumb">
-                    <span ng-if="item.AssetRestrictionIcon" ng-class="'icon-'+item.AssetRestrictionIcon.CssTag+'-label'"></span>
-                </div>
-            </a>
-            <div class="item-card-caption">
-                <a ng-href="{{item.Item && item.Item.AbsoluteUrl || item.link}}" class="item-card-name-link">
-                    <div class="text-overflow item-card-name">{{item.name || (item.Item && item.Item.Name)}}</div>
-                </a>
-            </div>
-        </div>
-    </script>
     <link rel="stylesheet" href="~/CSS/Pages/Avatar/Character.css">
 }
 
@@ -147,7 +132,7 @@ Roblox.Endpoints = Roblox.Endpoints || {
         <div class="items-list">
             <ul class="hlist item-cards-stackable">
                 <li ng-repeat="item in items" class="list-item item-card">
-                    <div ng-include="'avatar-item-card'"></div>
+                    <div ng-include="'/My/avatar-item-card.html'"></div>
                 </li>
             </ul>
         </div>

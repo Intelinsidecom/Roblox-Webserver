@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,6 +45,7 @@ namespace Avatar
     public sealed class AvatarRepository
     {
         private readonly BodyColorsRepository _bodyColorsRepository = new BodyColorsRepository();
+        private readonly AvatarWornAssetsRepository _wornAssetsRepository = new AvatarWornAssetsRepository();
 
         public async Task<AvatarState> GetAvatarAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
         {
@@ -54,7 +56,8 @@ namespace Avatar
 
             var state = new AvatarState();
 
-            var bodyColors = await _bodyColorsRepository.GetBodyColorsAsync(connectionString, userId, cancellationToken)
+            var bodyColors = await _bodyColorsRepository
+                .GetBodyColorsAsync(connectionString, userId, cancellationToken)
                 .ConfigureAwait(false);
 
             state.BodyColors.headColorId = bodyColors.HeadColorId;
@@ -64,7 +67,25 @@ namespace Avatar
             state.BodyColors.rightLegColorId = bodyColors.RightLegColorId;
             state.BodyColors.leftLegColorId = bodyColors.LeftLegColorId;
 
-            // Scales and Assets are currently not stored in the database in this project
+            // Load worn assets so the avatar API exposes currently equipped items (e.g., T-shirts).
+            var wornIds = await _wornAssetsRepository
+                .GetWornAssetIdsAsync(connectionString, userId, cancellationToken)
+                .ConfigureAwait(false);
+
+            state.Assets = wornIds
+                .Select(id => new AvatarAssetState
+                {
+                    id = id,
+                    name = string.Empty,
+                    assetType = new AvatarAssetTypeState
+                    {
+                        id = 0,
+                        name = string.Empty
+                    }
+                })
+                .ToArray();
+
+            // Scales are not yet stored in the database in this project
             // and are therefore returned with conservative defaults.
 
             return state;

@@ -117,8 +117,14 @@ public sealed class ThumbnailService : IThumbnailService
         using var http = new HttpClient();
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
-        resp.EnsureSuccessStatusCode();
+
         var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+        if (!resp.IsSuccessStatusCode)
+        {
+            var statusCode = (int)resp.StatusCode;
+            var reason = resp.ReasonPhrase ?? string.Empty;
+            throw new HttpRequestException($"Arbiter /renderavatar returned {statusCode} {reason}. Body: {Trunc(json)}");
+        }
 
         using var doc = JsonDocument.Parse(json);
 

@@ -63,19 +63,78 @@ avatar.controller("avatarItemsController", ["$scope", "$log", "$timeout", "$q", 
             , beforeLoad:function() {}
 
             , loadSuccess:function(i) {
-                var r=[], u=h.getPagingParameter("assetTypeId"), f=n.getAssetTypeName(u); angular.forEach(i, function(i) {
-                        var e= {}
+                var r=[], u=h.getPagingParameter("assetTypeId"), f=n.getAssetTypeName(u);
+                console.log("[AvatarItems] loadSuccess invoked. assetTypeId:", u, "name:", f);
+                console.log("[AvatarItems] Raw response items length:", Array.isArray(i)?i.length:"?", "payload:", i);
 
-                        ; if(e.name=i.Item.Name, e.id=i.Item.AssetId, e.type="Asset", n.addItemThumbnailAndLink(e), n.$parent.updateItemSelected(e), e.expired=i.UserItem&&i.UserItem.IsRentalExpired, e.thumbnail=i.Thumbnail, e.assetType= {
-                                id:u, name:f
+                angular.forEach(i, function(i) {
+                        var e= {};
+
+                        try {
+                            console.log("[AvatarItems] Processing asset", i && i.Item ? i.Item.AssetId : "unknown", i && i.Item ? i.Item.Name : "?");
+
+                            if(!i || !i.Item) {
+                                console.warn("[AvatarItems] Skipping item with missing Item payload", i);
+                                return
                             }
 
-                            , e.expired) {
-                            t.debug(e.name+" is expired!"); return
-                        }
+                            e.name=i.Item.Name;
+                            e.id=i.Item.AssetId;
+                            e.type="Asset";
 
-                        c[e.id]?t.debug(e.name+" is a duplicate"):(c[e.id]= !0, r.push(e))
-                    }), [].push.apply(n.items, r), h.hasNextPage()?n.$emit("manualInfiniteScrollCheck"):(t.debug("Doesn't have next page, loading recommendations"), w())
+                            // Some helper methods may not exist depending on parent scope; guard them.
+                            if(typeof n.addItemThumbnailAndLink==="function") {
+                                n.addItemThumbnailAndLink(e)
+                            } else {
+                                console.warn("[AvatarItems] addItemThumbnailAndLink is not a function on scope", n)
+                            }
+
+                            if(n.$parent && typeof n.$parent.updateItemSelected==="function") {
+                                n.$parent.updateItemSelected(e)
+                            } else {
+                                console.warn("[AvatarItems] $parent.updateItemSelected is not available; selection state may be stale")
+                            }
+
+                            e.expired=i.UserItem&&i.UserItem.IsRentalExpired;
+
+                            // Keep full server payload for templates that still reference it
+                            e.Item = i.Item;
+                            e.Thumbnail = i.Thumbnail;
+
+                            // Fallback URL when no CDN thumbnail yet
+                            e.thumbnailUrl = (i.Thumbnail && i.Thumbnail.Url) ? i.Thumbnail.Url : (e.thumbnail && e.thumbnail.RetryUrl);
+
+                            e.assetType= {
+                                id:u,
+                                name:f
+                            };
+
+                            if(e.expired) {
+                                t.debug(e.name+" is expired!");
+                                return
+                            }
+
+                            if(c[e.id]) {
+                                console.log("[AvatarItems] Duplicate skipped", e.id);
+                                t.debug(e.name+" is a duplicate");
+                                return
+                            }
+
+                            c[e.id]= !0;
+                            r.push(e);
+                            console.log("[AvatarItems] Added item", e.id)
+                        } catch(ex) {
+                            console.error("[AvatarItems] Error while processing inventory item", i, ex)
+                        }
+                    });
+
+                [].push.apply(n.items, r);
+                console.log("[AvatarItems] Items added this page:", r.length, "Total items now:", n.items.length);
+
+                // Ensure Angular updates bindings even if outside digest
+                n.$applyAsync && n.$applyAsync();
+
+                h.hasNextPage()?n.$emit("manualInfiniteScrollCheck"):(t.debug("Doesn't have next page, loading recommendations"), w())
             }
 
             , loadError:function() {
