@@ -15,6 +15,17 @@ namespace Assets
         private readonly AssetsRepository _repository = new AssetsRepository();
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
 
+        private static byte[] ConvertToPng(byte[] originalBytes)
+        {
+            using (var input = new MemoryStream(originalBytes))
+            using (var image = new Bitmap(input))
+            using (var output = new MemoryStream())
+            {
+                image.Save(output, ImageFormat.Png);
+                return output.ToArray();
+            }
+        }
+
         public async Task<long> CreateTShirtAsync(
             string connectionString,
             long ownerUserId,
@@ -42,10 +53,12 @@ namespace Assets
                 throw new ArgumentException("cdnAssetsRoot is required", nameof(cdnAssetsRoot));
 
             // 1) ---------- Save uploaded PNG as image asset ------------------
+            var pngBytes = ConvertToPng(fileBytes);
+
             string pngHash;
             using (var sha = SHA256.Create())
             {
-                var hashBytes = sha.ComputeHash(fileBytes);
+                var hashBytes = sha.ComputeHash(pngBytes);
                 var sb = new StringBuilder(hashBytes.Length * 2);
                 foreach (var b in hashBytes)
                     sb.Append(b.ToString("x2"));
@@ -55,15 +68,13 @@ namespace Assets
             var assetFolder = Path.Combine(cdnAssetsRoot, "asset");
             Directory.CreateDirectory(assetFolder);
 
-            var pngExtension = Path.GetExtension(originalFileName);
-            if (string.IsNullOrWhiteSpace(pngExtension))
-                pngExtension = ".png";
+            var pngExtension = ".png";
             var pngFileName = pngHash + pngExtension;
             var pngFullPath = Path.Combine(assetFolder, pngFileName);
 
             using (var fs = new FileStream(pngFullPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true))
             {
-                await fs.WriteAsync(fileBytes, 0, fileBytes.Length, cancellationToken).ConfigureAwait(false);
+                await fs.WriteAsync(pngBytes, 0, pngBytes.Length, cancellationToken).ConfigureAwait(false);
             }
 
             var imageCreateParams = new AssetCreateParams
@@ -73,7 +84,7 @@ namespace Assets
                 OwnerUserId = ownerUserId,
                 ContentHash = pngHash,
                 FileExtension = pngExtension,
-                ContentType = contentType,
+                ContentType = "image/png",
                 ThumbnailUrl = null
             };
             var imageAssetId = await _repository.CreateAssetAsync(connectionString, imageCreateParams, cancellationToken)
@@ -130,7 +141,7 @@ namespace Assets
                     var thumbPath = Path.Combine(thumbnailsRoot, thumbFileName);
 
                     using (var template = new Bitmap(tshirtTemplatePath))
-                    using (var userImageStream = new MemoryStream(fileBytes))
+                    using (var userImageStream = new MemoryStream(pngBytes))
                     using (var userImage = new Bitmap(userImageStream))
                     using (var composed = new Bitmap(template.Width, template.Height))
                     using (var g = Graphics.FromImage(composed))

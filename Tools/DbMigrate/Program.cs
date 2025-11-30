@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Collections.Generic;
 using DbUp;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -62,7 +63,8 @@ internal class Program
         Console.WriteLine("4) Describe users table (columns)");
         Console.WriteLine("5) List users (id, name, created)");
         Console.WriteLine("6) View user details (by id or name)");
-        Console.Write("Enter choice (1-6): ");
+        Console.WriteLine("7) Asset maintenance (wipe all assets or a single asset)");
+        Console.Write("Enter choice (1-7): ");
         var key = Console.ReadKey(intercept: true).KeyChar;
         Console.WriteLine();
 
@@ -283,6 +285,238 @@ internal class Program
             {
                 Console.Error.WriteLine(ex);
                 return -1;
+            }
+        }
+        else if (key == '7')
+        {
+            Console.WriteLine("Asset maintenance:");
+            Console.WriteLine("1) Wipe ALL assets from database and delete their files");
+            Console.WriteLine("2) Wipe a single asset (and linked T-Shirt image/XML) from database and delete files");
+            Console.Write("Enter choice (1-2): ");
+            var subKey = Console.ReadKey(intercept: true).KeyChar;
+            Console.WriteLine();
+
+            var websiteDir = Path.Combine(repoRoot, "Website");
+            string? assetsDirectory = null;
+            if (Directory.Exists(websiteDir))
+            {
+                var cfg = new ConfigurationBuilder()
+                    .SetBasePath(websiteDir)
+                    .AddJsonFile("appsettings.json", optional: true)
+                    .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+                assetsDirectory = cfg["Assets:Directory"];
+            }
+
+            if (string.IsNullOrWhiteSpace(assetsDirectory))
+            {
+                Console.WriteLine("Assets directory not configured in Website/appsettings*.json; file deletions will be skipped.");
+            }
+
+            string? assetFolder = null;
+            if (!string.IsNullOrWhiteSpace(assetsDirectory))
+            {
+                assetFolder = Path.Combine(assetsDirectory, "asset");
+            }
+
+            if (subKey == '1')
+            {
+                Console.WriteLine();
+                Console.WriteLine("WARNING: This will DELETE ALL rows from assets and user_assets, and attempt to delete all asset files.");
+                Console.Write("Type 'WIPE_ASSETS' to continue (or anything else to cancel): ");
+                var confirm = Console.ReadLine();
+                if (!string.Equals(confirm, "WIPE_ASSETS", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Cancelled.");
+                    return 1;
+                }
+
+                try
+                {
+                    using var conn = new NpgsqlConnection(connectionString);
+                    conn.Open();
+                    using var tx = conn.BeginTransaction();
+
+                    var fileInfo = new List<(string Hash, string? Ext)>();
+                    const string selectSql = "select content_hash, file_extension from assets";
+                    using (var cmdSelect = new NpgsqlCommand(selectSql, conn, tx))
+                    using (var reader = cmdSelect.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var hash = reader.GetString(0);
+                            var ext = reader.IsDBNull(1) ? null : reader.GetString(1);
+                            fileInfo.Add((hash, ext));
+                        }
+                    }
+
+                    using (var cmdDelUserAssets = new NpgsqlCommand("delete from user_assets;", conn, tx))
+                    {
+                        cmdDelUserAssets.ExecuteNonQuery();
+                    }
+
+                    using (var cmdDelAssets = new NpgsqlCommand("delete from assets;", conn, tx))
+                    {
+                        cmdDelAssets.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+
+                    if (!string.IsNullOrWhiteSpace(assetFolder) && Directory.Exists(assetFolder))
+                    {
+                        foreach (var (hash, ext) in fileInfo)
+                        {
+                            var fileName = hash + (ext ?? string.Empty);
+                            var path = Path.Combine(assetFolder, fileName);
+                            if (File.Exists(path))
+                            {
+                                try
+                                {
+                                    File.Delete(path);
+                                }
+                                catch
+                                {
+                                }
+                            }
+                        }
+                    }
+
+                    Console.WriteLine("All assets and user_assets rows have been deleted. Associated files were deleted where possible.");
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                    return -1;
+                }
+            }
+            else if (subKey == '2')
+            {
+                Console.Write("Enter asset id: ");
+                var input = Console.ReadLine();
+                if (!long.TryParse(input, out var rootAssetId) || rootAssetId <= 0)
+                {
+                    Console.WriteLine("Invalid asset id.");
+                    return 1;
+                }
+
+                try
+                {
+                    using var conn = new NpgsqlConnection(connectionString);
+                    conn.Open();
+                    using var tx = conn.BeginTransaction();
+
+                    const string baseSql = "select asset_id, asset_type_id, name, owner_user_id, content_hash, file_extension from assets where asset_id = @id limit 1";
+                    using var cmdBase = new NpgsqlCommand(baseSql, conn, tx);
+                    cmdBase.Parameters.AddWithValue("id", rootAssetId);
+
+                    long assetId;
+                    int assetTypeId;
+                    string name;
+                    long ownerUserId;
+                    string contentHash;
+                    string? fileExt;
+
+                    using (var reader = cmdBase.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                        {
+                            Console.WriteLine("Asset not found.");
+                            return 1;
+                        }
+
+                        assetId = reader.GetInt64(0);
+                        assetTypeId = reader.GetInt32(1);
+                        name = reader.GetString(2);
+                        ownerUserId = reader.GetInt64(3);
+                        contentHash = reader.GetString(4);
+                        fileExt = reader.IsDBNull(5) ? null : reader.GetString(5);
+                    }
+
+                    var idsToDelete = new List<long> { assetId };
+                    var filesToDelete = new List<(string Hash, string? Ext)> { (contentHash, fileExt) };
+
+                    if (assetTypeId == 2)
+                    {
+                        const string linkedSql = "select asset_id, content_hash, file_extension from assets where owner_user_id = @owner and asset_type_id = 1 and name = @name || ' Image' limit 1";
+                        using var cmdLinked = new NpgsqlCommand(linkedSql, conn, tx);
+                        cmdLinked.Parameters.AddWithValue("owner", ownerUserId);
+                        cmdLinked.Parameters.AddWithValue("name", name);
+                        using var readerLinked = cmdLinked.ExecuteReader();
+                        if (readerLinked.Read())
+                        {
+                            var linkedId = readerLinked.GetInt64(0);
+                            var linkedHash = readerLinked.GetString(1);
+                            var linkedExt = readerLinked.IsDBNull(2) ? null : readerLinked.GetString(2);
+                            if (!idsToDelete.Contains(linkedId))
+                            {
+                                idsToDelete.Add(linkedId);
+                                filesToDelete.Add((linkedHash, linkedExt));
+                            }
+                        }
+                    }
+                    else if (assetTypeId == 1 && name.EndsWith(" Image", StringComparison.Ordinal))
+                    {
+                        var baseName = name[..^6];
+                        const string tshirtSql = "select asset_id, content_hash, file_extension from assets where owner_user_id = @owner and asset_type_id = 2 and name = @name limit 1";
+                        using var cmdT = new NpgsqlCommand(tshirtSql, conn, tx);
+                        cmdT.Parameters.AddWithValue("owner", ownerUserId);
+                        cmdT.Parameters.AddWithValue("name", baseName);
+                        using var readerT = cmdT.ExecuteReader();
+                        if (readerT.Read())
+                        {
+                            var linkedId = readerT.GetInt64(0);
+                            var linkedHash = readerT.GetString(1);
+                            var linkedExt = readerT.IsDBNull(2) ? null : readerT.GetString(2);
+                            if (!idsToDelete.Contains(linkedId))
+                            {
+                                idsToDelete.Add(linkedId);
+                                filesToDelete.Add((linkedHash, linkedExt));
+                            }
+                        }
+                    }
+
+                    using (var cmdDel = new NpgsqlCommand("delete from assets where asset_id = any(@ids);", conn, tx))
+                    {
+                        cmdDel.Parameters.AddWithValue("ids", idsToDelete.ToArray());
+                        cmdDel.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+
+                    if (!string.IsNullOrWhiteSpace(assetFolder) && Directory.Exists(assetFolder))
+                    {
+                        foreach (var (hash, ext) in filesToDelete)
+                        {
+                            var fileName = hash + (ext ?? string.Empty);
+                            var path = Path.Combine(assetFolder, fileName);
+                            if (File.Exists(path))
+                            {
+                                try
+                                {
+                                    File.Delete(path);
+                                }
+                                catch
+                                {
+                                }
+                            }
+                        }
+                    }
+
+                    Console.WriteLine($"Deleted {idsToDelete.Count} asset(s) and their files where possible.");
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                    return -1;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid asset maintenance choice.");
+                return 1;
             }
         }
         else

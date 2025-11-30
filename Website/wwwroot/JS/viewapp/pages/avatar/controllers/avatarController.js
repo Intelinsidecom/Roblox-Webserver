@@ -286,14 +286,23 @@ function li(n) {
     }
 
     function f(n) {
-        var s=n.assetType, h= !u&&k(s.name)?o.assets.maxAccessories:bi(s.id), f=e(n.assetType); i[f]=typeof i[f]=="undefined" ?0:i[f], i[f]<h?(i[f]+=1, r.push(n)):t.debug("Removed asset " +n.name+" because it exceeded wearing limits")
+        var s=n.assetType, h= !u&&k(s.name)?o.assets.maxAccessories:bi(s.id), f=e(n.assetType); i[f]=typeof i[f]=="undefined" ?0:i[f], i[f]<h?(i[f]+=1, r.push(n)):t.debug("Removed asset "+n.name+" because it exceeded wearing limits")
     }
 
     var r=[], i= {}
 
-    , u=k(n.assetType.name); return f(n), angular.forEach(l, function(n) {
-            f(n)
-        }), b=dt(n), st(r)
+    , u=k(n.assetType.name); var existing=l; if(n.assetType&&n.assetType.name==="T-Shirt") {
+        existing=[];
+        angular.forEach(l, function(t) {
+            if(!t.assetType||t.assetType.name!=="T-Shirt"||t.id===n.id) existing.push(t)
+        })
+    }
+
+    f(n);
+    angular.forEach(existing, function(t) {
+            f(t)
+        });
+    b=dt(n); return st(r)
 }
 
 function ot(n) {

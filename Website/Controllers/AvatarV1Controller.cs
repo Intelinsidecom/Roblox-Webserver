@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
+using System.Linq;
 using Users;
 using Avatar;
 
@@ -312,8 +313,47 @@ public class AvatarV1Controller : ControllerBase
             return Problem("Database not configured");
 
         var repo = new AvatarWornAssetsRepository();
-        var ids = model.assetIds ?? Array.Empty<long>();
-        await repo.SetWornAssetIdsAsync(connStr, userId, ids, cancellationToken);
+        var rawIds = model.assetIds ?? Array.Empty<long>();
+
+        // Normalize and enforce server-side clothing rules so callers cannot
+        // bypass them by hitting the API directly.
+        var filteredIds = rawIds.Distinct().ToList();
+
+        if (filteredIds.Count > 0)
+        {
+            // Enforce "only one T-Shirt" at the persistence layer even if
+            // a buggy or malicious client sends multiple T-Shirt asset IDs.
+            const int TShirtAssetTypeId = 2;
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select asset_id from assets where asset_type_id = @tshirtTypeId and asset_id = any(@ids) order by asset_id";
+            await using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("tshirtTypeId", TShirtAssetTypeId);
+                cmd.Parameters.AddWithValue("ids", filteredIds.ToArray());
+
+                var tshirtIds = new System.Collections.Generic.List<long>();
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    tshirtIds.Add(reader.GetInt64(0));
+                }
+
+                if (tshirtIds.Count > 1)
+                {
+                    var keep = tshirtIds[0];
+                    var tshirtSet = new System.Collections.Generic.HashSet<long>(tshirtIds);
+
+                    filteredIds = filteredIds
+                        .Where(id => !tshirtSet.Contains(id) || id == keep)
+                        .ToList();
+                }
+            }
+        }
+
+        await repo.SetWornAssetIdsAsync(connStr, userId, filteredIds, cancellationToken);
 
         // Keep avatar_state_hash in sync with current body colors and
         // worn assets so downstream systems can see configuration changes.

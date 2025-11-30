@@ -893,20 +893,28 @@ body.modal-open {
 .items-list .item-card .item-card-container {
     width: 100%;
     padding-bottom: 0;
-    background-color: #ffffff;
-    border: 1px solid #d4d4d4;
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
-    transition: box-shadow 200ms ease;
+}
+
+.items-list .item-card .item-card-container.selected {
+    border-color: #02b757;
+    box-shadow: 0 0 0 2px rgba(2, 183, 87, 0.7);
+    border-radius: 4px;
 }
 
 .items-list .item-card .item-card-container:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* Keep the equipped outline visible even when hovering */
+.items-list .item-card .item-card-container.selected:hover {
+    border-color: #02b757;
+    box-shadow: 0 0 0 2px rgba(2, 183, 87, 0.7);
+    border-radius: 4px;
+}
+
 .items-list .item-card .item-card-equipped {
-    border: 2px solid #02b757;
+    border: 0;
     position: absolute;
     top: 0;
     right: 0;

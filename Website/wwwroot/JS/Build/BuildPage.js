@@ -123,8 +123,12 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
         t = this, u5 = $(this), u5.addClass("gear-open");
         var e = u.closest("table"),
             f = e.data("item-id"),
-            o = e.data("item-moderation-approved");
-        o = o === "True", r5.find("a").each(function () {
+            o = e.data("item-moderation-approved"),
+            isTShirt = e.data("type") === "tshirts",
+            dropdown = isTShirt ? $("#tshirt-dropdown-menu") : r5;
+
+        if (!isTShirt) {
+            o = o === "True", dropdown.find("a").each(function () {
             var n = $(this),
                 i = n.hasClass("advertise-link"),
                 r = n.data("href-template"),
@@ -135,11 +139,13 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
                 universeId: f
             }, Roblox.EventStream.TargetTypes.WWW)
         });
-        var s3 = r5.parent().offset(),
-            c3 = r5.outerWidth(),
+        }
+
+        var s3 = dropdown.parent().offset(),
+            c3 = dropdown.outerWidth(),
             h3 = u5.offset();
         console.log('[BuildPage.js] a() positioning dropdown; parent offset:', s3, 'dropdown width:', c3, 'button offset:', h3);
-        return r5.css({
+        return dropdown.css({
             top: h3.top - s3.top + 21 + u5.outerHeight() + 9 + "px",
             left: h3.left - s3.left + 15 - c3 + u5.outerWidth() + "px"
         }).show(), u5.parent().css({

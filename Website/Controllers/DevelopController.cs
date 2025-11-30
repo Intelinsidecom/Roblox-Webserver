@@ -137,19 +137,37 @@ namespace RobloxWebserver.Controllers
             {
                 var sb = new StringBuilder();
                 sb.Append(@"<div class='items-container-inner'>");
-                sb.Append(@"    <h2 class='header-text'>Upload T-Shirt</h2>");
+                sb.Append(@"    <h1 class='title'>Create a T-Shirt <span class='tip-text'>Don't know how? <a href='https://en.help.roblox.com/hc/en-us/articles/203313200' class='text-link'>Click here</a></span></h1>");
                 sb.Append(@"    <form id='tshirt-upload-form' method='post' enctype='multipart/form-data' action='/develop/upload-tshirt'>");
-                sb.Append(@"        <div class='form-group'>");
-                sb.Append(@"            <label for='tshirt-name'>Name</label>");
-                sb.Append(@"            <input type='text' id='tshirt-name' name='name' class='text-box' required />");
+
+                // Find your image row
+                sb.Append(@"        <div class='form-outer'>");
+                sb.Append(@"            <div class='form-inner label-column'>");
+                sb.Append(@"                <span class='form-label'>Find your image:</span>");
+                sb.Append(@"            </div>");
+                sb.Append(@"            <div class='form-inner input-column'>");
+                sb.Append(@"                <input type='file' id='tshirt-file' name='file' accept='image/*' required />");
+                sb.Append(@"            </div>");
                 sb.Append(@"        </div>");
-                sb.Append(@"        <div class='form-group'>");
-                sb.Append(@"            <label for='tshirt-file'>Image file</label>");
-                sb.Append(@"            <input type='file' id='tshirt-file' name='file' accept='image/*' required />");
+
+                // T-Shirt name row
+                sb.Append(@"        <div class='form-outer'>");
+                sb.Append(@"            <div class='form-inner label-column'>");
+                sb.Append(@"                <span class='form-label'>T-Shirt Name:</span>");
+                sb.Append(@"            </div>");
+                sb.Append(@"            <div class='form-inner input-column'>");
+                sb.Append(@"                <input type='text' id='tshirt-name' name='name' class='text-box text-box-large' required />");
+                sb.Append(@"            </div>");
                 sb.Append(@"        </div>");
-                sb.Append(@"        <div class='form-group'>");
-                sb.Append(@"            <button type='submit' class='btn-medium btn-primary'>Upload</button>");
+
+                // Upload button row
+                sb.Append(@"        <div class='form-outer'>");
+                sb.Append(@"            <div class='form-inner label-column'></div>");
+                sb.Append(@"            <div class='form-inner input-column'>");
+                sb.Append(@"                <button type='submit' class='btn-medium btn-primary'>Upload</button>");
+                sb.Append(@"            </div>");
                 sb.Append(@"        </div>");
+
                 sb.Append(@"    </form>");
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -244,8 +262,8 @@ limit 50;";
                             
                             // Add dropdown menu for T-shirt actions
                             sb.Append(@"        <div id='tshirt-dropdown-menu' style='display:none;'>");
-                            sb.Append(@"            <a href='#' data-action='edit'>Edit</a>");
-                            sb.Append(@"            <a href='#' data-action='remove' class='divider-top'>Remove</a>");
+                            sb.Append(@"            <a href='#' data-action='configure'>Configure</a>");
+                            sb.Append(@"            <a href='#' data-action='advertise' class='divider-top'>Advertise</a>");
                             sb.Append(@"        </div>");
                             
                             sb.Append(@"    </div>");

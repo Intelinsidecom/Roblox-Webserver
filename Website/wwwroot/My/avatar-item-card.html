@@ -1,8 +1,13 @@
-<div class="item-card-container">
+<div class="item-card-container" ng-class="{'selected': item.selected}">
     <a href="" class="item-card-link" ng-click="onItemClicked(item, $event)">
         <div class="item-card-thumb-container">
             <img ng-src="{{(item.Thumbnail && item.Thumbnail.Url) || item.thumbnailUrl}}" class="item-card-thumb">
             <span ng-if="item.AssetRestrictionIcon" ng-class="'icon-'+item.AssetRestrictionIcon.CssTag+'-label'"></span>
+
+            <!-- Equipped overlay: shows green border + triangle when this item is selected -->
+            <div class="item-card-equipped" ng-if="item.selected">
+                <div class="item-card-equipped-label"></div>
+            </div>
         </div>
     </a>
     <div class="item-card-caption">
