@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/fVSZMEQ7JI=",
+  "dgSpecHash": "SDXNmQO5/AI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Avatar\\Avatar.csproj",
+  "projectFilePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Avatar\\Avatar.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Intel\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\Intel\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",

@@ -33,6 +33,25 @@ namespace RobloxWebserver.Controllers
             return Json(result);
         }
 
+        [HttpGet("checkifinvalidusernameforsignup")]
+        public async Task<IActionResult> CheckIfInvalidUsernameForSignup([FromQuery] string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return Json(new { data = 0 });
+            }
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+            {
+                return Json(new { data = 0 });
+            }
+
+            var result = await UserQueries.DoesUsernameExistAsync(connStr, username);
+            var data = result != null && result.success ? 1 : 0;
+            return Json(new { data });
+        }
+
         // Legacy endpoint used by TosModalCheck.js; always indicate no modal is required.
         [HttpGet("show-tos")]
         public IActionResult ShowTos([FromQuery] bool isLicensingTermsCheckNeeded)

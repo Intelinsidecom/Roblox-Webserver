@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sMc+OQEkFI8=",
+  "dgSpecHash": "1u6/PPlxGP0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Tools\\DbMigrate\\DbMigrate.csproj",
+  "projectFilePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Tools\\DbMigrate\\DbMigrate.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Intel\\.nuget\\packages\\dbup-core\\6.0.4\\dbup-core.6.0.4.nupkg.sha512",
     "C:\\Users\\Intel\\.nuget\\packages\\dbup-postgresql\\6.0.3\\dbup-postgresql.6.0.3.nupkg.sha512",
@@ -19,7 +19,11 @@
     "C:\\Users\\Intel\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
     "C:\\Users\\Intel\\.nuget\\packages\\npgsql\\9.0.2\\npgsql.9.0.2.nupkg.sha512",
     "C:\\Users\\Intel\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
-    "C:\\Users\\Intel\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512"
+    "C:\\Users\\Intel\\.nuget\\packages\\system.text.json\\8.0.0\\system.text.json.8.0.0.nupkg.sha512",
+    "C:\\Users\\Intel\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.22\\microsoft.netcore.app.ref.8.0.22.nupkg.sha512",
+    "C:\\Users\\Intel\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.22\\microsoft.windowsdesktop.app.ref.8.0.22.nupkg.sha512",
+    "C:\\Users\\Intel\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.22\\microsoft.aspnetcore.app.ref.8.0.22.nupkg.sha512",
+    "C:\\Users\\Intel\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.22\\microsoft.netcore.app.host.win-x64.8.0.22.nupkg.sha512"
   ],
   "logs": []
 }

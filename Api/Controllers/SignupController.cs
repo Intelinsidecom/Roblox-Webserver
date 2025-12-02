@@ -198,15 +198,26 @@ namespace Api.Controllers
 
             // Set .ROBLOSECURITY cookie to remember the user
             var cookieValue = $"UserId={newUserId}";
+
+            var isHttps = Request.IsHttps;
+            var cookieDomain = config["Auth:CookieDomain"];
+            var sameSiteConfig = (config["Auth:CookieSameSite"] ?? "Lax").Trim();
+            var sameSite = SameSiteMode.Lax;
+            if (sameSiteConfig.Equals("None", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.None;
+            else if (sameSiteConfig.Equals("Strict", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.Strict;
+            if (sameSite == SameSiteMode.None) isHttps = true;
+
             Response.Cookies.Append(
                 ".ROBLOSECURITY",
                 cookieValue,
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = DateTimeOffset.UtcNow.AddYears(1)
+                    Secure = isHttps,
+                    SameSite = sameSite,
+                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    Path = "/",
+                    Domain = string.IsNullOrWhiteSpace(cookieDomain) ? null : cookieDomain
                 }
             );
 

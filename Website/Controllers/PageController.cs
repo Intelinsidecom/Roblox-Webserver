@@ -13,10 +13,20 @@ namespace RobloxWebserver.Controllers
         [HttpPost("upgrades/robux")]
         public IActionResult RobuxPost()
         {
-            // Accept legacy form POSTs and render the same page.
             if (User?.Identity?.IsAuthenticated == true)
                 return Redirect("/home");
             return View("~/Views/Pages/Robux.cshtml");
+        }
+        [HttpGet("cataloga")]
+        public IActionResult Catalog()
+        {
+            return View("~/Views/Pages/Catalog.cshtml");
+        }
+
+        [HttpPost("cataloga")]
+        public IActionResult CatalogPost()
+        {
+            return View("~/Views/Pages/Catalog.cshtml");
         }
     }
 }

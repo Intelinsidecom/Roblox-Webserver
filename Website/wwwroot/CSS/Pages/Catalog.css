@@ -106,6 +106,10 @@
 div#catalog {
   font-size: 12px;
 }
+div#catalog .right-content h2 {
+  font-size: 30px;
+  font-weight: normal;
+}
 div#catalog .selected {
   font-weight: 600;
   color: #343434;

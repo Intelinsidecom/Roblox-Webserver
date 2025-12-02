@@ -2995,50 +2995,47 @@
   },
   "packageFolders": {
     "C:\\Users\\Intel\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Website\\RobloxWebserver.csproj",
+      "projectUniqueName": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\RobloxWebserver.csproj",
       "projectName": "RobloxWebserver",
-      "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Website\\RobloxWebserver.csproj",
+      "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\RobloxWebserver.csproj",
       "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Website\\obj\\",
+      "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj": {
-              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Api\\Api.csproj"
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Api\\Api.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Api\\Api.csproj"
             },
-            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Assets\\Assets.csproj": {
-              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Assets\\Assets.csproj"
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Assets\\Assets.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Assets\\Assets.csproj"
             },
-            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Avatar\\Avatar.csproj": {
-              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Avatar\\Avatar.csproj"
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Avatar\\Avatar.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Avatar\\Avatar.csproj"
             },
-            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Thumbnails\\Thumbnails.csproj": {
-              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Thumbnails\\Thumbnails.csproj"
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj"
             },
-            "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj": {
-              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\Assemblies\\Users\\Users.csproj"
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Users\\Users.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Users\\Users.csproj"
             }
           }
         }
@@ -3052,8 +3049,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -3101,7 +3097,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

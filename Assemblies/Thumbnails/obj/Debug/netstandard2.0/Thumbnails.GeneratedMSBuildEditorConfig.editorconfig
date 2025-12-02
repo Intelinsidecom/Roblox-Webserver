@@ -1,8 +1,5 @@
 is_global = true
 build_property.RootNamespace = Thumbnails
-build_property.ProjectDir = C:\Users\Intel\Documents\GitHub\RobloxWebserver\Assemblies\Thumbnails\
+build_property.ProjectDir = C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Assemblies\Thumbnails\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
-build_property.CsWinRTUseWindowsUIXamlProjections = false
-build_property.EffectiveAnalysisLevelStyle = 
-build_property.EnableCodeStyleSeverity = 

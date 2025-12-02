@@ -16,7 +16,7 @@ namespace RobloxWebserver.Controllers
         public IActionResult Route(string? path)
         {
             // Normalize path: root -> index
-            var pagePath = string.IsNullOrWhiteSpace(path) ? "index" : path.Trim();
+            var pagePath = string.IsNullOrWhiteSpace(path) ? "index" : path.Trim().Trim('/');
             pagePath = pagePath.Replace('\\', '/');
             // prevent traversal
             while (pagePath.Contains(".."))

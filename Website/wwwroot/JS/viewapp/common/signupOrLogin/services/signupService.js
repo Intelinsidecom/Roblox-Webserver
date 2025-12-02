@@ -28,7 +28,8 @@ signupOrLogin.factory("signupService", ["$http", "captchaService", "displayServi
                 crossDomain: !0,
                 withCredentials: !0
             }).success(function(n) {
-                Roblox.SignupOrLogin.onSignupSuccess(n.userId)
+                Roblox.SignupOrLogin.onSignupSuccess(n.userId);
+                Roblox.SignupOrLogin.onLoginSuccess(n.userId);
             }).error(function(n, u) {
                 if (r.badSubmit = !0, r.isSubmitting = !1, u === 403) {
                     var f = 0;
