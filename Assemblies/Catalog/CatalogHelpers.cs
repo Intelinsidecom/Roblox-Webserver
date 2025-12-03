@@ -50,6 +50,11 @@ namespace RobloxWebserver.Assemblies.Catalog
                 {
                     sqlBuilder.Append("  and a.asset_type_id = 2 ");
                 }
+                // Body Parts category (4): explicitly exclude T-Shirts
+                else if (category == 4)
+                {
+                    sqlBuilder.Append("  and a.asset_type_id <> 2 ");
+                }
 
                 sqlBuilder.Append("order by a.asset_id desc ");
                 sqlBuilder.Append("limit @limit");
