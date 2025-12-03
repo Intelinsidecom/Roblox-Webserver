@@ -1,0 +1,34 @@
+@model IEnumerable<RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel>
+
+<div class="right-content divider-left">
+    <h2>Catalog Items (dummy data)</h2>
+    <div style="clear:both;"></div>
+
+    @foreach (var item in Model)
+    {
+        <div class="CatalogItemOuter BigOuter">
+            <div class="SmallCatalogItemView BigView">
+                <div class="CatalogItemInner BigInner">
+                    <div class="roblox-item-image image-large" data-item-id="@item.Id" data-image-size="large">
+                        <div class="item-image-wrapper">
+                            <a href="#">
+                                <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
+                            </a>
+                        </div>
+                    </div>
+                    <div id="textDisplay">
+                        <div class="CatalogItemName notranslate">
+                            <a class="name notranslate" href="#" title="@item.Name">@item.Name</a>
+                        </div>
+                        <div class="CatalogHoverContent">
+                            <div>
+                                <span class="CatalogItemInfoLabel">Creator:</span>
+                                <span class="HoverInfo notranslate">@item.CreatorName</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1081,6 +1081,20 @@
           "bin/placeholder/Avatar.dll": {}
         }
       },
+      "Catalog/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Assets": "1.0.0",
+          "Npgsql": "8.0.4"
+        },
+        "compile": {
+          "bin/placeholder/Catalog.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Catalog.dll": {}
+        }
+      },
       "Thumbnails/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
@@ -2968,6 +2982,11 @@
       "path": "../Assemblies/Avatar/Avatar.csproj",
       "msbuildProject": "../Assemblies/Avatar/Avatar.csproj"
     },
+    "Catalog/1.0.0": {
+      "type": "project",
+      "path": "../Assemblies/Catalog/Catalog.csproj",
+      "msbuildProject": "../Assemblies/Catalog/Catalog.csproj"
+    },
     "Thumbnails/1.0.0": {
       "type": "project",
       "path": "../Assemblies/Thumbnails/Thumbnails.csproj",
@@ -2984,6 +3003,7 @@
       "Api >= 1.0.0",
       "Assets >= 1.0.0",
       "Avatar >= 1.0.0",
+      "Catalog >= 1.0.0",
       "LigerShark.WebOptimizer.Core >= 3.0.477",
       "Microsoft.EntityFrameworkCore >= 8.0.10",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.10",
@@ -3030,6 +3050,9 @@
             },
             "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Avatar\\Avatar.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Avatar\\Avatar.csproj"
+            },
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Catalog\\Catalog.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Catalog\\Catalog.csproj"
             },
             "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj"

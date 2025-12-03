@@ -2113,6 +2113,10 @@
       "PackagePath": "staticwebassets\\images\\8b0052e4ff81d8e14f19faff2a22fcf7.png"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\AddGearToGame.jpg",
+      "PackagePath": "staticwebassets\\images\\AddGearToGame.jpg"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\AssetIcons\\icon_labels_06292016.svg",
       "PackagePath": "staticwebassets\\images\\AssetIcons\\icon_labels_06292016.svg"
     },
@@ -2135,6 +2139,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\BuildPage\\ico-game_status3.png",
       "PackagePath": "staticwebassets\\images\\BuildPage\\ico-game_status3.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\BuildersClubOnly.png",
+      "PackagePath": "staticwebassets\\images\\BuildersClubOnly.png"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Buttons\\Arrows\\btn-silver-left-27.png",
@@ -2177,6 +2185,10 @@
       "PackagePath": "staticwebassets\\images\\Buttons\\questionmark-12x12.png"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\DealTickingOut.png",
+      "PackagePath": "staticwebassets\\images\\DealTickingOut.png"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\FrontPage.png",
       "PackagePath": "staticwebassets\\images\\FrontPage.png"
     },
@@ -2213,6 +2225,18 @@
       "PackagePath": "staticwebassets\\images\\Icons\\thumbs.svg"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\LimitedBuildersClub.png",
+      "PackagePath": "staticwebassets\\images\\LimitedBuildersClub.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\LimitedItems.png",
+      "PackagePath": "staticwebassets\\images\\LimitedItems.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\LimitedUniqueItems.png",
+      "PackagePath": "staticwebassets\\images\\LimitedUniqueItems.png"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Logo\\logo_R.svg",
       "PackagePath": "staticwebassets\\images\\Logo\\logo_R.svg"
     },
@@ -2231,6 +2255,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\MobileApp\\Upgrades\\green_check.png",
       "PackagePath": "staticwebassets\\images\\MobileApp\\Upgrades\\green_check.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\NewItem.png",
+      "PackagePath": "staticwebassets\\images\\NewItem.png"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\NextStyleGuide\\facebook.svg",
@@ -2303,6 +2331,26 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\StyleGuide\\btn-control-small-tile.png",
       "PackagePath": "staticwebassets\\images\\StyleGuide\\btn-control-small-tile.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Tickets.png",
+      "PackagePath": "staticwebassets\\images\\Tickets.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\UI\\catalog\\browse-by-category-header.png",
+      "PackagePath": "staticwebassets\\images\\UI\\catalog\\browse-by-category-header.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\UI\\catalog\\dropdown.png",
+      "PackagePath": "staticwebassets\\images\\UI\\catalog\\dropdown.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\UI\\catalog\\img-right_arrow.png",
+      "PackagePath": "staticwebassets\\images\\UI\\catalog\\img-right_arrow.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\UI\\catalog\\sprite-arrow.png",
+      "PackagePath": "staticwebassets\\images\\UI\\catalog\\sprite-arrow.png"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\UI\\img-check.png",

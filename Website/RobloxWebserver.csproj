@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Assemblies\Thumbnails\Thumbnails.csproj" />
     <ProjectReference Include="..\Assemblies\Avatar\Avatar.csproj" />
     <ProjectReference Include="..\Assemblies\Assets\Assets.csproj" />
+    <ProjectReference Include="..\Assemblies\Catalog\Catalog.csproj" />
   </ItemGroup>
 
 </Project>

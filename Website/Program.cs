@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication;
 using Website.Auth;
 using WebOptimizer;
 using Website.Extensions;
+using RobloxWebserver.Assemblies.Catalog;
+using RobloxWebserver.Assemblies.Catalog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 // Thumbnails service
 builder.Services.AddSingleton<IThumbnailService>(sp => new ThumbnailService(sp.GetRequiredService<IConfiguration>()));
+
+// Catalog assembly services
+builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
+builder.Services.AddSingleton<ICatalogService, CatalogService>();
+
+// Catalog assembly services
+builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
+builder.Services.AddSingleton<ICatalogService, CatalogService>();
 
 // WebOptimizer bundling/minification moved to extension for clarity
 builder.Services.AddWebOptimizerPipeline();

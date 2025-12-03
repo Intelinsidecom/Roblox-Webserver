@@ -469,6 +469,9 @@ div.roblox-item-image {
 .BigOuter .CatalogItemInner .CatalogHoverContent {
   padding-left: 6px;
 }
+.CatalogHoverContent div {
+  text-align: left;
+}
 .CatalogItemInner .ItemImg {
   border: 0;
   height: 160px;
@@ -865,4 +868,22 @@ div#textDisplay {
   .right-content .btn-medium.btn-primary {
     right: 40px;
   }
+}
+
+/* Vertical offset for Catalog page content (adjust margin-top as desired) */
+body[data-internal-page-name="Catalog"] #catalog {
+  margin-top: 40px;
+}
+
+/* Move the entire Catalog content block down below the header.
+   Adjust margin-top as you like; !important is needed because
+   Legacy/Navigation.css is loaded after this file. */
+body[data-internal-page-name="Catalog"] #navContent {
+  margin-top: 40px !important;
+}
+/* Ensure Catalog main content is not clipped inside an inner scrollable .nav-content */
+body[data-internal-page-name="Catalog"] .nav-content {
+  overflow: visible;
+  margin-left: 0 !important;
+  width: 100% !important;
 }

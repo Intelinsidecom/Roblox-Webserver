@@ -1,3 +1,4 @@
+@model IEnumerable<RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel>
 @{ Layout = "_Layout"; }
 <!DOCTYPE html>
 <html>
@@ -13,17 +14,94 @@
 <link rel="stylesheet" href="/CSS/Legacy/Modal.css">
 <link rel="stylesheet" href="/CSS/Pages/Shared/ShopInterstitialModal.css">
 
-<link rel="stylesheet" href="/CSS/fetch(1)">
+<script type="text/javascript" src="/JS/roblox.js"></script>
 
-        <link href="https://web.archive.org/web/20160412024048im_/https://images.rbxcdn.com/7aee41db80c1071f60377c3575a0ed87.ico" rel="icon">
-    <link rel="icon" type="image/vnd.microsoft.icon" href="https://web.archive.org/web/20160412024048im_/https://www.roblox.com/favicon.ico"><meta http-equiv="Content-Language" content="en-us"><meta name="author" content="ROBLOX Corporation"><meta id="ctl00_metadescription" name="description" content="ROBLOX is powered by a growing community of over 300,000 creators who produce an infinite variety of highly immersive experiences. These experiences range from 3D multiplayer games and competitions, to interactive adventures where friends can take on new personas imagining what it would be like to be a dinosaur, a miner in a quarry or an astronaut on a space exploration."><meta id="ctl00_metakeywords" name="keywords" content="free games, online games, building games, virtual worlds, free mmo, gaming cloud, physics engine">
+<script type="text/javascript" src="/JS/EventTracker.js"></script>
+<script type="text/javascript" src="/JS/ClientInstaller.js"></script>
+<script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
+<script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
+
+<script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
+<script type="text/javascript" src="/JS/iFrameLogin.js"></script>
+<script type="text/javascript" src="/JS/TwoStepVerificationModal.js"></script>
+
+<script type="text/javascript" src="/JS/modules/Widgets/ItemImage.js"></script>
+
+<script type="text/javascript" src="/JS/PageStyleNotifications.js"></script>
+<script type="text/javascript" src="/JS/Events/CatalogImpression.js"></script>
+<script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
+<script type="text/javascript" src="/JS/history.js/jquery.history.js"></script>
+<script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+<script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+
+<script type="text/javascript" src="/JS/roblox.js"></script>
+<script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+<script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
+<script type="text/javascript" src="/JS/extensions/string.js"></script>
+<script type="text/javascript" src="/JS/StringTruncator.js"></script>
+<script type="text/javascript" src="/JS/json2.min.js"></script>
+<script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+<script type="text/javascript" src="/JS/MasterPageUI.js"></script>
+<script type="text/javascript" src="/JS/jquery.cookie.js"></script>
+<script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
+<script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
+<script type="text/javascript" src="/JS/RobloxCookies.js"></script>
+<script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
+<script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
+<script type="text/javascript" src="/JS/MongoEventListener.js"></script>
+<script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
+<script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+<script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
+<script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
+<script type="text/javascript" src="/JS/Linkify.js"></script>
+<script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+<script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
+<script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
+<script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
+<script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+<script type="text/javascript" src="/JS/utilities/performance.js"></script>
+<script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
+<script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
+<script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
+<script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+<script type="text/javascript" src="/JS/XsrfToken.js"></script>
+<script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
+<script type="text/javascript" src="/JS/DropDownNav.js"></script>
+<script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
+<script type="text/javascript" src="/JS/GPTAdScript.js"></script>
+<script type="text/javascript" src="/JS/VideoPreRoll.js"></script>
+<script type="text/javascript" src="/JS/CharacterSelect.js"></script>
+<script type="text/javascript" src="/JS/MadStatus.js"></script>
+<script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
+<script type="text/javascript" src="/JS/ABPlaceLauncher.js"></script>
+<script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
+<script type="text/javascript" src="/JS/leancore/Navigation.js"></script>
+<script type="text/javascript" src="/JS/Reference/widget.js"></script>
+<script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+<script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
+<script type="text/javascript" src="/JS/GameLauncher.js"></script>
+<script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
+<script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
+<script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
+<script type="text/javascript" src="/JS/IframeEventListener.js"></script>
+<script type="text/javascript" src="/JS/ShopInterstitialModal.js"></script>
+<script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
+
+<script type="text/javascript" src="/JS/modules/Pages/CatalogShared.js"></script>
+
+<script type="text/javascript" src="/JS/modules/Widgets/HierarchicalDropdown.js"></script>
+
+<script type="text/javascript" src="/JS/athena.js"></script>
+
+<script type="text/javascript" src="/JS/modules/Pages/Catalog.js"></script>
+
+
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script type="text/javascript" src="./Catalog - ROBLOX_files/jquery-1.11.1.min.js.download"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")</script>
-<script type="text/javascript" src="./Catalog - ROBLOX_files/jquery-migrate-1.2.1.min.js.download"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
 
-<script type="text/javascript" src="./Catalog - ROBLOX_files/339db7b9d8758a887bea55b8934c776b.js.download"></script>
         <script type="text/javascript">
             if (Roblox && Roblox.EventStream) {
                 Roblox.EventStream.Init("//web.archive.org/web/20160412024048/https://ecsv2.roblox.com/www/e.png",
@@ -138,6 +216,12 @@ function __doPostBack(eventTarget, eventArgument) {
     #Body {
         padding: 5px;
     }
+
+    .disabled-tab {
+        pointer-events: none;
+        cursor: default;
+        opacity: 0.5;
+    }
 </style>
 
 
@@ -228,7 +312,8 @@ function __doPostBack(eventTarget, eventArgument) {
                 </ul>
             </li>
         
-            <li class="subcategories"><a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/catalog/#category=gear" class="assetTypeFilter" data-category="5">Gear</a>
+            <li class="subcategories">
+                <a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/catalog/#category=gear" class="assetTypeFilter" data-category="5">Gear</a>
                 <ul class="slideOut" style="top:-159px; width:auto;">
                     <div>
                         <li class="slideHeader"><span>Gear Categories</span></li>
@@ -254,15 +339,15 @@ function __doPostBack(eventTarget, eventArgument) {
         <h3>Legend</h3>
     </div>
     <div id="legendcontent" style="overflow: hidden; ">
-        <img src="./Catalog - ROBLOX_files/4fc3a98692c7ea4d17207f1630885f68.png" style="margin-left: -13px">
+        <img src="/images/BuildersClubOnly.png" style="margin-left: -13px">
         <div class="legendText"><b>Builders Club Only</b><br>
         Only purchasable by Builders Club members.</div>
 
-        <img src="./Catalog - ROBLOX_files/793dc1fd7562307165231ca2b960b19a.png" style="margin-left: -13px">
+        <img src="/images/LimitedItems.png" style="margin-left: -13px">
         <div class="legendText"><b>Limited Items</b><br>
         Owners of these discontinued items can re-sell them to other users at any price.</div>
         
-        <img src="./Catalog - ROBLOX_files/d649b9c54a08dcfa76131d123e7d8acc.png" style="margin-left: -13px">
+        <img src="/images/LimitedUniqueItems.png" style="margin-left: -13px">
         <div class="legendText"><b>Limited Unique Items</b><br>
         A limited supply originally sold by ROBLOX. Each unit is labeled with a serial number. Once sold out, owners can re-sell them to other users.
         </div>
@@ -275,126 +360,172 @@ function __doPostBack(eventTarget, eventArgument) {
         <h2>Featured Items on ROBLOX</h2>
         <div style="clear:both;"></div>
         
-        
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <div class="CatalogItemOuter BigOuter">
+                    <div class="SmallCatalogItemView BigView">
+                        <div class="CatalogItemInner BigInner">
+                            <div class="roblox-item-image image-large" data-item-id="@item.Id" data-image-size="large">
+                                <div class="item-image-wrapper">
+                                    <a href="#">
+                                        <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
 
+                                        @if (item.IsLimitedUnique)
+                                        {
+                                            <img src="/images/LimitedUniqueItems.png" alt="Limited Unique" class="limited-overlay" />
+                                        }
+                                        else if (item.IsLimited)
+                                        {
+                                            <img src="/images/LimitedItems.png" alt="Limited" class="limited-overlay" />
+                                        }
 
+                                        @if (item.IsNew)
+                                        {
+                                            <img src="/images/NewItem.png" alt="New" />
+                                        }
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="textDisplay">
+                                <div class="CatalogItemName notranslate">
+                                    <a class="name notranslate" href="#" title="@item.Name">@item.Name</a>
+                                </div>
 
-<div class="CatalogItemOuter BigOuter">
-<div class="SmallCatalogItemView BigView">
-<div class="CatalogItemInner BigInner">    
-        <div class="roblox-item-image image-large" data-item-id="395201183" data-image-size="large">
-            <div class="item-image-wrapper">
-                <a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Korblox-Polar-Defense-Helm-item?id=395201183">
-                    <img title="Korblox Polar Defense Helm" alt="Korblox Polar Defense Helm" class="original-image " src="./Catalog - ROBLOX_files/9a81bc2265fc116a3a19654f8445f1dd">
-                                            <img src="./Catalog - ROBLOX_files/38db481d8e9c04ce960b4f49cbf94af2.png" alt="Limited Unique" class="limited-overlay">
-                                                                <img src="./Catalog - ROBLOX_files/b84cdb8c0e7c6cbe58e91397f91b8be8.png" alt="New">
-                </a>
-            </div>
-        </div>
-        
-    <div id="textDisplay">
-    <div class="CatalogItemName notranslate"><a class="name notranslate" href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Korblox-Polar-Defense-Helm-item?id=395201183" title="Korblox Polar Defense Helm">Korblox Polar Defense Helm</a></div>
-                <div class="robux-price"><span class="SalesText">was </span><span class="robux notranslate">500</span></div>
-            <div id="PrivateSales"><span class="SalesText">now </span><span class="robux notranslate">1,250</span></div>
-    </div>
-        <div class="CatalogHoverContent">
-            <div><span class="CatalogItemInfoLabel">Creator:</span> <span class="HoverInfo notranslate"><a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/users/1/profile">ROBLOX</a></span></div>
-            <div><span class="CatalogItemInfoLabel">Updated:</span> <span class="HoverInfo">2 days ago</span></div>
-            <div><span class="CatalogItemInfoLabel">Sales:</span> <span class="HoverInfo notranslate">1000</span></div>
-            <div><span class="CatalogItemInfoLabel">Favorited:</span> <span class="HoverInfo">207 times</span></div>
-        </div>
-</div>
-</div>	
-</div>
+                                @if (item.PriceRobux.HasValue || item.PriceTickets.HasValue)
+                                {
+                                    if (item.PriceRobux.HasValue)
+                                    {
+                                        if (item.OriginalPriceRobux.HasValue && item.OriginalPriceRobux != item.PriceRobux)
+                                        {
+                                            <div class="robux-price"><span class="SalesText">was </span><span class="robux notranslate">@item.OriginalPriceRobux</span></div>
+                                            <div id="PrivateSales"><span class="SalesText">now </span><span class="robux notranslate">@item.PriceRobux</span></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="robux-price"><span class="robux notranslate">@item.PriceRobux</span></div>
+                                        }
+                                    }
+                                    else if (item.PriceTickets.HasValue)
+                                    {
+                                        <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
+                                    }
+                                }
 
+                                <div class="CatalogHoverContent">
+                                    <div>
+                                        <span class="CatalogItemInfoLabel">Creator:</span>
+                                        <span class="HoverInfo notranslate">@item.CreatorName</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.UpdatedText))
+                                    {
+                                        <div>
+                                            <span class="CatalogItemInfoLabel">Updated:</span>
+                                            <span class="HoverInfo">@item.UpdatedText</span>
+                                        </div>
+                                    }
+                                    @if (item.Sales.HasValue)
+                                    {
+                                        <div>
+                                            <span class="CatalogItemInfoLabel">Sales:</span>
+                                            <span class="HoverInfo notranslate">@item.Sales</span>
+                                        </div>
+                                    }
+                                    @if (item.FavoritedCount.HasValue)
+                                    {
+                                        <div>
+                                            <span class="CatalogItemInfoLabel">Favorited:</span>
+                                            <span class="HoverInfo">@item.FavoritedCount times</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
 
-<div class="CatalogItemOuter BigOuter">
-<div class="SmallCatalogItemView BigView">
-<div class="CatalogItemInner BigInner">    
-        <div class="roblox-item-image image-large" data-item-id="390970950" data-image-size="large">
-            <div class="item-image-wrapper">
-                <a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Paper-Tix-Hat-item?id=390970950">
-                    <img title="Paper Tix Hat" alt="Paper Tix Hat" class="original-image " src="./Catalog - ROBLOX_files/0e0edd90a1b726ad861ccd5a678570a2">
-                                                                <img src="./Catalog - ROBLOX_files/189fd0a5fee903ef4ad2337ecfea5a00.png" alt="Deadline">
-                                            <img src="./Catalog - ROBLOX_files/b84cdb8c0e7c6cbe58e91397f91b8be8.png" alt="New">
-                </a>
-            </div>
-        </div>
-        
-    <div id="textDisplay">
-    <div class="CatalogItemName notranslate"><a class="name notranslate" href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Paper-Tix-Hat-item?id=390970950" title="Paper Tix Hat">Paper Tix Hat</a></div>
-            <div class="tickets-price"><span class="tickets notranslate">500</span></div>
-    </div>
-        <div class="CatalogHoverContent">
-            <div><span class="CatalogItemInfoLabel">Creator:</span> <span class="HoverInfo notranslate"><a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/users/1/profile">ROBLOX</a></span></div>
-            <div><span class="CatalogItemInfoLabel">Updated:</span> <span class="HoverInfo">4 hours ago</span></div>
-            <div><span class="CatalogItemInfoLabel">Sales:</span> <span class="HoverInfo notranslate">18,426</span></div>
-            <div><span class="CatalogItemInfoLabel">Favorited:</span> <span class="HoverInfo">354 times</span></div>
-        </div>
-</div>
-</div>	
-</div>
+            foreach (var item in Model)
+            {
+                <div class="CatalogItemOuter SmallOuter">
+                    <div class="SmallCatalogItemView SmallView">
+                        <div class="CatalogItemInner SmallInner">
+                            <div class="roblox-item-image image-small" data-item-id="@item.Id" data-image-size="small">
+                                <div class="item-image-wrapper">
+                                    <a href="#">
+                                        <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
 
+                                        @if (item.IsLimitedUnique)
+                                        {
+                                            <img src="/images/LimitedUniqueItems.png" alt="Limited Unique" class="limited-overlay" />
+                                        }
+                                        else if (item.IsLimited)
+                                        {
+                                            <img src="/images/LimitedItems.png" alt="Limited" class="limited-overlay" />
+                                        }
+                                    </a>
+                                </div>
+                            </div>
 
-<div class="CatalogItemOuter BigOuter">
-<div class="SmallCatalogItemView BigView">
-<div class="CatalogItemInner BigInner">    
-        <div class="roblox-item-image image-large" data-item-id="390971171" data-image-size="large">
-            <div class="item-image-wrapper">
-                <a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Ticket-Beanie-item?id=390971171">
-                    <img title="Ticket Beanie" alt="Ticket Beanie" class="original-image " src="./Catalog - ROBLOX_files/620cf44c929bc7e883194e3f8e8f6145">
-                                                                <img src="./Catalog - ROBLOX_files/189fd0a5fee903ef4ad2337ecfea5a00.png" alt="Deadline">
-                                            <img src="./Catalog - ROBLOX_files/b84cdb8c0e7c6cbe58e91397f91b8be8.png" alt="New">
-                </a>
-            </div>
-        </div>
-        
-    <div id="textDisplay">
-    <div class="CatalogItemName notranslate"><a class="name notranslate" href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Ticket-Beanie-item?id=390971171" title="Ticket Beanie">Ticket Beanie</a></div>
-            <div class="tickets-price"><span class="tickets notranslate">250</span></div>
-    </div>
-        <div class="CatalogHoverContent">
-            <div><span class="CatalogItemInfoLabel">Creator:</span> <span class="HoverInfo notranslate"><a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/users/1/profile">ROBLOX</a></span></div>
-            <div><span class="CatalogItemInfoLabel">Updated:</span> <span class="HoverInfo">4 hours ago</span></div>
-            <div><span class="CatalogItemInfoLabel">Sales:</span> <span class="HoverInfo notranslate">14,302</span></div>
-            <div><span class="CatalogItemInfoLabel">Favorited:</span> <span class="HoverInfo">239 times</span></div>
-        </div>
-</div>
-</div>	
-</div>
+                            <div id="textDisplay">
+                                <div class="CatalogItemName notranslate">
+                                    <a class="name notranslate" href="#" title="@item.Name">@item.Name</a>
+                                </div>
 
+                                @if (item.PriceRobux.HasValue || item.PriceTickets.HasValue)
+                                {
+                                    if (item.PriceRobux.HasValue)
+                                    {
+                                        if (item.OriginalPriceRobux.HasValue && item.OriginalPriceRobux != item.PriceRobux)
+                                        {
+                                            <div class="robux-price"><span class="SalesText">was </span><span class="robux notranslate">@item.OriginalPriceRobux</span></div>
+                                            <div id="PrivateSales"><span class="SalesText">now </span><span class="robux notranslate">@item.PriceRobux</span></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="robux-price"><span class="robux notranslate">@item.PriceRobux</span></div>
+                                        }
+                                    }
+                                    else if (item.PriceTickets.HasValue)
+                                    {
+                                        <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
+                                    }
+                                }
 
-<div class="CatalogItemOuter BigOuter">
-<div class="SmallCatalogItemView BigView">
-<div class="CatalogItemInner BigInner">    
-        <div class="roblox-item-image image-large" data-item-id="395201965" data-image-size="large">
-            <div class="item-image-wrapper">
-                <a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Redcliff-Assassin-item?id=395201965">
-                    <img title="Redcliff Assassin" alt="Redcliff Assassin" class="original-image " src="./Catalog - ROBLOX_files/27e0b8587c30b2349a6c20f42e57a1c4">
-                                                                                    <img src="./Catalog - ROBLOX_files/b84cdb8c0e7c6cbe58e91397f91b8be8.png" alt="New">
-                </a>
-            </div>
-        </div>
-        
-    <div id="textDisplay">
-    <div class="CatalogItemName notranslate"><a class="name notranslate" href="https://web.archive.org/web/20160412024048/https://www.roblox.com/Redcliff-Assassin-item?id=395201965" title="Redcliff Assassin">Redcliff Assassin</a></div>
-            <div class="robux-price"><span class="robux notranslate">175</span></div>
-    </div>
-        <div class="CatalogHoverContent">
-            <div><span class="CatalogItemInfoLabel">Creator:</span> <span class="HoverInfo notranslate"><a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/users/1/profile">ROBLOX</a></span></div>
-            <div><span class="CatalogItemInfoLabel">Updated:</span> <span class="HoverInfo">2 days ago</span></div>
-            <div><span class="CatalogItemInfoLabel">Sales:</span> <span class="HoverInfo notranslate">1,205</span></div>
-            <div><span class="CatalogItemInfoLabel">Favorited:</span> <span class="HoverInfo">202 times</span></div>
-        </div>
-</div>
-</div>	
-</div>
-        <div style="clear:both"></div>
-
-
-        <div style="clear:both;padding-top: 50px;text-align:center;font-weight: bold;">
-                <a href="https://web.archive.org/web/20160412024048/https://www.roblox.com/catalog/#featured=all" class="assetTypeFilter" data-category="Featured">See all featured items</a>            
-        </div>
+                                <div class="CatalogHoverContent">
+                                    <div>
+                                        <span class="CatalogItemInfoLabel">Creator:</span>
+                                        <span class="HoverInfo notranslate">@item.CreatorName</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.UpdatedText))
+                                    {
+                                        <div>
+                                            <span class="CatalogItemInfoLabel">Updated:</span>
+                                            <span class="HoverInfo">@item.UpdatedText</span>
+                                        </div>
+                                    }
+                                    @if (item.Sales.HasValue)
+                                    {
+                                        <div>
+                                            <span class="CatalogItemInfoLabel">Sales:</span>
+                                            <span class="HoverInfo notranslate">@item.Sales</span>
+                                        </div>
+                                    }
+                                    @if (item.FavoritedCount.HasValue)
+                                    {
+                                        <div>
+                                            <span class="CatalogItemInfoLabel">Favorited:</span>
+                                            <span class="HoverInfo">@item.FavoritedCount times</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
     </div>
     <div style="clear:both"></div>
 </div>
@@ -441,16 +572,33 @@ function __doPostBack(eventTarget, eventArgument) {
     </script>
 <![endif]-->
 
+<script type="text/javascript">
+    $(function () {
+        function shouldStayEnabled($link) {
+            var text = $.trim($link.text());
+            return text === "All Featured Items" || text === "T-Shirts";
+        }
+
+        // Disable all assetTypeFilter / gearFilter / breadCrumbFilter tabs except the allowed ones
+        $("a.assetTypeFilter, a.gearFilter, a.breadCrumbFilter").each(function () {
+            var $link = $(this);
+            if (!shouldStayEnabled($link)) {
+                $link.addClass("disabled-tab");
+                $link.on("click", function (e) {
+                    e.preventDefault();
+                    return false;
+                });
+            }
+        });
+    });
+</script>
 
                     <div style="clear:both"></div>
                 </div>
             </div>
-        </div> 
-        </div>
         
         </div></div>
     
-
 
 </form>
 

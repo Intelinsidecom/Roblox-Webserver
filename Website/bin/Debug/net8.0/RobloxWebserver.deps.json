@@ -11,6 +11,7 @@
           "Api": "1.0.0",
           "Assets": "1.0.0",
           "Avatar": "1.0.0",
+          "Catalog": "1.0.0",
           "LigerShark.WebOptimizer.Core": "3.0.477",
           "Microsoft.EntityFrameworkCore": "8.0.10",
           "Microsoft.EntityFrameworkCore.Design": "8.0.10",
@@ -702,6 +703,18 @@
           }
         }
       },
+      "Catalog/1.0.0": {
+        "dependencies": {
+          "Assets": "1.0.0",
+          "Npgsql": "8.0.4"
+        },
+        "runtime": {
+          "Catalog.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
       "Thumbnails/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
@@ -1096,6 +1109,11 @@
       "sha512": ""
     },
     "Avatar/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Catalog/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

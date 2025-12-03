@@ -17,16 +17,5 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/home");
             return View("~/Views/Pages/Robux.cshtml");
         }
-        [HttpGet("cataloga")]
-        public IActionResult Catalog()
-        {
-            return View("~/Views/Pages/Catalog.cshtml");
-        }
-
-        [HttpPost("cataloga")]
-        public IActionResult CatalogPost()
-        {
-            return View("~/Views/Pages/Catalog.cshtml");
-        }
     }
 }
