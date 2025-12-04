@@ -2205,6 +2205,170 @@
       "PackagePath": "staticwebassets\\images\\Games\\stars.svg"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Adventure.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Adventure.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Castle.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Castle.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\City.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\City.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Classic.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Classic.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Cthulu.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Cthulu.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\FPS.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\FPS.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\LOL.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\LOL.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\MenuSprites.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\MenuSprites.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\ModernMilitary.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\ModernMilitary.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Ninja.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Ninja.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Pirate.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Pirate.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\SciFi.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\SciFi.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Skatepark.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Skatepark.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Sports.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Sports.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\Tutorial.gif",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\Tutorial.gif"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIconsInverted\\WildWest.png",
+      "PackagePath": "staticwebassets\\images\\GenreIconsInverted\\WildWest.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Adventure.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Adventure.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\All.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\All.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Castle.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Castle.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\City.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\City.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Classic.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Classic.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Cthulu.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Cthulu.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\FPS.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\FPS.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Fantasy.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Fantasy.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Funny.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Funny.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\GenreIconsSprite.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\GenreIconsSprite.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\LOL.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\LOL.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\ModernMilitary.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\ModernMilitary.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Ninja.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Ninja.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Pirate.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Pirate.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\RPG.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\RPG.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Scary.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Scary.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Sci-Fi.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Sci-Fi.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\SciFi.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\SciFi.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Skatepark.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Skatepark.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Sports.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Sports.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\TownandCity.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\TownandCity.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Tutorial.gif",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Tutorial.gif"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\Tutorial.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\Tutorial.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\War.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\War.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\GenreIcons\\WildWest.png",
+      "PackagePath": "staticwebassets\\images\\GenreIcons\\WildWest.png"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Home\\friendsstatus.svg",
       "PackagePath": "staticwebassets\\images\\Home\\friendsstatus.svg"
     },
