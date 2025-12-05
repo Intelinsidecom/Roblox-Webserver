@@ -1,0 +1,115 @@
+/* ~/CSS/Pages/Shared/Friend.css */
+.icon-default-friendstatus,
+.icon-ingame,
+.icon-instudio,
+.icon-online {
+	background-image: url(/web/20160326012633im_/http://static.rbxcdn.com/images/Home/friendsstatus.svg);
+	background-repeat: no-repeat;
+	background-size: 100% auto;
+	width: 28px;
+	height: 28px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.icon-ingame {
+	background-position: 0 0;
+}
+
+.icon-instudio {
+	background-position: 0 -28px;
+}
+
+.icon-online {
+	background-position: 0 -56px;
+}
+
+.friend-list {
+	max-height: 110px;
+	overflow: hidden;
+}
+
+.friend {
+	width: 11.11111%;
+	height: 110px;
+	position: relative;
+}
+
+.friend .friend-link {
+	position: relative;
+	max-width: 85px;
+	margin: 0 auto;
+}
+
+.friend .friend-avatar {
+	display: inline-block;
+}
+
+.friend .friend-avatar img {
+	width: 85px;
+	height: 85px;
+	border: 1px solid #B8B8B8;
+	border-radius: 3px;
+}
+
+.friend .friend-name {
+	display: block;
+	margin: 3px 0 0;
+}
+
+.friend .friend-name:hover {
+	color: #00A2FF;
+}
+
+.friend .friend-status {
+	position: absolute;
+	right: -3.5px;
+	top: 70px;
+}
+
+@media(max-width:991px) {
+	.friend .friend-status {
+		right: 0;
+	}
+}
+
+@media(max-width:991px) {
+	.friend .friend-status {
+		background-image: none;
+		height: 4px;
+		width: 85px;
+		left: 0;
+		top: 84px;
+		margin: 0 auto;
+	}
+
+	.friend .friend-status.icon-ingame {
+		background-color: #02b757;
+	}
+
+	.friend .friend-status.icon-instudio {
+		background-color: #F68802;
+	}
+
+	.friend .friend-status.icon-online {
+		background-color: #00A2FF;
+	}
+}
+
+@media(max-width:991px) {
+	.friend {
+		width: 14.28571%;
+	}
+}
+
+@media(max-width:767px) {
+	.friend {
+		width: 20%;
+	}
+}
+
+@media(max-width:479px) {
+	.friend {
+		width: 33.33333%;
+	}
+}

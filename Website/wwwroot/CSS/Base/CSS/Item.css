@@ -120,7 +120,7 @@
 
 .GenreInfo .GamesInfoIcon {
 	display: inline-block;
-	background-image: url(/web/20160429201715im_/https://static.rbxcdn.com/images/GenreIcons/GenreIconsSprite.png);
+	background-image: url(/images/GenreIcons/GenreIconsSprite.png);
 	width: 16px;
 	height: 16px;
 }
@@ -185,7 +185,7 @@ pre.Description.Full,
 .closeBtnCircle_35h {
 	width: 35px;
 	height: 35px;
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/closeBtnCircle_35h.png);
+	background: url(/images/Buttons/closeBtnCircle_35h.png);
 }
 
 .closeBtnCircle_20h:hover {
@@ -200,11 +200,11 @@ pre.Description.Full,
 	position: absolute;
 	top: 5px;
 	left: 5px;
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/btn-x.png);
+	background: url(/images/Buttons/btn-x.png);
 }
 
 .PurchaseModal .simplemodal-close a {
-	background: url('/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/btn-x.png') no-repeat top left;
+	background: url('/images/Buttons/btn-x.png') no-repeat top left;
 	display: block;
 	height: 20px;
 	width: 20px;
@@ -245,11 +245,22 @@ pre.Description.Full,
 	text-align: center;
 }
 
+.ConfigureItemButtons {
+	text-align: center;
+}
+
+.ConfigureItemButtons .btn-medium {
+	font-size: 18px;
+	height: 24px;
+	min-width: 50px;
+	padding: 1px 10px 2px 10px;
+}
+
 .btn-blue-ok-sharp {
 	height: 50px;
 	width: 102px;
 	display: inline-block;
-	background: url('/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/btn_blue_ok_l.png') top left no-repeat;
+	background: url('/images/Buttons/btn_blue_ok_l.png') top left no-repeat;
 }
 
 .btn-blue-ok-sharp:hover {
@@ -400,4 +411,129 @@ pre.Description.Full,
 	position: absolute;
 	top: 0;
 	left: 10px;
+}
+
+#EditItemContainer {
+	margin-top: 50px;
+}
+
+#EditItemContainer .StandardBoxHeader {
+	background: none;
+	border: 0;
+	color: #333;
+	font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 12px;
+    color: #343434;
+    letter-spacing: -1px;
+}
+
+#EditItemContainer .StandardBoxHeader span {
+	background: none;
+	height: auto;
+	padding: 0;
+}
+
+#EditItem #ItemName {
+	width: 500px;
+	margin: 20px auto 0;
+}
+
+#EditItem #ItemName .Label {
+	font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 550;
+}
+
+#EditItem #ItemName .TextBox {
+	width: 100%;
+	font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+#EditItem #ItemDescription {
+	width: 500px;
+	margin: 20px auto;
+		
+}
+
+#EditItem #ItemDescription .MultilineTextBox {
+	width: 100%;
+	min-height: 200px;
+	font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+	font-size: 15px;
+	font-weight: normal;
+	border: 1px solid #ccc;
+	padding: 5px;
+}
+
+#EditItem #ItemDescription .Label {
+	font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+	font-size: 14px;
+	font-weight: 550;
+}
+
+#SellItem {
+	margin-top: 25px;
+}
+
+#SellItem fieldset {
+	border: none;
+	margin: 0;
+}
+
+#SellItem .Suggestion {
+	width: auto;
+	margin: 0 0 10px 20px;
+}
+
+#SellItem table {
+	width: auto;
+	margin: 10px 0 0 115px;
+}
+
+#SellItem td {
+	padding: 8px 4px;
+}
+
+#SellItem td:first-child {
+	text-align: right;
+	padding-right: 8px;
+	font-weight: 600;
+}
+
+#SellItem .EnableCommentsRow {
+	margin-left: 40px !important;
+}
+
+#SellItem .MarketplaceFeeNote {
+	display: inline-block;
+	margin-left: 2px;
+	margin-top: 0;
+}
+
+#SellItem .CurrencyColor1 {
+	padding-left: 20px;
+	background: url(/images/cssspecific/rbx2/head_infobox_icons.png) no-repeat 0 -42px;
+	margin-right: 4px;
+	color: #080;
+	font-weight: 600;
+}
+
+#SellItem .icon-robux {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+	vertical-align: middle;
+}
+
+#SellItem .sell-robux-amount {
+	font-size: 12px;
+	margin-left: -6px;
+	position: relative;
+	top: 1px;
+	color: #186911;
 }

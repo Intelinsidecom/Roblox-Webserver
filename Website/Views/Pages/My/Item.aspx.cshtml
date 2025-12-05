@@ -106,10 +106,10 @@ Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$cphRoblox
             <div id="Body">
 
     <div id="EditItemContainer">
-        <div class="StandardBoxHeader" style="margin: 10px auto 0; width: 709px; position: relative; right: 20px;">
+        <div class="StandardBoxHeader" style="margin: 10px auto 0; width: 780px; position: relative; right: 20px;">
             <span>Configure
             T-Shirt</span></div>
-        <div class="StandardBox" style="width: 705px; margin: 0 auto; float: none; position: relative; right: 20px;">
+        <div class="StandardBox" style="width: 805px; margin: 0 auto; float: none; position: relative; right: 20px;">
             <div id="EditItem">
                 
                 <a id="ctl00_cphRoblox_TopBackButton" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$TopBackButton&quot;, &quot;&quot;, true, &quot;&quot;, &quot;/SpasAttackM13-s-shirt-off-selling-item?id=47543155&quot;, false, true))">Back</a>
@@ -130,8 +130,8 @@ Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$cphRoblox
                     <textarea name="ctl00$cphRoblox$DescriptionTextBox" rows="2" cols="20" id="ctl00_cphRoblox_DescriptionTextBox" class="MultilineTextBox" style="height:150px;color: Black">This is SpasAttackM13`s shirt that he was wearing in Mar.8/2011
 or in germen:Maz.8/2011.</textarea>
                 </div>
-                <div class="Buttons">
-                    <a id="ctl00_cphRoblox_LinkButton1" tabindex="4" class="Button" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$LinkButton1&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Update</a>&nbsp;<a id="ctl00_cphRoblox_LinkButton2" tabindex="5" class="Button" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$LinkButton2&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Cancel</a>
+                <div class="Buttons ConfigureItemButtons">
+                    <a id="ctl00_cphRoblox_LinkButton1" tabindex="4" class="btn-medium btn-neutral" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$LinkButton1&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Save</a>&nbsp;<a id="ctl00_cphRoblox_LinkButton2" tabindex="5" class="btn-medium btn-negative" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$LinkButton2&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Cancel</a>
                 </div>
                 <div id="SellItem">
                     <fieldset title="Sell this item">
@@ -140,48 +140,101 @@ or in germen:Maz.8/2011.</textarea>
                             Check the box below and enter a price if you want to sell this item in the Roblox catalog.
                             Uncheck the box to remove the item from the catalog.
                         </div>
-                        <div style="margin: 10px 0;">
-                            <input id="ctl00_cphRoblox_SellThisItemCheckBox" type="checkbox" name="ctl00$cphRoblox$SellThisItemCheckBox" />
-                            <label for="ctl00_cphRoblox_SellThisItemCheckBox">Sell this item</label>
+                        <div class="EnableCommentsRow" style="margin-left:20px; margin-top:10px;">
+                            <input id="ctl00_cphRoblox_SellThisItemCheckBox" type="checkbox" name="ctl00$cphRoblox$SellThisItemCheckBox" />&nbsp;&nbsp;&nbsp;
+                            <label for="ctl00_cphRoblox_SellThisItemCheckBox">Sell this Item</label>
                         </div>
-                        <div>
+                        <div id="SellItemPricing" style="display:none;">
                             <table cellspacing="5" cellpadding="0">
                                 <tr>
                                     <td>Price:</td>
-                                    <td>
-                                        <span class="CurrencyColor1">R$</span>
-                                    </td>
-                                    <td>
+                                    <td colspan="3">
+                                        <span class="CurrencyColor1">&nbsp;</span>
                                         <input id="ctl00_cphRoblox_PriceTextBox" name="ctl00$cphRoblox$PriceTextBox" type="text" style="width:50px;" />
-                                    </td>
-                                    <td>
-                                        <input id="ctl00_cphRoblox_SellButton" type="submit" class="Button" value="Sell this item" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Marketplace Fee:</td>
                                     <td colspan="3">
-                                        <span class="CurrencyColor1">R$0</span>
-                                        <span style="margin-left:5px;">(30% - minimum 1)</span>
+                                        <span class="CurrencyColor1">&nbsp;</span><span class="text-robux sell-robux-amount">0</span>
+                                        <span class="MarketplaceFeeNote">(30% - minimum 1)</span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>You Earn:</td>
                                     <td colspan="3">
-                                        <span class="CurrencyColor1">R$0</span>
+                                        <span class="CurrencyColor1">&nbsp;</span><span class="text-robux sell-robux-amount">0</span>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                     </fieldset>
                 </div>
-                <div id="Comments">
+                <script type="text/javascript">
+                    (function () {
+                        function updateSellMath() {
+                            var priceInput = document.getElementById('ctl00_cphRoblox_PriceTextBox');
+                            if (!priceInput) {
+                                return;
+                            }
+                            var raw = priceInput.value || '';
+                            var numeric = raw.replace(/[^0-9]/g, '');
+                            var price = parseInt(numeric, 10);
+                            if (isNaN(price) || price < 0) {
+                                price = 0;
+                            }
+                            var amountSpans = document.querySelectorAll('#SellItem .sell-robux-amount');
+                            if (!amountSpans || amountSpans.length < 2) {
+                                return;
+                            }
+                            var fee = 0;
+                            var earn = 0;
+                            if (price > 0) {
+                                fee = Math.floor(price * 0.3);
+                                if (fee < 1) {
+                                    fee = 1;
+                                }
+                                earn = price - fee;
+                                if (earn < 0) {
+                                    earn = 0;
+                                }
+                            }
+                            amountSpans[0].innerHTML = fee;
+                            amountSpans[1].innerHTML = earn;
+                        }
+                        function updateSellPricingVisibility() {
+                            var cb = document.getElementById('ctl00_cphRoblox_SellThisItemCheckBox');
+                            var panel = document.getElementById('SellItemPricing');
+                            if (!cb || !panel) {
+                                return;
+                            }
+                            if (cb.checked) {
+                                panel.style.display = '';
+                                updateSellMath();
+                            } else {
+                                panel.style.display = 'none';
+                            }
+                        }
+                        window.updateSellMath = updateSellMath;
+                        var priceInput = document.getElementById('ctl00_cphRoblox_PriceTextBox');
+                        if (priceInput) {
+                            priceInput.onkeyup = updateSellMath;
+                            priceInput.onchange = updateSellMath;
+                        }
+                        var sellCb = document.getElementById('ctl00_cphRoblox_SellThisItemCheckBox');
+                        if (sellCb) {
+                            sellCb.onclick = updateSellPricingVisibility;
+                        }
+                        updateSellPricingVisibility();
+                    })();
+                </script>
+                <div id="Comments" style="margin-bottom:30px;">
                     <fieldset title="Turn comments on/off">
                         <legend>Turn comments on/off</legend>
                         <div class="Suggestion">
                             Choose whether or not this item is open for comments.
                         </div>
-                        <div class="EnableCommentsRow" style="margin-left:20px;">
+                        <div class="EnableCommentsRow" style="margin-left:20px; margin-top:20px;">
                             <input id="ctl00_cphRoblox_EnableCommentsCheckBox" type="checkbox" name="ctl00$cphRoblox$EnableCommentsCheckBox" checked="checked" />&nbsp;&nbsp;&nbsp;
                             <label for="ctl00_cphRoblox_EnableCommentsCheckBox">Allow Comments</label>
                         </div>
@@ -384,9 +437,11 @@ or in germen:Maz.8/2011.</textarea>
 </div>
 
 </div>
-                <div class="Buttons">
-                    <a id="ctl00_cphRoblox_SubmitButton" tabindex="4" class="Button" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$SubmitButton&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Update</a>&nbsp;<a id="ctl00_cphRoblox_CancelButton" tabindex="5" class="Button" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$CancelButton&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Cancel</a>
+                <div class="Buttons ConfigureItemButtons">
+                    <a id="ctl00_cphRoblox_SubmitButton" tabindex="4" class="btn-medium btn-neutral" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$SubmitButton&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Save</a>&nbsp;<a id="ctl00_cphRoblox_CancelButton" tabindex="5" class="btn-medium btn-negative" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$CancelButton&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Cancel</a>
                 </div>
+                   <a id="ctl00_cphRoblox_BottomBackButton" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$BottomBackButton&quot;, &quot;&quot;, true, &quot;&quot;, &quot;/SpasAttackM13-s-shirt-off-selling-item?id=47543155&quot;, false, true))">Back</a>
+            </div>
         </div>
     </div>
     <div style="clear: both;"></div>
