@@ -33,6 +33,10 @@
       "PackagePath": "staticwebassets\\CSS\\Base\\CSS\\Item.css"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Base\\CSS\\ItemRemake.css",
+      "PackagePath": "staticwebassets\\CSS\\Base\\CSS\\ItemRemake.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Base\\CSS\\LoadingSpinner.css",
       "PackagePath": "staticwebassets\\CSS\\Base\\CSS\\LoadingSpinner.css"
     },

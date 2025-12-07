@@ -123,8 +123,7 @@ namespace RobloxWebserver.Assemblies.Catalog
 from assets a
 join users u on u.user_id = a.owner_user_id
 where a.asset_type_id = 2
-  and (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%')
-  and (a.name is null or a.name not ilike '%image%')
+  and coalesce(a.asset_image, false) = false
 order by a.asset_id desc
 limit @limit";
 

@@ -37,6 +37,7 @@ namespace Assets
             string thumbnailsRoot,
             string thumbnailBaseUrl,
             string tshirtTemplatePath,
+            string tshirtTemplateHighResPath,
             string baseUrl,
             string? publicAssetBaseUrl,
             CancellationToken cancellationToken = default)
@@ -85,7 +86,9 @@ namespace Assets
                 ContentHash = pngHash,
                 FileExtension = pngExtension,
                 ContentType = "image/png",
-                ThumbnailUrl = null
+                ThumbnailUrl = null,
+                AssetImage = false,
+                AssetLink = null
             };
             var imageAssetId = await _repository.CreateAssetAsync(connectionString, imageCreateParams, cancellationToken)
                 .ConfigureAwait(false);
@@ -128,6 +131,7 @@ namespace Assets
 
             // 3) ---------- Generate thumbnail using template -------------------
             string? thumbnailUrl = null;
+            string? highResThumbnailUrl = null;
             try
             {
                 if (!string.IsNullOrWhiteSpace(thumbnailsRoot) &&
@@ -166,11 +170,49 @@ namespace Assets
                     var relPath = ("thumbnails/" + thumbFileName).TrimStart('/', '\\');
                     thumbnailUrl = string.IsNullOrEmpty(thumbBase) ? null : string.Concat(thumbBase, "/", relPath);
                 }
+
+                if (!string.IsNullOrWhiteSpace(thumbnailsRoot) &&
+                    !string.IsNullOrWhiteSpace(thumbnailBaseUrl) &&
+                    !string.IsNullOrWhiteSpace(tshirtTemplateHighResPath) &&
+                    File.Exists(tshirtTemplateHighResPath))
+                {
+                    Directory.CreateDirectory(thumbnailsRoot);
+
+                    var highResThumbFileName = xmlHash + "_tshirt_highres.png";
+                    var highResThumbPath = Path.Combine(thumbnailsRoot, highResThumbFileName);
+
+                    using (var template = new Bitmap(tshirtTemplateHighResPath))
+                    using (var userImageStream = new MemoryStream(pngBytes))
+                    using (var userImage = new Bitmap(userImageStream))
+                    using (var composed = new Bitmap(template.Width, template.Height))
+                    using (var g = Graphics.FromImage(composed))
+                    {
+                        g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+
+                        g.DrawImage(template, 0, 0, template.Width, template.Height);
+
+                        var targetWidth = (int)(template.Width * 0.5);
+                        var targetHeight = (int)(template.Height * 0.5);
+                        var targetX = (template.Width - targetWidth) / 2;
+                        var targetY = (template.Height - targetHeight) / 2;
+
+                        g.DrawImage(userImage, new Rectangle(targetX, targetY, targetWidth, targetHeight));
+
+                        composed.Save(highResThumbPath, ImageFormat.Png);
+                    }
+
+                    var highResThumbBase = thumbnailBaseUrl?.TrimEnd('/', '\\') ?? string.Empty;
+                    var highResRelPath = ("thumbnails/" + highResThumbFileName).TrimStart('/', '\\');
+                    highResThumbnailUrl = string.IsNullOrEmpty(highResThumbBase) ? null : string.Concat(highResThumbBase, "/", highResRelPath);
+                }
             }
             catch
             {
                 // Swallow thumbnail composition failures; asset upload should still succeed.
                 thumbnailUrl = null;
+                highResThumbnailUrl = null;
             }
 
             var tshirtCreateParams = new AssetCreateParams
@@ -181,12 +223,18 @@ namespace Assets
                 ContentHash = xmlHash,
                 FileExtension = xmlExtension,
                 ContentType = "application/xml",
-                ThumbnailUrl = thumbnailUrl
+                ThumbnailUrl = thumbnailUrl,
+                HighResThumbnailUrl = highResThumbnailUrl,
+                Description = "T-shirt"
             };
 
             var tshirtAssetId = await _repository.CreateAssetAsync(connectionString, tshirtCreateParams, cancellationToken)
                 .ConfigureAwait(false);
             await _userAssetsRepository.AddUserAssetAsync(connectionString, ownerUserId, tshirtAssetId, cancellationToken)
+                .ConfigureAwait(false);
+
+            // Mark the image asset as being the image for this T-Shirt and link it.
+            await _repository.UpdateAssetImageLinkAsync(connectionString, imageAssetId, true, tshirtAssetId, cancellationToken)
                 .ConfigureAwait(false);
 
             return tshirtAssetId;

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "q7PbDHKaIxwb1Eq6Dfpy2R4EpKDMxsXfqx+WTTnXFAc=",
+  "Hash": "TLmzpUerJGIA4HqsRBgdqnZdkr4Up4mw8LUGJS13JxE=",
   "Source": "RobloxWebserver",
   "BasePath": "_content/RobloxWebserver",
   "Mode": "Default",
@@ -198,6 +198,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\CSS\\Base\\CSS\\Item.css"
+    },
+    {
+      "Identity": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Base\\CSS\\ItemRemake.css",
+      "SourceId": "RobloxWebserver",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\",
+      "BasePath": "_content/RobloxWebserver",
+      "RelativePath": "CSS/Base/CSS/ItemRemake.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\CSS\\Base\\CSS\\ItemRemake.css"
     },
     {
       "Identity": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Base\\CSS\\jquery.mCustomScrollbar.css",

@@ -317,6 +317,7 @@ limit 50;";
             var thumbnailsRoot = _configuration["Thumbnails:OutputDirectory"];
             var thumbnailBaseUrl = _configuration["Thumbnails:ThumbnailUrl"];
             var tshirtTemplatePath = _configuration["Thumbnails:TshirtTemplatePath"];
+            var tshirtTemplateHighResPath = _configuration["Thumbnails:TshirtTemplateHighResPath"];
             var publicAssetBaseUrl = _configuration["Assets:PublicBaseUrl"];
 
             try
@@ -336,6 +337,7 @@ limit 50;";
                     thumbnailsRoot ?? string.Empty,
                     thumbnailBaseUrl ?? string.Empty,
                     tshirtTemplatePath ?? string.Empty,
+                    tshirtTemplateHighResPath ?? string.Empty,
                     baseUrl,
                     publicAssetBaseUrl,
                     cancellationToken).ConfigureAwait(false);

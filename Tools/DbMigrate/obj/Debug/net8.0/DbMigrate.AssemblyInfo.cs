@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DbMigrate")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e850b8d4eb1a9eefc9286821fbef1f16461667a6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33743ef1cd16b2552f19dd75eb9cd3a97550aed6")]
 [assembly: System.Reflection.AssemblyProductAttribute("DbMigrate")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DbMigrate")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

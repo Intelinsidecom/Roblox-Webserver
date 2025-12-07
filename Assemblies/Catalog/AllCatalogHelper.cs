@@ -35,8 +35,7 @@ namespace RobloxWebserver.Assemblies.Catalog
        a.created_at
 from assets a
 join users u on u.user_id = a.owner_user_id
-where (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%')
-  and (a.name is null or a.name not ilike '%image%')
+where coalesce(a.asset_image, false) = false
 order by a.asset_id desc
 limit @limit";
 

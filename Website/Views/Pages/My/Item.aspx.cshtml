@@ -1,4 +1,126 @@
+@using Assets
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @{ Layout = "_Layout"; }
+@{
+    var idRaw = Context.Request.Query["id"].ToString();
+    if (!long.TryParse(idRaw, out var itemId) || itemId <= 0)
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
+    var connStr = Configuration.GetConnectionString("Default");
+    if (string.IsNullOrWhiteSpace(connStr))
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
+    var resolvedId = AssetHelpers.ResolveLinkedAssetId(connStr, itemId);
+
+    var isPost = string.Equals(Context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
+    var action = isPost ? Context.Request.Form["Action"].ToString() : string.Empty;
+    var updateSucceeded = false;
+    DateTime? updateTime = null;
+
+    if (isPost && string.Equals(action, "Cancel", StringComparison.OrdinalIgnoreCase))
+    {
+        Context.Response.Redirect($"/catalog/{itemId}/haaa");
+        return;
+    }
+
+    if (isPost && string.Equals(action, "Save", StringComparison.OrdinalIgnoreCase))
+    {
+        var postedName = Context.Request.Form["ctl00$cphRoblox$NameTextBox"].ToString();
+        var postedDescription = Context.Request.Form["ctl00$cphRoblox$DescriptionTextBox"].ToString();
+        var sellCheckboxRaw = Context.Request.Form["ctl00$cphRoblox$SellThisItemCheckBox"].ToString();
+        var onSalePosted = !string.IsNullOrWhiteSpace(sellCheckboxRaw);
+        var priceRaw = Context.Request.Form["ctl00$cphRoblox$RobuxPrice"].ToString();
+        var allowCommentsRaw = Context.Request.Form["ctl00$cphRoblox$EnableCommentsCheckBox"].ToString();
+        var allowCommentsPosted = !string.IsNullOrWhiteSpace(allowCommentsRaw);
+        var genreRaw = Context.Request.Form["ctl00$cphRoblox$actualGenreSelection"].ToString();
+
+        int parsedGenre = 1;
+        if (!string.IsNullOrWhiteSpace(genreRaw) && int.TryParse(genreRaw, out var tmpGenre) && tmpGenre >= 1 && tmpGenre <= 15)
+        {
+            parsedGenre = tmpGenre;
+        }
+
+        long parsedPrice = 0;
+        if (!string.IsNullOrWhiteSpace(priceRaw))
+        {
+            var digitsOnly = new string(priceRaw.Where(char.IsDigit).ToArray());
+            if (!string.IsNullOrWhiteSpace(digitsOnly) && long.TryParse(digitsOnly, out var tmp) && tmp >= 0)
+            {
+                parsedPrice = tmp;
+            }
+        }
+
+        if (!onSalePosted)
+        {
+            parsedPrice = 0;
+        }
+
+        var assetsRepo = new AssetsRepository();
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(postedName))
+            {
+                assetsRepo.UpdateAssetMetadataAsync(connStr, resolvedId, postedName, postedDescription)
+                    .GetAwaiter().GetResult();
+            }
+
+            assetsRepo.UpdateAssetSaleAsync(connStr, resolvedId, onSalePosted, parsedPrice)
+                .GetAwaiter().GetResult();
+
+            assetsRepo.UpdateAssetAllowCommentsAsync(connStr, resolvedId, allowCommentsPosted)
+                .GetAwaiter().GetResult();
+
+            assetsRepo.UpdateAssetGenreAsync(connStr, resolvedId, parsedGenre)
+                .GetAwaiter().GetResult();
+
+            updateSucceeded = true;
+            updateTime = DateTime.Now;
+        }
+        catch
+        {
+        }
+    }
+
+    var repo = new AssetMetadataRepository();
+    AssetRecord record;
+    try
+    {
+        record = repo.GetAssetByIdAsync(connStr, resolvedId).GetAwaiter().GetResult();
+    }
+    catch
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
+    if (record == null)
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
+    var assetName = record.Name ?? string.Empty;
+    var assetTypeLabel = AssetTypeNames.GetConfigureLabel(record.AssetTypeId);
+    var assetDescription = record.Description ?? string.Empty;
+    var primaryThumb = string.IsNullOrWhiteSpace(record.HighResThumbnailUrl)
+        ? record.ThumbnailUrl
+        : record.HighResThumbnailUrl;
+    var assetThumbnail = string.IsNullOrWhiteSpace(primaryThumb)
+        ? "/images/RobloxLogo.png"
+        : primaryThumb;
+    var onSale = record.OnSale;
+    var assetPrice = record.Price;
+    var allowComments = record.AllowComments;
+    var assetGenre = record.Genre;
+    var minPrice = 2;
+}
 
 <!DOCTYPE html>
 <html>
@@ -229,10 +351,11 @@
         }
     </script>
 
-<form name="aspnetForm" method="post" action="/my/item.aspx?id=1161477602" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm" class="nav-container no-gutter-ads">
+<form name="aspnetForm" method="post" action="/my/item.aspx?id=@itemId" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm" class="nav-container no-gutter-ads">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="Action" id="Action" value="" />
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
 </div>
 
@@ -302,42 +425,39 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
 
 
     <div id="EditItemContainer">
-        <h1>Configure T-Shirt</h1>
+        <h1>Configure @assetTypeLabel</h1>
         <div>
             <div id="EditItem" style="width:890px;">
-                <a href="https://web.roblox.com/catalog/1161477602/haaa">Back</a>
+                <a href="javascript:history.back();">Back</a>
                 <div id="ctl00_cphRoblox_ConfirmationPanel">
-	
+@if (updateSucceeded && updateTime.HasValue)
+{
                     <div class="status-confirm">
-                        Your changes to the item have been saved. (4:34:42 PM)
+                        Your changes to the item have been saved. (@updateTime.Value.ToString("h:mm:ss tt"))
                     </div>
-                
-</div>
-                
+}
+                </div>
                 
                 <div id="ItemName">
                     <span id="ctl00_cphRoblox_NameLabel" class="form-label">Name:</span><br />
-                    <input name="ctl00$cphRoblox$NameTextBox" type="text" value="haaa" maxlength="50" id="ctl00_cphRoblox_NameTextBox" class="TextBox" />
+                    <input name="ctl00$cphRoblox$NameTextBox" type="text" value="@assetName" maxlength="50" id="ctl00_cphRoblox_NameTextBox" class="TextBox" />
                     <span id="ctl00_cphRoblox_NTBRFV" style="color:Red;visibility:hidden;">A Name is Required</span>
                 </div>
                 <div id="ItemThumbnail">
-                    <a id="ctl00_cphRoblox_rbxGalleryAssetThumbnail_rbxAssetImage" class=" notranslate notranslate" title="haaa" class=" notranslate notranslate" onclick="__doPostBack(&#39;ctl00$cphRoblox$rbxGalleryAssetThumbnail$rbxAssetImage&#39;,&#39;&#39;)" style="display:inline-block;height:230px;width:420px;cursor:pointer;"><img src="https://t0.rbxcdn.com/bf3b417816c4f9cbf070e8ef37cccbea" height="230" width="420" border="0" alt="haaa" class=" notranslate notranslate" /></a>
-
-
-
-
+                    <a id="ctl00_cphRoblox_rbxGalleryAssetThumbnail_rbxAssetImage" class=" notranslate notranslate" title="@assetName" onclick="__doPostBack(&#39;ctl00$cphRoblox$rbxGalleryAssetThumbnail$rbxAssetImage&#39;,&#39;&#39;)" style="display:inline-block;height:230px;width:420px;cursor:pointer;">
+                        <img src="@assetThumbnail" height="230" width="420" border="0" alt="@assetName" class=" notranslate notranslate" />
+                    </a>
                 </div>
                 <div id="ItemDescription">
                     <span id="ctl00_cphRoblox_DescriptionLabel" class="form-label">Description:</span><br />
-                    <textarea name="ctl00$cphRoblox$DescriptionTextBox" rows="2" cols="20" id="ctl00_cphRoblox_DescriptionTextBox" class="text" style="height:150px;width: 410px;padding: 5px;">
-T-</textarea>
+                    <textarea name="ctl00$cphRoblox$DescriptionTextBox" rows="2" cols="20" id="ctl00_cphRoblox_DescriptionTextBox" class="text" style="height:150px;width: 410px;padding: 5px;">@assetDescription</textarea>
                 </div>
                 
                 <div class="Buttons">
-                    <a id="ctl00_cphRoblox_SubmitButtonTop" tabindex="4" class="btn-small btn-neutral" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$SubmitButtonTop&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">
+                    <a id="ctl00_cphRoblox_SubmitButtonTop" tabindex="4" class="btn-small btn-neutral" href="javascript:void(0);" onclick="document.getElementById('Action').value='Save'; document.getElementById('aspnetForm').submit(); return false;">
                         Save
                     </a>&nbsp;
-                    <a id="ctl00_cphRoblox_CancelButtonTop" tabindex="5" class="btn-small btn-negative" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$CancelButtonTop&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">
+                    <a id="ctl00_cphRoblox_CancelButtonTop" tabindex="5" class="btn-small btn-negative" href="javascript:void(0);" onclick="document.getElementById('Action').value='Cancel'; document.getElementById('aspnetForm').submit(); return false;">
                         Cancel
                     </a>
                 </div>
@@ -351,7 +471,7 @@ T-</textarea>
                                 catalog. Uncheck the box to remove the item from the catalog.
                             </div>
                             <div class="SellThisItemRow">
-                                <input id="ctl00_cphRoblox_SellThisItemCheckBox" type="checkbox" name="ctl00$cphRoblox$SellThisItemCheckBox" checked="checked" /><label for="ctl00_cphRoblox_SellThisItemCheckBox">Sell this Item</label>
+                                <input id="ctl00_cphRoblox_SellThisItemCheckBox" type="checkbox" name="ctl00$cphRoblox$SellThisItemCheckBox" @(onSale ? "checked=\"checked\"" : string.Empty) /><label for="ctl00_cphRoblox_SellThisItemCheckBox">Sell this Item</label>
                                     <div id="ctl00_cphRoblox_PricingPanel" class="PricingPanel">
 		
                                     
@@ -371,11 +491,11 @@ T-</textarea>
                                             <div class="PricingField_Robux">
                                                 
                                                     <span class="robux">&nbsp;</span>
-                                                    <input name="ctl00$cphRoblox$RobuxPrice" type="text" value="4600" maxlength="9" id="ctl00_cphRoblox_RobuxPrice" class="TextBox" />
+                                                    <input name="ctl00$cphRoblox$RobuxPrice" type="text" value="@assetPrice" maxlength="9" id="ctl00_cphRoblox_RobuxPrice" class="TextBox" />
                                                 
                                             </div>
                                             <span id="PricingError" class="status-error" style="display:none;">
-                                                The minimum price for this item is <span class="robux notranslate">2</span>
+                                                The minimum price for this item is <span class="robux notranslate">@minPrice</span>
                                             </span>
                                             <span id="PricingErrorMax" class="status-error" style="display:none;">
                                                 The maximum price for this item is <span class="robux notranslate">999999999</span>
@@ -384,7 +504,7 @@ T-</textarea>
                                         </div>
                                         
                                         <div id="Fee" style="margin-top: 18px;">
-                                            <div id="market-info" data-market-fee-rate="30" data-minimum-price="2" class="PricingLabel form-label">
+                                            <div id="market-info" data-market-fee-rate="30" data-minimum-price="@minPrice" class="PricingLabel form-label">
                                                 Marketplace Fee:<br />
                                                 <span class="Suggestion footnote">(30% - minimum 1)</span></div>
                                             <div class="PricingField_Robux">
@@ -419,7 +539,7 @@ T-</textarea>
                             Choose whether or not this item is open for comments.
                         </div>
                         <div class="EnableCommentsRow">
-                            <input id="ctl00_cphRoblox_EnableCommentsCheckBox" type="checkbox" name="ctl00$cphRoblox$EnableCommentsCheckBox" checked="checked" /><label for="ctl00_cphRoblox_EnableCommentsCheckBox">Allow Comments</label>
+                            <input id="ctl00_cphRoblox_EnableCommentsCheckBox" type="checkbox" name="ctl00$cphRoblox$EnableCommentsCheckBox" @(allowComments ? "checked=\"checked\"" : string.Empty) /><label for="ctl00_cphRoblox_EnableCommentsCheckBox">Allow Comments</label>
                         </div>
                     </fieldset>
                 </div>
@@ -452,6 +572,18 @@ T-</textarea>
                                         }
                                     }
                                 }
+                            </script>
+
+                            <script type="text/javascript">
+                                $(function () {
+                                    var currentGenre = @assetGenre;
+                                    if (currentGenre >= 1 && currentGenre <= 15) {
+                                        var $radio = $('#SetGenres input[name="GenreButtons2"][value="' + currentGenre + '"]');
+                                        if ($radio.length) {
+                                            $radio.prop('checked', true);
+                                        }
+                                    }
+                                });
                             </script>
 
                             <div id="ctl00_cphRoblox_AllowOneGenre">
@@ -595,7 +727,7 @@ T-</textarea>
                                                 </li>
                                             
                                     </ul>
-                                    <input type="hidden" name="ctl00$cphRoblox$actualGenreSelection" id="ctl00_cphRoblox_actualGenreSelection" value="13" />
+                                    <input type="hidden" name="ctl00$cphRoblox$actualGenreSelection" id="ctl00_cphRoblox_actualGenreSelection" value="@assetGenre" />
                                 </div>
                             
 	</div>                 
@@ -605,14 +737,14 @@ T-</textarea>
 </div>
 
                 <div class="Buttons">
-                    <a id="ctl00_cphRoblox_SubmitButtonBottom" tabindex="4" class="btn-small btn-neutral" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$SubmitButtonBottom&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">
+                    <a id="ctl00_cphRoblox_SubmitButtonBottom" tabindex="4" class="btn-small btn-neutral" href="javascript:void(0);" onclick="document.getElementById('Action').value='Save'; document.getElementById('aspnetForm').submit(); return false;">
                         Save
                     </a>&nbsp;
-                    <a id="ctl00_cphRoblox_CancelButtonBottom" tabindex="5" class="btn-small btn-negative" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$CancelButtonBottom&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">
+                    <a id="ctl00_cphRoblox_CancelButtonBottom" tabindex="5" class="btn-small btn-negative" href="javascript:void(0);" onclick="document.getElementById('Action').value='Cancel'; document.getElementById('aspnetForm').submit(); return false;">
                         Cancel
                     </a>
                 </div>
-                <a href="https://web.roblox.com/catalog/1161477602/haaa">Back</a>
+                <a href="javascript:history.back();">Back</a>
             </div>
         </div>
     </div>

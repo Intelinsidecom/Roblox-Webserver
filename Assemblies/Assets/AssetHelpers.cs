@@ -45,5 +45,23 @@ namespace Assets
 
             return diff.TotalDays < 1;
         }
+
+        public static long ResolveLinkedAssetId(string connectionString, long assetId)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            var repo = new AssetMetadataRepository();
+            var record = repo.GetAssetByIdAsync(connectionString, assetId).GetAwaiter().GetResult();
+            if (record == null)
+                return assetId;
+
+            if (record.AssetImage && record.AssetLink.HasValue && record.AssetLink.Value > 0)
+                return record.AssetLink.Value;
+
+            return assetId;
+        }
     }
 }
