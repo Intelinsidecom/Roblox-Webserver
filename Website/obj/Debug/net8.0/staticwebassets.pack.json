@@ -153,6 +153,10 @@
       "PackagePath": "staticwebassets\\CSS\\Pages\\IDE\\Login.css"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Item\\Edit.css",
+      "PackagePath": "staticwebassets\\CSS\\Pages\\Item\\Edit.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Landing\\RollerCoaster\\Landing.css",
       "PackagePath": "staticwebassets\\CSS\\Pages\\Landing\\RollerCoaster\\Landing.css"
     },
@@ -589,8 +593,16 @@
       "PackagePath": "staticwebassets\\JS\\My\\avatarBodyColorDifference.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\My\\myitem.js",
+      "PackagePath": "staticwebassets\\JS\\My\\myitem.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Navigation\\ShopAmazon.js",
       "PackagePath": "staticwebassets\\JS\\Navigation\\ShopAmazon.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\AuthenticationNotificationsHandler.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\AuthenticationNotificationsHandler.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\PushNotifications\\DesktopPushNotificationsRegistrationUI.js",
@@ -607,6 +619,34 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\PushNotifications\\PushNotificationsRegistrar.js",
       "PackagePath": "staticwebassets\\JS\\Notifications\\PushNotifications\\PushNotificationsRegistrar.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\Sources\\crossTabReplicatedSource.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\Sources\\crossTabReplicatedSource.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\Sources\\hybridSource.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\Sources\\hybridSource.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\Sources\\signalRSource.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\Sources\\signalRSource.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\client.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\client.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\factory.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\factory.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\signalRConnectionWrapper.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\signalRConnectionWrapper.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Notifications\\RealTime\\stateTracker.js",
+      "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\stateTracker.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\PlaceLauncher.js",
@@ -643,6 +683,14 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\ShopInterstitialModal.js",
       "PackagePath": "staticwebassets\\JS\\ShopInterstitialModal.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\SignalR\\SignalRAbortAsyncPatch-2.2.0.js",
+      "PackagePath": "staticwebassets\\JS\\SignalR\\SignalRAbortAsyncPatch-2.2.0.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\SignalR\\jquery.signalr-2.2.0.js",
+      "PackagePath": "staticwebassets\\JS\\SignalR\\jquery.signalr-2.2.0.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\SignupFormValidatorGeneric.js",
@@ -713,6 +761,10 @@
       "PackagePath": "staticwebassets\\JS\\XsrfToken.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\YouTube\\RobloxYouTube.js",
+      "PackagePath": "staticwebassets\\JS\\YouTube\\RobloxYouTube.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\a85b3879a3ca6b0561e40aed91e60994.js",
       "PackagePath": "staticwebassets\\JS\\a85b3879a3ca6b0561e40aed91e60994.js"
     },
@@ -727,6 +779,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\angular\\angular-ui-router.min.js",
       "PackagePath": "staticwebassets\\JS\\angular\\angular-ui-router.min.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\angular\\angular.audio.js",
+      "PackagePath": "staticwebassets\\JS\\angular\\angular.audio.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\angular\\angular.js",
@@ -747,6 +803,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\angular\\ui-bootstrap-custom-tpls-2.5.0.js",
       "PackagePath": "staticwebassets\\JS\\angular\\ui-bootstrap-custom-tpls-2.5.0.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\angular\\ui-bootstrap-custom-tpls-2.5.0.min.js",
+      "PackagePath": "staticwebassets\\JS\\angular\\ui-bootstrap-custom-tpls-2.5.0.min.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\athena.js",
@@ -973,12 +1033,36 @@
       "PackagePath": "staticwebassets\\JS\\lib\\WebForms.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\4.5.2\\1\\MicrosoftAjax.js",
+      "PackagePath": "staticwebassets\\JS\\lib\\ajax\\4.5.2\\1\\MicrosoftAjax.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\4.5.2\\1\\MicrosoftAjaxWebForms.js",
+      "PackagePath": "staticwebassets\\JS\\lib\\ajax\\4.5.2\\1\\MicrosoftAjaxWebForms.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\4.5.2\\1\\WebForms.js",
+      "PackagePath": "staticwebassets\\JS\\lib\\ajax\\4.5.2\\1\\WebForms.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\4.5.2\\1\\WebUIValidation.js",
+      "PackagePath": "staticwebassets\\JS\\lib\\ajax\\4.5.2\\1\\WebUIValidation.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\MicrosoftAjax.js",
       "PackagePath": "staticwebassets\\JS\\lib\\ajax\\MicrosoftAjax.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\MicrosoftAjaxWebForms.js",
       "PackagePath": "staticwebassets\\JS\\lib\\ajax\\MicrosoftAjaxWebForms.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\jQuery\\jquery-1.11.1.min.js",
+      "PackagePath": "staticwebassets\\JS\\lib\\ajax\\jQuery\\jquery-1.11.1.min.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\ajax\\jquery.migrate\\jquery-migrate-1.2.1.min.js",
+      "PackagePath": "staticwebassets\\JS\\lib\\ajax\\jquery.migrate\\jquery-migrate-1.2.1.min.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\lib\\athena\\athena.js",
@@ -1285,6 +1369,10 @@
       "PackagePath": "staticwebassets\\JS\\pageStyleNotifications.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\page_splitApps___9efbdd8c00dc7339bd109d5ddd805a6e_m.js",
+      "PackagePath": "staticwebassets\\JS\\page_splitApps___9efbdd8c00dc7339bd109d5ddd805a6e_m.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\polyfill\\ie7localStorage.js",
       "PackagePath": "staticwebassets\\JS\\polyfill\\ie7localStorage.js"
     },
@@ -1371,6 +1459,14 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\templateApp.js",
       "PackagePath": "staticwebassets\\JS\\templateApp.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\utilities\\CrossTabCommunication\\Kingmaker.js",
+      "PackagePath": "staticwebassets\\JS\\utilities\\CrossTabCommunication\\Kingmaker.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\utilities\\CrossTabCommunication\\PubSub.js",
+      "PackagePath": "staticwebassets\\JS\\utilities\\CrossTabCommunication\\PubSub.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\utilities\\ExponentialBackoff.js",
@@ -2057,6 +2153,10 @@
       "PackagePath": "staticwebassets\\images\\04baeb33ef66ef1395cd5464309fece6.jpg"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\1387da00c070fd34110985aee87f3155.ico.gzip",
+      "PackagePath": "staticwebassets\\images\\1387da00c070fd34110985aee87f3155.ico.gzip"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\20e7d1543d2c5caf201184d86530fc35.png",
       "PackagePath": "staticwebassets\\images\\20e7d1543d2c5caf201184d86530fc35.png"
     },
@@ -2403,6 +2503,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\LimitedUniqueItems.png",
       "PackagePath": "staticwebassets\\images\\LimitedUniqueItems.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Logo\\landing_page_icon_12192016.svg",
+      "PackagePath": "staticwebassets\\images\\Logo\\landing_page_icon_12192016.svg"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Logo\\logo_R.svg",

@@ -1,0 +1,252 @@
+/* /CSS/Pages/Item/Edit.css */
+#EditItemContainer h1 {
+	display: block;
+}
+
+#ItemContainer #Summary #DescriptionLabel {
+	margin-bottom: .4em;
+	margin-top: .7em;
+}
+
+.resetPlacePadding {
+	padding: 10px;
+}
+
+#EditItemContainer {
+	margin: 0 -50px;
+}
+
+#EditItemContainer fieldset {
+	margin: 0;
+}
+
+#EditItemContainer #ItemName {
+	margin: 0 auto;
+	margin-top: 10px;
+	padding: 0;
+	text-align: left;
+	width: 420px;
+}
+
+#EditItemContainer #ItemThumbnail {
+	border: solid 1px #9C9C9C;
+	height: 230px;
+	margin: 0 auto;
+	margin-top: 10px;
+	padding: 0;
+	text-align: left;
+	width: 420px;
+}
+
+#EditItemContainer #ItemDescription {
+	margin: 0 auto;
+	margin-top: 10px;
+	padding: 0;
+	text-align: left;
+	width: 420px;
+}
+
+#EditItemContainer #SelectFileBadgeUpload {
+	margin: 0 auto;
+	margin-top: 10px;
+	padding: 0;
+	text-align: left;
+	width: 420px;
+}
+
+#EditItemContainer #Comments,
+#EditItemContainer #PlaceAccess,
+#EditItemContainer #PlaceCopyProtection,
+#EditItemContainer #AllowGear,
+#EditItemContainer #SetGenres,
+#EditItemContainer #VersionHistory,
+#EditItemContainer #PublicDomain,
+#EditItemContainer #SellThisItem,
+#EditItemContainer #PlaceReset,
+#EditItemContainer #PlaceBuildAccess,
+.MyItemOptions,
+.Configure.ProductPromotionsContainer {
+	padding: 5px;
+	margin: 10px;
+}
+
+#EditItemContainer #SellThisItem #Pricing {
+	margin: 5px;
+	padding: 5px;
+}
+
+#EditItemContainer #SellThisItem #Price {
+	height: 28px;
+	margin-top: 10px;
+}
+
+#EditItemContainer #SellThisItem #Price .TextBox {
+	padding: 2px 4px;
+	width: 75px;
+}
+
+#EditItemContainer .CopyProtectionRow,
+#EditItemContainer .EnableCommentsRow,
+#EditItemContainer .PublicDomainRow,
+#EditItemContainer .SellThisItemRow,
+#EditItemContainer .GearSettings,
+#EditItemContainer .GenreSettings,
+#EditItemContainer .MembershipLevelSettings {
+	margin: 10px 35px;
+}
+
+#EditItemContainer .GenreSettings {
+	margin: 10px 0;
+}
+
+#EditItemContainer .GearSettings {
+	margin: 10px 40px;
+}
+
+#EditItemContainer .PricingLabel {
+	float: left;
+	line-height: 24px;
+	margin-right: 5px;
+	text-align: right;
+	width: 155px;
+}
+
+#EditItemContainer .PricingField_Robux {
+	float: left;
+	height: 24px;
+	margin-left: 5px;
+	margin-top: 5px;
+	text-align: left;
+	width: 120px;
+}
+
+#EditItemContainer #PricingError,
+#EditItemContainer #PricingErrorMax {
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+	margin: 3px 0 0 10px;
+}
+
+#EditItemContainer .MarketplaceFeeInRobuxLabel,
+#EditItemContainer .UserProfitInRobuxLabel {
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+	height: 18px;
+}
+
+#EditItemContainer .Buttons {
+	margin: 10px auto;
+	text-align: center;
+}
+
+#EditItemContainer .TextBox {
+	margin: 0;
+	padding: 5px 10px;
+	width: 400px;
+}
+
+#EditItemContainer .Multiline {
+	margin: 0;
+	padding: 5px 10px;
+	width: 400px;
+}
+
+#EditItemContainer .Suggestion {
+	padding-left: 9px;
+}
+
+#EditItemContainer .ItemConfigRadioButton {
+	margin-left: 20px;
+}
+
+.MyItemIndentedOption {
+	font-size: .9em;
+	margin: 10px 0 10px 100px;
+}
+
+/* Ensure Configure Item main content is not clipped inside an inner scrollable .nav-content */
+body .nav-content {
+	overflow: visible;
+}
+
+/* /CSS/Pages/Notifications/Notifications.css */
+.feedification {
+	overflow: auto;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.feedification-icon {
+	float: left;
+	margin-right: 13px;
+	width: 60px;
+	height: 70px;
+}
+
+.feedification-icon img {
+	position: relative;
+	top: 1px;
+	left: -1px;
+}
+
+.pagification {
+	overflow: hidden;
+	padding: 10px;
+	position: relative;
+	margin-bottom: 10px;
+}
+
+.pagification-icon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	margin: 10px;
+}
+
+.pagification-icon .icon-logo-r {
+	background-image: url("/images/Logo/landing_page_icon_12192016.svg");
+	background-size: 58px 58px;
+	height: 58px;
+	width: 58px;
+}
+
+.pagification-body {
+	float: left;
+	overflow: hidden;
+	margin-left: 68px;
+}
+
+.BuildPageContent .pagification-body {
+	width: 530px;
+}
+
+.pagification-message {
+	overflow: hidden;
+}
+
+.pagification-showall {
+	display: none;
+}
+
+.pagification-collapse {
+	display: inline;
+}
+
+.collapsed .pagification-message {
+	height: 2.6em;
+}
+
+.collapsed .pagification-showall {
+	display: inline;
+}
+
+.collapsed .pagification-collapse {
+	display: none;
+}
+
+.pagification-links {
+	text-align: right;
+}
