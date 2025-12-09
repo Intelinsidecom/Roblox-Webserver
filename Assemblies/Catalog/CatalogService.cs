@@ -49,11 +49,21 @@ namespace RobloxWebserver.Assemblies.Catalog
                 sb.Append(System.Net.WebUtility.HtmlEncode(item.Name));
                 sb.Append("</a></div>");
 
-                // Price block: show Robux icon-style span with 0 if no price is set
-                var priceRobux = item.PriceRobux ?? 0;
-                sb.Append("<div class=\"robux-price\"><span class=\"robux notranslate\">");
-                sb.Append(priceRobux);
-                sb.Append("</span></div>");
+                // Price block: use the actual Robux price when present.
+                // If the price is 0, display "Free" instead of "0".
+                if (item.PriceRobux.HasValue)
+                {
+                    sb.Append("<div class=\"robux-price\"><span class=\"robux notranslate\">");
+                    if (item.PriceRobux.Value == 0)
+                    {
+                        sb.Append("Free");
+                    }
+                    else
+                    {
+                        sb.Append(item.PriceRobux.Value);
+                    }
+                    sb.Append("</span></div>");
+                }
 
                 // Hover content: creator, updated, sales, favorited (all safe defaults)
                 var creator = string.IsNullOrWhiteSpace(item.CreatorName) ? "ROBLOX" : item.CreatorName;

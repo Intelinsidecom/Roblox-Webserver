@@ -1095,6 +1095,19 @@
           "bin/placeholder/Catalog.dll": {}
         }
       },
+      "Economy/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Npgsql": "8.0.4"
+        },
+        "compile": {
+          "bin/placeholder/Economy.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Economy.dll": {}
+        }
+      },
       "Thumbnails/1.0.0": {
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
@@ -2987,6 +3000,11 @@
       "path": "../Assemblies/Catalog/Catalog.csproj",
       "msbuildProject": "../Assemblies/Catalog/Catalog.csproj"
     },
+    "Economy/1.0.0": {
+      "type": "project",
+      "path": "../Assemblies/Economy/Economy.csproj",
+      "msbuildProject": "../Assemblies/Economy/Economy.csproj"
+    },
     "Thumbnails/1.0.0": {
       "type": "project",
       "path": "../Assemblies/Thumbnails/Thumbnails.csproj",
@@ -3004,6 +3022,7 @@
       "Assets >= 1.0.0",
       "Avatar >= 1.0.0",
       "Catalog >= 1.0.0",
+      "Economy >= 1.0.0",
       "LigerShark.WebOptimizer.Core >= 3.0.477",
       "Microsoft.EntityFrameworkCore >= 8.0.10",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.10",
@@ -3053,6 +3072,9 @@
             },
             "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Catalog\\Catalog.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Catalog\\Catalog.csproj"
+            },
+            "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Economy\\Economy.csproj": {
+              "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Economy\\Economy.csproj"
             },
             "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj": {
               "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj"

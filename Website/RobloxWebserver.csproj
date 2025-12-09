@@ -24,6 +24,7 @@
     <ProjectReference Include="..\Assemblies\Avatar\Avatar.csproj" />
     <ProjectReference Include="..\Assemblies\Assets\Assets.csproj" />
     <ProjectReference Include="..\Assemblies\Catalog\Catalog.csproj" />
+    <ProjectReference Include="..\Assemblies\Economy\Economy.csproj" />
   </ItemGroup>
 
 </Project>

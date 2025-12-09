@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 <html lang="en">
 <link href="~/favicon.ico" rel="icon">
 <head>
@@ -85,12 +86,109 @@
 </head>
 <body>
     <partial name="_Header" />
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
+
+        long parsedUserId;
+        long.TryParse(userId, out parsedUserId);
+
+        string? userNameFromDb = null;
+        if (parsedUserId > 0)
+        {
+            var connStr = Configuration.GetConnectionString("Default");
+            if (!string.IsNullOrWhiteSpace(connStr))
+            {
+                userNameFromDb = Users.UserQueries.GetUserNameByIdAsync(connStr, parsedUserId).GetAwaiter().GetResult();
+            }
+        }
+
+        var userName =
+            userNameFromDb ??
+            User?.FindFirst("RobloxUsername")?.Value ??
+            User?.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ??
+            User?.Identity?.Name ??
+            userId;
+
+        <!-- LEFT NAV MENU -->
+        <div id="navigation" class="rbx-left-col" data-behavior="left-col">
+            <ul>
+                <li class="text-lead">
+                    <a class="text-overflow" href="/users/@userId/profile">@userName</a>
+                </li>
+                <li class="rbx-divider"></li>
+            </ul>
+
+            <div class="rbx-scrollbar" data-toggle="scrollbar" onselectstart="return false;">
+                <ul>
+                    <li><a href="/home" id="nav-home"><span class="icon-nav-home"></span><span>Home</span></a></li>
+                    <li><a href="/users/@userId/profile" id="nav-profile"><span class="icon-nav-profile"></span><span>Profile</span></a></li>
+                    <li>
+                        <a href="/my/messages" id="nav-message" data-count="0">
+                            <span class="icon-nav-message"></span><span>Messages</span>
+                            <span class="notification-blue hide" title="0">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/friends" id="nav-friends" data-count="0">
+                            <span class="icon-nav-friends"></span><span>Friends</span>
+                            <span class="notification-blue hide" title="0">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/my/character" id="nav-character">
+                            <span class="icon-nav-charactercustomizer"></span><span>Avatar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/inventory" id="nav-inventory">
+                            <span class="icon-nav-inventory"></span><span>Inventory</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/trade" id="nav-trade">
+                            <span class="icon-nav-trade"></span><span>Trade</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/groups" id="nav-group">
+                            <span class="icon-nav-group"></span><span>Groups</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/forum" id="nav-forum">
+                            <span class="icon-nav-forum"></span><span>Forum</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/blog" id="nav-blog">
+                            <span class="icon-nav-blog"></span><span>Blog</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    }
+
+    <div id="navContent">
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
     </div>
+
     <partial name="_Footer" />
+    <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $(document).on("click", '[data-behavior="nav-notification"]', function (e) {
+                e.preventDefault();
+                $('[data-behavior="left-col"]').toggleClass("nav-show");
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

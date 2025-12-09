@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 using Assets;
@@ -14,7 +15,7 @@ namespace RobloxWebserver.Assemblies.Catalog
     /// </summary>
     public static class CatalogSearchHelper
     {
-        public static async Task<string> BuildSearchHtmlAsync(string connectionString, string keyword, int category, int maxCount)
+        public static async Task<string> BuildSearchHtmlAsync(string connectionString, string keyword, int category, IReadOnlyCollection<int>? genres, int maxCount)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException("connectionString is required", nameof(connectionString));
@@ -38,10 +39,15 @@ namespace RobloxWebserver.Assemblies.Catalog
                 sqlBuilder.Append("       a.owner_user_id,");
                 sqlBuilder.Append("       u.user_name,");
                 sqlBuilder.Append("       a.last_updated,");
-                sqlBuilder.Append("       a.created_at ");
+                sqlBuilder.Append("       a.created_at,");
+                sqlBuilder.Append("       a.on_sale,");
+                sqlBuilder.Append("       a.price ");
                 sqlBuilder.Append("from assets a ");
                 sqlBuilder.Append("join users u on u.user_id = a.owner_user_id ");
-                sqlBuilder.Append("where (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%') ");
+                // Exclude generated image assets (asset_image = true) and only include items that are on sale
+                sqlBuilder.Append("where coalesce(a.asset_image, false) = false ");
+                sqlBuilder.Append("  and a.on_sale = true ");
+                sqlBuilder.Append("  and (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%') ");
                 sqlBuilder.Append("  and (a.name is null or a.name not ilike '%image%') ");
                 sqlBuilder.Append("  and a.name ilike @keyword ");
 
@@ -56,6 +62,11 @@ namespace RobloxWebserver.Assemblies.Catalog
                     sqlBuilder.Append("  and a.asset_type_id <> 2 ");
                 }
 
+                if (genres != null && genres.Count > 0)
+                {
+                    sqlBuilder.Append("  and a.genre = any(@genres) ");
+                }
+
                 sqlBuilder.Append("order by a.asset_id desc ");
                 sqlBuilder.Append("limit @limit");
 
@@ -65,6 +76,11 @@ namespace RobloxWebserver.Assemblies.Catalog
                 {
                     cmd.Parameters.AddWithValue("keyword", "%" + keyword + "%");
                     cmd.Parameters.AddWithValue("limit", maxCount);
+
+                    if (genres != null && genres.Count > 0)
+                    {
+                        cmd.Parameters.AddWithValue("genres", genres.ToArray());
+                    }
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
                     {
@@ -81,6 +97,8 @@ namespace RobloxWebserver.Assemblies.Catalog
                             var createdAt = reader.IsDBNull(6)
                                 ? lastUpdated
                                 : reader.GetFieldValue<DateTimeOffset>(6);
+                            // Column 7 is a.on_sale (boolean); column 8 is a.price (bigint)
+                            var price = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8);
 
                             items.Add(new CatalogItem
                             {
@@ -89,7 +107,7 @@ namespace RobloxWebserver.Assemblies.Catalog
                                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                                 CreatorId = ownerUserId,
                                 ImageUrl = string.IsNullOrWhiteSpace(thumb) ? "/images/RobloxLogo.png" : thumb,
-                                PriceRobux = 0,
+                                PriceRobux = price.HasValue ? (int?)price.Value : null,
                                 Sales = 0,
                                 FavoritedCount = 0,
                                 IsNew = AssetHelpers.IsNew(createdAt),

@@ -64,7 +64,8 @@ internal class Program
         Console.WriteLine("5) List users (id, name, created)");
         Console.WriteLine("6) View user details (by id or name)");
         Console.WriteLine("7) Asset maintenance (wipe all assets or a single asset)");
-        Console.Write("Enter choice (1-7): ");
+Console.WriteLine("8) Add Robux/Tix to a user");
+        Console.Write("Enter choice (1-8): ");
         var key = Console.ReadKey(intercept: true).KeyChar;
         Console.WriteLine();
 
@@ -517,6 +518,47 @@ internal class Program
             {
                 Console.WriteLine("Invalid asset maintenance choice.");
                 return 1;
+            }
+        }
+        else if (key == '8')
+        {
+            try
+            {
+                Console.Write("Enter user id: ");
+                var inputId = Console.ReadLine();
+                if (!long.TryParse(inputId, out var uid) || uid <= 0)
+                {
+                    Console.WriteLine("Invalid user id.");
+                    return 1;
+                }
+
+                Console.Write("Currency (R)obux or (T)ix? ");
+                var curKey = Console.ReadKey(intercept: true).KeyChar;
+                Console.WriteLine();
+                var currency = curKey == 'T' || curKey == 't' ? "tix" : "robux";
+
+                Console.Write("Amount to add (can be negative): ");
+                var amtStr = Console.ReadLine();
+                if (!long.TryParse(amtStr, out var delta))
+                {
+                    Console.WriteLine("Invalid amount.");
+                    return 1;
+                }
+
+                var column = currency == "tix" ? "tix_balance" : "robux_balance";
+                using var conn = new NpgsqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new NpgsqlCommand($"update users set {column} = {column} + @d where user_id = @id", conn);
+                cmd.Parameters.AddWithValue("d", delta);
+                cmd.Parameters.AddWithValue("id", uid);
+                var affected = cmd.ExecuteNonQuery();
+                Console.WriteLine(affected == 1 ? "Balance updated." : "User not found or no change made.");
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return -1;
             }
         }
         else

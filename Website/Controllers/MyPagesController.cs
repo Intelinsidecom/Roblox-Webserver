@@ -13,6 +13,20 @@ namespace RobloxWebserver.Controllers
             _viewEngine = viewEngine;
         }
 
+        [HttpGet("my/character")]
+        public IActionResult Character()
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+                return Redirect("/");
+
+            const string viewPath = "~/Views/Pages/My/Character.aspx.cshtml";
+            var result = _viewEngine.GetView(null, viewPath, true);
+            if (!result.Success)
+                return NotFound();
+
+            return View(viewPath);
+        }
+
         [HttpGet("My/{*path}")]
         public IActionResult Route(string? path)
         {

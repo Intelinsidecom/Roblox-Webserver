@@ -1,18 +1,22 @@
 // Build/BuildPage.js
 typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undefined" && (Roblox.BuildPage = {}), $(function () {
     function i() {
-        console.log('[BuildPage.js] i() closeDropdown called; current gear element t =', t);
+        // console.log('[BuildPage.js] i() closeDropdown called; current gear element t =', t);
         if (t) {
             var n = $(t);
-            console.log('[BuildPage.js] i() removing gear-open from', n.get(0));
+            // console.log('[BuildPage.js] i() removing gear-open from', n.get(0));
             n.removeClass("gear-open"), n.parent().css({
                 "background-color": "#FFFFFF",
                 "border-color": "white",
                 "z-index": "0"
             }), t = null
         }
-        console.log('[BuildPage.js] i() hiding dropdown menus c and s');
-        return c.hide(), s.hide(), !1
+        // console.log('[BuildPage.js] i() hiding dropdown menus c, s, and tshirtDropdown');
+
+        c.hide();
+        s.hide();
+        $("#tshirt-dropdown-menu").hide();
+        return !1
     }
 
     function o(t, i) {
@@ -117,37 +121,85 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
 
     function a(n5, r5) {
         var u5;
-        console.log('[BuildPage.js] a() openDropdown called for gear button; current t:', t, 'event target:', this);
-        if (t == this) return console.log('[BuildPage.js] a() same gear button clicked; closing dropdown via i()'), i();
-        t && (console.log('[BuildPage.js] a() closing previously open dropdown before opening new one'), i());
+        // console.log('[BuildPage.js] a() openDropdown called for gear button; current t:', t, 'event target:', this);
+        if (t == this) return /* console.log('[BuildPage.js] a() same gear button clicked; closing dropdown via i()'), */ i();
+        t && (/* console.log('[BuildPage.js] a() closing previously open dropdown before opening new one'), */ i());
+
         t = this, u5 = $(this), u5.addClass("gear-open");
-        var e = u.closest("table"),
+        var e = u5.closest("table"),
             f = e.data("item-id"),
             o = e.data("item-moderation-approved"),
             isTShirt = e.data("type") === "tshirts",
             dropdown = isTShirt ? $("#tshirt-dropdown-menu") : r5;
 
+        if (isTShirt) {
+            // Point the Configure link to /my/item.aspx?id=<item-id> for the current T-shirt row
+            dropdown.find("a[data-action='configure']").attr("href", "/my/item.aspx?id=" + f);
+        }
+
         if (!isTShirt) {
-            o = o === "True", dropdown.find("a").each(function () {
-            var n = $(this),
-                i = n.hasClass("advertise-link"),
-                r = n.data("href-template"),
-                s, t;
-            r && (s = r.replace(/=0/g, "=" + f).replace(/\/0\//g, "/" + f + "/").replace(/\/0$/, "/" + f), n.attr("href", s)), n.attr("data-place-id") && n.attr("data-place-id", f), n.attr("data-item-id") && n.attr("data-item-id", f), e.data("runnable") === "False" && n.data("ad-activate-link") === "Run" ? n.hide() : e.data("runnable") === "True" && n.data("ad-activate-link") === "Run" && n.show(), u.data("is-sponsored-game") && (n.data("parent-sponsored-game-element", u.parents(".sponsored-game")), n.hasClass("dropdown-item-run-sponsored-game") && n.toggle(u.data("show-run")), n.hasClass("dropdown-item-stop-sponsored-game") && n.toggle(u.data("show-stop"))), n.data("href-reference") && n.attr("href", e.data(n.data("href-reference"))), n.hasClass("shutdown-all-servers-button") && (e.data("type") == "universes" ? n.attr("data-universe-id", f).removeAttr("data-place-id") : n.attr("data-place-id", f).removeAttr("data-universe-id")), t = e.data("rootplace-id"), n.data("require-root-place") && !t ? n.hide() : n.data("require-root-place") && t && (n.show(), n.data("configure-place-template") && n.attr("href", n.data("configure-place-template").replace(/\/\d+\//, "/" + t + "/"))), i && !o ? n.hide() : i && o && n.show()
-        }), $("#configure-localization-link").click(function () {
-            Roblox && Roblox.EventStream && Roblox.EventStream.SendEventWithTarget("formInteraction", "Create", {
-                universeId: f
-            }, Roblox.EventStream.TargetTypes.WWW)
-        });
+            o = o === "True";
+            dropdown.find("a").each(function () {
+                var n = $(this),
+                    i = n.hasClass("advertise-link"),
+                    r = n.data("href-template"),
+                    s, t;
+                r && (s = r.replace(/=0/g, "=" + f).replace(/\/0\//g, "/" + f + "/").replace(/\/0$/, "/" + f), n.attr("href", s));
+                n.attr("data-place-id") && n.attr("data-place-id", f);
+                n.attr("data-item-id") && n.attr("data-item-id", f);
+                e.data("runnable") === "False" && n.data("ad-activate-link") === "Run" ? n.hide() : e.data("runnable") === "True" && n.data("ad-activate-link") === "Run" && n.show();
+                u5.data("is-sponsored-game") && (n.data("parent-sponsored-game-element", u5.parents(".sponsored-game")), n.hasClass("dropdown-item-run-sponsored-game") && n.toggle(u5.data("show-run")), n.hasClass("dropdown-item-stop-sponsored-game") && n.toggle(u5.data("show-stop")));
+                n.data("href-reference") && n.attr("href", e.data(n.data("href-reference")));
+                n.hasClass("shutdown-all-servers-button") && (e.data("type") == "universes" ? n.attr("data-universe-id", f).removeAttr("data-place-id") : n.attr("data-place-id", f).removeAttr("data-universe-id"));
+                t = e.data("rootplace-id");
+                n.data("require-root-place") && !t ? n.hide() : n.data("require-root-place") && t && (n.show(), n.data("configure-place-template") && n.attr("href", n.data("configure-place-template").replace(/\/\d+\//, "/" + t + "/")));
+                i && !o ? n.hide() : i && o && n.show();
+            });
+            $("#configure-localization-link").click(function () {
+                Roblox && Roblox.EventStream && Roblox.EventStream.SendEventWithTarget("formInteraction", "Create", {
+                    universeId: f
+                }, Roblox.EventStream.TargetTypes.WWW)
+            });
         }
 
         var s3 = dropdown.parent().offset(),
             c3 = dropdown.outerWidth(),
-            h3 = u5.offset();
-        console.log('[BuildPage.js] a() positioning dropdown; parent offset:', s3, 'dropdown width:', c3, 'button offset:', h3);
+            h3 = u5.offset(),
+            finalTop,
+            finalLeft;
+        if (isTShirt) {
+            // Ensure the T-shirt dropdown is anchored to the page so we can use absolute offsets
+            if (!dropdown.parent().is('body')) {
+                dropdown.appendTo('body');
+            }
+            // Recompute parent offset after potential move (body is usually {top:0,left:0})
+            s3 = dropdown.parent().offset() || { top: 0, left: 0 };
+
+            // Detailed debug for T-shirt dropdown positioning
+            // console.log('[BuildPage.js] a() T-shirt positioning raw values (anchored to body):', {
+            //     parentOffsetTop: s3.top,
+            //     parentOffsetLeft: s3.left,
+            //     buttonOffsetTop: h3.top,
+            //     buttonOffsetLeft: h3.left,
+            //     buttonOuterHeight: u5.outerHeight(),
+            //     buttonOuterWidth: u5.outerWidth(),
+            //     dropdownWidth: c3
+            // });
+            // Vertically: just below the gear button, with a small padding
+            finalTop = h3.top + u5.outerHeight() + 4;
+            // Horizontally: align the dropdown's right edge with the gear button's right edge
+            finalLeft = h3.left + u5.outerWidth() - c3;
+        } else {
+            finalTop = h3.top - s3.top + 21 + u5.outerHeight() + 9;
+            finalLeft = h3.left - s3.left + 15 - c3 + u5.outerWidth();
+        }
+
+        // console.log('[BuildPage.js] a() positioning dropdown; isTShirt:', isTShirt, 'parent offset:', s3, 'dropdown width:', c3, 'button offset:', h3, 'finalTop:', finalTop, 'finalLeft:', finalLeft);
+
         return dropdown.css({
-            top: h3.top - s3.top + 21 + u5.outerHeight() + 9 + "px",
-            left: h3.left - s3.left + 15 - c3 + u5.outerWidth() + "px"
+            position: "absolute",
+            top: finalTop + "px",
+            left: finalLeft + "px"
         }).show(), u5.parent().css({
             "background-color": "#EFEFEF",
             "border-color": "gray",
@@ -242,16 +294,17 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
         p2 = $("#GroupCreationsTab " + r),
         c = $("#MyCreationsTab #build-dropdown-menu"),
         s = $("#GroupCreationsTab #build-dropdown-menu"),
+        tshirtDropdown = $("#tshirt-dropdown-menu"),
         t = null,
         k = $("#assetLinks").data("asset-links-enabled"),
         y;
-    console.log('[BuildPage.js] Document ready for BuildPage; initial selectors:', {
-        myDropDownExists: w.length,
-        groupDropDownExists: p2.length,
-        myDropdownMenuExists: c.length,
-        groupDropdownMenuExists: s.length,
-        assetLinksEnabled: k
-    });
+    // console.log('[BuildPage.js] Document ready for BuildPage; initial selectors:', {
+    //     myDropDownExists: w.length,
+    //     groupDropDownExists: p2.length,
+    //     myDropdownMenuExists: c.length,
+    //     groupDropdownMenuExists: s.length,
+    //     assetLinksEnabled: k
+    // });
     $("a[data-retry-url]").loadRobloxThumbnails();
     w.change(function () {
         console.log('[BuildPage.js] #MyCreationsTab place-creationcontext-drop-down change event');
@@ -344,7 +397,8 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
     $("#GroupCreationsTab").on("click", "a.gear-button", function (n) {
         return a.apply(this, [n, s])
     });
-    $(document).click(function () {
+    $(document).click(function (evt) {
+        // console.log('[BuildPage.js] document click handler fired; target:', evt.target, 'current gear element t =', t);
         i()
     }), $(window).resize(i), $("input[data-bid-now-amount]").filter_input({
         regex: "[0-9]"

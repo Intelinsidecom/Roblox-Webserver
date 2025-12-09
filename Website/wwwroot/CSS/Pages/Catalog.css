@@ -154,6 +154,10 @@ div#catalog div#dropdown li ul {
   top: 0;
   display: none;
 }
+/* Ensure subcategory slide-out menus appear on hover even if JS widget fails */
+div#catalog div#dropdown ul li.subcategories:hover > ul.slideOut {
+  display: block;
+}
 div#catalog div#dropdown ul li span {
   font-weight: bold;
 }

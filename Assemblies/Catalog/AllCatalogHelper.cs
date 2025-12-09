@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Npgsql;
 using Assets;
@@ -12,7 +13,7 @@ namespace RobloxWebserver.Assemblies.Catalog
     /// </summary>
     public static class AllCatalogHelper
     {
-        public static async Task<string> BuildAllAssetsHtmlAsync(string connectionString, int maxCount = 42)
+        public static async Task<string> BuildAllAssetsHtmlAsync(string connectionString, int maxCount = 42, int? category = null, int? subcategory = null, IReadOnlyCollection<int>? genres = null)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException("connectionString is required", nameof(connectionString));
@@ -26,22 +27,50 @@ namespace RobloxWebserver.Assemblies.Catalog
             {
                 await conn.OpenAsync().ConfigureAwait(false);
 
-                const string sql = @"select a.asset_id,
+                var sql = @"select a.asset_id,
        a.name,
        a.thumbnail_url,
        a.owner_user_id,
        u.user_name,
        a.last_updated,
-       a.created_at
+       a.created_at,
+       a.on_sale,
+       a.price
 from assets a
 join users u on u.user_id = a.owner_user_id
 where coalesce(a.asset_image, false) = false
-order by a.asset_id desc
-limit @limit";
+  and a.on_sale = true";
+
+                // Apply simple category-specific rules similar to CatalogSearchHelper
+                if (category.HasValue)
+                {
+                    if (category.Value == 3)
+                    {
+                        // Clothing: restrict to T-Shirts for now (asset_type_id = 2)
+                        sql += "\n  and a.asset_type_id = 2";
+                    }
+                    else if (category.Value == 4)
+                    {
+                        // Body Parts: explicitly exclude T-Shirts
+                        sql += "\n  and a.asset_type_id <> 2";
+                    }
+                }
+
+                if (genres != null && genres.Count > 0)
+                {
+                    sql += "\n  and a.genre = any(@genres)";
+                }
+
+                sql += "\norder by a.asset_id desc\nlimit @limit";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("limit", maxCount);
+
+                    if (genres != null && genres.Count > 0)
+                    {
+                        cmd.Parameters.AddWithValue("genres", genres.ToArray());
+                    }
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
                     {
@@ -58,6 +87,7 @@ limit @limit";
                             var createdAt = reader.IsDBNull(6)
                                 ? lastUpdated
                                 : reader.GetFieldValue<DateTimeOffset>(6);
+                            var price = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8);
 
                             items.Add(new CatalogItem
                             {
@@ -66,7 +96,7 @@ limit @limit";
                                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                                 CreatorId = ownerUserId,
                                 ImageUrl = string.IsNullOrWhiteSpace(thumb) ? "/images/RobloxLogo.png" : thumb,
-                                PriceRobux = 0,
+                                PriceRobux = price.HasValue ? (int?)price.Value : null,
                                 Sales = 0,
                                 FavoritedCount = 0,
                                 IsNew = AssetHelpers.IsNew(createdAt),

@@ -1,3 +1,27 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@using Users
+@{
+    long robuxBalance = 0;
+    long tixBalance = 0;
+    if (User.Identity.IsAuthenticated)
+    {
+        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userIdStr) && long.TryParse(userIdStr, out var uid) && uid > 0)
+        {
+            var connStr = Configuration.GetConnectionString("Default");
+            if (!string.IsNullOrWhiteSpace(connStr))
+            {
+                try
+                {
+                    robuxBalance = UserQueries.GetCurrencyByIdAsync(connStr, uid, "robux").GetAwaiter().GetResult();
+                    tixBalance = UserQueries.GetCurrencyByIdAsync(connStr, uid, "tix").GetAwaiter().GetResult();
+                }
+                catch { }
+            }
+        }
+    }
+}
+
 <script type="text/javascript" src="~/JS/Login/Login.js"></script>
 
 <script type="text/javascript">
@@ -31,6 +55,7 @@
     <div class="container-fluid">
         <div class="rbx-navbar-header">
             <div data-behavior="nav-notification" class="rbx-nav-collapse" onselectstart="return false;">
+                <span class="icon-nav-menu"></span>
 
                 <div class="notification-red hide" title="0">
                     
@@ -72,7 +97,7 @@
                         <li class="rbx-navbar-search-option" data-searchurl="https://www.roblox.com/games/?Keyword=">
                             <span class="rbx-navbar-search-text">Search <span class="rbx-navbar-search-string"></span> in Games</span>
                         </li>
-                        <li class="rbx-navbar-search-option" data-searchurl="https://www.roblox.com/catalog/browse.aspx?CatalogContext=1&amp;Keyword=">
+                        <li class="rbx-navbar-search-option" data-searchurl="/catalog/browse.aspx?CatalogContext=1&amp;Keyword=">
                             <span class="rbx-navbar-search-text">Search <span class="rbx-navbar-search-string"></span> in Catalog</span>
                         </li>
                         <li class="rbx-navbar-search-option" data-searchurl="https://www.roblox.com/groups/search.aspx?val=">
@@ -84,9 +109,60 @@
             </ul>
         </div><!--rbx-navbar-search-->
         <div class="navbar-right rbx-navbar-right col-xs-4 col-sm-3">
-                <ul class="nav navbar-right rbx-navbar-right-nav" data-display-opened="False">
-                    @if (!User.Identity.IsAuthenticated)
-                    {
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <ul class="nav navbar-right rbx-navbar-icon-group">
+                        <li class="navbar-icon-item">
+                            <a class="rbx-menu-item" data-toggle="popover" data-bind="popover-setting" data-viewport="#header">
+                                <span class="icon-nav-settings" id="nav-settings"></span>
+                            </a>
+                            <div class="rbx-popover-content" data-toggle="popover-setting">
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a class="rbx-menu-item" href="https://www.roblox.com/my/account">
+                                            Settings
+                                            <span class="xsmall nav-setting-highlight "></span>
+                                        </a>
+                                    </li>
+                                    <li><a class="rbx-menu-item" href="https://www.roblox.com/Help/Builderman.aspx" target="_blank">Help</a></li>
+                                    <li><a class="rbx-menu-item" data-behavior="logout" data-bind="/authentication/logout">Logout</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="navbar-icon-item">
+                            <a id="nav-robux-icon" class="rbx-menu-item" data-toggle="popover" data-bind="popover-robux">
+                                <span class="icon-nav-robux" id="nav-robux"></span>
+                                <span class="rbx-text-navbar-right" id="nav-robux-amount">@robuxBalance.ToString("N0")</span>
+                            </a>
+                            <div class="rbx-popover-content" data-toggle="popover-robux">
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="https://www.roblox.com/My/Money.aspx#/#Summary_tab" id="nav-robux-balance" class="rbx-menu-item">@robuxBalance.ToString("N0") ROBUX</a></li>
+                                    <li><a href="https://www.roblox.com/upgrades/robux?ctx=navpopover" class="rbx-menu-item">Buy ROBUX</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="navbar-icon-item">
+                            <a id="nav-tix-icon" class="rbx-menu-item" data-toggle="popover" data-bind="popover-tix">
+                                <span class="icon-nav-tix" id="nav-tix"></span>
+                                <span class="rbx-text-navbar-right" id="nav-tix-amount">@tixBalance.ToString("N0")</span>
+                            </a>
+                            <div class="rbx-popover-content" data-toggle="popover-tix">
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="https://www.roblox.com/My/Money.aspx#/#Summary_tab" id="nav-tix-balance" class="rbx-menu-item">@tixBalance.ToString("N0") Tix</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="rbx-navbar-right-search" data-toggle="toggle-search">
+                            <a class="rbx-menu-icon rbx-menu-item">
+                                <span class="icon-nav-search-white"></span>
+                            </a>
+                        </li>
+                    </ul>
+                }
+                else
+                {
+                    <ul class="nav navbar-right rbx-navbar-right-nav" data-display-opened="False">
                         <li>
                             <a id="header-login" class="rbx-navbar-login" data-behavior="login" data-toggle="popover" data-bind="popover-login" data-viewport="#header" data-original-title="" title="">Log In</a>
                         </li>
@@ -96,13 +172,13 @@
                         <li>
                             <a class="rbx-navbar-signup" href="https://web.archive.org/web/20160429214141/https://www.roblox.com/newlogin?returnUrl=%2Fnewlogin%3FreturnUrl%3D%252Fgames%252F189707%252FNatural-Disaster-Survival">Sign Up</a>
                         </li>
-                    }
-                    <li class="rbx-navbar-right-search" data-toggle="toggle-search">
-                        <a class="rbx-menu-icon">
-                            <span class="icon-nav-search-white"></span>
-                        </a>
-                    </li>
-                </ul>
+                        <li class="rbx-navbar-right-search" data-toggle="toggle-search">
+                            <a class="rbx-menu-icon">
+                                <span class="icon-nav-search-white"></span>
+                            </a>
+                        </li>
+                    </ul>
+                }
         </div><!-- navbar right-->
         <ul class="nav rbx-navbar hidden-md hidden-lg col-xs-12">
             <li>

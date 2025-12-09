@@ -35,5 +35,10 @@ namespace Users
             var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             return result == null || result is DBNull ? null : Convert.ToString(result);
         }
+
+        public static Task<string?> GetUserNameByIdAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            return GetCreatorOfIdAsync(connectionString, userId, cancellationToken);
+        }
     }
 }

@@ -22,17 +22,18 @@ namespace Users
             using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-            using var cmd = new NpgsqlCommand("select coalesce(robux_balance, 0) from users where user_id = @id", conn);
+            using var cmd = new NpgsqlCommand("select coalesce(robux_balance, 0), coalesce(tix_balance, 0) from users where user_id = @id", conn);
             cmd.Parameters.AddWithValue("id", userId);
-            var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
             long robux = 0;
-            if (obj != null && obj != DBNull.Value)
+            long tickets = 0;
+            if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                try { robux = Convert.ToInt64(obj); } catch { robux = 0; }
+                if (!reader.IsDBNull(0)) robux = reader.GetInt64(0);
+                if (!reader.IsDBNull(1)) tickets = reader.GetInt64(1);
             }
 
-            // Tickets currency no longer exists; return 0 to satisfy legacy clients
-            return new UserBalance { Robux = robux, Tickets = 0 };
+            return new UserBalance { Robux = robux, Tickets = tickets };
         }
     }
 }

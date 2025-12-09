@@ -441,6 +441,28 @@ span.inactive-image {
 #build-dropdown-menu a:hover {
   background-color: #d8d8d8;
 }
+
+/* T-shirt gear dropdown menu - same styling as #build-dropdown-menu */
+#tshirt-dropdown-menu {
+  width: 125px;
+  background-color: #efefef;
+  border: 1px solid #777;
+  font: 12px normal Arial, Helvetica, sans-serif;
+  position: absolute;
+  display: none;
+  text-align: left;
+  z-index: 1000;
+}
+#tshirt-dropdown-menu a {
+  display: block;
+  text-decoration: none;
+  color: black;
+  padding: 4px 8px;
+  margin: 0;
+}
+#tshirt-dropdown-menu a:hover {
+  background-color: #d8d8d8;
+}
 /* ~/CSS/Pages/Build/StudioWidget.css */
 #StudioWidget {
   width: 136px;
