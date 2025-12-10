@@ -1,0 +1,128 @@
+/* ~/CSS/Pages/Shared/AssetStatusIcon.css */
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+.asset-status-icon.status-default {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 400;
+    background-color: #757575;
+    color: #fff;
+    padding: 6px;
+    border-radius: 5px;
+    line-height: 1em;
+}
+
+.asset-status-icon.status-default .label-text {
+    vertical-align: middle;
+}
+
+.asset-status-icon.status-new {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 400;
+    background-color: #F68802;
+    color: #fff;
+    padding: 6px;
+    border-radius: 5px;
+    line-height: 1em;
+}
+
+.asset-status-icon.status-new .label-text {
+    vertical-align: middle;
+}
+
+.asset-status-icon.status-sale {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 400;
+    background-color: #E2231A;
+    color: #fff;
+    padding: 6px;
+    border-radius: 5px;
+    line-height: 1em;
+}
+
+.asset-status-icon.status-sale .label-text {
+    vertical-align: middle;
+}
+
+.asset-status-icon.has-icon .icon-clock {
+    background-position: -20px -720px;
+    width: 20px;
+    height: 20px;
+    background-size: 40px auto;
+}
+
+.item-cards-stackable .asset-status-icon {
+    position: absolute;
+    top: 9px;
+    right: 6px;
+    z-index: 1;
+}
+
+.item-cards-stackable .asset-status-icon.status-default {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 400;
+    background-color: #757575;
+    color: #fff;
+    padding: 4px;
+    border-radius: 3px;
+    line-height: 1em;
+}
+
+.item-cards-stackable .asset-status-icon.status-default .label-text {
+    vertical-align: middle;
+}
+
+.item-cards-stackable .asset-status-icon.status-new {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 400;
+    background-color: #F68802;
+    color: #fff;
+    padding: 4px;
+    border-radius: 3px;
+    line-height: 1em;
+}
+
+.item-cards-stackable .asset-status-icon.status-new .label-text {
+    vertical-align: middle;
+}
+
+.item-cards-stackable .asset-status-icon.status-sale {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 400;
+    background-color: #E2231A;
+    color: #fff;
+    padding: 4px;
+    border-radius: 3px;
+    line-height: 1em;
+}
+
+.item-cards-stackable .asset-status-icon.status-sale .label-text {
+    vertical-align: middle;
+}
+
+.item-cards-stackable .asset-status-icon.has-icon {
+    padding: 2px;
+}
+
+.item-cards-stackable .asset-status-icon.has-icon .icon-clock {
+    background-position: -16px -576px;
+    width: 16px;
+    height: 16px;
+    background-size: 32px auto;
+}
+
+.item-cards-stackable .asset-status-icon.has-icon.has-text.status-new,
+.item-cards-stackable .asset-status-icon.has-icon.has-text.status-sale {
+    padding: 3px 4px 3px 2px;
+}

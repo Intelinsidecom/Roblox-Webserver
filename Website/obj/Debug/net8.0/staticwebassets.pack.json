@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\CSS\\2017\\SiteStyle.css"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\2017\\SiteStyles.css",
+      "PackagePath": "staticwebassets\\CSS\\2017\\SiteStyles.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Base\\CSS\\Abp.css",
       "PackagePath": "staticwebassets\\CSS\\Base\\CSS\\Abp.css"
     },
@@ -161,6 +165,10 @@
       "PackagePath": "staticwebassets\\CSS\\Pages\\Item\\Edit.css"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Item\\ItemPage.css",
+      "PackagePath": "staticwebassets\\CSS\\Pages\\Item\\ItemPage.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Landing\\RollerCoaster\\Landing.css",
       "PackagePath": "staticwebassets\\CSS\\Pages\\Landing\\RollerCoaster\\Landing.css"
     },
@@ -201,12 +209,24 @@
       "PackagePath": "staticwebassets\\CSS\\Pages\\Notifications\\PushNotificationRegistration.css"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Recommendations\\Recommendations.css",
+      "PackagePath": "staticwebassets\\CSS\\Pages\\Recommendations\\Recommendations.css"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Shared\\AssetStatusIcon.css",
+      "PackagePath": "staticwebassets\\CSS\\Pages\\Shared\\AssetStatusIcon.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Shared\\AssetsExplorer.css",
       "PackagePath": "staticwebassets\\CSS\\Pages\\Shared\\AssetsExplorer.css"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Shared\\Friend.css",
       "PackagePath": "staticwebassets\\CSS\\Pages\\Shared\\Friend.css"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Shared\\ItemThumbnail.css",
+      "PackagePath": "staticwebassets\\CSS\\Pages\\Shared\\ItemThumbnail.css"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Pages\\Shared\\ShopInterstitialModal.css",
@@ -247,10 +267,6 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Search.ps1",
       "PackagePath": "staticwebassets\\CSS\\Search.ps1"
-    },
-    {
-      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\SiteStyle.css",
-      "PackagePath": "staticwebassets\\CSS\\SiteStyle.css"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\YUIReset.css",
@@ -445,6 +461,10 @@
       "PackagePath": "staticwebassets\\JS\\Events\\AjaxPageLoadEvent.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Events\\AssetActionButtonClickEvent.js",
+      "PackagePath": "staticwebassets\\JS\\Events\\AssetActionButtonClickEvent.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Events\\CatalogImpression.js",
       "PackagePath": "staticwebassets\\JS\\Events\\CatalogImpression.js"
     },
@@ -543,6 +563,18 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Interstitial.js",
       "PackagePath": "staticwebassets\\JS\\Interstitial.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\ItemPurchaseForDialog.js",
+      "PackagePath": "staticwebassets\\JS\\ItemPurchaseForDialog.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Item\\ItemPage.js",
+      "PackagePath": "staticwebassets\\JS\\Item\\ItemPage.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Item\\PurchaseItem.js",
+      "PackagePath": "staticwebassets\\JS\\Item\\PurchaseItem.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\JSErrorTracker.js",
@@ -653,6 +685,10 @@
       "PackagePath": "staticwebassets\\JS\\Notifications\\RealTime\\stateTracker.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\NumberFormatting.js",
+      "PackagePath": "staticwebassets\\JS\\NumberFormatting.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\PlaceLauncher.js",
       "PackagePath": "staticwebassets\\JS\\PlaceLauncher.js"
     },
@@ -735,6 +771,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Tracking\\FormEvents.js",
       "PackagePath": "staticwebassets\\JS\\Tracking\\FormEvents.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Tracking\\ModalEvents.js",
+      "PackagePath": "staticwebassets\\JS\\Tracking\\ModalEvents.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Tracking\\SignupTrackingScript.js",
@@ -1485,6 +1525,10 @@
       "PackagePath": "staticwebassets\\JS\\utilities\\PersistedBackoffIntervalTracker.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\utilities\\countdownTimer.js",
+      "PackagePath": "staticwebassets\\JS\\utilities\\countdownTimer.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\utilities\\deviceFeatureDetection.js",
       "PackagePath": "staticwebassets\\JS\\utilities\\deviceFeatureDetection.js"
     },
@@ -2103,6 +2147,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\webkit.js",
       "PackagePath": "staticwebassets\\JS\\webkit.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\widgets\\Favorites.js",
+      "PackagePath": "staticwebassets\\JS\\widgets\\Favorites.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\widgets\\jquery.mCustomScrollbar.concat.min.js",

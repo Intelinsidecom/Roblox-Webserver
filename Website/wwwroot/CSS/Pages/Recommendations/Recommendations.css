@@ -1,0 +1,32 @@
+/* ~/CSS/Pages/Recommendations/Recommendations.css */
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+@media(max-width:767px) {
+    .recommendations-container {
+        width: 100%;
+    }
+}
+
+.recommended-items-slider {
+    overflow: hidden;
+    width: 100%;
+}
+
+@media(max-width:991px) {
+    .recommended-items-slider .item-cards {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+    .recommended-items-slider .item-card {
+        float: none;
+        display: inline-block;
+    }
+}

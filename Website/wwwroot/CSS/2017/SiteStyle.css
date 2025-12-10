@@ -7231,41 +7231,6 @@ button.close {
 	background-color: rgba(25, 25, 25, 0.5);
 }
 
-.rbx-left-col {
-	height: 96%;
-	height: calc(100% - 40px);
-	background-color: #fff;
-	overflow: hidden;
-	box-shadow: 0 0 3px 0 rgba(25, 25, 25, 0.3);
-}
-
-@media(max-width:991px) {
-	.rbx-left-col {
-		height: 92%;
-		height: calc(100% - 80px);
-	}
-}
-
-@media(max-width:767px) {
-	.rbx-left-col {
-		box-shadow: 0 0 160px 0 rgba(25, 25, 25, 0.5);
-	}
-}
-
-.rbx-left-col ul {
-	padding: 5px 10px 0;
-}
-
-.rbx-left-col li {
-	margin: 5px 0;
-	position: relative;
-}
-
-.rbx-left-col .rbx-scrollbar {
-	height: 92%;
-	height: calc(100% - 50px);
-}
-
 .rbx-scrollbar {
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
@@ -8623,80 +8588,7 @@ button.close {
 	margin: 0 6px;
 }
 
-.rbx-left-col.nav-show {
-	width: 175px;
-}
 
-.rbx-left-col.nav-show .rbx-scrollbar {
-	width: 175px;
-}
-
-.rbx-left-col.nav-show .rbx-scrollbar li {
-	width: 150px;
-}
-
-.rbx-left-col {
-	-webkit-transform: translate3d(0, 0, 0);
-	transform: translate3d(0, 0, 0);
-	-ms-transform: none;
-	position: fixed;
-	width: 0;
-	font-size: 16px;
-	left: 0;
-	overflow: hidden;
-	top: 0;
-	z-index: 999;
-}
-
-.rbx-left-col li {
-	line-height: 1.42857;
-}
-
-.rbx-left-col li a {
-	color: #191919;
-	display: block;
-}
-
-.rbx-left-col li a.btn-secondary-xs,
-.rbx-left-col li a.btn-secondary-xs:hover,
-.rbx-left-col li a.btn-secondary-xs:focus {
-	color: #fff;
-}
-
-.rbx-left-col .rbx-scrollbar {
-	width: 0;
-}
-
-.rbx-left-col .rbx-scrollbar a,
-.rbx-left-col .rbx-scrollbar a:hover,
-.rbx-left-col .rbx-scrollbar a:focus {
-	font-weight: 400;
-}
-
-@media(min-width:1688px) {
-	.rbx-left-col {
-		box-shadow: 0 0 3px rgba(25, 25, 25, 0.3);
-		width: 175px;
-	}
-
-	.rbx-left-col .rbx-scrollbar {
-		width: 175px;
-	}
-
-	.no-gutter-ads .rbx-left-col {
-		width: 175px;
-	}
-
-	.no-gutter-ads .rbx-left-col .rbx-scrollbar {
-		width: 175px;
-	}
-}
-
-@media(min-width:992px) {
-	.rbx-left-col {
-		top: 0;
-	}
-}
 
 .rbx-scrollbar {
 	height: 100%;
@@ -8705,32 +8597,6 @@ button.close {
 
 .rbx-scrollbar .rbx-upgrade-now {
 	margin: 12px 0;
-}
-
-.rbx-nav-sponsor img {
-	max-width: 100%;
-	height: auto;
-	vertical-align: middle;
-}
-
-#nav-profile:hover,
-#nav-character:hover {
-	color: #F68802;
-}
-
-#nav-message:hover,
-#nav-friends:hover,
-#nav-trade:hover,
-#nav-group:hover,
-#nav-forum:hover,
-#nav-blog:hover,
-#nav-shop:hover {
-	color: #00A2FF;
-}
-
-#nav-home:hover,
-#nav-inventory:hover {
-	color: #02b757;
 }
 
 .mCSB_inside>.mCSB_container {

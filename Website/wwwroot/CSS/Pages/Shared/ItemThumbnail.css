@@ -1,0 +1,246 @@
+/* ~/CSS/Pages/Shared/ItemThumbnail.css */
+.form-inline {
+    position: static;
+}
+
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+.thumbnail-holder {
+    border: 1px #ddd solid;
+    position: relative;
+    height: 420px;
+    width: 420px;
+}
+
+@media(max-width:970px) {
+    .thumbnail-holder {
+        height: 300px;
+        width: 300px;
+    }
+}
+
+@media(max-width:767px) {
+    .thumbnail-holder {
+        width: 420px;
+        height: 420px;
+    }
+}
+
+@media(max-width:543px) {
+    .thumbnail-holder {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+.thumbnail-holder .thumbnail-span {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.thumbnail-holder .thumbnail-span>img {
+    height: inherit;
+    width: inherit;
+}
+
+.thumbnail-holder.thumbnail-Small .thumbnail-span>img {
+    height: 150px;
+    width: 150px;
+    margin-top: 104px;
+}
+
+@media(max-width:970px) {
+    .thumbnail-holder.thumbnail-Small .thumbnail-span>img {
+        margin-top: 44px;
+    }
+}
+
+@media(max-width:767px) {
+    .thumbnail-holder.thumbnail-Small .thumbnail-span>img {
+        margin-top: 135px;
+    }
+}
+
+@media(max-width:543px) {
+    .thumbnail-holder.thumbnail-Small .thumbnail-span>img {
+        margin-top: 25px;
+    }
+}
+
+.thumbnail-holder.thumbnail-Medium .thumbnail-span>img {
+    height: 256px;
+    width: 256px;
+    margin-top: 82px;
+}
+
+@media(max-width:970px) {
+    .thumbnail-holder.thumbnail-Medium .thumbnail-span>img {
+        margin-top: 22px;
+    }
+}
+
+@media(max-width:767px) {
+    .thumbnail-holder.thumbnail-Medium .thumbnail-span>img {
+        margin-top: 82px;
+    }
+}
+
+@media(max-width:543px) {
+    .thumbnail-holder.thumbnail-Medium .thumbnail-span>img {
+        margin-top: 0;
+        height: 200px;
+        width: 200px;
+    }
+}
+
+@media(max-width:767px) {
+    .thumbnail-holder.has-related-info {
+        margin-bottom: 50px;
+    }
+}
+
+.thumbnail-holder .enable-three-dee {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transition: box-shadow .2 ease-in-out;
+    -o-transition: box-shadow .2 ease-in-out;
+    transition: box-shadow .2 ease-in-out;
+    border: 1px solid transparent;
+    background-color: #fff;
+    border-color: #B8B8B8;
+    color: #191919;
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 400;
+    height: auto;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 9px 9px;
+    font-size: 18px;
+    line-height: 100%;
+    border-radius: 3px;
+    border: 1px solid #B8B8B8;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    height: 38px;
+    width: 40px;
+}
+
+.thumbnail-holder .enable-three-dee:link {
+    color: #191919;
+}
+
+.thumbnail-holder .enable-three-dee:hover,
+.thumbnail-holder .enable-three-dee:focus {
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(150, 150, 150, 0.74);
+    border-color: #B8B8B8;
+    color: #191919;
+    cursor: pointer;
+}
+
+.thumbnail-holder .enable-three-dee:active,
+.thumbnail-holder .enable-three-dee.active {
+    box-shadow: none;
+    background-color: #fff;
+    color: #191919;
+}
+
+.thumbnail-holder .enable-three-dee:active:focus,
+.thumbnail-holder .enable-three-dee.active:focus {
+    outline: 0 none;
+}
+
+.thumbnail-holder .enable-three-dee:visited {
+    box-shadow: none;
+    color: #191919;
+}
+
+.thumbnail-holder .enable-three-dee:visited:focus {
+    outline: 0 none;
+}
+
+.thumbnail-holder .enable-three-dee.disabled,
+.thumbnail-holder .enable-three-dee.disabled:hover,
+.thumbnail-holder .enable-three-dee.disabled:focus,
+.thumbnail-holder .enable-three-dee.disabled:active,
+.thumbnail-holder .enable-three-dee.disabled.active,
+.thumbnail-holder .enable-three-dee[disabled],
+.thumbnail-holder .enable-three-dee[disabled]:hover,
+.thumbnail-holder .enable-three-dee[disabled]:focus,
+.thumbnail-holder .enable-three-dee[disabled]:active,
+.thumbnail-holder .enable-three-dee[disabled].active {
+    opacity: 1;
+    background-color: #fff;
+    border-color: #B8B8B8;
+    color: #B8B8B8;
+    cursor: default;
+}
+
+.thumbnail-holder .asset-restriction-icon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.thumbnail-holder .asset-status-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 10px;
+}
+
+.thumbnail-holder .related-game-container {
+    position: relative;
+}
+
+.thumbnail-holder .MediaPlayerIcon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 6px;
+    cursor: pointer;
+}
+
+.thumbnail-holder .icon-play {
+    background-position: 0 -528px;
+    background-size: 96px auto;
+    height: 48px;
+    width: 48px;
+}
+
+.thumbnail-holder .icon-play:hover {
+    background-position: -48px -528px;
+}
+
+.thumbnail-holder .icon-pause {
+    background-position: 0 -576px;
+    background-size: 96px auto;
+    height: 48px;
+    width: 48px;
+}
+
+.thumbnail-holder .icon-pause:hover {
+    background-position: -48px -576px;
+}
+
+.touch .thumbnail-holder .icon-play {
+    background-position: 0 -528px;
+}
+
+.touch .thumbnail-holder .icon-pause {
+    background-position: 0 -576px;
+}
