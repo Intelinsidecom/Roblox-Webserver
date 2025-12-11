@@ -17,7 +17,6 @@
   font-weight: 500;
   padding: 15px 0;
   margin: 0;
-  margin-left: 30px;
 }
 
 .catalog-header {
@@ -38,7 +37,7 @@
 
 .avatar-left-panel {
   width: 277px;
-  margin-left: 30px;
+  margin-left: 0;
   margin-right: 24px;
 }
 
@@ -159,4 +158,14 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+@media (min-width: 992px) {
+  .avatar-header-text {
+    margin-left: 100px;
+  }
+
+  .avatar-left-panel {
+    margin-left: 100px;
+  }
 }

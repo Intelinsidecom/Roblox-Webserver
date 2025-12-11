@@ -16,6 +16,9 @@ Roblox.ItemPurchase = function(n, t, i) {
     }
 
     function k(n) {
+        if (!n) {
+            return n;
+        }
         return n.toUpperCase() === h ? h : n
     }
 

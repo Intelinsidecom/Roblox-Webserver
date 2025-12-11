@@ -30,6 +30,7 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.EventStream == "und
             case n.DIAGNOSTIC:
                 y = f
         }
+        if (!y) return;
         if (t && l !== n.DEFAULT) throw "TargetType '" + l + "' is not supported in Service Worker mode";
         e && s && y !== "" && (w = h(e, s), p = y, p += y.indexOf("?") === -1 ? "?" : "&", t ? (a(c, w), p += v(c), Roblox.Fetch.getWithNoCredentials(p)) : ($.extend(c, w), p += $.param(c), b = new Image, b.src = p), o.LocalEventLog.push({
             eventName: e,

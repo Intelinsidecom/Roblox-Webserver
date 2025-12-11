@@ -10,6 +10,7 @@ using System.IO;
 using Avatar;
 using System.Security.Cryptography;
 using System.Text;
+using Assets;
 
 namespace Website.Controllers;
 
@@ -18,11 +19,114 @@ public class ThumbnailsController : ControllerBase
 {
     private readonly IThumbnailService _thumbnailService;
     private readonly IConfiguration _configuration;
+    private readonly AssetMetadataRepository _assetMetadataRepository;
 
     public ThumbnailsController(IThumbnailService thumbnailService, IConfiguration configuration)
     {
         _thumbnailService = thumbnailService;
         _configuration = configuration;
+        _assetMetadataRepository = new AssetMetadataRepository();
+    }
+
+    private sealed class ItemThumbnailRequest
+    {
+        public string? imageSize { get; set; }
+        public bool noClick { get; set; }
+        public bool noOverlays { get; set; }
+        public long assetId { get; set; }
+    }
+
+    // JSONP endpoint used by JS/modules/Widgets/ItemImage.js
+    // GET /item-thumbnails?jsoncallback=foo&params=[{...}]
+    [HttpGet("item-thumbnails")]
+    public async Task<IActionResult> ItemThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
+    {
+        var results = new List<object?>();
+
+        if (!string.IsNullOrWhiteSpace(rawParams))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(rawParams);
+                if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    var connStr = _configuration.GetConnectionString("Default");
+
+                    foreach (var elem in doc.RootElement.EnumerateArray())
+                    {
+                        long assetId = 0;
+                        if (elem.TryGetProperty("assetId", out var assetProp))
+                        {
+                            if (assetProp.ValueKind == JsonValueKind.Number)
+                            {
+                                assetId = assetProp.GetInt64();
+                            }
+                            else if (assetProp.ValueKind == JsonValueKind.String && long.TryParse(assetProp.GetString(), out var parsed))
+                            {
+                                assetId = parsed;
+                            }
+                        }
+
+                        if (assetId <= 0)
+                        {
+                            results.Add(null);
+                            continue;
+                        }
+
+                        string name = $"Item {assetId}";
+                        string thumbUrl = "/images/RobloxLogo.png";
+
+                        if (!string.IsNullOrWhiteSpace(connStr))
+                        {
+                            try
+                            {
+                                var asset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId).ConfigureAwait(false);
+                                if (asset != null)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(asset.Name))
+                                    {
+                                        name = asset.Name;
+                                    }
+
+                                    if (!string.IsNullOrWhiteSpace(asset.ThumbnailUrl))
+                                    {
+                                        thumbUrl = asset.ThumbnailUrl!;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                // Fallback to defaults on DB error
+                            }
+                        }
+
+                        var itemUrl = $"/catalog/{assetId}/";
+
+                        results.Add(new
+                        {
+                            url = itemUrl,
+                            name,
+                            thumbnailUrl = thumbUrl,
+                            thumbnailFinal = true
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                // Malformed JSON: return empty array
+            }
+        }
+
+        var json = JsonSerializer.Serialize(results);
+
+        if (string.IsNullOrWhiteSpace(jsoncallback))
+        {
+            return Content(json, "application/json");
+        }
+
+        var script = $"{jsoncallback}({json});";
+        return Content(script, "application/javascript");
     }
 
     // Legacy endpoint used by AjaxAvatarThumbnail.js

@@ -1,6 +1,10 @@
 {
   "Files": [
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\2017\\Base\\CSS\\StyleGuide.css",
+      "PackagePath": "staticwebassets\\CSS\\2017\\Base\\CSS\\StyleGuide.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\2017\\Base\\CSS\\jquery.mCustomScrollbar.css",
       "PackagePath": "staticwebassets\\CSS\\2017\\Base\\CSS\\jquery.mCustomScrollbar.css"
     },
@@ -11,10 +15,6 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\2017\\SiteStyle.css",
       "PackagePath": "staticwebassets\\CSS\\2017\\SiteStyle.css"
-    },
-    {
-      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\2017\\SiteStyles.css",
-      "PackagePath": "staticwebassets\\CSS\\2017\\SiteStyles.css"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\Base\\CSS\\Abp.css",
@@ -269,6 +269,10 @@
       "PackagePath": "staticwebassets\\CSS\\Search.ps1"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\SiteStyle.css",
+      "PackagePath": "staticwebassets\\CSS\\SiteStyle.css"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\CSS\\YUIReset.css",
       "PackagePath": "staticwebassets\\CSS\\YUIReset.css"
     },
@@ -335,6 +339,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\1ba208cf31fb5a6a592b902955c8770b.js",
       "PackagePath": "staticwebassets\\JS\\1ba208cf31fb5a6a592b902955c8770b.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\2017CatalogItem.js",
+      "PackagePath": "staticwebassets\\JS\\2017CatalogItem.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\3D\\MTLLoader.js.disabled",
@@ -2169,6 +2177,10 @@
       "PackagePath": "staticwebassets\\ScriptResource.axd"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\Search.ps1",
+      "PackagePath": "staticwebassets\\Search.ps1"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
     },
@@ -2339,6 +2351,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Buttons\\questionmark-12x12.png",
       "PackagePath": "staticwebassets\\images\\Buttons\\questionmark-12x12.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\DataAlert.svg",
+      "PackagePath": "staticwebassets\\images\\DataAlert.svg"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\DealTickingOut.png",
@@ -2609,6 +2625,10 @@
       "PackagePath": "staticwebassets\\images\\Shared\\branded_05092016.svg"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Shared\\branded_06282017.svg",
+      "PackagePath": "staticwebassets\\images\\Shared\\branded_06282017.svg"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Shared\\creation.svg",
       "PackagePath": "staticwebassets\\images\\Shared\\creation.svg"
     },
@@ -2619,6 +2639,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Shared\\games.svg",
       "PackagePath": "staticwebassets\\images\\Shared\\games.svg"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Shared\\generic_07172017.svg",
+      "PackagePath": "staticwebassets\\images\\Shared\\generic_07172017.svg"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\Shared\\generic_10252016.svg",
@@ -2691,6 +2715,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\a0afd0556163477e1023c5aa55d1b9f6.png",
       "PackagePath": "staticwebassets\\images\\a0afd0556163477e1023c5aa55d1b9f6.png"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\b80339ddf867ccfe6ab23a2c263d8000.png",
+      "PackagePath": "staticwebassets\\images\\b80339ddf867ccfe6ab23a2c263d8000.png"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\cca69eca62f23ca413fc920549e936ea.jpg",

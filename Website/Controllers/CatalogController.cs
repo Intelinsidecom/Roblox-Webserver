@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Assets;
 using RobloxWebserver.Assemblies.Catalog;
+using Users;
 
 namespace RobloxWebserver.Controllers
 {
@@ -12,11 +15,13 @@ namespace RobloxWebserver.Controllers
     {
         private readonly ICatalogService _catalogService;
         private readonly IConfiguration _configuration;
+        private readonly AssetMetadataRepository _assetMetadataRepository;
 
         public CatalogController(ICatalogService catalogService, IConfiguration configuration)
         {
             _catalogService = catalogService;
             _configuration = configuration;
+            _assetMetadataRepository = new AssetMetadataRepository();
         }
 
         public class CatalogItemViewModel
@@ -24,6 +29,7 @@ namespace RobloxWebserver.Controllers
             public long Id { get; set; }
             public string Name { get; set; } = string.Empty;
             public string CreatorName { get; set; } = string.Empty;
+            public long CreatorId { get; set; }
             public string ImageUrl { get; set; } = string.Empty;
 
             public int? PriceRobux { get; set; }
@@ -37,6 +43,120 @@ namespace RobloxWebserver.Controllers
             public string UpdatedText { get; set; } = string.Empty;
             public int? Sales { get; set; }
             public int? FavoritedCount { get; set; }
+            public string Description { get; set; } = string.Empty;
+            public int GenreId { get; set; }
+            public string GenreLabel { get; set; } = string.Empty;
+            public long UserRobuxBalance { get; set; }
+            public bool AllowComments { get; set; }
+        }
+
+        [HttpGet("{id:long}/{itemName}")]
+        public async Task<IActionResult> Item(long id, string itemName)
+        {
+            if (id <= 0)
+            {
+                return NotFound();
+            }
+
+            var connectionString = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return StatusCode(500, "Database connection string is not configured.");
+            }
+
+            var asset = await _assetMetadataRepository.GetAssetByIdAsync(connectionString, id).ConfigureAwait(false);
+            if (asset == null)
+            {
+                return NotFound();
+            }
+
+            var expectedSlug = ToSlug(asset.Name);
+            if (!string.Equals(itemName, expectedSlug, StringComparison.OrdinalIgnoreCase))
+            {
+                return NotFound();
+            }
+
+            var creatorName = string.Empty;
+            if (asset.OwnerUserId > 0)
+            {
+                var name = await UserQueries.GetUserNameByIdAsync(connectionString, asset.OwnerUserId).ConfigureAwait(false);
+                if (!string.IsNullOrWhiteSpace(name))
+                {
+                    creatorName = name;
+                }
+            }
+
+            long userRobux = 0;
+            var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var currentUserId) && currentUserId > 0)
+            {
+                try
+                {
+                    userRobux = await UserQueries.GetCurrencyByIdAsync(connectionString, currentUserId, "robux").ConfigureAwait(false);
+                }
+                catch
+                {
+                    userRobux = 0;
+                }
+            }
+
+            var model = new CatalogItemViewModel
+            {
+                Id = asset.AssetId,
+                Name = asset.Name,
+                CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
+                CreatorId = asset.OwnerUserId,
+                ImageUrl = string.IsNullOrWhiteSpace(asset.ThumbnailUrl) ? "/images/RobloxLogo.png" : asset.ThumbnailUrl,
+                PriceRobux = asset.OnSale ? (int?)Math.Min(asset.Price, int.MaxValue) : null,
+                PriceTickets = null,
+                OriginalPriceRobux = null,
+                IsLimited = false,
+                IsLimitedUnique = false,
+                IsNew = false,
+                UpdatedText = string.Empty,
+                Sales = null,
+                FavoritedCount = null,
+                Description = asset.Description ?? string.Empty,
+                GenreId = asset.Genre,
+                GenreLabel = AssetGenreNames.GetGenreLabel(asset.Genre),
+                UserRobuxBalance = userRobux,
+                AllowComments = asset.AllowComments
+            };
+
+            return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);
+        }
+
+        private static string ToSlug(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return string.Empty;
+            }
+
+            name = name.Trim().ToLowerInvariant();
+
+            var chars = new System.Text.StringBuilder(name.Length);
+            bool lastWasHyphen = false;
+
+            foreach (var ch in name)
+            {
+                if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))
+                {
+                    chars.Append(ch);
+                    lastWasHyphen = false;
+                }
+                else if (ch == ' ' || ch == '-' || ch == '_' || ch == '.')
+                {
+                    if (!lastWasHyphen)
+                    {
+                        chars.Append('-');
+                        lastWasHyphen = true;
+                    }
+                }
+            }
+
+            var result = chars.ToString().Trim('-');
+            return string.IsNullOrEmpty(result) ? string.Empty : result;
         }
 
         [HttpGet("")]

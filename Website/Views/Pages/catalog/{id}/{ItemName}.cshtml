@@ -1,3 +1,4 @@
+@model RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel
 @{ Layout = "_Layout"; }
 <!DOCTYPE html><!--[if IE 8]><html class=ie8 ng-app=robloxApp><![endif]--> <!--[if gt IE 8]><!-->
 <html><!--<![endif]-->
@@ -76,12 +77,13 @@
  <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
  <script type="text/javascript" src="/JS/Bootstrap/GenericConfirmation.js"></script>
 
-    
+ <script type="text/javascript" src="/JS/2017CatalogItem.js"></script>
+
+
 <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
 <link rel="stylesheet" href="~/CSS/Pages/Shared/ItemThumbnail.css">
 <link rel="stylesheet" href="~/CSS/Pages/Recommendations/Recommendations.css">
-<link rel="stylesheet" href="~/CSS/LeanBaseStyle.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/jquery.mCustomScrollbar.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/PlaceLauncher.css">
@@ -91,6 +93,7 @@
 <link rel="stylesheet" href="~/CSS/Base/CSS/Abp.css">
 <link rel="stylesheet" href="~/CSS/Legacy/Modal.css">
 <link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
+<link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
 
 <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
@@ -98,12 +101,11 @@
 <link rel="stylesheet" href="~/CSS/Pages/Recommendations/Recommendations.css">
 <link rel="stylesheet" href="~/CSS/Pages/Shared/AssetStatusIcon.css">
 
-<link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
-
+<link rel="stylesheet" href="~/CSS/2017/Base/CSS/StyleGuide.css">
 
 
 <head data-machine-id=WEB1494>
-    <title>Headless Horseman - ROBLOX</title>
+    <title>@(string.IsNullOrWhiteSpace(Model?.Name) ? "Item" : Model.Name) - ROBLOX</title>
 
     <script>
         var Roblox = Roblox || {};
@@ -149,8 +151,8 @@
     <div id=fb-root></div>
     <div id=wrap class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled=false>
        </div>
-            <div class=content>
-                <div id=item-container class=page-content data-item-id=134082613 data-item-name="Headless Horseman" data-asset-type=Package data-userasset-id="" data-is-purchase-enabled=true data-product-id=18122488 data-bc-requirement=0 data-expected-currency=1 data-expected-price=31000 data-seller-name=ROBLOX data-expected-seller-id=1 data-lowest-private-sale-userasset-id="" data-is-limited-unique=false data-user-id=404463238 data-asset-granted=False data-forward-url="" data-avatar-wear-url=https://avatar.roblox.com/v1/avatar/assets/134082613/wear data-avatar-remove-url=https://avatar.roblox.com/v1/avatar/assets/134082613/remove data-current-time="10/20/2017 4:29:09 PM">
+            <div class="content item-page-main">
+                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type=Package data-userasset-id="" data-is-purchase-enabled=true data-product-id=18122488 data-bc-requirement=0 data-expected-currency=1 data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique=false data-user-id=404463238 data-asset-granted=False data-forward-url="" data-avatar-wear-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/remove" data-current-time="10/20/2017 4:29:09 PM">
                     <div class=system-feedback>
                         <div class=alert-system-feedback>
                             <div class="alert alert-success">Purchase Completed</div>
@@ -161,17 +163,19 @@
                     </div>
                     <div class="section-content top-section">
                         <div class=item-name-container>
-                            <h2>Headless Horseman</h2>
-                            <div><span class=text-label>By <a href="https://web.roblox.com/users/1/profile/" class=text-name>ROBLOX</a></span>
-                                <div id=phone-sale-clock class="sale-clock phone-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM"><span class=icon-red-timer-16x16></span>
+                            <h2>@Model.Name</h2>
+                            <div><span class=text-label>By <a href="/users/@Model.CreatorId/profile" class=text-name>@Model.CreatorName</a></span>
+
+                                @* <div id=phone-sale-clock class="sale-clock phone-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM"><span class=icon-red-timer-16x16></span>
                                     <div class=text></div>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
                         <div class=item-thumbnail-container>
-                            <div id=AssetThumbnail class="thumbnail-holder thumbnail-Large three-dee-static" data-reset-enabled-every-page data-3d-thumbs-enabled three-dee-static data-3dtype=static data-url="/thumbnail/asset?assetId=134082613&amp;thumbnailFormatId=254&amp;width=420&amp;height=420"><span class=thumbnail-span data-3d-url="/asset-thumbnail-3d/json?assetId=134082613"><img src=https://t1.rbxcdn.com/83c58269824e5de860a75b9bcd401c37></span>
+                            <div id=AssetThumbnail class="thumbnail-holder thumbnail-Large three-dee-static" data-reset-enabled-every-page data-3d-thumbs-enabled three-dee-static data-3dtype=static data-url="/thumbnail/asset?assetId=@Model.Id&amp;thumbnailFormatId=254&amp;width=420&amp;height=420"><span class=thumbnail-span data-3d-url="/asset-thumbnail-3d/json?assetId=@Model.Id"><img src="@Model.ImageUrl"></span>
+
                                 <div class=equipped-marker></div><span class="enable-three-dee three-dee-static-icon"></span>
-                                <div class="asset-status-icon status-sale has-icon"><span class=icon-clock></span> <span> </span></div>
+                                @* <div class="asset-status-icon status-sale has-icon"><span class=icon-clock></span> <span> </span></div> *@
                             </div>
                             <script>
                                 (function() {
@@ -186,34 +190,51 @@
                                 <div class=price-container-text>
                                     <div class="text-label field-label price-label">Price</div>
                                     <div class=price-info>
-                                        <div class="icon-text-wrapper clearfix icon-robux-price-container"><span class=icon-robux></span> <span class=text-robux-lg>31,000</span></div>
+                                        <div class="icon-text-wrapper clearfix icon-robux-price-container">
+                                            <span class=icon-robux></span>
+                                            <span class=text-robux-lg>
+                                                @if (Model.PriceRobux.HasValue)
+                                                {
+                                                    @Model.PriceRobux.Value.ToString("N0")
+                                                }
+                                                @* else
+                                                {
+                                                    @:Offsale
+                                                } *@
+                                            </span>
+                                        </div>
                                     </div>
+
                                 </div>
-                                <div class=action-button><button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux> Buy </button>
-                                    <div id=sale-clock class="sale-clock desktop-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM">
+                                <div class=action-button><button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux data-item-name="@Model.Name" data-seller-name="@Model.CreatorName" data-item-id="@Model.Id" data-expected-price="@(Model.PriceRobux ?? 0)" data-expected-currency="1" data-asset-type="Package" data-expected-seller-id="@Model.CreatorId"> Buy </button>
+                                    @* <div id=sale-clock class="sale-clock desktop-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM">
                                         <div class=text></div>
-                                    </div>
+                                    </div> *@
                                 </div>
                             </div>
                             <div class="clearfix item-mobile-description item-field-container">
-                                <pre class=description-content>&quot;No, you must believe me. It was a horseman, a dead one. Headless.&quot;</pre>
+                                <pre class=description-content>@Model.Description</pre>
+
                             </div>
                             <div class="clearfix item-type-field-container">
                                 <div class="text-label field-label">Type</div><span class=field-content>Package</span>
+
                             </div>
                             <div class="clearfix item-field-container">
                                 <div class="text-label field-label">Genres</div>
-                                <div class=field-content><a class="text-name item-genre" href=https://web.roblox.com/all-catalog> All </a></div>
+                                <div class=field-content><span class="text-name item-genre">@Model.GenreLabel</span></div>
+
                             </div>
                             <div class="clearfix toggle-target item-field-container">
                                 <div class="text-label field-label">Description</div>
-                                <pre id=item-details-description class="content-overflow-toggle content-height content-overflow-page-loading field-content description-content">&quot;No, you must believe me. It was a horseman, a dead one. Headless.&quot;<span class="hidden toggle-content" data-container-id=item-details-description>Read More</span></pre>
+                                <pre id=item-details-description class="content-overflow-toggle content-height content-overflow-page-loading field-content description-content">@Model.Description<span class="hidden toggle-content" data-container-id=item-details-description>Read More</span></pre>
+
                             </div>
                             <div class="hide show-more-end" data-container-id=item-details></div><button type=button class="hidden btn-full-width btn-control-md toggle-content" data-container-id=item-details>Read More</button>
                         </div>
                         <ul class="item-social-container clearfix include-favorite">
                             <li class=favorite-button-container>
-                                <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=134082613 data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F134082613%2FHeadless-Horseman"> <span title=22,757 class="text-favorite favoriteCount 22,757" id=result>22K+</span>
+                                <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=@Model.Id data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name"> <span title=22,757 class="text-favorite favoriteCount 22,757" id=result>22K+</span>
                                         <div id=favorite-icon class=icon-favorite></div>
                                     </a></div>
                         </ul>
@@ -226,7 +247,7 @@
                                 "useInventorySite": true
                             };
                         </script>
-                        <div class=current-items ng-controller=recommendationsController ng-init="initializeWithModelValues(134082613, 32, 7)" ng-show="recommendationsData.items.length > 0" ng-cloak>
+                        <div class=current-items ng-controller=recommendationsController ng-init="initializeWithModelValues(@Model.Id, 32, 7)" ng-show="recommendationsData.items.length > 0" ng-cloak>
                             <div class="container-list recommendations-container">
                                 <div class="container-header recommendations-header">
                                     <h3>Recommended {{ recommendationsData.assetTypeName | capitalize }}</h3>
@@ -249,6 +270,94 @@
                             </div>
                         </div>
                     </div>
+                    @if (Model.AllowComments)
+                    {
+                        <div>
+                        <div id=AjaxCommentsContainer class=comments-container data-asset-id="@Model.Id" data-total-collection-size="" data-is-user-authenticated=True data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name">
+                            <div class=container-header>
+                                <h3>Comments</h3>
+                            </div>
+                            <div class="section-content AddAComment">
+                                <div id=send-comment-captcha></div>
+                                <div class=comment-form>
+                                    <form class="form-horizontal ng-pristine ng-valid" role=form>
+                                        <div class=form-group><textarea class="form-control input-field rbx-comment-input blur" placeholder="Write a comment!" rows=1></textarea>
+                                            <div class=rbx-comment-msgs><span class="rbx-comment-error text-error text-overflow"></span> <span class="rbx-comment-count small"></span></div>
+                                        </div><button type=button class="btn-secondary-md rbx-post-comment">Post Comment</button>
+                                    </form>
+                                </div>
+                                <div class="comments vlist"></div>
+                                <div class=comments-item-template>
+                                    <div class="comment-item list-item">
+                                        <div class="comment-user list-header">
+                                            <div class="Avatar avatar avatar-headshot-md" data-user-id=comment-author-id data-image-size=small></div>
+                                        </div>
+                                        <div class="comment-body list-body"><a class=text-name>username</a>
+                                            <p class="comment-content list-content">text</p><span class="xsmall text-date-hint">4 hours ago</span>
+                                        </div>
+                                        <div class=comment-controls><a class="rbx-comment-report-link abuse-report-modal" href="https://web.roblox.com/abusereport/comment?id=%CommentID&amp;RedirectUrl=%PageURL" title="Report Abuse"><span class=icon-flag></span></a></div>
+                                    </div>
+                                </div>
+                                <div class=loader-template>
+                                    <div class=loading-animated>
+                                        <div>
+                                            <div></div>
+                                            <div></div>
+                                            <div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id=AjaxCommentsMoreButtonContainer class=ajax-comments-more-button-container><button type=button class="btn-control-sm rbx-comments-see-more hidden">See More</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    <script>
+                        var Roblox = Roblox || {};
+                        $(function() {
+                            if (!Roblox.Captcha) {
+                                return;
+                            }
+                            var captcha = Roblox.Captcha;
+                            captcha.setInvisibleMode("true" == "true" ? true : false);
+                            captcha.setSiteKey("6LcpwSQUAAAAAPN5nICO6tHekrkrSIYvsl9jAPW4");
+                            var types = ["PostComment"];
+                            captcha.setMultipleEndpoints(types, "https://api.roblox.com/captcha/validate/user");
+                        });
+                    </script>
+                    <script>
+                        $(document).ready(function() {
+                            Roblox.Comments.Resources = {
+                                defaultMessage: "Write a comment!",
+                                noCommentsFound: "No comments found.",
+                                moreComments: "More Comments",
+                                sorrySomethingWentWrong: "Sorry, something went wrong.",
+                                charactersRemaining: "characters remaining",
+                                emailVerifiedABTitle: "Verify Your Email",
+                                emailVerifiedABMessage: "You must verify your email before you can comment. You can verify your email on the &lt;a class=&#39;text-link&#39; href=&#39;https://web.roblox.com/my/account?confirmemail=1&#39;&gt;Account&lt;/a&gt; page.",
+                                linksNotAllowedTitle: "Links Not Allowed",
+                                linksNotAllowedMessage: "Comments should be about the item or place on which you are commenting. Links are not permitted.",
+                                accept: "Verify",
+                                decline: "Cancel",
+                                tooManyCharacters: "Too many characters!",
+                                tooManyNewlines: "Too many newlines!"
+                            };
+                            Roblox.Comments.Limits = [{
+                                limit: '10',
+                                character: "\n",
+                                message: Roblox.Comments.Resources.tooManyNewlines
+                            }, {
+                                limit: '200',
+                                character: undefined,
+                                message: Roblox.Comments.Resources.tooManyCharacters
+                            }];
+                            Roblox.Comments.FilterIsEnabled = true;
+                            Roblox.Comments.FilterRegex = "(([a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}[:\\#/\\?]+)|([a-zA-Z0-9]\\.[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}))";
+                            Roblox.Comments.FilterCleanExistingComments = false;
+                            Roblox.Comments.initialize();
+                        });
+                    </script>
+
                 </div>
                 <div class="GenericModal modalPopup unifiedModal smallModal" style=display:none>
                     <div class=Title></div>
@@ -261,7 +370,7 @@
                         <div id=GenericModalButtonContainer class=GenericModalButtonContainer><a class="ImageButton btn-neutral btn-large roblox-ok">OK</a></div>
                     </div>
                 </div>
-                <div id=ItemPurchaseAjaxData data-has-currency-service-error=False data-currency-service-error-message="" data-authenticateduser-isnull=False data-user-balance-robux=870 data-user-bc=3 data-continueshopping-url=https://web.roblox.com/catalog/134082613/Headless-Horseman data-imageurl=https://t6.rbxcdn.com/e7e0074e913e4c36b548ad1b39cd018e data-alerturl=https://images.rbxcdn.com/75af9e2cb6a75450bee5245f5ee11c86.svg.gzip data-insufficentfundsurl=https://images.rbxcdn.com/b80339ddf867ccfe6ab23a2c263d8000.png></div>
+                <div id=ItemPurchaseAjaxData data-has-currency-service-error=False data-currency-service-error-message="" data-authenticateduser-isnull=False data-user-balance-robux="@Model.UserRobuxBalance" data-user-bc=0 data-continueshopping-url="/catalog/@Model.Id/@Model.Name" data-imageurl="@Model.ImageUrl" data-alerturl=/images/DataAlert.svg.gzip data-insufficentfundsurl=/images/b80339ddf867ccfe6ab23a2c263d8000.png></div>
             </div>
         </div>
     </div>
@@ -405,25 +514,7 @@
     </div>
     <div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>
     <div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div><iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
-    <script>
-        Roblox.Client._skip = null;
-        Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
-        Roblox.Client._installHost = 'setup.roblox.com';
-        Roblox.Client.ImplementsProxy = true;
-        Roblox.Client._silentModeEnabled = true;
-        Roblox.Client._bringAppToFrontEnabled = false;
-        Roblox.Client._currentPluginVersion = '';
-        Roblox.Client._eventStreamLoggingEnabled = true;
-        Roblox.Client._installSuccess = function() {
-            if (GoogleAnalyticsEvents) {
-                GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
-                GoogleAnalyticsEvents.FireEvent(['Plugin', 'Install Success']);
-                if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
-                    Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
-                }
-            }
-        }
-    </script>
+   
     <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle=confirmation style=display:none><a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
         <div class=Title></div>
         <div class=GenericModalBody>
@@ -512,6 +603,30 @@
             Roblox.JSErrorTracker.initialize({
                 'suppressConsoleError': true
             });
+        });
+    </script>
+    <script>
+        $(function () {
+            var $container = $("#item-container"),
+                $primaryButton = $(".PurchaseButton, .InstallButton").first(),
+                $purchaseButtons;
+
+            if ($primaryButton.length > 0 && $container.length > 0) {
+                $primaryButton.attr("data-expected-price", $container.attr("data-expected-price"));
+                $primaryButton.attr("data-bc-requirement", $container.attr("data-bc-requirement"));
+                $primaryButton.attr("data-product-id", $container.attr("data-product-id"));
+                $primaryButton.attr("data-item-id", $container.attr("data-item-id"));
+                $primaryButton.attr("data-item-name", $container.attr("data-item-name"));
+                $primaryButton.attr("data-asset-type", $container.attr("data-asset-type"));
+                $primaryButton.attr("data-expected-currency", $container.attr("data-expected-currency"));
+                $primaryButton.attr("data-expected-seller-id", $container.attr("data-expected-seller-id"));
+            }
+
+            $purchaseButtons = $(".PurchaseButton");
+            if ($purchaseButtons.length > 0 && $container.length > 0) {
+                $purchaseButtons.attr("data-seller-name", $container.attr("data-seller-name"));
+                $purchaseButtons.attr("data-userasset-id", $container.attr("data-lowest-private-sale-userasset-id"));
+            }
         });
     </script>
 </body>
