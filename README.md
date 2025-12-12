@@ -1,5 +1,8 @@
 # Roblox Webserver
 
+## Have Questions? Need Help? Join the official Freebloxia Server: 
+https://discord.gg/8gWQtsUE9
+
 Webserver designed to work nicely with all Roblox Clients (Hosting, Joining and more) and to be as close to how roblox looked during 2016/2017 Era, be Documented on All Apis, how everything works.
 
 ## This Repo is consisted of:
