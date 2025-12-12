@@ -76,9 +76,21 @@
  <script type="text/javascript" src="/JS/utilities/popover.js"></script>
  <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
  <script type="text/javascript" src="/JS/Bootstrap/GenericConfirmation.js"></script>
-
+ <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+ <script type="text/javascript" src="/JS/Tracking/FormEvents.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/common/formEvents/formEvents.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/common/formEvents/directives/formContext.js"></script>
+ <script type="text/javascript" src="/JS/TosModalCheck.js"></script>
+ <script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+ <script type="text/javascript" src="/JS/Comments.js?v=3"></script>
+ <script type="text/javascript" src="/JS/viewapp/common/directives/toggleLoadingDirective.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/emailAndPhoneUpsell.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/constants/emailAndPhoneUpsellConstants.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/services/emailAndPhoneUpsellService.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellController.js"></script>
+ <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellModalController.js"></script>
  <script type="text/javascript" src="/JS/2017CatalogItem.js"></script>
-
 
 <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
@@ -102,7 +114,7 @@
 <link rel="stylesheet" href="~/CSS/Pages/Shared/AssetStatusIcon.css">
 
 <link rel="stylesheet" href="~/CSS/2017/Base/CSS/StyleGuide.css">
-
+<link rel="stylesheet" href="~/CSS//Base/CSS/Modals.css">
 
 <head data-machine-id=WEB1494>
     <title>@(string.IsNullOrWhiteSpace(Model?.Name) ? "Item" : Model.Name) - ROBLOX</title>
@@ -149,10 +161,10 @@
     <div id=http-retry-data data-http-retry-max-timeout=0 data-http-retry-base-timeout=0 data-http-retry-max-times=5></div>
     <div id=TosAgreementInfo data-terms-check-needed=False></div>
     <div id=fb-root></div>
-    <div id=wrap class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled=false>
+            <div id=wrap class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled=false>
        </div>
             <div class="content item-page-main">
-                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type=Package data-userasset-id="" data-is-purchase-enabled=true data-product-id=18122488 data-bc-requirement=0 data-expected-currency=1 data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique=false data-user-id=404463238 data-asset-granted=False data-forward-url="" data-avatar-wear-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/remove" data-current-time="10/20/2017 4:29:09 PM">
+                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type="Package" data-userasset-id="" data-is-purchase-enabled=true data-product-id="@Model.Id" data-bc-requirement=0 data-expected-currency="1" data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique="@Model.IsLimitedUnique" data-user-id="@User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" data-asset-granted=False data-forward-url="" data-avatar-wear-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/remove" data-current-time="@DateTime.UtcNow">
                     <div class=system-feedback>
                         <div class=alert-system-feedback>
                             <div class="alert alert-success">Purchase Completed</div>
@@ -164,7 +176,13 @@
                     <div class="section-content top-section">
                         <div class=item-name-container>
                             <h2>@Model.Name</h2>
-                            <div><span class=text-label>By <a href="/users/@Model.CreatorId/profile" class=text-name>@Model.CreatorName</a></span>
+                            <div>
+                                <span class=text-label>By <a href="/users/@Model.CreatorId/profile" class=text-name>@Model.CreatorName</a></span>
+                                @if (Model.IsOwned)
+                                {
+                                    <div class=divider>&nbsp;</div>
+                                    <div class=label-checkmark><span class=icon-checkmark-white-bold></span></div><span>Item Owned</span>
+                                }
 
                                 @* <div id=phone-sale-clock class="sale-clock phone-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM"><span class=icon-red-timer-16x16></span>
                                     <div class=text></div>
@@ -188,6 +206,10 @@
                         <div id=item-details class="content-overflow-toggle content-height content-overflow-page-loading item-details">
                             <div class="clearfix price-container">
                                 <div class=price-container-text>
+                                    @if (Model.IsOwned)
+                                    {
+                                        <div class=item-first-line>This item is available in your inventory.</div>
+                                    }
                                     <div class="text-label field-label price-label">Price</div>
                                     <div class=price-info>
                                         <div class="icon-text-wrapper clearfix icon-robux-price-container">
@@ -206,7 +228,15 @@
                                     </div>
 
                                 </div>
-                                <div class=action-button><button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux data-item-name="@Model.Name" data-seller-name="@Model.CreatorName" data-item-id="@Model.Id" data-expected-price="@(Model.PriceRobux ?? 0)" data-expected-currency="1" data-asset-type="Package" data-expected-seller-id="@Model.CreatorId"> Buy </button>
+                                <div class=action-button>
+                                    @if (Model.IsOwned)
+                                    {
+                                        <a id=edit-avatar-button href="https://web.roblox.com/my/avatar" class="btn-fixed-width-lg btn-control-md" data-button-action=avatar> Edit Avatar </a>
+                                    }
+                                    else
+                                    {
+                                        <button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux data-item-name="@Model.Name" data-seller-name="@Model.CreatorName" data-item-id="@Model.Id" data-expected-price="@(Model.PriceRobux ?? 0)" data-expected-currency="1" data-asset-type="Package" data-expected-seller-id="@Model.CreatorId"> Buy </button>
+                                    }
                                     @* <div id=sale-clock class="sale-clock desktop-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM">
                                         <div class=text></div>
                                     </div> *@
@@ -217,7 +247,7 @@
 
                             </div>
                             <div class="clearfix item-type-field-container">
-                                <div class="text-label field-label">Type</div><span class=field-content>Package</span>
+                                <div class="text-label field-label">Type</div><span class=field-content>@Model.AssetTypeLabel</span>
 
                             </div>
                             <div class="clearfix item-field-container">
@@ -270,10 +300,10 @@
                             </div>
                         </div>
                     </div>
-                    @if (Model.AllowComments)
+                    @if (Model.AllowComments && User?.Identity?.IsAuthenticated == true)
                     {
                         <div>
-                        <div id=AjaxCommentsContainer class=comments-container data-asset-id="@Model.Id" data-total-collection-size="" data-is-user-authenticated=True data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name">
+                        <div id=AjaxCommentsContainer class=comments-container data-asset-id="@Model.Id" data-total-collection-size="" data-is-user-authenticated="@User.Identity.IsAuthenticated.ToString().ToLower()" data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name">
                             <div class=container-header>
                                 <h3>Comments</h3>
                             </div>
@@ -298,8 +328,9 @@
                                         <div class=comment-controls><a class="rbx-comment-report-link abuse-report-modal" href="https://web.roblox.com/abusereport/comment?id=%CommentID&amp;RedirectUrl=%PageURL" title="Report Abuse"><span class=icon-flag></span></a></div>
                                     </div>
                                 </div>
-                                <div class=loader-template>
+                                <div class=loader-template style="display:none">
                                     <div class=loading-animated>
+
                                         <div>
                                             <div></div>
                                             <div></div>
@@ -354,7 +385,9 @@
                             Roblox.Comments.FilterIsEnabled = true;
                             Roblox.Comments.FilterRegex = "(([a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}[:\\#/\\?]+)|([a-zA-Z0-9]\\.[a-zA-Z0-9-]+\\.[a-zA-Z]{2,4}))";
                             Roblox.Comments.FilterCleanExistingComments = false;
-                            Roblox.Comments.initialize();
+                            if ($("#AjaxCommentsContainer").length) {
+                                Roblox.Comments.initialize();
+                            }
                         });
                     </script>
 

@@ -437,6 +437,10 @@
       "PackagePath": "staticwebassets\\JS\\ClientInstaller.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Comments.js",
+      "PackagePath": "staticwebassets\\JS\\Comments.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\CookieUpgrader.js",
       "PackagePath": "staticwebassets\\JS\\CookieUpgrader.js"
     },
@@ -575,6 +579,10 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\ItemPurchaseForDialog.js",
       "PackagePath": "staticwebassets\\JS\\ItemPurchaseForDialog.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Item\\ContextMenu.js",
+      "PackagePath": "staticwebassets\\JS\\Item\\ContextMenu.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\Item\\ItemPage.js",
@@ -867,6 +875,14 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\b2bbae1405827db876faeeb0327f7fce.js",
       "PackagePath": "staticwebassets\\JS\\b2bbae1405827db876faeeb0327f7fce.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\captcha\\captchaService.js",
+      "PackagePath": "staticwebassets\\JS\\captcha\\captchaService.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\captcha\\constants\\captchaConstants.js",
+      "PackagePath": "staticwebassets\\JS\\captcha\\constants\\captchaConstants.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\challenge",
@@ -1721,6 +1737,10 @@
       "PackagePath": "staticwebassets\\JS\\viewapp\\common\\directives\\switcherDirective.js"
     },
     {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\common\\directives\\toggleLoadingDirective.js",
+      "PackagePath": "staticwebassets\\JS\\viewapp\\common\\directives\\toggleLoadingDirective.js"
+    },
+    {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\common\\filters.js",
       "PackagePath": "staticwebassets\\JS\\viewapp\\common\\filters.js"
     },
@@ -2055,6 +2075,26 @@
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\cursorPagination\\services\\cursorPaginationService.js",
       "PackagePath": "staticwebassets\\JS\\viewapp\\widgets\\cursorPagination\\services\\cursorPaginationService.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\constants\\emailAndPhoneUpsellConstants.js",
+      "PackagePath": "staticwebassets\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\constants\\emailAndPhoneUpsellConstants.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\controllers\\emailAndPhoneUpsellController.js",
+      "PackagePath": "staticwebassets\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\controllers\\emailAndPhoneUpsellController.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\controllers\\emailAndPhoneUpsellModalController.js",
+      "PackagePath": "staticwebassets\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\controllers\\emailAndPhoneUpsellModalController.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\emailAndPhoneUpsell.js",
+      "PackagePath": "staticwebassets\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\emailAndPhoneUpsell.js"
+    },
+    {
+      "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\services\\emailAndPhoneUpsellService.js",
+      "PackagePath": "staticwebassets\\JS\\viewapp\\widgets\\emailAndPhoneUpsell\\services\\emailAndPhoneUpsellService.js"
     },
     {
       "Id": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\JS\\viewapp\\widgets\\modal\\constants\\modalOptions.js",

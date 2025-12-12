@@ -17,5 +17,19 @@ namespace Assets
                     return string.Empty;
             }
         }
+
+        public static string GetTypeName(int assetTypeId)
+        {
+            // Extend this switch as you add support for more asset types.
+            switch (assetTypeId)
+            {
+                case 2:
+                    return "T-Shirt";
+                case 32:
+                    return "Package";
+                default:
+                    return "Asset";
+            }
+        }
     }
 }

@@ -112,7 +112,12 @@ public sealed class ThumbnailService : IThumbnailService
             qb.Append("&baseUrl=").Append(Uri.EscapeDataString(websiteBase));
         }
 
-        var requestUri = arbiterUrl.TrimEnd('/') + "/renderavatar?" + qb.ToString();
+        // Headshots go through the dedicated /renderheadshot endpoint, others use /renderavatar
+        var route = string.Equals(type, "headshot", StringComparison.OrdinalIgnoreCase)
+            ? "/renderheadshot?"
+            : "/renderavatar?";
+
+        var requestUri = arbiterUrl.TrimEnd('/') + route + qb.ToString();
 
         using var http = new HttpClient();
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
@@ -123,7 +128,7 @@ public sealed class ThumbnailService : IThumbnailService
         {
             var statusCode = (int)resp.StatusCode;
             var reason = resp.ReasonPhrase ?? string.Empty;
-            throw new HttpRequestException($"Arbiter /renderavatar returned {statusCode} {reason}. Body: {Trunc(json)}");
+            throw new HttpRequestException($"Arbiter {route.TrimEnd('?')} returned {statusCode} {reason}. Body: {Trunc(json)}");
         }
 
         using var doc = JsonDocument.Parse(json);

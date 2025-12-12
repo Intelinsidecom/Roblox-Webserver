@@ -36,6 +36,16 @@ public class ThumbnailsController : ControllerBase
         public long assetId { get; set; }
     }
 
+    private sealed class AvatarThumbnailRequest
+    {
+        public string? imageSize { get; set; }
+        public bool noClick { get; set; }
+        public bool noOverlays { get; set; }
+        public long userId { get; set; }
+        public long userOutfitId { get; set; }
+        public string? name { get; set; }
+    }
+
     // JSONP endpoint used by JS/modules/Widgets/ItemImage.js
     // GET /item-thumbnails?jsoncallback=foo&params=[{...}]
     [HttpGet("item-thumbnails")]
@@ -108,6 +118,85 @@ public class ThumbnailsController : ControllerBase
                             name,
                             thumbnailUrl = thumbUrl,
                             thumbnailFinal = true
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                // Malformed JSON: return empty array
+            }
+        }
+
+        var json = JsonSerializer.Serialize(results);
+
+        if (string.IsNullOrWhiteSpace(jsoncallback))
+        {
+            return Content(json, "application/json");
+        }
+
+        var script = $"{jsoncallback}({json});";
+        return Content(script, "application/javascript");
+    }
+
+    // JSONP endpoint used by JS/modules/Widgets/AvatarImage.js
+    // GET /avatar-thumbnails?jsoncallback=foo&params=[{...}]
+    [HttpGet("avatar-thumbnails")]
+    public IActionResult AvatarThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
+    {
+        var results = new List<object?>();
+
+        if (!string.IsNullOrWhiteSpace(rawParams))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(rawParams);
+                if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var elem in doc.RootElement.EnumerateArray())
+                    {
+                        long userId = 0;
+                        string displayName = "Player";
+
+                        if (elem.TryGetProperty("userId", out var userIdProp))
+                        {
+                            if (userIdProp.ValueKind == JsonValueKind.Number)
+                            {
+                                userId = userIdProp.GetInt64();
+                            }
+                            else if (userIdProp.ValueKind == JsonValueKind.String && long.TryParse(userIdProp.GetString(), out var parsed))
+                            {
+                                userId = parsed;
+                            }
+                        }
+
+                        if (elem.TryGetProperty("name", out var nameProp) && nameProp.ValueKind == JsonValueKind.String)
+                        {
+                            var n = nameProp.GetString();
+                            if (!string.IsNullOrWhiteSpace(n))
+                            {
+                                displayName = n!;
+                            }
+                        }
+
+                        if (userId <= 0)
+                        {
+                            results.Add(null);
+                            continue;
+                        }
+                        var profileUrl = $"/users/{userId}/profile";
+
+                        // Use the existing headshot-thumbnail/image endpoint, which
+                        // renders and serves the player's headshot avatar via Arbiter.
+                        var thumbUrl = $"/headshot-thumbnail/image?userId={userId}";
+
+                        results.Add(new
+                        {
+                            url = profileUrl,
+                            name = displayName,
+                            thumbnailUrl = thumbUrl,
+                            thumbnailFinal = true,
+                            bcOverlayUrl = (string?)null
                         });
                     }
                 }

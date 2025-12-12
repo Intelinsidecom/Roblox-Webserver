@@ -16,6 +16,7 @@ namespace RobloxWebserver.Controllers
         private readonly ICatalogService _catalogService;
         private readonly IConfiguration _configuration;
         private readonly AssetMetadataRepository _assetMetadataRepository;
+        private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
 
         public CatalogController(ICatalogService catalogService, IConfiguration configuration)
         {
@@ -31,6 +32,8 @@ namespace RobloxWebserver.Controllers
             public string CreatorName { get; set; } = string.Empty;
             public long CreatorId { get; set; }
             public string ImageUrl { get; set; } = string.Empty;
+
+            public string AssetTypeLabel { get; set; } = string.Empty;
 
             public int? PriceRobux { get; set; }
             public int? PriceTickets { get; set; }
@@ -48,6 +51,7 @@ namespace RobloxWebserver.Controllers
             public string GenreLabel { get; set; } = string.Empty;
             public long UserRobuxBalance { get; set; }
             public bool AllowComments { get; set; }
+            public bool IsOwned { get; set; }
         }
 
         [HttpGet("{id:long}/{itemName}")]
@@ -87,16 +91,19 @@ namespace RobloxWebserver.Controllers
             }
 
             long userRobux = 0;
+            bool isOwned = false;
             var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var currentUserId) && currentUserId > 0)
             {
                 try
                 {
                     userRobux = await UserQueries.GetCurrencyByIdAsync(connectionString, currentUserId, "robux").ConfigureAwait(false);
+                    isOwned = await _userAssetsRepository.UserOwnsAssetAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
                 }
                 catch
                 {
                     userRobux = 0;
+                    isOwned = false;
                 }
             }
 
@@ -107,6 +114,7 @@ namespace RobloxWebserver.Controllers
                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                 CreatorId = asset.OwnerUserId,
                 ImageUrl = string.IsNullOrWhiteSpace(asset.ThumbnailUrl) ? "/images/RobloxLogo.png" : asset.ThumbnailUrl,
+                AssetTypeLabel = AssetTypeNames.GetTypeName(asset.AssetTypeId),
                 PriceRobux = asset.OnSale ? (int?)Math.Min(asset.Price, int.MaxValue) : null,
                 PriceTickets = null,
                 OriginalPriceRobux = null,
@@ -120,7 +128,8 @@ namespace RobloxWebserver.Controllers
                 GenreId = asset.Genre,
                 GenreLabel = AssetGenreNames.GetGenreLabel(asset.Genre),
                 UserRobuxBalance = userRobux,
-                AllowComments = asset.AllowComments
+                AllowComments = asset.AllowComments,
+                IsOwned = isOwned
             };
 
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);
