@@ -1,0 +1,128 @@
+# ========================
+# OS generated files
+# ========================
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ========================
+# Editor / IDE
+# ========================
+# Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.user
+.vs/
+
+# Xcode
+*.xcworkspace
+!default.xcworkspace/
+*.xcuserstate
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+DerivedData/
+build/
+
+# CLion / JetBrains
+.idea/
+*.iml
+
+# Vim / Emacs / Sublime
+*~
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# ========================
+# Build directories
+# ========================
+# Out-of-source CMake build
+build/
+bin/
+lib/
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+Makefile
+CTestTestfile.cmake
+Testing/
+Contribs/cpm-cache
+
+# Android / NDK
+.gradle/
+local.properties
+**/build/
+
+# iOS / CocoaPods
+Pods/
+Podfile.lock
+*.xcworkspace
+App.xcconfig
+
+# ========================
+# Generated / temporary
+# ========================
+
+# Logs and reports
+*.log
+*.err
+*.out
+coverage/
+
+# Test outputs
+*.profdata
+*.profraw
+
+# Script outputs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+.cache
+
+# ========================
+# Binary artifacts
+# ========================
+# Libraries
+*.lib
+*.a
+*.so
+*.dylib
+*.dll
+# Executables
+*.exe
+*.app
+# Packages
+*.zip
+*.tar.gz
+*.7z
+
+# ========================
+# User-specific config
+# ========================
+# Environment variables, local overrides, secrets
+.env
+.env.*
+
+# whitelist fmod
+!fmod/**

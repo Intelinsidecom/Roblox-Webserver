@@ -142,7 +142,7 @@ public class ThumbnailsController : ControllerBase
     // JSONP endpoint used by JS/modules/Widgets/AvatarImage.js
     // GET /avatar-thumbnails?jsoncallback=foo&params=[{...}]
     [HttpGet("avatar-thumbnails")]
-    public IActionResult AvatarThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
+    public async Task<IActionResult> AvatarThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
     {
         var results = new List<object?>();
 
@@ -153,6 +153,13 @@ public class ThumbnailsController : ControllerBase
                 using var doc = JsonDocument.Parse(rawParams);
                 if (doc.RootElement.ValueKind == JsonValueKind.Array)
                 {
+                    var connStr = _configuration.GetConnectionString("Default");
+                    var pendingPlaceholder = _configuration["Thumbnails:PendingAvatarPlaceholderUrl"];
+                    if (string.IsNullOrWhiteSpace(pendingPlaceholder))
+                    {
+                        pendingPlaceholder = "/images/RobloxLogo.png";
+                    }
+
                     foreach (var elem in doc.RootElement.EnumerateArray())
                     {
                         long userId = 0;
@@ -184,18 +191,50 @@ public class ThumbnailsController : ControllerBase
                             results.Add(null);
                             continue;
                         }
+
                         var profileUrl = $"/users/{userId}/profile";
 
-                        // Use the existing headshot-thumbnail/image endpoint, which
-                        // renders and serves the player's headshot avatar via Arbiter.
-                        var thumbUrl = $"/headshot-thumbnail/image?userId={userId}";
+                        string thumbUrl;
+                        bool thumbnailFinal;
+
+                        if (!string.IsNullOrWhiteSpace(connStr))
+                        {
+                            string? existingUrl = null;
+                            try
+                            {
+                                // For avatar widgets we serve the user's headshot image.
+                                existingUrl = await ThumbnailQueries.GetUserHeadshotUrlAsync(connStr!, userId).ConfigureAwait(false);
+                            }
+                            catch
+                            {
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(existingUrl))
+                            {
+                                thumbUrl = existingUrl!;
+                                thumbnailFinal = true;
+                            }
+                            else
+                            {
+                                thumbUrl = pendingPlaceholder!;
+                                thumbnailFinal = false;
+                            }
+                        }
+                        else
+                        {
+                            // Fallback when DB is not configured: use the existing
+                            // headshot-thumbnail/image endpoint as a best-effort
+                            // avatar representation.
+                            thumbUrl = $"/headshot-thumbnail/image?userId={userId}";
+                            thumbnailFinal = true;
+                        }
 
                         results.Add(new
                         {
                             url = profileUrl,
                             name = displayName,
                             thumbnailUrl = thumbUrl,
-                            thumbnailFinal = true,
+                            thumbnailFinal,
                             bcOverlayUrl = (string?)null
                         });
                     }
@@ -276,14 +315,17 @@ public class ThumbnailsController : ControllerBase
             var fullUrl = CombineUrl(baseUrl!, save.FileName);
 
             var connStr = _configuration.GetConnectionString("Default");
-            if (!string.IsNullOrWhiteSpace(connStr) && renderType == "headshot")
+            if (!string.IsNullOrWhiteSpace(connStr))
             {
-                await using var conn = new NpgsqlConnection(connStr);
-                await conn.OpenAsync(cancellationToken);
-                await using var cmd = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
-                cmd.Parameters.AddWithValue("u", fullUrl);
-                cmd.Parameters.AddWithValue("id", targetUserId);
-                await cmd.ExecuteNonQueryAsync(cancellationToken);
+                if (string.Equals(renderType, "headshot", StringComparison.OrdinalIgnoreCase))
+                {
+                    await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
+                }
+                else if (string.Equals(renderType, "avatar", StringComparison.OrdinalIgnoreCase))
+                {
+                    await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
+                }
+                // "full" renders do not persist URLs.
             }
 
             return Ok(new { hash, thumbnail_url = fullUrl });
@@ -321,14 +363,7 @@ public class ThumbnailsController : ControllerBase
             baseUrl = $"{scheme}://{host}/";
         }
         var fullUrl = CombineUrl(baseUrl!, save.FileName);
-        await using (var conn = new NpgsqlConnection(connStr))
-        {
-            await conn.OpenAsync(cancellationToken);
-            await using var cmd = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
-            cmd.Parameters.AddWithValue("u", fullUrl);
-            cmd.Parameters.AddWithValue("id", userId);
-            await cmd.ExecuteNonQueryAsync(cancellationToken);
-        }
+        await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr, userId, fullUrl, cancellationToken);
         return Redirect(fullUrl);
     }
 
@@ -352,43 +387,12 @@ public class ThumbnailsController : ControllerBase
         var targetWidth = width.GetValueOrDefault(420);
         var targetHeight = height.GetValueOrDefault(420);
         // Build a canonical avatar configuration JSON for global caching
-        var avatarRepository = new AvatarRepository();
-        var avatarStateFull = await avatarRepository.GetAvatarAsync(connStr, userId, cancellationToken);
+        var configBuilder = new AvatarRenderConfigBuilder();
+        var config = await configBuilder
+            .BuildAvatarRenderConfigAsync(connStr, userId, "avatar", targetWidth, targetHeight, cancellationToken)
+            .ConfigureAwait(false);
 
-        var wornIds = avatarStateFull.Assets ?? Array.Empty<Avatar.AvatarAssetState>();
-        var wornAssetIds = wornIds
-            .Select(a => a.id)
-            .OrderBy(id => id)
-            .ToArray();
-
-        var configObject = new
-        {
-            renderType = "avatar",
-            width = targetWidth,
-            height = targetHeight,
-            bodyColors = new
-            {
-                head = avatarStateFull.BodyColors.headColorId,
-                torso = avatarStateFull.BodyColors.torsoColorId,
-                rightArm = avatarStateFull.BodyColors.rightArmColorId,
-                leftArm = avatarStateFull.BodyColors.leftArmColorId,
-                rightLeg = avatarStateFull.BodyColors.rightLegColorId,
-                leftLeg = avatarStateFull.BodyColors.leftLegColorId
-            },
-            wornAssetIds = wornAssetIds
-        };
-
-        var json = JsonSerializer.Serialize(configObject);
-        string configHash;
-        using (var sha = SHA256.Create())
-        {
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var digest = sha.ComputeHash(bytes);
-            var hashSb = new StringBuilder(digest.Length * 2);
-            foreach (var b in digest)
-                hashSb.Append(b.ToString("x2"));
-            configHash = hashSb.ToString();
-        }
+        var configHash = config.configHash;
 
         // Global cache lookup by configuration hash
         try
@@ -424,15 +428,10 @@ public class ThumbnailsController : ControllerBase
         {
         }
 
-        // Persist the URL as the user's headshot_url for compatibility.
+        // Optionally persist the avatar render URL without touching the headshot entry.
         try
         {
-            await using var conn = new NpgsqlConnection(connStr);
-            await conn.OpenAsync(cancellationToken);
-            await using var cmd = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
-            cmd.Parameters.AddWithValue("u", fullUrl);
-            cmd.Parameters.AddWithValue("id", userId);
-            await cmd.ExecuteNonQueryAsync(cancellationToken);
+            await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr, userId, fullUrl, cancellationToken);
         }
         catch
         {

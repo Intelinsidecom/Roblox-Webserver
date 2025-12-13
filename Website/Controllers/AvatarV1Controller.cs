@@ -250,15 +250,64 @@ public class AvatarV1Controller : ControllerBase
             var connStr = _configuration.GetConnectionString("Default");
             if (!string.IsNullOrWhiteSpace(connStr))
             {
-                if (renderType == "headshot")
+                if (renderType == "avatar")
                 {
+                    // Primary: update the main avatar thumbnail URL.
+                    await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
+
+                    // Best-effort: pre-render and persist a fresh headshot so that
+                    // consumers of the headshot endpoint do not incur an extra
+                    // first-render delay after avatar changes.
+                    try
+                    {
+                        var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", targetUserId, cancellationToken: cancellationToken);
+                        var headshotUrl = CombineUrl(baseUrl!, headshotSave.FileName);
+                        await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, headshotUrl, cancellationToken);
+                    }
+                    catch
+                    {
+                        // Headshot pre-render is best-effort; ignore failures so avatar
+                        // redraw still succeeds.
+                    }
+                }
+                else if (renderType == "headshot")
+                {
+                    // For headshot redraws, first best-effort pre-render avatar so both
+                    // variants stay in sync, then persist the requested headshot URL.
+                    try
+                    {
+                        var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", targetUserId, cancellationToken: cancellationToken);
+                        var avatarUrl = CombineUrl(baseUrl!, avatarSave.FileName);
+                        await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, avatarUrl, cancellationToken);
+                    }
+                    catch
+                    {
+                        // Avatar pre-render is best-effort.
+                    }
+
                     await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
                 }
-                else if (renderType == "avatar")
+                else if (renderType == "full")
                 {
-                    await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
+                    // "full" renders are not persisted directly, but we can use a
+                    // redraw as an opportunity to refresh both avatar and headshot
+                    // thumbnails so all variants are warm and consistent.
+                    try
+                    {
+                        var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", targetUserId, cancellationToken: cancellationToken);
+                        var avatarUrl = CombineUrl(baseUrl!, avatarSave.FileName);
+                        await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, avatarUrl, cancellationToken);
+
+                        var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", targetUserId, cancellationToken: cancellationToken);
+                        var headshotUrl = CombineUrl(baseUrl!, headshotSave.FileName);
+                        await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, headshotUrl, cancellationToken);
+                    }
+                    catch
+                    {
+                        // Best-effort only; failure to refresh thumbnails should not
+                        // cause the full render request itself to fail.
+                    }
                 }
-                // 'full' does not update DB
             }
 
             return Ok(new { hash, thumbnail_url = fullUrl });

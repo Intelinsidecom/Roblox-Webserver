@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Text;
-using System.Security.Cryptography;
-using System.Linq;
 using Users;
 using Thumbnails;
 using Avatar;
@@ -92,43 +88,12 @@ public class AvatarThumbnail3DController : ControllerBase
         // If a database connection is available, try a DB-backed 3D avatar cache based on avatar configuration hash.
         if (!string.IsNullOrWhiteSpace(connStr))
         {
-            // Build a canonical avatar configuration JSON (mirrors 2D bust thumbnail cache).
-            var avatarRepository = new AvatarRepository();
-            var avatarStateFull = await avatarRepository.GetAvatarAsync(connStr!, userId);
+            var configBuilder = new AvatarRenderConfigBuilder();
+            var config = await configBuilder
+                .BuildAvatarRenderConfigAsync(connStr!, userId, "avatar3d", w, h)
+                .ConfigureAwait(false);
 
-            var wornIds = avatarStateFull.Assets ?? Array.Empty<AvatarAssetState>();
-            var wornAssetIds = wornIds
-                .Select(a => a.id)
-                .OrderBy(id => id)
-                .ToArray();
-
-            var configObject = new
-            {
-                renderType = "avatar3d",
-                width = w,
-                height = h,
-                bodyColors = new
-                {
-                    head = avatarStateFull.BodyColors.headColorId,
-                    torso = avatarStateFull.BodyColors.torsoColorId,
-                    rightArm = avatarStateFull.BodyColors.rightArmColorId,
-                    leftArm = avatarStateFull.BodyColors.leftArmColorId,
-                    rightLeg = avatarStateFull.BodyColors.rightLegColorId,
-                    leftLeg = avatarStateFull.BodyColors.leftLegColorId
-                },
-                wornAssetIds = wornAssetIds
-            };
-
-            var json = JsonSerializer.Serialize(configObject);
-            using (var sha = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(json);
-                var digest = sha.ComputeHash(bytes);
-                var hashSb = new StringBuilder(digest.Length * 2);
-                foreach (var b in digest)
-                    hashSb.Append(b.ToString("x2"));
-                configHash = hashSb.ToString();
-            }
+            configHash = config.configHash;
 
             // Global 3D cache lookup by configuration hash (best-effort).
             try

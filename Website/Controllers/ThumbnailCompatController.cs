@@ -183,12 +183,7 @@ public class ThumbnailCompatController : ControllerBase
     {
         var connStr = _configuration.GetConnectionString("Default");
         if (string.IsNullOrWhiteSpace(connStr)) return;
-        await using var conn = new NpgsqlConnection(connStr);
-        await conn.OpenAsync();
-        await using var up = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
-        up.Parameters.AddWithValue("u", url);
-        up.Parameters.AddWithValue("id", userId);
-        await up.ExecuteNonQueryAsync();
+        await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr, userId, url);
     }
 
     private static string CombineUrl(string baseUrl, string relative)

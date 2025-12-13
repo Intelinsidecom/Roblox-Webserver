@@ -264,8 +264,8 @@
                         </div>
                         <ul class="item-social-container clearfix include-favorite">
                             <li class=favorite-button-container>
-                                <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=@Model.Id data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name"> <span title=22,757 class="text-favorite favoriteCount 22,757" id=result>22K+</span>
-                                        <div id=favorite-icon class=icon-favorite></div>
+                                <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=@Model.Id data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name"> <span class="text-favorite favoriteCount" id=result>@((Model.FavoritedCount ?? 0).ToString("N0"))</span>
+                                        <div id=favorite-icon class="icon-favorite@(Model.IsFavorited ? " favorited" : string.Empty)"></div>
                                     </a></div>
                         </ul>
                     </div>

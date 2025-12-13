@@ -17,7 +17,9 @@ namespace Thumbnails
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-            using var cmd = new NpgsqlCommand("select headshot_url from users where user_id = @id", conn);
+            using var cmd = new NpgsqlCommand(
+                "select coalesce(avatar_render_urls->>'headshot', headshot_url, headshot_thumbnail_url) from users where user_id = @id",
+                conn);
             cmd.Parameters.AddWithValue("id", userId);
             var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             return obj is string s && !string.IsNullOrWhiteSpace(s) ? s : null;
@@ -32,7 +34,9 @@ namespace Thumbnails
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-            using var cmd = new NpgsqlCommand("select thumbnail_url from users where user_id = @id", conn);
+            using var cmd = new NpgsqlCommand(
+                "select coalesce(avatar_render_urls->>'avatar', thumbnail_url, avatar_thumbnail_url) from users where user_id = @id",
+                conn);
             cmd.Parameters.AddWithValue("id", userId);
             var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             return obj is string s && !string.IsNullOrWhiteSpace(s) ? s : null;
@@ -48,7 +52,9 @@ namespace Thumbnails
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-            using var cmd = new NpgsqlCommand("select user_id, thumbnail_url from users where user_id = ANY(@ids)", conn);
+            using var cmd = new NpgsqlCommand(
+                "select user_id, coalesce(avatar_render_urls->>'avatar', thumbnail_url, avatar_thumbnail_url) as url from users where user_id = ANY(@ids)",
+                conn);
             cmd.Parameters.AddWithValue("ids", userIds);
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -70,7 +76,9 @@ namespace Thumbnails
 
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-            using var cmd = new NpgsqlCommand("select user_id, headshot_url from users where user_id = ANY(@ids)", conn);
+            using var cmd = new NpgsqlCommand(
+                "select user_id, coalesce(avatar_render_urls->>'headshot', headshot_url, headshot_thumbnail_url) as url from users where user_id = ANY(@ids)",
+                conn);
             cmd.Parameters.AddWithValue("ids", userIds);
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -90,8 +98,14 @@ namespace Thumbnails
                 throw new ArgumentOutOfRangeException(nameof(userId));
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-            using var cmd = new NpgsqlCommand("update users set headshot_url = @u where user_id = @id", conn);
-            cmd.Parameters.AddWithValue("u", url ?? (object)DBNull.Value);
+            using var cmd = new NpgsqlCommand(
+                @"update users
+                  set avatar_render_urls = coalesce(avatar_render_urls, '{}'::jsonb) || jsonb_build_object('headshot', @u),
+                      headshot_url       = @u,
+                      headshot_thumbnail_url = coalesce(headshot_thumbnail_url, @u)
+                  where user_id = @id",
+                conn);
+            cmd.Parameters.AddWithValue("u", (object?)url ?? DBNull.Value);
             cmd.Parameters.AddWithValue("id", userId);
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -104,8 +118,16 @@ namespace Thumbnails
                 throw new ArgumentOutOfRangeException(nameof(userId));
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-            using var cmd = new NpgsqlCommand("update users set thumbnail_url = @u where user_id = @id", conn);
-            cmd.Parameters.AddWithValue("u", url ?? (object)DBNull.Value);
+            using var cmd = new NpgsqlCommand(
+                @"update users
+                  set avatar_render_urls    = (coalesce(avatar_render_urls, '{}'::jsonb) - 'headshot') || jsonb_build_object('avatar', @u),
+                      thumbnail_url         = @u,
+                      avatar_thumbnail_url  = coalesce(avatar_thumbnail_url, @u),
+                      headshot_url          = null,
+                      headshot_thumbnail_url = null
+                  where user_id = @id",
+                conn);
+            cmd.Parameters.AddWithValue("u", (object?)url ?? DBNull.Value);
             cmd.Parameters.AddWithValue("id", userId);
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }

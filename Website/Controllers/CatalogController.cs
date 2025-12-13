@@ -17,6 +17,7 @@ namespace RobloxWebserver.Controllers
         private readonly IConfiguration _configuration;
         private readonly AssetMetadataRepository _assetMetadataRepository;
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
+        private readonly AssetsRepository _assetsRepository = new AssetsRepository();
 
         public CatalogController(ICatalogService catalogService, IConfiguration configuration)
         {
@@ -52,6 +53,7 @@ namespace RobloxWebserver.Controllers
             public long UserRobuxBalance { get; set; }
             public bool AllowComments { get; set; }
             public bool IsOwned { get; set; }
+            public bool IsFavorited { get; set; }
         }
 
         [HttpGet("{id:long}/{itemName}")]
@@ -74,6 +76,17 @@ namespace RobloxWebserver.Controllers
                 return NotFound();
             }
 
+            int? favoritedCount = null;
+            try
+            {
+                var count = await _assetsRepository.GetFavoriteCountAsync(connectionString, asset.AssetId).ConfigureAwait(false);
+                favoritedCount = count;
+            }
+            catch
+            {
+                favoritedCount = null;
+            }
+
             var expectedSlug = ToSlug(asset.Name);
             if (!string.Equals(itemName, expectedSlug, StringComparison.OrdinalIgnoreCase))
             {
@@ -92,6 +105,7 @@ namespace RobloxWebserver.Controllers
 
             long userRobux = 0;
             bool isOwned = false;
+            bool isFavorited = false;
             var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var currentUserId) && currentUserId > 0)
             {
@@ -99,11 +113,13 @@ namespace RobloxWebserver.Controllers
                 {
                     userRobux = await UserQueries.GetCurrencyByIdAsync(connectionString, currentUserId, "robux").ConfigureAwait(false);
                     isOwned = await _userAssetsRepository.UserOwnsAssetAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
+                    isFavorited = await _assetsRepository.UserHasFavoritedAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
                 }
                 catch
                 {
                     userRobux = 0;
                     isOwned = false;
+                    isFavorited = false;
                 }
             }
 
@@ -123,13 +139,14 @@ namespace RobloxWebserver.Controllers
                 IsNew = false,
                 UpdatedText = string.Empty,
                 Sales = null,
-                FavoritedCount = null,
+                FavoritedCount = favoritedCount,
                 Description = asset.Description ?? string.Empty,
                 GenreId = asset.Genre,
                 GenreLabel = AssetGenreNames.GetGenreLabel(asset.Genre),
                 UserRobuxBalance = userRobux,
                 AllowComments = asset.AllowComments,
-                IsOwned = isOwned
+                IsOwned = isOwned,
+                IsFavorited = isFavorited
             };
 
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);

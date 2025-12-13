@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "aZlItji+Qnmg+1KNj0+IGX9MVzfE2JqGPsc4yblzQUk=",
+  "Hash": "AQMdtS9WY5ulqBj5pXHTmKdkUWJR9fQxrTEl4fok1Cs=",
   "Source": "RobloxWebserver",
   "BasePath": "_content/RobloxWebserver",
   "Mode": "Default",
@@ -2117,6 +2117,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\Badges\\roblox_badges.svg"
+    },
+    {
+      "Identity": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\blocked.png",
+      "SourceId": "RobloxWebserver",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\",
+      "BasePath": "_content/RobloxWebserver",
+      "RelativePath": "images/blocked.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\blocked.png"
     },
     {
       "Identity": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\wwwroot\\images\\BuildersClubOnly.png",

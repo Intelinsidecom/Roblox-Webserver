@@ -232,5 +232,127 @@ where asset_id = @asset_id;";
 
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        public async Task AddFavoriteAsync(string connectionString, long userId, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set favorites = case
+    when exists (
+        select 1
+        from jsonb_array_elements_text(favorites) as x(v)
+        where v = @user_id::text
+    ) then favorites
+    else favorites || to_jsonb(@user_id::bigint)
+end,
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("user_id", userId);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<bool> UserHasFavoritedAsync(string connectionString, long userId, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select exists (
+    select 1
+    from assets
+    where asset_id = @asset_id
+      and exists (
+          select 1
+          from jsonb_array_elements_text(favorites) as x(v)
+          where v = @user_id::text
+      )
+);";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("user_id", userId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            if (result is bool b)
+                return b;
+
+            return false;
+        }
+
+        public async Task RemoveFavoriteAsync(string connectionString, long userId, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set favorites = coalesce(
+    (
+        select jsonb_agg(value::bigint)
+        from jsonb_array_elements(favorites) as value
+        where value::text <> @user_id::text
+    ),
+    '[]'::jsonb
+),
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("user_id", userId);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<int> GetFavoriteCountAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select coalesce(jsonb_array_length(favorites), 0)
+from assets
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            if (result is int i)
+                return i;
+            if (result is long l)
+                return (int)Math.Min(l, int.MaxValue);
+
+            return 0;
+        }
     }
 }

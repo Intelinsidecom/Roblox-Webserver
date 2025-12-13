@@ -1,0 +1,287 @@
+Avatar Rendering & Thumbnail/Caching Architecture Analysis
+===========================================================
+
+Scope
+-----
+This document summarizes the current architecture of avatar thumbnail rendering and caching (2D headshot/avatar and 3D models) in Roblox-Webserver and proposes concrete, incremental improvements. It focuses on:
+
+- AvatarV1Controller
+- ThumbnailsController
+- AvatarThumbnail3DController
+- ThumbnailService / IThumbnailService
+- ThumbnailQueries
+- AvatarThumbnailCacheRepository
+- AvatarRepository and related avatar state logic
+
+
+Current High-Level Flow
+-----------------------
+
+### 1. 2D avatar & headshot thumbnails
+
+- Frontend (`avatarController.js` / `avatarService.js`):
+  - `redrawThumbnail()` calls a `redrawThumbnailUrl`, which points to `v1/avatar/redraw-thumbnail`.
+  - Upon success, the client calls `refreshThumbnail()` which:
+    - Clears existing `<img>`/`<canvas>` nodes in the thumbnail container.
+    - Shows a spinner (via `Roblox.ThumbnailSpinner` or `showAvatarSpinner`).
+    - Calls `Roblox.ThumbnailView.reloadThumbnail()` to reload the markup.
+
+- `AvatarV1Controller.RedrawThumbnail` (authoritative endpoint):
+  - Auth-only; takes `type` query param: `headshot | avatar | full` (default `headshot`).
+  - Resolves user ID from auth claims only.
+  - Delegates thumbnail generation to `_thumbnailService.RenderAvatarAsync(type, userId, ...)`.
+  - Computes CDN URL from `Thumbnails:ThumbnailUrl` or falls back to scheme+host.
+  - Writes the resulting URL(s) to `users` using `ThumbnailQueries`:
+    - For `type == "avatar"`:
+      - Updates main avatar thumbnail URL via `SetUserThumbnailUrlAsync`.
+      - Best-effort: also pre-renders a `headshot` and updates headshot URL.
+    - For `type == "headshot"`:
+      - Best-effort: pre-renders `avatar` and updates avatar URL.
+      - Sets headshot URL via `SetUserHeadshotUrlAsync`.
+    - For `type == "full"`:
+      - Does not persist `full` URL directly.
+      - Best-effort: refreshes both avatar and headshot thumbnails via `RenderAvatarAsync` and `ThumbnailQueries`.
+
+- `ThumbnailsController` (legacy & helper endpoints):
+  - `/thumbs/rawavatar.ashx`: legacy polling endpoint returning a plain-text URL or `PENDING`.
+  - `Headshot` endpoint (`/headshot-thumbnail/image`):
+    - Checks DB for existing headshot URL via `ThumbnailQueries.GetUserHeadshotUrlAsync`.
+    - If present, redirects to that URL.
+    - If absent, renders a headshot on demand via `_thumbnailService.RenderAvatarAsync("headshot")`, persists via `SetUserHeadshotUrlAsync`, then redirects.
+  - `Bust` endpoint (`/bust-thumbnail/image`):
+    - Always re-renders at requested `width/height` (default 420×420).
+    - Builds a canonical avatar config JSON:
+      - `renderType = "avatar"`
+      - `width/height`
+      - Body colors
+      - Sorted worn asset IDs from `AvatarRepository`.
+    - Computes a SHA256 `configHash` over that JSON.
+    - Looks up a global cache row via `AvatarThumbnailCacheRepository.TryGetAsync(connStr, configHash)`.
+      - If hit: builds CDN-based URL and redirects.
+    - On miss:
+      - Calls `_thumbnailService.RenderAvatarAsync("avatar", userId, targetWidth, targetHeight, ...)`.
+      - Builds full CDN URL and writes a row to `avatar_thumbnail_cache` via `AvatarThumbnailCacheRepository.UpsertAsync(...)`.
+      - Best-effort: updates `users.thumbnail_url` via `ThumbnailQueries.SetUserThumbnailUrlAsync`.
+
+- `ThumbnailService.RenderAvatarAsync`:
+  - Forms GET query to Arbiter via `Thumbnails:ArbiterUrl` (default `http://localhost:5000`).
+  - Route: `/renderheadshot?` for type `headshot`, `/renderavatar?` otherwise.
+  - Query params: `type`, `userId`, optional `x`, `y`, and `baseUrl`.
+  - Parses JSON response from Arbiter to extract a base64 PNG (array/object/string patterns).
+  - Saves PNG via `SaveBase64PngAsync`, which:
+    - Strips `data:` prefix if present.
+    - Detects PNG vs JPEG magic bytes.
+    - Computes SHA256 hash of bytes to derive filename.
+    - Writes into a local output directory (configurable), with an atomic temp file write.
+    - Returns `ThumbnailSaveResult` with `Hash`, `FileName`, `FullPath`, and `AlreadyExisted`.
+
+- `ThumbnailQueries` and DB fields:
+  - `GetUserThumbnailUrlAsync`/`GetUserHeadshotUrlAsync` and their batch variants.
+  - DB schema uses JSONB `avatar_render_urls` plus legacy columns:
+    - `SetUserHeadshotUrlAsync` updates:
+      - `avatar_render_urls['headshot']`
+      - `headshot_url`
+      - `headshot_thumbnail_url` (best-effort mirror)
+    - `SetUserThumbnailUrlAsync` updates:
+      - `avatar_render_urls['avatar']` and removes `headshot` key
+      - `thumbnail_url`, `avatar_thumbnail_url`
+      - Clears `headshot_url` and `headshot_thumbnail_url`.
+
+
+### 2. 3D avatar thumbnails
+
+- `AvatarThumbnail3DController`:
+  - `/avatar-thumbnail-3d/user-avatar`: simple metadata bootstrap; returns `{ Final = true, Url = metadataUrl }` where `metadataUrl` points to `GetMetadata`.
+  - `GetMetadata(userId, size)`:
+    - Validates `userId`, verifies existence via `UserQueries`.
+    - Parses `size` like `352x352` with defaults 352×352.
+    - If DB is configured, builds the same canonical avatar config JSON approach as bust 2D cache, but with:
+      - `renderType = "avatar3d"`
+      - `width/height`
+      - `bodyColors`
+      - sorted `wornAssetIds` from `AvatarRepository.GetAvatarAsync`.
+    - Computes SHA256 `configHash` over this JSON.
+    - Tries global 3D cache via `Avatar3DThumbnailCacheRepository.TryGetAsync(connStr, configHash)`:
+      - On hit, builds CDN URLs for OBJ and MTL under `3DAvatar/{entry.ModelHash}/` and returns `{ obj, mtl }`.
+    - On miss (or if DB not available):
+      - Calls `_thumbnailService.RenderAvatar3DAndCacheAsync(userId, w, h)`.
+      - Builds CDN URLs (`3DAvatar/{hash}/{obj}`, `3DAvatar/{hash}/{mtl}`).
+      - Best-effort: persists mapping in `avatar_3d_cache` via `Avatar3DThumbnailCacheRepository.UpsertAsync(connStr, configHash, ...)`.
+
+- `ThumbnailService.RenderAvatar3DAndCacheAsync`:
+  - Determines base dir: `Thumbnails:Avatar3DDirectory` or hard-coded fallback.
+  - Builds user/size cache key `${userId}_${w}x${h}` and uses a `maps` subdirectory to store a `mapPath` text file mapping (userId, size) -> latest model hash.
+  - If `mapPath` exists and mapped hash directory has valid `.obj` and `.mtl`, returns a cache hit.
+  - Otherwise:
+    - Calls `RenderAvatar3DBase64Async` to talk to Arbiter (`/renderavatar3d`).
+    - Decodes base64 or falls back to UTF8 bytes if not valid base64.
+    - Computes SHA256 hash over bytes to derive `dir` name.
+    - Extracts ZIP contents (if payload is ZIP) or treats bytes as OBJ and writes both `.obj` and a minimal `.mtl`.
+    - Returns `Avatar3DCacheResult` with `Hash`, path, filenames, and `AlreadyExisted` flag.
+
+- `ThumbnailService.RenderAvatar3DBase64Async`:
+  - Similar to 2D: queries Arbiter (`/renderavatar3d`) and extracts base64 payload from JSON.
+
+
+Key Strengths
+-------------
+
+- **Separation of concerns**: Rendering logic is encapsulated in `ThumbnailService`; controllers mostly orchestrate HTTP & DB updates.
+- **Deterministic config-based caching**: Both 2D bust (`avatar_thumbnail_cache`) and 3D (`avatar_3d_cache`) rely on a canonical JSON representation and SHA256 hash keyed on avatar state rather than user ID alone.
+- **Best-effort caching**: Controllers are robust to cache or DB failures and always fall back to rendering.
+- **Atomic file writes & hashing**: Good use of atomic write to disk and hash-based filenames for deduplication.
+
+
+Areas for Improvement (Architecture & Assemblies)
+-------------------------------------------------
+
+1. **Controller duplication of config-hash logic**
+   - Both `ThumbnailsController.Bust` and `AvatarThumbnail3DController.GetMetadata` build nearly identical canonical avatar config JSON and compute a SHA256 `configHash`.
+   - This logic is controller-specific and duplicated, but conceptually belongs in an **avatar thumbnail configuration service** or shared helper under `Assemblies/Avatar` or `Assemblies/Thumbnails`.
+   - **Improvement**:
+     - Introduce an assembly-level helper, e.g. `AvatarThumbnailConfigBuilder` or `AvatarConfigHasher`, responsible for:
+       - Loading full avatar state via `AvatarRepository`.
+       - Producing a canonical DTO with body colors, scales, and sorted asset IDs.
+       - Serializing JSON with stable ordering and computing SHA256.
+     - Controllers consume high-level methods like:
+       - `GetBustConfigHash(connStr, userId, width, height)`.
+       - `Get3DConfigHash(connStr, userId, width, height)`.
+     - This reduces duplication, makes future schema changes (e.g., adding scales or layered clothing) single-source.
+
+2. **Avatar state hash vs. render config hash**
+   - `AvatarV1Controller.SetBodyColors` and `SetWearingAssets` recompute a DB-level `avatar_state_hash` via `AvatarStateHasher.RecomputeAndStoreAvatarHashAsync`.
+   - Separately, bust & 3D endpoints recompute a **render-specific hash** based on body colors + worn assets + size.
+   - These hashes are conceptually related but computed in different places.
+   - **Improvement**:
+     - Consolidate hashing logic such that `avatar_state_hash` can be leveraged for cache invalidation:
+       - Example: `config_hash = SHA256(avatar_state_hash + "|" + width + "x" + height + "|" + renderType)`.
+     - Provide a small assembly service, e.g. `AvatarRenderKeyFactory`, which:
+       - Fetches `avatar_state_hash` and composes a render key based on resolution/render type.
+       - Avoids re-materializing full avatar JSON in multiple places.
+     - This makes caches easier to reason about and more robust to future avatar state extensions.
+
+3. **3D avatar cache coordination between file-system and DB**
+   - 3D caching uses two layers:
+     - File system cache keyed by `(userId, size)` via `maps` directory.
+     - DB `avatar_3d_cache` keyed by `config_hash`.
+   - These can drift: file-system map is authoritative for user/size, DB is only used when DB is available, and there is no reconciliation if one is cleared.
+   - **Improvement**:
+     - Move the **authoritative mapping** to the DB (`avatar_3d_cache`) and treat per-user `maps` files as a local performance optimization.
+     - Encapsulate mapping operations in an assembly-level `Avatar3DCachingService`:
+       - `TryGetByConfigHash(connStr, configHash)`
+       - `TryGetByUserResolution(connStr, userId, width, height)` (optional view over `avatar_3d_cache`).
+       - `StoreMapping(connStr, configHash, hash, objFileName, mtlFileName, width, height)`
+     - `RenderAvatar3DAndCacheAsync` should accept a `configHash` (from controllers) rather than re-deriving user/size-only keys.
+
+4. **HTTP and configuration concerns inside assemblies**
+   - `ThumbnailService` directly constructs `HttpClient` instances and wires URLs from configuration.
+   - This works but makes unit testing and advanced behaviors (retry policies, timeouts, circuit breakers) harder.
+   - **Improvement**:
+     - Allow injecting an `HttpClient` (via `IHttpClientFactory`) and `IOptions<ThumbnailOptions>` into `ThumbnailService` from the Website project.
+     - Leave the `ThumbnailService` in `Assemblies/Thumbnails` but decouple it from raw `IConfiguration` and hard-coded defaults.
+     - Expose a POCO `ThumbnailOptions` with:
+       - `ArbiterUrl`
+       - `WebsiteBaseUrl`
+       - `OutputDirectory`
+       - `Avatar3DDirectory`
+     - This allows Website or Arbiter to own the configuration story while the assembly focuses on pure behavior.
+
+5. **Synchronous filesystem operations in hot paths**
+   - `ThumbnailService.SaveBase64PngAsync` writes file asynchronously once, but existence checks and final file moves are sync and blocking.
+   - `RenderAvatar3DAndCacheAsync` does `Directory.GetFiles`, `File.ReadAllText`, `File.WriteAllText`, and `File.WriteAllBytes` synchronously.
+   - For high-throughput scenarios or slow disks, these synchronous calls might show up in request latency.
+   - **Improvement** (incremental):
+     - For now, keep synchronous operations but encapsulate 3D I/O in a dedicated helper service.
+     - Optionally, introduce async file APIs (.NET supports some but not all operations asynchronously), or queue heavy file work via background jobs.
+
+
+Areas for Improvement (Caching & Perf Semantics)
+-----------------------------------------------
+
+1. **Bust endpoint always re-renders on cache miss**
+   - The `Bust` endpoint’s contract is to always render at the requested size when cache misses occur.
+   - However, it also persists the result into `avatar_thumbnail_cache` and optionally `users.thumbnail_url`.
+   - If the same `(avatarConfig, width, height)` is requested frequently, this is fine. But for many ad-hoc sizes it may produce a large number of cached variants.
+   - **Improvement**:
+     - Consider a **whitelist of canonical sizes** (e.g., 150×150, 420×420) and map arbitrary requests to nearest canonical size for cache lookup & generation.
+     - Expose this canonicalization in a shared assembly helper to ensure consistent behavior across 2D and 3D.
+
+2. **No max age / invalidation policy on caches**
+   - `avatar_thumbnail_cache` and `avatar_3d_cache` are written with `created_at = now()` but not read in any time-aware fashion.
+   - This is fine if `config_hash` fully reflects all avatar state (including all future dimensions), but:
+     - If the meaning of the avatar state changes (e.g., new asset types or shading changes), existing cache entries may be stale despite identical `config_hash`.
+   - **Improvement**:
+     - Consider a `cache_version` column in cache tables and bake a version string into the config hash composition.
+     - E.g., `config_hash = SHA256("v2:" + canonicalConfigJson)`.
+     - On breaking changes to render pipeline, bump version and flush only new entries while old entries naturally become unreachable.
+
+3. **3D rendering fallback when DB is unavailable**
+   - When `connStr` is empty:
+     - `AvatarThumbnail3DController` skips the DB-backed `avatar_3d_cache` and falls back directly to `_thumbnailService.RenderAvatar3DAndCacheAsync` (filesystem-only caching).
+   - This is acceptable, but behaviors differ between environments.
+   - **Improvement**:
+     - Centralize the “cache or render” decision in a service that can still use `avatar_state_hash` even without a full DB connection (or log that DB is disabled explicitly).
+
+4. **Multiple DB queries for the same avatar state**
+   - Several endpoints fetch avatar state or user existence separately:
+     - `UserQueries.UserExistsAsync` is called frequently before operations.
+     - `AvatarRepository.GetAvatarAsync` then calls body color and worn assets queries again.
+   - **Improvement**:
+     - Where possible, eliminate redundant `UserExistsAsync` checks when subsequent queries would naturally return empty or error.
+     - Provide an assembly-level `AvatarStateService` that exposes a single method returning `(exists, avatarState)` or throws, so controllers can avoid redundant calls.
+
+5. **Redraw behavior and throttling**
+   - Client-side JS (`avatarController.js`) has logic to detect flood errors (`code === 1`) from the redraw API and temporarily disable the redraw button.
+   - Server-side, `AvatarV1Controller.RedrawThumbnail` has no explicit rate limiting; presumably, Arbiter or another layer implements rate limits.
+   - **Improvement**:
+     - If not already enforced upstream, consider a simple server-side throttle keyed by user ID and type, stored in Redis or DB, to avoid abuse.
+
+
+Suggested Refactors (Concrete Steps)
+------------------------------------
+
+1. **Introduce shared avatar render config helper (Assemblies/Avatar)**
+   - New class e.g. `AvatarRenderConfigService` in `Assemblies/Avatar`:
+     - Methods:
+       - `Task<(string configHash, CanonicalAvatarConfig config)> Build2DBustConfigAsync(string connStr, long userId, int width, int height, CancellationToken ct)`.
+       - `Task<(string configHash, CanonicalAvatarConfig config)> Build3DConfigAsync(string connStr, long userId, int width, int height, CancellationToken ct)`.
+     - Internals:
+       - Uses `AvatarRepository.GetAvatarAsync`.
+       - Constructs the canonical object and hash (shared between 2D and 3D).
+   - Update:
+     - `ThumbnailsController.Bust` to call this helper instead of inlined JSON logic.
+     - `AvatarThumbnail3DController.GetMetadata` to share the same logic with possibly a different `renderType`.
+
+2. **Add an assembly-level caching abstraction**
+   - Introduce e.g. `IAvatarThumbnailCache` in `Assemblies/Avatar` that wraps both `AvatarThumbnailCacheRepository` and `Avatar3DThumbnailCacheRepository` responsibilities.
+   - Methods:
+     - `Task<string?> TryGet2DUrlAsync(string connStr, string configHash, CancellationToken ct)`.
+     - `Task Upsert2DAsync(string connStr, string configHash, ThumbnailSaveResult save, string renderType, int width, int height, CancellationToken ct)`.
+     - `Task<(bool found, Avatar3DCacheEntry entry)> TryGet3DAsync(string connStr, string configHash, CancellationToken ct)`.
+     - `Task Upsert3DAsync(string connStr, string configHash, Avatar3DCacheResult result, int width, int height, CancellationToken ct)`.
+   - Controllers then depend on this interface, not DB details, making it easier to evolve schemas.
+
+3. **Align `AvatarStateHasher` with thumbnail config hashing**
+   - Move all SHA256 utilities (currently duplicated: `ThumbnailService`, controllers) into a single reusable helper.
+   - Ensure `AvatarStateHasher` and avatar thumbnail hashing use the same utility functions for computing hex strings.
+
+4. **Decouple ThumbnailService from IConfiguration**
+   - Keep `ThumbnailService` in `Assemblies/Thumbnails` but:
+     - Make configuration dependency be via `ThumbnailOptions` POCO (constructor parameter or `IOptions<ThumbnailOptions>`).
+     - Allow injecting an `HttpClient` (via `IHttpClientFactory`) for Arbiter calls.
+   - Website project wires these up in `Startup` / `Program`.
+
+5. **Optional: introduce background jobs for heavy re-renders**
+   - Re-renders that are not user-blocking (e.g., best-effort headshot warmup in `AvatarV1Controller.RedrawThumbnail`) could be pushed to a background queue.
+   - For now, these calls are sequential and can add overhead to the request.
+
+
+Summary
+-------
+
+- The current avatar rendering and caching system is structurally solid: controllers delegate to `ThumbnailService`, and caches are config-hash based rather than purely user ID based.
+- The main opportunities are **deduplicating hashing/config logic into assemblies**, **centralizing cache access**, and **decoupling I/O and configuration details** from controllers.
+- Implementing the proposed helpers in `Assemblies/Avatar` and `Assemblies/Thumbnails` would:
+  - Reduce duplication and risk of drift between 2D and 3D behavior.
+  - Make it easier to extend avatar schema and rendering options.
+  - Provide clearer seams for testing and future optimizations (e.g., introducing Redis caches, background jobs, or throttling).
