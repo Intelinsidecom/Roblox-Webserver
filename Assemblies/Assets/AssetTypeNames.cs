@@ -13,6 +13,10 @@ namespace Assets
             {
                 case 2:
                     return "T-Shirt";
+                case 11:
+                    return "Shirt";
+                case 12:
+                    return "Pants";
                 default:
                     return string.Empty;
             }
@@ -25,6 +29,10 @@ namespace Assets
             {
                 case 2:
                     return "T-Shirt";
+                case 11:
+                    return "Shirt";
+                case 12:
+                    return "Pants";
                 case 32:
                     return "Package";
                 default:

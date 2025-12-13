@@ -118,6 +118,24 @@ namespace RobloxWebserver.Assemblies.Catalog
                 }
             }
 
+            // Populate real favorite counts for each asset so the catalog UI can
+            // display "Favorited: X times" based on live data instead of 0.
+            var assetsRepo = new Assets.AssetsRepository();
+            foreach (var item in items)
+            {
+                try
+                {
+                    var favCount = await assetsRepo.GetFavoriteCountAsync(connectionString, item.Id).ConfigureAwait(false);
+                    item.FavoritedCount = favCount;
+                }
+                catch
+                {
+                    // On any error, leave FavoritedCount null; callers will fall back
+                    // to a safe default when rendering.
+                    item.FavoritedCount = null;
+                }
+            }
+
             var page = new CatalogPageResult
             {
                 Items = items,

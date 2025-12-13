@@ -138,6 +138,9 @@ Roblox.DevelopPage = function() {
         if (viewValue === "2") {
             console.log('[Develop.js] Detected T-Shirts view; loading content from /develop/asset-list/2');
             $("#MyCreationsTab .items-container").load("/develop/asset-list/2");
+        } else if (viewValue === "12") {
+            console.log('[Develop.js] Detected Pants view; loading content from /develop/asset-list/12');
+            $("#MyCreationsTab .items-container").load("/develop/asset-list/12");
         }
     })
 }();

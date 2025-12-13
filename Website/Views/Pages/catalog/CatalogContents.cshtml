@@ -11,14 +11,14 @@
                 <div class="CatalogItemInner BigInner">
                     <div class="roblox-item-image image-large" data-item-id="@item.Id" data-image-size="large">
                         <div class="item-image-wrapper">
-                            <a href="#">
+                            <a href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })">
                                 <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
                             </a>
                         </div>
                     </div>
                     <div id="textDisplay">
                         <div class="CatalogItemName notranslate">
-                            <a class="name notranslate" href="#" title="@item.Name">@item.Name</a>
+                            <a class="name notranslate" href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })" title="@item.Name">@item.Name</a>
                         </div>
                         <div class="CatalogHoverContent">
                             <div>

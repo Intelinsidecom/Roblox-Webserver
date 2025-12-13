@@ -96,7 +96,7 @@ namespace Website.Controllers
 
             long.TryParse(pid, out var uid);
 
-            long? tShirtAssetId = null;
+            var wornAssetIds = new System.Collections.Generic.List<long>();
             var connStr = _configuration.GetConnectionString("Default");
             if (!string.IsNullOrWhiteSpace(connStr) && uid > 0)
             {
@@ -108,16 +108,17 @@ namespace Website.Controllers
                     const string sql = @"select awa.asset_id
 from avatar_worn_assets awa
 join assets a on a.asset_id = awa.asset_id
-where awa.user_id = @uid and a.asset_type_id = 2
-order by awa.asset_id
-limit 1";
+where awa.user_id = @uid
+order by awa.asset_id";
 
                     await using var cmd = new NpgsqlCommand(sql, conn);
                     cmd.Parameters.AddWithValue("uid", uid);
-                    var obj = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (obj != null && obj != DBNull.Value)
+
+                    await using var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
-                        tShirtAssetId = Convert.ToInt64(obj);
+                        var assetId = reader.GetInt64(0);
+                        wornAssetIds.Add(assetId);
                     }
                 }
                 catch
@@ -126,17 +127,17 @@ limit 1";
                 }
             }
 
-            var tShirtUrl = tShirtAssetId.HasValue
-                ? $"{baseUrl}/asset/?id={tShirtAssetId.Value}"
-                : $"{baseUrl}/asset/?id=19"; // fallback ShirtGraphic asset
+            var bodyColorsUrl = $"{baseUrl}/asset/bodycolors.ashx?userId={pid}";
+            var urls = new System.Collections.Generic.List<string> { bodyColorsUrl };
+
+            foreach (var assetId in wornAssetIds)
+            {
+                urls.Add($"{baseUrl}/asset/?id={assetId}");
+            }
 
             // Response format (semicolon-separated URLs), per request:
-            // http://your.url.here/Asset/bodycolors.ashx;http://your.url.here/Asset/?id=TSHIRT
-            var body = string.Join(';', new[]
-            {
-                $"{baseUrl}/asset/bodycolors.ashx?userId={pid}",
-                tShirtUrl
-            });
+            // http://your.url.here/Asset/bodycolors.ashx;http://your.url.here/Asset/?id=TSHIRT;http://your.url.here/Asset/?id=PANTS
+            var body = string.Join(';', urls);
 
             return Content(body, "text/plain");
         }

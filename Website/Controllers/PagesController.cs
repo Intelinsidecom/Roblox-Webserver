@@ -30,7 +30,7 @@ namespace RobloxWebserver.Controllers
             var result = _viewEngine.GetView(executingFilePath: null, viewPath: viewPath, isMainPage: true);
             if (!result.Success)
             {
-                return NotFound();
+                return Redirect("/404");
             }
 
             return View(viewPath);

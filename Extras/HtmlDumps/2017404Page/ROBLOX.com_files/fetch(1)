@@ -1,0 +1,23 @@
+/* ~/CSS/Pages/RobloxError/RobloxError.css */
+.modal-header .icon-close{background-position:0 -420px;background-size:40px auto;width:20px;height:20px;vertical-align:top;}.request-error-page-content{max-width:970px;width:800px;margin:0 auto;margin-top:10%;}.request-error-page-content .contact-message{text-align:center;}.request-error-page-content .default-error-page{background:#fff;overflow:hidden;padding:15px;position:relative;}.request-error-page-content .default-error-page .message-container{float:left;width:45%;margin:0 auto;}.request-error-page-content .default-error-page .message-container .error-title,.request-error-page-content .default-error-page .message-container .error-message{margin-bottom:12px;}.request-error-page-content .default-error-page .message-container .error-title{font-weight:400;font-size:36px;}.request-error-page-content .default-error-page .message-container .error-message{font-weight:300;font-size:16px;}.request-error-page-content .default-error-page .message-container .error-message span{padding:0 5px;}.request-error-page-content .default-error-page .action-buttons{padding:18px 0;position:absolute;bottom:0;}.request-error-page-content .default-error-page .action-buttons a:first-child{margin-right:12px;}.request-error-page-content .default-error-page .error-image{height:300px;float:right;display:block;margin:20px 0;}@media(max-width:991px){.request-error-page-content{width:100%;margin-top:0;}.request-error-page-content .default-error-page .message-container{float:none;width:100%;}.request-error-page-content .default-error-page .message-container .error-title,.request-error-page-content .default-error-page .message-container .error-message{text-align:center;}.request-error-page-content .default-error-page .message-container .error-title{font-size:24px;}.request-error-page-content .default-error-page .error-image{float:none;margin:36px auto;}.request-error-page-content .default-error-page .action-buttons{position:static;text-align:center;}}@media(max-width:767px){.request-error-page-content .default-error-page .message-container{float:left;width:45%;}.request-error-page-content .default-error-page .message-container .error-title,.request-error-page-content .default-error-page .message-container .error-message{text-align:left;}.request-error-page-content .default-error-page .error-image{float:right;height:126px;}.request-error-page-content .default-error-page .action-buttons{position:absolute;}}@media(max-width:543px){.request-error-page-content{width:100%;margin-top:0;}.request-error-page-content .default-error-page .message-container{float:none;width:100%;}.request-error-page-content .default-error-page .message-container .error-title,.request-error-page-content .default-error-page .message-container .error-message{text-align:center;}.request-error-page-content .default-error-page .message-container .error-title{font-size:24px;}.request-error-page-content .default-error-page .error-image{float:none;margin:36px auto;}.request-error-page-content .default-error-page .action-buttons{position:static;text-align:center;}}
+
+/*
+     FILE ARCHIVED ON 00:07:33 Mar 19, 2017 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 15:06:44 Dec 13, 2025.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.613
+  exclusion.robots: 0.024
+  exclusion.robots.policy: 0.01
+  esindex: 0.013
+  cdx.remote: 18.538
+  LoadShardBlock: 366.412 (3)
+  PetaboxLoader3.datanode: 319.962 (5)
+  load_resource: 219.756 (2)
+  PetaboxLoader3.resolve: 139.911 (2)
+*/

@@ -233,6 +233,30 @@ where asset_id = @asset_id;";
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task UpdateAssetThumbnailsAsync(string connectionString, long assetId, string? thumbnailUrl, string? highResThumbnailUrl, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set thumbnail_url = @thumbnail_url,
+    high_res_thumbnail_url = @high_res_thumbnail_url,
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("thumbnail_url", (object?)thumbnailUrl ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("high_res_thumbnail_url", (object?)highResThumbnailUrl ?? DBNull.Value);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task AddFavoriteAsync(string connectionString, long userId, long assetId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

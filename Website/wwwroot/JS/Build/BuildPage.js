@@ -130,14 +130,16 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
             f = e.data("item-id"),
             o = e.data("item-moderation-approved"),
             isTShirt = e.data("type") === "tshirts",
-            dropdown = isTShirt ? $("#tshirt-dropdown-menu") : r5;
+            isPants = e.data("type") === "pants",
+            isClothing = isTShirt || isPants,
+            dropdown = isClothing ? $("#tshirt-dropdown-menu") : r5;
 
-        if (isTShirt) {
-            // Point the Configure link to /my/item.aspx?id=<item-id> for the current T-shirt row
+        if (isClothing) {
+            // Point the Configure link to /my/item.aspx?id=<item-id> for the current clothing row (T-shirt or pants)
             dropdown.find("a[data-action='configure']").attr("href", "/my/item.aspx?id=" + f);
         }
 
-        if (!isTShirt) {
+        if (!isClothing) {
             o = o === "True";
             dropdown.find("a").each(function () {
                 var n = $(this),
@@ -167,24 +169,14 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
             h3 = u5.offset(),
             finalTop,
             finalLeft;
-        if (isTShirt) {
-            // Ensure the T-shirt dropdown is anchored to the page so we can use absolute offsets
+        if (isClothing) {
+            // Ensure the clothing dropdown is anchored to the page so we can use absolute offsets
             if (!dropdown.parent().is('body')) {
                 dropdown.appendTo('body');
             }
             // Recompute parent offset after potential move (body is usually {top:0,left:0})
             s3 = dropdown.parent().offset() || { top: 0, left: 0 };
 
-            // Detailed debug for T-shirt dropdown positioning
-            // console.log('[BuildPage.js] a() T-shirt positioning raw values (anchored to body):', {
-            //     parentOffsetTop: s3.top,
-            //     parentOffsetLeft: s3.left,
-            //     buttonOffsetTop: h3.top,
-            //     buttonOffsetLeft: h3.left,
-            //     buttonOuterHeight: u5.outerHeight(),
-            //     buttonOuterWidth: u5.outerWidth(),
-            //     dropdownWidth: c3
-            // });
             // Vertically: just below the gear button, with a small padding
             finalTop = h3.top + u5.outerHeight() + 4;
             // Horizontally: align the dropdown's right edge with the gear button's right edge

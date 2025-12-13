@@ -7,7 +7,32 @@ avatar.controller("recentItemsController", ["$scope", "$log", "$timeout", "$q", 
 
         function s() {
             !h()||e||n.loading||(n.loading= !0, n.items=[], u.getRecentItems(o).then(function(t) {
-                        var i, r; for(n.items=[], i=0; i<t.data.length; i++)r=t.data[i], n.addItemThumbnailAndLink(r), n.updateItemSelected(r); n.items=t.data, n.loading= !1, e= !0
+                        var i, src, mapped, items = [];
+
+                        n.items = [];
+
+                        for (i = 0; i < t.data.length; i++) {
+                            src = t.data[i];
+
+                            mapped = {
+                                id: src.id,
+                                name: src.name,
+                                type: "Asset",
+                                assetType: {
+                                    id: src.assetTypeId,
+                                    name: (typeof n.getAssetTypeName === "function") ? n.getAssetTypeName(src.assetTypeId) : null
+                                },
+                                Thumbnail: src.thumbnailUrl ? { Url: src.thumbnailUrl } : null
+                            };
+
+                            n.addItemThumbnailAndLink(mapped);
+                            n.updateItemSelected(mapped);
+                            items.push(mapped);
+                        }
+
+                        n.items = items;
+                        n.loading = !1;
+                        e = !0;
                     }
 
                     , function() {

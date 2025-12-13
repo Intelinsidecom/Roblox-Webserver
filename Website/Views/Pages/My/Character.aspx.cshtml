@@ -373,12 +373,25 @@ Roblox.Endpoints = Roblox.Endpoints || {
 
         <div class="avatar-right-panel" ng-controller="avatarController">
             <div ng-include="'avatar-editor-tabs'"></div>
-            <div class="avatar-content-area" ng-controller="avatarItemsController">
-                <div ng-show="selectedMenu && selectedMenu.name === 'BodyColors'" ng-controller="bodyColorsController">
-                    <div ng-include="'body-colors-list'"></div>
+            <div class="avatar-content-area">
+                <!-- Recent Items Controller for Recent Tab -->
+                <div ng-show="selectedTab && selectedTab.name === 'Recent'" ng-controller="recentItemsController">
+                    <div ng-include="'avatar-items-list'"></div>
                 </div>
-                <div ng-show="!selectedMenu || selectedMenu.name !== 'BodyColors'">
-                    <div avatar-items></div>
+                
+                <!-- Avatar Items Controller for Asset Tabs (Clothing, Body, Animations) -->
+                <div ng-show="selectedTab && selectedTab.tabType === 'Assets'" ng-controller="avatarItemsController">
+                    <div ng-show="selectedMenu && selectedMenu.name === 'BodyColors'" ng-controller="bodyColorsController">
+                        <div ng-include="'body-colors-list'"></div>
+                    </div>
+                    <div ng-show="!selectedMenu || selectedMenu.name !== 'BodyColors'">
+                        <div avatar-items></div>
+                    </div>
+                </div>
+                
+                <!-- Outfits Controller would go here if implemented -->
+                <div ng-show="selectedTab && selectedTab.tabType === 'Outfits'" ng-controller="outfitsController">
+                    <!-- Outfits content -->
                 </div>
             </div>
         </div>

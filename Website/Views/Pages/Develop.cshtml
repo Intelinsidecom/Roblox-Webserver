@@ -38,11 +38,11 @@
             case "40":
                 viewName = "Meshes";
                 break;
-            case "11":
-                viewName = "Shirts";
-                break;
             case "2":
                 viewName = "T-Shirts";
+                break;
+            case "11":
+                viewName = "Shirts";
                 break;
             case "12":
                 viewName = "Pants";
@@ -406,7 +406,7 @@
                                                             <a href="/develop?Page=sponsored-games" class="tab-item tab-item-disabled">Sponsored Games</a>
                                                             <a href="/develop?view=11" class="tab-item tab-item-disabled @(viewParam == "11" ? "tab-item-selected" : string.Empty)">Shirts</a>
                                                             <a href="/develop?view=2" class="tab-item @(viewParam == "2" ? "tab-item-selected" : string.Empty)">T-Shirts</a>
-                                                            <a href="/develop?view=12" class="tab-item tab-item-disabled @(viewParam == "12" ? "tab-item-selected" : string.Empty)">Pants</a>
+                                                            <a href="/develop?view=12" class="tab-item @(viewParam == "12" ? "tab-item-selected" : string.Empty)">Pants</a>
                                                             <a href="/develop?view=38" class="tab-item tab-item-disabled @(viewParam == "38" ? "tab-item-selected" : string.Empty)">Plugins</a>
 
                                                             <div id=StudioWidget>
@@ -428,56 +428,63 @@
                                                             </div>
                                                         <td class=content-area>
                                                             <div class=items-container>
-                                                                <a href="https://web.roblox.com/places/create" id="CreatePlace" class="create-new-button btn-medium btn-primary">Create New Game</a>
-                                                                <table class="section-header">
-                                                                    <tr>
-                                                                        <td class="content-title">
-                                                                            <div>
-                                                                                <h2 class="header-text">Games</h2>
-                                                                                <span class="aside-text" data-active-count="1" data-max-active-count="200"></span>
-                                                                                <label class="checkbox-label active-only-checkbox">
-                                                                                    <input type="checkbox" />Show Public Only
-                                                                                </label>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                                <div class="items-container-inner">
-                                                                    <table class="item-table" data-item-id="1" data-rootplace-id="1" data-type="universes">
+                                                                @if (viewParam == "2" || viewParam == "12")
+                                                                {
+                                                                    <div class="items-container-inner"></div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="https://web.roblox.com/places/create" id="CreatePlace" class="create-new-button btn-medium btn-primary">Create New Game</a>
+                                                                    <table class="section-header">
                                                                         <tr>
-                                                                            <td class="image-col universe-image-col" style="text-align:center;">
-                                                                                <a href="/universes/configure?id=1" class="game-image">
-                                                                                    <img src="https://t7.rbxcdn.com/33d7dc233c34b71e4cb3cfe0b98f92f4" alt="My First Game" />
-                                                                                </a>
-                                                                            </td>
-                                                                            <td class="universe-name-col">
-                                                                                <a class="title notranslate" href="/universes/configure?id=1">My First Game</a>
-                                                                                <table class="details-table">
-                                                                                    <tr>
-                                                                                        <td class="item-universe">
-                                                                                            <span>Start Place:</span>
-                                                                                            <a class="title notranslate start-place-url" href="/games/1/My-First-Game">My First Game</a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                    <tr class="activate-cell">
-                                                                                        <td>
-                                                                                            <a class="place-active" href="/universes/configure?id=1">Public</a>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </table>
-                                                                            </td>
-                                                                            <td class="edit-col">
-                                                                                <a class="roblox-edit-button btn-control btn-control-large" href="javascript:">Edit</a>
-                                                                            </td>
-                                                                            <td class="menu-col">
-                                                                                <div class="gear-button-wrapper">
-                                                                                    <a href="#" class="gear-button"></a>
+                                                                            <td class="content-title">
+                                                                                <div>
+                                                                                    <h2 class="header-text">Games</h2>
+                                                                                    <span class="aside-text" data-active-count="1" data-max-active-count="200"></span>
+                                                                                    <label class="checkbox-label active-only-checkbox">
+                                                                                        <input type="checkbox" />Show Public Only
+                                                                                    </label>
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
                                                                     </table>
-                                                                    <div class="separator"></div>
-                                                                </div>
+                                                                    <div class="items-container-inner">
+                                                                        <table class="item-table" data-item-id="1" data-rootplace-id="1" data-type="universes">
+                                                                            <tr>
+                                                                                <td class="image-col universe-image-col" style="text-align:center;">
+                                                                                    <a href="/universes/configure?id=1" class="game-image">
+                                                                                        <img src="https://t7.rbxcdn.com/33d7dc233c34b71e4cb3cfe0b98f92f4" alt="My First Game" />
+                                                                                    </a>
+                                                                                </td>
+                                                                                <td class="universe-name-col">
+                                                                                    <a class="title notranslate" href="/universes/configure?id=1">My First Game</a>
+                                                                                    <table class="details-table">
+                                                                                        <tr>
+                                                                                            <td class="item-universe">
+                                                                                                <span>Start Place:</span>
+                                                                                                <a class="title notranslate start-place-url" href="/games/1/My-First-Game">My First Game</a>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <tr class="activate-cell">
+                                                                                            <td>
+                                                                                                <a class="place-active" href="/universes/configure?id=1">Public</a>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                </td>
+                                                                                <td class="edit-col">
+                                                                                    <a class="roblox-edit-button btn-control btn-control-large" href="javascript:">Edit</a>
+                                                                                </td>
+                                                                                <td class="menu-col">
+                                                                                    <div class="gear-button-wrapper">
+                                                                                        <a href="#" class="gear-button"></a>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        <div class="separator"></div>
+                                                                    </div>
+                                                                }
                                                             </div>
                                                             <div class=build-loading-container style=display:none>
                                                                 <div class=buildpage-loading-container><img alt=^_^ src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif></div>

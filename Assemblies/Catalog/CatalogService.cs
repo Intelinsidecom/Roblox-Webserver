@@ -32,20 +32,21 @@ namespace RobloxWebserver.Assemblies.Catalog
 
             foreach (var item in pageResult.Items)
             {
+                var slug = ToSlug(item.Name);
+
                 sb.Append("<div class=\"CatalogItemOuter SmallOuter\">");
                 sb.Append("<div class=\"SmallCatalogItemView SmallView\">");
                 sb.Append("<div class=\"CatalogItemInner SmallInner\">");
                 sb.Append("<div class=\"roblox-item-image image-small\" data-item-id=\"" + item.Id + "\" data-image-size=\"small\">");
-                sb.Append("<div class=\"item-image-wrapper\"><a href=\"#\">");
+                sb.Append("<div class=\"item-image-wrapper\"><a href=\"/catalog/" + item.Id + "/" + slug + "\">");
                 sb.Append("<img class=\"original-image\" alt=\"" + System.Net.WebUtility.HtmlEncode(item.Name) + "\" title=\"" + System.Net.WebUtility.HtmlEncode(item.Name) + "\" src=\"" + item.ImageUrl + "\" />");
                 if (item.IsNew)
                 {
                     sb.Append("<img src=\"/images/NewItem.png\" alt=\"New\" />");
                 }
                 sb.Append("</a></div></div>");
-
                 sb.Append("<div id=\"textDisplay\">");
-                sb.Append("<div class=\"CatalogItemName notranslate\"><a class=\"name notranslate\" href=\"#\" title=\"" + System.Net.WebUtility.HtmlEncode(item.Name) + "\">");
+                sb.Append("<div class=\"CatalogItemName notranslate\"><a class=\"name notranslate\" href=\"/catalog/" + item.Id + "/" + slug + "\" title=\"" + System.Net.WebUtility.HtmlEncode(item.Name) + "\">");
                 sb.Append(System.Net.WebUtility.HtmlEncode(item.Name));
                 sb.Append("</a></div>");
 
@@ -107,6 +108,37 @@ namespace RobloxWebserver.Assemblies.Catalog
             }
 
             return sb.ToString();
+        }
+
+        private static string ToSlug(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return string.Empty;
+
+            name = name.Trim().ToLowerInvariant();
+
+            var chars = new StringBuilder(name.Length);
+            bool lastWasHyphen = false;
+
+            foreach (var ch in name)
+            {
+                if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))
+                {
+                    chars.Append(ch);
+                    lastWasHyphen = false;
+                }
+                else if (ch == ' ' || ch == '-' || ch == '_' || ch == '.')
+                {
+                    if (!lastWasHyphen)
+                    {
+                        chars.Append('-');
+                        lastWasHyphen = true;
+                    }
+                }
+            }
+
+            var result = chars.ToString().Trim('-');
+            return string.IsNullOrEmpty(result) ? string.Empty : result;
         }
 
         public async Task<string> BuildTShirtCatalogHtmlAsync(string connectionString, int maxCount = 42)

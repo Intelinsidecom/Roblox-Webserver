@@ -107,6 +107,24 @@ where coalesce(a.asset_image, false) = false
                 }
             }
 
+            // Populate real favorite counts for each asset so the catalog UI can
+            // show "Favorited: X times" using live data instead of 0.
+            var assetsRepo = new Assets.AssetsRepository();
+            foreach (var item in items)
+            {
+                try
+                {
+                    var favCount = await assetsRepo.GetFavoriteCountAsync(connectionString, item.Id).ConfigureAwait(false);
+                    item.FavoritedCount = favCount;
+                }
+                catch
+                {
+                    // If anything goes wrong, leave FavoritedCount null and let callers
+                    // fall back to a safe default.
+                    item.FavoritedCount = null;
+                }
+            }
+
             var page = new CatalogPageResult
             {
                 Items = items,

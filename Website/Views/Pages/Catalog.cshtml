@@ -369,7 +369,8 @@ function __doPostBack(eventTarget, eventArgument) {
                         <div class="CatalogItemInner BigInner">
                             <div class="roblox-item-image image-large" data-item-id="@item.Id" data-image-size="large">
                                 <div class="item-image-wrapper">
-                                    <a href="#">
+                                    <a href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })">
+
                                         <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
 
                                         @if (item.IsLimitedUnique)
@@ -390,7 +391,8 @@ function __doPostBack(eventTarget, eventArgument) {
                             </div>
                             <div id="textDisplay">
                                 <div class="CatalogItemName notranslate">
-                                    <a class="name notranslate" href="#" title="@item.Name">@item.Name</a>
+                                    <a class="name notranslate" href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })" title="@item.Name">@item.Name</a>
+
                                 </div>
 
                                 @if (item.PriceRobux.HasValue || item.PriceTickets.HasValue)
@@ -453,13 +455,9 @@ function __doPostBack(eventTarget, eventArgument) {
                         <div class="CatalogItemInner SmallInner">
                             <div class="roblox-item-image image-small" data-item-id="@item.Id" data-image-size="small">
                                 <div class="item-image-wrapper">
-                                    <a href="#">
-                                        <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
+                                    <a href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })">
 
-                                        @if (item.IsLimitedUnique)
-                                        {
-                                            <img src="/images/LimitedUniqueItems.png" alt="Limited Unique" class="limited-overlay" />
-                                        }
+                                        <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
                                         else if (item.IsLimited)
                                         {
                                             <img src="/images/LimitedItems.png" alt="Limited" class="limited-overlay" />

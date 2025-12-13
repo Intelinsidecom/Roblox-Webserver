@@ -107,6 +107,13 @@ on conflict (user_id, asset_id) do nothing;";
                             await insCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
                         }
 
+                        // Increment sales counter for this asset as part of the same transaction.
+                        using (var salesCmd = new NpgsqlCommand("update assets set sales = coalesce(sales, 0) + 1 where asset_id = @aid", conn, tx))
+                        {
+                            salesCmd.Parameters.AddWithValue("aid", assetId);
+                            await salesCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                        }
+
                         tx.Commit();
                         return (true, null);
                     }

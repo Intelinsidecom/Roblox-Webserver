@@ -152,7 +152,7 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);
         }
 
-        private static string ToSlug(string name)
+        public static string ToSlug(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
