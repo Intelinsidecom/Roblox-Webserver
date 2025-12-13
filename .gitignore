@@ -124,5 +124,14 @@ yarn-error.log*
 .env
 .env.*
 
+
 # whitelist fmod
 !fmod/**
+
+
+## Webserver Related Stuff
+
+*.json
+asset/
+thumbnails/
+3DAvatar/
