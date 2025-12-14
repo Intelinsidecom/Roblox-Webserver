@@ -128,6 +128,42 @@ Roblox=Roblox|| {}
      }
  }
 
+ // Ensure the avatar thumbnail URL is unique on each refresh so the browser
+ // does not serve a cached image. This updates the data-url of #UserAvatar
+ // (which Roblox.ThumbnailView uses) with a cache-buster query parameter.
+ function updateAvatarThumbnailUrlCacheBuster() {
+     try {
+         if (!window.$) return;
+
+         var $thumb = $("#UserAvatar");
+         if (!$thumb.length) return;
+
+         var url = $thumb.attr("data-url");
+         if (!url) return;
+
+         // Split off any existing query string so we can safely modify it.
+         var parts = url.split("?");
+         var base = parts[0];
+         var query = parts.length > 1 ? parts[1] : "";
+
+         var params = [];
+         if (query) {
+             params = query.split("&").filter(function (kv) {
+                 // Drop any previous cache-buster key we might have added.
+                 return kv && kv.indexOf("avatarCacheBust=") !== 0;
+             });
+         }
+
+         params.push("avatarCacheBust=" + new Date().getTime());
+
+         var newUrl = base + "?" + params.join("&");
+         $thumb.attr("data-url", newUrl);
+     } catch (e) {
+         // Fail-safe: if anything goes wrong we just skip cache-busting and
+         // fall back to whatever Roblox.ThumbnailView would normally do.
+     }
+ }
+
  // Refetch avatar
  function refetchAvatar() {
      console.log('Refetching avatar...');
@@ -142,6 +178,8 @@ Roblox=Roblox|| {}
              }
          }
      } catch (e) {}
+     // Make sure the thumbnail URL is unique each time so we bypass cache.
+     updateAvatarThumbnailUrlCacheBuster();
      showAvatarSpinner();
      if (typeof Roblox !== 'undefined' && Roblox.ThumbnailView && typeof Roblox.ThumbnailView.reloadThumbnail === 'function') {
          Roblox.ThumbnailView.reloadThumbnail();

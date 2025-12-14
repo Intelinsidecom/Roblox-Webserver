@@ -28,8 +28,38 @@ signupOrLogin.factory("signupService", ["$http", "captchaService", "displayServi
                 crossDomain: !0,
                 withCredentials: !0
             }).success(function(n) {
+                // Notify signup success but do not redirect or treat as logged in yet.
                 Roblox.SignupOrLogin.onSignupSuccess(n.userId);
-                Roblox.SignupOrLogin.onLoginSuccess(n.userId);
+
+                var username = r.signup && r.signup.username;
+                var password = r.signup && r.signup.password;
+
+                // Only after we successfully call the login API (which sets the cookie)
+                // do we run the login-success handler and redirect.
+                if (username && password) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/login/v1",
+                        data: { username: username, password: password },
+                        crossDomain: !0,
+                        xhrFields: { withCredentials: !0 },
+                        success: function(t) {
+                            if (t && t.userId) {
+                                Roblox.SignupOrLogin.onLoginSuccess(t.userId);
+                            }
+                            window.location = "/home";
+                        },
+                        error: function(xhr) {
+                            // If the login API rejects (e.g., 403), fall back to the login page
+                            // so the user can try manually.
+                            window.location = "/login";
+                        }
+                    });
+                } else if (n && n.userId) {
+                    // As a very last fallback (no username/password captured),
+                    // just go to home and let server auth logic decide.
+                    window.location = "/home";
+                }
             }).error(function(n, u) {
                 if (r.badSubmit = !0, r.isSubmitting = !1, u === 403) {
                     var f = 0;

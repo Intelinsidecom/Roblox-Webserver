@@ -97,7 +97,31 @@ typeof Roblox == "undefined" && (Roblox = {}), Roblox.ThumbnailView = function()
             } catch (e) {}
 
             u = u + "&_=" + $.now(), f.load(u, function() {
-                t = f.find(o), p();
+                t = f.find(o);
+
+                // After new markup is loaded, ensure the inner <img> uses a
+                // cache-busted URL so the browser does not serve a stale
+                // avatar image from cache (especially for /bust-thumbnail/image
+                // avatars).
+                try {
+                    var img = t.find('> img');
+                    if (img && img.length) {
+                        var src = img.attr('src');
+                        if (src) {
+                            var hasQuery = src.indexOf('?') !== -1;
+                            var separator = hasQuery ? '&' : '?';
+                            var cacheParam = 'avatarCacheBust=' + $.now();
+
+                            // Strip any previous avatarCacheBust parameter we
+                            // might have added before appending a fresh one.
+                            var cleaned = src.replace(/([?&])avatarCacheBust=[^&]*/g, '$1').replace(/[?&]$/, '');
+                            var newSrc = cleaned + separator + cacheParam;
+                            img.attr('src', newSrc);
+                        }
+                    }
+                } catch (e) {}
+
+                p();
 
                 // Once the new thumbnail markup has been loaded, clear the
                 // avatar spinner if the helper exists so it never stays stuck

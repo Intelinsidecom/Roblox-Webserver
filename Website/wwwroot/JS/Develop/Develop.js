@@ -142,5 +142,37 @@ Roblox.DevelopPage = function() {
             console.log('[Develop.js] Detected Pants view; loading content from /develop/asset-list/12');
             $("#MyCreationsTab .items-container").load("/develop/asset-list/12");
         }
+
+        // Handle Pants upload via AJAX so errors stay inline on the /develop page
+        $(document).on('submit', '#pants-upload-form', function (e) {
+            e.preventDefault();
+
+            var $form = $(this);
+            var $error = $('#pants-upload-error');
+            if ($error.length) {
+                $error.text('');
+            }
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                url: $form.attr('action') || '/develop/upload-pants',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    console.log('[Develop.js] Pants upload succeeded; reloading pants asset list');
+                    $("#MyCreationsTab .items-container").load("/develop/asset-list/12");
+                },
+                error: function (xhr) {
+                    console.log('[Develop.js] Pants upload failed; status:', xhr.status, 'response:', xhr.responseText);
+                    if ($error.length) {
+                        var message = xhr && xhr.responseText ? xhr.responseText : 'Failed to upload pants.';
+                        $error.text(message);
+                    }
+                }
+            });
+        });
     })
 }();

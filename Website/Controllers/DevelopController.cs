@@ -324,6 +324,7 @@ limit 50;";
                 sb.Append(@"            <div class='form-inner label-column'></div>");
                 sb.Append(@"            <div class='form-inner input-column'>");
                 sb.Append(@"                <button type='submit' class='btn-medium btn-primary'>Upload</button>");
+                sb.Append(@"                <div id='pants-upload-error' class='text-error'></div>");
                 sb.Append(@"            </div>");
                 sb.Append(@"        </div>");
 
@@ -343,9 +344,13 @@ limit 50;";
                             var sqlPants = @"select a.asset_id,
        a.name,
        a.created_at,
-       a.thumbnail_url
+       a.thumbnail_url,
+       i.asset_id as image_asset_id
 from user_assets ua
 join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 12
+left join assets i on i.owner_user_id = a.owner_user_id
+                  and i.asset_type_id = 1
+                  and i.name = a.name || ' Image'
 where ua.user_id = @uid
 order by ua.created_at desc, a.asset_id desc
 limit 50;";
@@ -367,6 +372,7 @@ limit 50;";
                                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                                 var createdAt = reader.GetDateTime(2);
                                 var thumbUrl = reader.IsDBNull(3) ? null : reader.GetString(3);
+                                var imageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
                                 var createdDateString = createdAt.ToString("M/d/yyyy");
 
                                 var slug = CatalogController.ToSlug(name);
@@ -393,6 +399,13 @@ limit 50;";
                                 sb.Append(@"                            <tr>");
                                 sb.Append(@"                                <td class='item-universe'><span>Created:</span> ");
                                 sb.Append(createdDateString);
+                                sb.Append(@" (ID: ");
+                                var idToShowPants = imageAssetId ?? assetId;
+                                sb.Append(@"<a href='/asset/?id=");
+                                sb.Append(idToShowPants);
+                                sb.Append(@"'>");
+                                sb.Append(idToShowPants);
+                                sb.Append(@"</a>)");
                                 sb.Append(@"</td>");
                                 sb.Append(@"                            </tr>");
                                 sb.Append(@"                        </table>");
@@ -559,6 +572,10 @@ limit 50;";
                     _configuration["Assets:PublicBaseUrl"],
                     arbiterBaseUrl,
                     cancellationToken).ConfigureAwait(false);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception)
             {

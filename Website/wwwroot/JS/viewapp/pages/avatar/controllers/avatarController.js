@@ -394,6 +394,15 @@ var l, g, b, ut, w, pt; t.debug("avatarController starting"), n.pageLoaded= !1, 
 			r.length && Roblox.ThumbnailSpinner.show(r);
 		}
 	} catch(e) {}
+
+	// Keep Angular-driven refresh behavior consistent with the global
+	// refetchAvatar() helper by applying the same cache-buster to the
+	// avatar thumbnail URL before reload.
+	try {
+		if (typeof updateAvatarThumbnailUrlCacheBuster === "function") {
+			updateAvatarThumbnailUrlCacheBuster();
+		}
+	} catch(e) {}
 	Roblox.ThumbnailView.reloadThumbnail()
 }
 

@@ -1,5 +1,27 @@
 // Login/Login.js
 function addMonths() {
+    if (!window.Roblox) {
+        window.Roblox = {};
+    }
+    if (!Roblox.Login) {
+        Roblox.Login = {};
+    }
+    if (!Roblox.Login.Resources) {
+        Roblox.Login.Resources = {
+            january: "January",
+            february: "February",
+            march: "March",
+            april: "April",
+            may: "May",
+            june: "June",
+            july: "July",
+            august: "August",
+            september: "September",
+            october: "October",
+            november: "November",
+            december: "December"
+        };
+    }
     $("<option>").attr("value", 1).text(Roblox.Login.Resources.january).appendTo('select[name="Month"]'), $("<option>").attr("value", 2).text(Roblox.Login.Resources.february).appendTo('select[name="Month"]'), $("<option>").attr("value", 3).text(Roblox.Login.Resources.march).appendTo('select[name="Month"]'), $("<option>").attr("value", 4).text(Roblox.Login.Resources.april).appendTo('select[name="Month"]'), $("<option>").attr("value", 5).text(Roblox.Login.Resources.may).appendTo('select[name="Month"]'), $("<option>").attr("value", 6).text(Roblox.Login.Resources.june).appendTo('select[name="Month"]'), $("<option>").attr("value", 7).text(Roblox.Login.Resources.july).appendTo('select[name="Month"]'), $("<option>").attr("value", 8).text(Roblox.Login.Resources.august).appendTo('select[name="Month"]'), $("<option>").attr("value", 9).text(Roblox.Login.Resources.september).appendTo('select[name="Month"]'), $("<option>").attr("value", 10).text(Roblox.Login.Resources.october).appendTo('select[name="Month"]'), $("<option>").attr("value", 11).text(Roblox.Login.Resources.november).appendTo('select[name="Month"]'), $("<option>").attr("value", 12).text(Roblox.Login.Resources.december).appendTo('select[name="Month"]')
 }
 
@@ -27,9 +49,12 @@ $(function() {
                     h = $("#loginarea").attr("data-is-captcha-on");
                 h && (e = $("#recaptcha_challenge_field").val(), o = $("#recaptcha_response_field").val());
                 var c = function() {
+                        console.log("Login.js: main login success, redirecting to", i + "?nl=true");
                         window.location.href = i + "?nl=true"
                     },
                     l = function(i) {
+                        console.error("Login.js: main login error", i && i.status, i && i.responseText);
+
                         var e, o;
                         switch (i.status) {
                             case 403:
@@ -72,7 +97,11 @@ $(function() {
                     success: c,
                     error: l
                 })
-            } else $("#loginForm").submit();
+            } else {
+                console.log("Login.js: falling back to #loginForm submit");
+                $("#loginForm").submit();
+            }
+
             return !1
         };
     $("[roblox-js-onclick]").click(t), $("[roblox-js-onsignup]").click(function() {
@@ -102,6 +131,7 @@ $(function() {
     }), $("#errorBanner").text().trim().length == 0 && $("#errorBanner").hide(), $("#Username").focus(), $("#loginForm").keydown(function(n) {
         if (n.which == 13) return t(), !1
     });
+
     var $headerForm = $("#LogInForm");
     if ($headerForm.length) {
         $headerForm.on("submit", function(ev){
@@ -109,8 +139,13 @@ $(function() {
             var u = $("#LoginUsername").val() || "";
             var f = $("#LoginPassword").val() || "";
             var a = $("#signInButtonPanel").attr("data-sign-on-api-path") || "/login/v1";
-            var c = function(){ window.location.href = i + "?nl=true"; };
+            console.log("Login.js: header login submit", { apiPath: a, usernameLength: u.length });
+            var c = function(resp){
+                console.log("Login.js: header login success", resp);
+                window.location.href = i + "?nl=true";
+            };
             var l = function(xhr){
+                console.error("Login.js: header login error", xhr && xhr.status, xhr && xhr.responseText);
                 try {
                     if (xhr && xhr.status === 403) {
                         var e = JSON.parse(xhr.responseText || "{}");
@@ -129,7 +164,8 @@ $(function() {
                 error: l
             });
         });
+
     }
- 
+
 })
 ;

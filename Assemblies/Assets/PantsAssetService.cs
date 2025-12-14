@@ -55,7 +55,27 @@ namespace Assets
             if (string.IsNullOrWhiteSpace(thumbnailsRoot))
                 throw new ArgumentException("thumbnailsRoot is required", nameof(thumbnailsRoot));
 
-            // 1) Save uploaded image as PNG to CDN and create image asset (asset_type_id = 1)
+            // 1) Validate pants texture dimensions (must be exactly 585x559) and
+            //    convert the uploaded image to PNG bytes for storage.
+            try
+            {
+                using (var input = new MemoryStream(fileBytes))
+                using (var image = new Bitmap(input))
+                {
+                    if (image.Width != 585 || image.Height != 559)
+                        throw new ArgumentException("Pants image must be exactly 585x559 pixels.", nameof(fileBytes));
+                }
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("Invalid image file.", ex);
+            }
+
+            // Always convert the validated image to PNG for consistent storage
             var pngBytes = ConvertToPng(fileBytes);
 
             string pngHash;

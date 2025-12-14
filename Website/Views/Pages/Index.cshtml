@@ -811,15 +811,130 @@
 
 
         <!-- Inline inits placed at end since no layout -->
-        <script>
-            $(function () {
-                Roblox.DeveloperConsoleWarning.showWarning();
-            });
-        </script>
         <script type="text/javascript">
-            $(function () {
-                Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true });
-            });
+            (function(){
+                try {
+                    console.log("[Index.cshtml] Debug: signup debug logger initializing");
+
+                    if (window.angular) {
+                        console.log("[Index.cshtml] Debug: angular detected");
+                    } else {
+                        console.warn("[Index.cshtml] Debug: angular NOT detected, signup will not work");
+                    }
+
+                    $(function(){
+                        var $btn = $("#signup-button");
+                        if ($btn.length) {
+                            console.log("[Index.cshtml] Debug: found #signup-button", {
+                                signupApiUrl: $btn.attr("data-signup-api-url") || null
+                            });
+
+                            $btn.on("click.signupDebug keypress.signupDebug", function(ev){
+                                if (ev.type === "keypress" && ev.which && ev.which !== 13 && ev.which !== 32) {
+                                    return;
+                                }
+
+                                try {
+                                    var username = $("#signup-username").val() || "";
+                                    var birthdayMonth = $("#MonthDropdown").val() || "";
+                                    var birthdayDay = $("#DayDropdown").val() || "";
+                                    var birthdayYear = $("#YearDropdown").val() || "";
+
+                                    console.log("[Index.cshtml] Debug: signup button activated", {
+                                        eventType: ev.type,
+                                        usernameLength: username.length,
+                                        birthdayMonth: birthdayMonth,
+                                        birthdayDay: birthdayDay,
+                                        birthdayYear: birthdayYear,
+                                        signupApiUrl: $btn.attr("data-signup-api-url") || null
+                                    });
+                                } catch (ex) {
+                                    console.error("[Index.cshtml] Debug: error while logging signup click", ex);
+                                }
+                            });
+                        } else {
+                            console.warn("[Index.cshtml] Debug: #signup-button not found, cannot log signup clicks");
+                        }
+                    });
+
+                    (function(){
+                        var NativeXHR = window.XMLHttpRequest;
+                        if (!NativeXHR || NativeXHR.__signupDebugWrapped) {
+                            return;
+                        }
+                        function WrappedXHR(){
+                            var xhr = new NativeXHR();
+                            try {
+                                var _open = xhr.open;
+                                var _send = xhr.send;
+                                var meta = { method: null, url: null, bodySize: null };
+
+                                xhr.open = function(method, url){
+                                    meta.method = method;
+                                    meta.url = url;
+                                    if (url && url.toString().toLowerCase().indexOf("/signup") !== -1) {
+                                        console.log("[Index.cshtml] Debug: XHR.open for signup", { method: method, url: url });
+                                    }
+                                    return _open.apply(xhr, arguments);
+                                };
+
+                                xhr.send = function(body){
+                                    try {
+                                        if (body && typeof body === "string") {
+                                            meta.bodySize = body.length;
+                                        }
+                                        if (meta.url && meta.url.toString().toLowerCase().indexOf("/signup") !== -1) {
+                                            console.log("[Index.cshtml] Debug: XHR.send for signup", {
+                                                method: meta.method,
+                                                url: meta.url,
+                                                bodySize: meta.bodySize
+                                            });
+
+                                            xhr.addEventListener("load", function(){
+                                                try {
+                                                    var text = xhr.responseText || "";
+                                                    var snippet = text.length > 500 ? text.substring(0, 500) + "..." : text;
+                                                    console.log("[Index.cshtml] Debug: XHR.load for signup", {
+                                                        status: xhr.status,
+                                                        readyState: xhr.readyState,
+                                                        url: meta.url,
+                                                        responseSnippet: snippet
+                                                    });
+                                                    console.log("[Index.cshtml] Debug: post-signup cookies", {
+                                                        location: window.location.href,
+                                                        cookieLength: document.cookie ? document.cookie.length : 0
+                                                    });
+                                                } catch (ex2) {
+                                                    console.error("[Index.cshtml] Debug: error while logging XHR load", ex2);
+                                                }
+                                            });
+
+                                            xhr.addEventListener("error", function(){
+                                                console.error("[Index.cshtml] Debug: XHR.error for signup", {
+                                                    status: xhr.status,
+                                                    readyState: xhr.readyState,
+                                                    url: meta.url
+                                                });
+                                            });
+                                        }
+                                    } catch (exSend) {
+                                        console.error("[Index.cshtml] Debug: error in XHR.send wrapper", exSend);
+                                    }
+                                    return _send.apply(xhr, arguments);
+                                };
+                            } catch (ex) {
+                                console.error("[Index.cshtml] Debug: failed to wrap XHR", ex);
+                            }
+                            return xhr;
+                        }
+                        WrappedXHR.__signupDebugWrapped = true;
+                        window.XMLHttpRequest = WrappedXHR;
+                        console.log("[Index.cshtml] Debug: XHR wrapper for signup installed");
+                    })();
+                } catch (outerEx) {
+                    console.error("[Index.cshtml] Debug: unexpected error in signup debug bootstrap", outerEx);
+                }
+            })();
         </script>
         <script type="text/javascript">
             (function(){

@@ -43,7 +43,7 @@ namespace Assets
 
             var diff = reference - createdAt;
 
-            return diff.TotalDays < 1;
+            return diff.TotalHours < 2;
         }
 
         public static long ResolveLinkedAssetId(string connectionString, long assetId)
