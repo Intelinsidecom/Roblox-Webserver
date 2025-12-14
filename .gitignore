@@ -136,3 +136,4 @@ asset/
 thumbnails/
 3DAvatar/
 *.cache
+*.props

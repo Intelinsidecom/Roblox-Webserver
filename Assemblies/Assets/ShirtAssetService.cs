@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace Assets
 {
-    public sealed class PantsAssetService
+    public sealed class ShirtAssetService
     {
         private readonly AssetsRepository _repository = new AssetsRepository();
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
@@ -27,7 +27,7 @@ namespace Assets
             }
         }
 
-        public async Task<long> CreatePantsAsync(
+        public async Task<long> CreateShirtAsync(
             string connectionString,
             long ownerUserId,
             string name,
@@ -55,15 +55,13 @@ namespace Assets
             if (string.IsNullOrWhiteSpace(thumbnailsRoot))
                 throw new ArgumentException("thumbnailsRoot is required", nameof(thumbnailsRoot));
 
-            // 1) Validate pants texture dimensions (must be exactly 585x559) and
-            //    convert the uploaded image to PNG bytes for storage.
             try
             {
                 using (var input = new MemoryStream(fileBytes))
                 using (var image = new Bitmap(input))
                 {
                     if (image.Width != 585 || image.Height != 559)
-                        throw new ArgumentException("Pants image must be exactly 585x559 pixels.", nameof(fileBytes));
+                        throw new ArgumentException("Shirt image must be exactly 585x559 pixels.", nameof(fileBytes));
                 }
             }
             catch (ArgumentException)
@@ -75,7 +73,6 @@ namespace Assets
                 throw new ArgumentException("Invalid image file.", ex);
             }
 
-            // Always convert the validated image to PNG for consistent storage
             var pngBytes = ConvertToPng(fileBytes);
 
             string pngHash;
@@ -103,7 +100,7 @@ namespace Assets
             var imageCreateParams = new AssetCreateParams
             {
                 Name = name + " Image",
-                AssetTypeId = 1, // Image / Decal backing the Pants
+                AssetTypeId = 1, // Image / Decal backing the Shirt
                 OwnerUserId = ownerUserId,
                 ContentHash = pngHash,
                 FileExtension = pngExtension,
@@ -115,9 +112,8 @@ namespace Assets
 
             var imageAssetId = await _repository.CreateAssetAsync(connectionString, imageCreateParams, cancellationToken)
                 .ConfigureAwait(false);
-            // Intentionally DO NOT add the backing image asset to user_assets; ownership should be on the Pants asset only.
+            // Intentionally DO NOT add the backing image asset to user_assets; ownership should be on the Shirt asset only.
 
-            // 2) Build Pants XML .rbxm that references the image via PantsTemplate
             var graphicBaseUrl = !string.IsNullOrWhiteSpace(publicAssetBaseUrl) ? publicAssetBaseUrl : baseUrl;
             if (string.IsNullOrWhiteSpace(graphicBaseUrl))
                 graphicBaseUrl = "http://localhost";
@@ -126,9 +122,9 @@ namespace Assets
                       "<roblox xmlns:xmime=\"http://www.w3.org/2005/05/xmlmime\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"http://www.roblox.com/roblox.xsd\" version=\"4\">\n" +
                       "    <External>null</External>\n" +
                       "    <External>nil</External>\n" +
-                      "    <Item class=\"Pants\" referent=\"RBX0\">\n" +
+                      "    <Item class=\"Shirt\" referent=\"RBX0\">\n" +
                       "        <Properties>\n" +
-                      $"            <Content name=\"PantsTemplate\"><url>{graphicBaseUrl.TrimEnd('/', '\\')}/asset/?id={imageAssetId}</url></Content>\n" +
+                      $"            <Content name=\"ShirtTemplate\"><url>{graphicBaseUrl.TrimEnd('/', '\\')}/asset/?id={imageAssetId}</url></Content>\n" +
                       $"            <string name=\"Name\">{System.Security.SecurityElement.Escape(name)}</string>\n" +
                       "            <bool name=\"archivable\">true</bool>\n" +
                       "        </Properties>\n" +
@@ -150,32 +146,27 @@ namespace Assets
             var xmlFullPath = Path.Combine(assetFolder, xmlFileName);
             File.WriteAllText(xmlFullPath, xml, new UTF8Encoding(false));
 
-            // 4) Create Pants asset record (asset_type_id = 11)
-            var pantsCreateParams = new AssetCreateParams
+            var shirtCreateParams = new AssetCreateParams
             {
                 Name = name,
-                AssetTypeId = 12, // Pants
+                AssetTypeId = 11, // Shirt
                 OwnerUserId = ownerUserId,
                 ContentHash = xmlHash,
                 FileExtension = xmlExtension,
                 ContentType = "application/xml",
                 ThumbnailUrl = null,
                 HighResThumbnailUrl = null,
-                Description = "Pants"
+                Description = "Shirt"
             };
 
-            var pantsAssetId = await _repository.CreateAssetAsync(connectionString, pantsCreateParams, cancellationToken)
+            var shirtAssetId = await _repository.CreateAssetAsync(connectionString, shirtCreateParams, cancellationToken)
                 .ConfigureAwait(false);
-            await _userAssetsRepository.AddUserAssetAsync(connectionString, ownerUserId, pantsAssetId, cancellationToken)
-                .ConfigureAwait(false);
-
-            // Mark the image asset as being the image for this Pants asset and link it.
-            await _repository.UpdateAssetImageLinkAsync(connectionString, imageAssetId, true, pantsAssetId, cancellationToken)
+            await _userAssetsRepository.AddUserAssetAsync(connectionString, ownerUserId, shirtAssetId, cancellationToken)
                 .ConfigureAwait(false);
 
-            // 5) Ask Arbiter to render a thumbnail for the Pants asset itself.
-            // We now use the Pants asset id (the .rbxm) as the primary input for rendering.
-            // If no Arbiter base URL is configured, fall back to a default HTTP endpoint.
+            await _repository.UpdateAssetImageLinkAsync(connectionString, imageAssetId, true, shirtAssetId, cancellationToken)
+                .ConfigureAwait(false);
+
             try
             {
                 using var http = new HttpClient();
@@ -183,8 +174,7 @@ namespace Assets
                     ? "http://localhost:5000"
                     : arbiterBaseUrl!.TrimEnd('/', '\\');
 
-                var requestUri = $"{baseUrlToUse}/renderavatarasset?assetId={pantsAssetId}";
-                Console.WriteLine($"[PantsAssetService] Requesting Arbiter render: {requestUri}");
+                var requestUri = $"{baseUrlToUse}/renderavatarasset?assetId={shirtAssetId}";
 
                 using var response = await http.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
@@ -196,7 +186,6 @@ namespace Assets
 
                     if (doc.RootElement.ValueKind == JsonValueKind.Object)
                     {
-                        // Future-proofing: support an explicit { thumbnailUrl = "..." } object.
                         if (doc.RootElement.TryGetProperty("thumbnailUrl", out var tEl) && tEl.ValueKind == JsonValueKind.String)
                         {
                             renderedDataUri = tEl.GetString();
@@ -204,7 +193,6 @@ namespace Assets
                     }
                     else if (doc.RootElement.ValueKind == JsonValueKind.Array && doc.RootElement.GetArrayLength() > 0)
                     {
-                        // Current Arbiter behavior: array of { type = "string", value = "url" } objects.
                         var first = doc.RootElement[0];
                         if (first.ValueKind == JsonValueKind.Object && first.TryGetProperty("value", out var vEl) && vEl.ValueKind == JsonValueKind.String)
                         {
@@ -216,12 +204,10 @@ namespace Assets
                     {
                         try
                         {
-                            // Decode data URI (expected format: data:image/png;base64,<base64>)
                             var commaIdx = renderedDataUri.IndexOf(',');
                             var base64Part = commaIdx >= 0 ? renderedDataUri.Substring(commaIdx + 1) : renderedDataUri;
                             var thumbBytes = Convert.FromBase64String(base64Part);
 
-                            // Hash bytes to create unique filename base
                             string thumbHash;
                             using (var sha = SHA256.Create())
                             {
@@ -234,7 +220,6 @@ namespace Assets
 
                             Directory.CreateDirectory(thumbnailsRoot);
 
-                            // Create high-res and low-quality (110x110) thumbnails
                             var highResFileName = thumbHash + "_highres.png";
                             var highResPath = Path.Combine(thumbnailsRoot, highResFileName);
 
@@ -244,10 +229,8 @@ namespace Assets
                             using (var ms = new MemoryStream(thumbBytes))
                             using (var original = new Bitmap(ms))
                             {
-                                // Save original as high-res
                                 original.Save(highResPath, ImageFormat.Png);
 
-                                // Create 110x110 low-quality version for catalog
                                 const int lowSize = 110;
                                 using (var lowBmp = new Bitmap(lowSize, lowSize))
                                 using (var g = Graphics.FromImage(lowBmp))
@@ -268,32 +251,31 @@ namespace Assets
                             var lowUrl = string.IsNullOrEmpty(thumbBase) ? null : string.Concat(thumbBase, "/", lowRelPath);
                             var highResUrl = string.IsNullOrEmpty(thumbBase) ? null : string.Concat(thumbBase, "/", highResRelPath);
 
-                            await _repository.UpdateAssetThumbnailsAsync(connectionString, pantsAssetId, lowUrl, highResUrl, cancellationToken)
+                            await _repository.UpdateAssetThumbnailsAsync(connectionString, shirtAssetId, lowUrl, highResUrl, cancellationToken)
                                 .ConfigureAwait(false);
-                            Console.WriteLine($"[PantsAssetService] Thumbnails stored for asset {pantsAssetId}: low={lowUrl}, high={highResUrl}");
+                            Console.WriteLine($"[ShirtAssetService] Thumbnails stored for asset {shirtAssetId}: low={lowUrl}, high={highResUrl}");
                         }
                         catch (Exception exThumb)
                         {
-                            Console.WriteLine($"[PantsAssetService] Failed to process Arbiter thumbnail for asset {pantsAssetId}: {exThumb.Message}");
+                            Console.WriteLine($"[ShirtAssetService] Failed to process Arbiter thumbnail for asset {shirtAssetId}: {exThumb.Message}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"[PantsAssetService] Arbiter returned no usable thumbnail for asset {pantsAssetId}.");
+                        Console.WriteLine($"[ShirtAssetService] Arbiter returned no usable thumbnail for asset {shirtAssetId}.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"[PantsAssetService] Arbiter HTTP {response.StatusCode} for {requestUri}");
+                    Console.WriteLine($"[ShirtAssetService] Arbiter HTTP {response.StatusCode} for {requestUri}");
                 }
             }
             catch (Exception ex)
             {
-                // If Arbiter is unavailable, continue without a thumbnail but log the failure.
-                Console.WriteLine($"[PantsAssetService] Failed to contact Arbiter for asset {pantsAssetId}: {ex.Message}");
+                Console.WriteLine($"[ShirtAssetService] Failed to contact Arbiter for asset {shirtAssetId}: {ex.Message}");
             }
 
-            return pantsAssetId;
+            return shirtAssetId;
         }
     }
 }

@@ -211,13 +211,18 @@ public class ThumbnailsController : ControllerBase
 
                             if (!string.IsNullOrWhiteSpace(existingUrl))
                             {
+                                // Normal path: use the stored headshot URL.
                                 thumbUrl = existingUrl!;
                                 thumbnailFinal = true;
                             }
                             else
                             {
-                                thumbUrl = pendingPlaceholder!;
-                                thumbnailFinal = false;
+                                // No stored headshot yet. Instead of leaving the avatar
+                                // in a permanently pending/blocked state, fall back to the
+                                // headshot-thumbnail endpoint, which will trigger Arbiter
+                                // rendering and then redirect the browser to the final URL.
+                                thumbUrl = $"/headshot-thumbnail/image?userId={userId}";
+                                thumbnailFinal = true;
                             }
                         }
                         else

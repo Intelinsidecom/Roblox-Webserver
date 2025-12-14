@@ -123,13 +123,17 @@ namespace RobloxWebserver.Controllers
                 }
             }
 
+            var primaryThumb = string.IsNullOrWhiteSpace(asset.HighResThumbnailUrl)
+                ? asset.ThumbnailUrl
+                : asset.HighResThumbnailUrl;
+
             var model = new CatalogItemViewModel
             {
                 Id = asset.AssetId,
                 Name = asset.Name,
                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                 CreatorId = asset.OwnerUserId,
-                ImageUrl = string.IsNullOrWhiteSpace(asset.ThumbnailUrl) ? "/images/RobloxLogo.png" : asset.ThumbnailUrl,
+                ImageUrl = string.IsNullOrWhiteSpace(primaryThumb) ? "/images/RobloxLogo.png" : primaryThumb,
                 AssetTypeLabel = AssetTypeNames.GetTypeName(asset.AssetTypeId),
                 PriceRobux = asset.OnSale ? (int?)Math.Min(asset.Price, int.MaxValue) : null,
                 PriceTickets = null,

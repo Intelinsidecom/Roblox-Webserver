@@ -81,7 +81,7 @@ namespace Assets
             var imageCreateParams = new AssetCreateParams
             {
                 Name = name + " Image",
-                AssetTypeId = 1, // Image / Decal
+                AssetTypeId = 1, // Image / Decal backing the T-Shirt
                 OwnerUserId = ownerUserId,
                 ContentHash = pngHash,
                 FileExtension = pngExtension,
@@ -92,8 +92,7 @@ namespace Assets
             };
             var imageAssetId = await _repository.CreateAssetAsync(connectionString, imageCreateParams, cancellationToken)
                 .ConfigureAwait(false);
-            await _userAssetsRepository.AddUserAssetAsync(connectionString, ownerUserId, imageAssetId, cancellationToken)
-                .ConfigureAwait(false);
+            // Intentionally DO NOT add the backing image asset to user_assets; ownership should be on the T-Shirt asset only.
 
             // 2) ---------- Compose ShirtGraphic XML referencing image asset --------
             var graphicBaseUrl = !string.IsNullOrWhiteSpace(publicAssetBaseUrl) ? publicAssetBaseUrl : baseUrl;

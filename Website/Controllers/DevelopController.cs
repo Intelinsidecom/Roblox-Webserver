@@ -21,6 +21,9 @@ namespace RobloxWebserver.Controllers
         private readonly IConfiguration _configuration;
         private readonly TShirtAssetService _tshirtService = new TShirtAssetService();
         private readonly PantsAssetService _pantsService = new PantsAssetService();
+        private readonly ShirtAssetService _shirtService = new ShirtAssetService();
+        private readonly ShirtAssetsRepository _shirtAssetsRepository = new ShirtAssetsRepository();
+        private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
 
         public DevelopController(IConfiguration configuration)
         {
@@ -291,12 +294,150 @@ limit 50;";
                 return Content(sb.ToString(), "text/html");
             }
 
+            // Shirts view for assetTypeId 11: show upload form and the current user's Shirts inventory
+            if (assetTypeId == 11)
+            {
+                var sb = new StringBuilder();
+                sb.Append(@"<div class='items-container-inner'>");
+                sb.Append(@"    <h1 class='title'>Create Shirt</h1>");
+                sb.Append(@"    <h3 class='title'>Get the Template<a href=""/images/Template-Shirts.png"">here</a></h3>");
+                sb.Append(@"    <form id='shirt-upload-form' method='post' enctype='multipart/form-data' action='/develop/upload-shirt'>");
+
+                // Find your image row
+                sb.Append(@"        <div class='form-outer'>");
+                sb.Append(@"            <div class='form-inner label-column'>");
+                sb.Append(@"                <span class='form-label'>Find your shirt image:</span>");
+                sb.Append(@"            </div>");
+                sb.Append(@"            <div class='form-inner input-column'>");
+                sb.Append(@"                <input type='file' id='shirt-file' name='file' accept='image/*' required />");
+                sb.Append(@"            </div>");
+                sb.Append(@"        </div>");
+
+                // Shirt name row
+                sb.Append(@"        <div class='form-outer'>");
+                sb.Append(@"            <div class='form-inner label-column'>");
+                sb.Append(@"                <span class='form-label'>Shirt Name:</span>");
+                sb.Append(@"            </div>");
+                sb.Append(@"            <div class='form-inner input-column'>");
+                sb.Append(@"                <input type='text' id='shirt-name' name='name' class='text-box text-box-large' required />");
+                sb.Append(@"            </div>");
+                sb.Append(@"        </div>");
+
+                // Upload button row
+                sb.Append(@"        <div class='form-outer'>");
+                sb.Append(@"            <div class='form-inner label-column'></div>");
+                sb.Append(@"            <div class='form-inner input-column'>");
+                sb.Append(@"                <button type='submit' class='btn-medium btn-primary'>Upload</button>");
+                sb.Append(@"                <div id='shirt-upload-error' class='text-error'></div>");
+                sb.Append(@"            </div>");
+                sb.Append(@"        </div>");
+
+                sb.Append(@"    </form>");
+
+                var userIdClaimShirt = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrWhiteSpace(userIdClaimShirt) && long.TryParse(userIdClaimShirt, out var userIdShirt) && userIdShirt > 0)
+                {
+                    var connStrShirt = _configuration.GetConnectionString("Default");
+                    if (!string.IsNullOrWhiteSpace(connStrShirt))
+                    {
+                        try
+                        {
+                            var shirtItems = await _shirtAssetsRepository.GetUserShirtsWithImagesAsync(connStrShirt, userIdShirt, cancellationToken).ConfigureAwait(false);
+
+                            var hasAnyShirts = false;
+                            sb.Append(@"    <div class='shirts-inventory-list'>");
+                            sb.Append(@"        <h3 class='header-text'>Your Shirts</h3>");
+                            sb.Append(@"        <div class='items-container'>");
+
+                            foreach (var item in shirtItems)
+                            {
+                                hasAnyShirts = true;
+                                var assetId = item.AssetId;
+                                var name = item.Name;
+                                var createdDateString = item.CreatedAt.ToString("M/d/yyyy");
+                                var thumbUrl = item.ThumbnailUrl;
+                                var imageAssetId = item.ImageAssetId;
+
+                                var slug = CatalogController.ToSlug(name);
+                                var catalogUrl = "/catalog/" + assetId + "/" + slug;
+
+                                sb.Append(@"            <table class='item-table' data-item-id='");
+                                sb.Append(assetId);
+                                sb.Append(@"' data-type='shirts'>");
+                                sb.Append(@"                <tr>");
+                                sb.Append(@"                    <td class='image-col universe-image-col' style='text-align:center'>");
+                                sb.Append(@"                        <a href='");
+                                sb.Append(catalogUrl);
+                                sb.Append(@"' class='game-image'> <img src='");
+                                sb.Append(System.Net.WebUtility.HtmlEncode(thumbUrl ?? "https://t7.rbxcdn.com/6bfa4d3e4d38a70d2f5b493987fe29c4"));
+                                sb.Append(@"' alt='Shirt'> </a>");
+                                sb.Append(@"                    </td>");
+                                sb.Append(@"                    <td class='universe-name-col'>");
+                                sb.Append(@"                        <a class='title notranslate' href='");
+                                sb.Append(catalogUrl);
+                                sb.Append(@"'>");
+                                sb.Append(System.Net.WebUtility.HtmlEncode(name));
+                                sb.Append(@"</a>");
+                                sb.Append(@"                        <table class='details-table'>");
+                                sb.Append(@"                            <tr>");
+                                sb.Append(@"                                <td class='item-universe'><span>Created:</span> ");
+                                sb.Append(createdDateString);
+                                sb.Append(@" (ID: ");
+                                var idToShowShirt = imageAssetId ?? assetId;
+                                sb.Append(@"<a href='/asset/?id=");
+                                sb.Append(idToShowShirt);
+                                sb.Append(@"'>");
+                                sb.Append(idToShowShirt);
+                                sb.Append(@"</a>)</td>");
+                                sb.Append(@"                            </tr>");
+                                sb.Append(@"                        </table>");
+                                sb.Append(@"                    </td>");
+                                sb.Append(@"                    <td class='edit-col'></td>");
+                                sb.Append(@"                    <td class='menu-col'>");
+                                sb.Append(@"                        <div class='gear-button-wrapper'>");
+                                sb.Append(@"                            <a href='#' class='gear-button'></a>");
+                                sb.Append(@"                        </div>");
+                                sb.Append(@"                    </td>");
+                                sb.Append(@"                </tr>");
+                                sb.Append(@"            </table>");
+                                sb.Append(@"            <div class='separator'></div>");
+                            }
+
+                            if (!hasAnyShirts)
+                            {
+                                sb.Append(@"            <div class='no-assets-text'>You have no Shirts yet. Upload one to see it here!</div>");
+                            }
+
+                            sb.Append(@"        </div>");
+
+                            sb.Append(@"        <div id='shirt-dropdown-menu' style='display:none;'>");
+                            sb.Append(@"            <a href='#' data-action='configure'>Configure</a>");
+                            sb.Append(@"            <a href='#' data-action='advertise' class='divider-top'>Advertise</a>");
+                            sb.Append(@"        </div>");
+
+                            sb.Append(@"    </div>");
+                        }
+                        catch
+                        {
+                            sb.Append(@"    <div class='shirts-inventory-list'>");
+                            sb.Append(@"        <div class='no-assets-text'>We couldn't load your Shirts right now.</div>");
+                            sb.Append(@"    </div>");
+                        }
+                    }
+                }
+
+                sb.Append(@"</div>");
+
+                return Content(sb.ToString(), "text/html");
+            }
+
             // Pants view for assetTypeId 12: show upload form and the current user's Pants inventory
             if (assetTypeId == 12)
             {
                 var sb = new StringBuilder();
                 sb.Append(@"<div class='items-container-inner'>");
                 sb.Append(@"    <h1 class='title'>Create Pants</h1>");
+                sb.Append(@"    <h3 class='title'>Get the Template<a href=""/images/Template-Pants.png"">here</a></h3>");
                 sb.Append(@"    <form id='pants-upload-form' method='post' enctype='multipart/form-data' action='/develop/upload-pants'>");
 
                 // Find your image row
@@ -338,42 +479,21 @@ limit 50;";
                     {
                         try
                         {
-                            await using var conn = new NpgsqlConnection(connStrPants);
-                            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-
-                            var sqlPants = @"select a.asset_id,
-       a.name,
-       a.created_at,
-       a.thumbnail_url,
-       i.asset_id as image_asset_id
-from user_assets ua
-join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 12
-left join assets i on i.owner_user_id = a.owner_user_id
-                  and i.asset_type_id = 1
-                  and i.name = a.name || ' Image'
-where ua.user_id = @uid
-order by ua.created_at desc, a.asset_id desc
-limit 50;";
-
-                            await using var cmd = new NpgsqlCommand(sqlPants, conn);
-                            cmd.Parameters.AddWithValue("uid", userIdPants);
-
-                            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                            var pantsItems = await _userAssetsRepository.GetUserPantsWithImagesAsync(connStrPants, userIdPants, cancellationToken).ConfigureAwait(false);
 
                             var hasAnyPants = false;
                             sb.Append(@"    <div class='pants-inventory-list'>");
                             sb.Append(@"        <h3 class='header-text'>Your Pants</h3>");
                             sb.Append(@"        <div class='items-container'>");
 
-                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            foreach (var item in pantsItems)
                             {
                                 hasAnyPants = true;
-                                var assetId = reader.GetInt64(0);
-                                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
-                                var createdAt = reader.GetDateTime(2);
-                                var thumbUrl = reader.IsDBNull(3) ? null : reader.GetString(3);
-                                var imageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
-                                var createdDateString = createdAt.ToString("M/d/yyyy");
+                                var assetId = item.AssetId;
+                                var name = item.Name;
+                                var createdDateString = item.CreatedAt.ToString("M/d/yyyy");
+                                var thumbUrl = item.ThumbnailUrl;
+                                var imageAssetId = item.ImageAssetId;
 
                                 var slug = CatalogController.ToSlug(name);
                                 var catalogUrl = "/catalog/" + assetId + "/" + slug;
@@ -405,8 +525,7 @@ limit 50;";
                                 sb.Append(idToShowPants);
                                 sb.Append(@"'>");
                                 sb.Append(idToShowPants);
-                                sb.Append(@"</a>)");
-                                sb.Append(@"</td>");
+                                sb.Append(@"</a>)</td>");
                                 sb.Append(@"                            </tr>");
                                 sb.Append(@"                        </table>");
                                 sb.Append(@"                    </td>");
@@ -470,6 +589,9 @@ limit 50;";
             var connStr = _configuration.GetConnectionString("Default");
             if (string.IsNullOrWhiteSpace(connStr))
                 return StatusCode(500, "Database connection string is not configured.");
+
+            if (await _userAssetsRepository.HasUploadedClothingInLastHourAsync(connStr, userId, cancellationToken).ConfigureAwait(false))
+                return BadRequest("You can only upload one shirt, pants, or T-Shirt per hour. Please try again later.");
 
             byte[] fileBytes;
             await using (var ms = new MemoryStream())
@@ -583,6 +705,73 @@ limit 50;";
             }
 
             return Redirect("/develop?view=12");
+        }
+
+        [HttpPost("upload-shirt")]
+        public async Task<IActionResult> UploadShirt([FromForm] string name, [FromForm] IFormFile file, CancellationToken cancellationToken)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is required.");
+
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Name is required.");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                return Unauthorized("User must be logged in to upload assets.");
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, "Database connection string is not configured.");
+
+            byte[] fileBytes;
+            await using (var ms = new MemoryStream())
+            {
+                await file.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
+                fileBytes = ms.ToArray();
+            }
+
+            var assetsDirectory = _configuration["Assets:Directory"];
+            var thumbnailsRoot = _configuration["Thumbnails:OutputDirectory"];
+            var thumbnailBaseUrl = _configuration["Thumbnails:ThumbnailUrl"];
+
+            if (string.IsNullOrWhiteSpace(assetsDirectory))
+                return StatusCode(500, "Assets directory is not configured.");
+            if (string.IsNullOrWhiteSpace(thumbnailsRoot) || string.IsNullOrWhiteSpace(thumbnailBaseUrl))
+                return StatusCode(500, "Thumbnail configuration is not configured.");
+
+            try
+            {
+                var scheme = string.IsNullOrEmpty(Request.Scheme) ? "http" : Request.Scheme;
+                var host = Request.Host.HasValue ? Request.Host.Value : "localhost";
+                var baseUrl = $"{scheme}://{host}";
+                var arbiterBaseUrl = _configuration["Arbiter:BaseUrl"];
+
+                _ = await _shirtService.CreateShirtAsync(
+                    connStr,
+                    userId,
+                    name,
+                    file.FileName,
+                    file.ContentType,
+                    fileBytes,
+                    assetsDirectory,
+                    baseUrl,
+                    thumbnailsRoot,
+                    thumbnailBaseUrl ?? string.Empty,
+                    _configuration["Assets:PublicBaseUrl"],
+                    arbiterBaseUrl,
+                    cancellationToken).ConfigureAwait(false);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to save asset record.");
+            }
+
+            return Redirect("/develop?view=11");
         }
     }
 }

@@ -300,7 +300,17 @@ function li(n) {
 
     f(n);
     angular.forEach(existing, function(t) {
-            f(t)
+            if(!t || !t.assetType || !n.assetType || typeof t.assetType.id==="undefined" || typeof n.assetType.id==="undefined") {
+                f(t);
+                return
+            }
+
+            if(t.id===n.id || t.assetType.id===n.assetType.id) {
+                f(t)
+            }
+            else {
+                r.push(t)
+            }
         });
     b=dt(n); return st(r)
 }

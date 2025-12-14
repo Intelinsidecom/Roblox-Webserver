@@ -396,7 +396,7 @@
                                                             <a href="/develop?Page=universes" class="tab-item tab-item-disabled @(string.IsNullOrEmpty(viewParam) ? "tab-item-selected" : string.Empty)">Games</a>
                                                             <a href="/develop?view=9" class="tab-item tab-item-disabled @(viewParam == "9" ? "tab-item-selected" : string.Empty)">Places</a>
                                                             <a href="/develop?view=10" class="tab-item tab-item-disabled @(viewParam == "10" ? "tab-item-selected" : string.Empty)">Models</a>
-                                                            <a href="/develop?view=13" class="tab-item tab-item-disabled @(viewParam == "13" ? "tab-item-selected" : string.Empty)">Decals</a>
+                                                            <a href="/develop?view=13" class="tab-item @(viewParam == "13" ? "tab-item-selected" : string.Empty)">Decals</a>
                                                             <a href="/develop?view=21" class="tab-item tab-item-disabled @(viewParam == "21" ? "tab-item-selected" : string.Empty)">Badges</a>
                                                             <a href="/develop?Page=game-passes" class="tab-item tab-item-disabled">Game Passes</a>
                                                             <a href="/develop?view=3" class="tab-item tab-item-disabled @(viewParam == "3" ? "tab-item-selected" : string.Empty)">Audio</a>
@@ -404,7 +404,7 @@
                                                             <a href="/develop?view=40" class="tab-item tab-item-disabled @(viewParam == "40" ? "tab-item-selected" : string.Empty)">Meshes</a>
                                                             <a href="/develop?Page=ads" class="tab-item tab-item-disabled">User Ads</a>
                                                             <a href="/develop?Page=sponsored-games" class="tab-item tab-item-disabled">Sponsored Games</a>
-                                                            <a href="/develop?view=11" class="tab-item tab-item-disabled @(viewParam == "11" ? "tab-item-selected" : string.Empty)">Shirts</a>
+                                                            <a href="/develop?view=11" class="tab-item @(viewParam == "11" ? "tab-item-selected" : string.Empty)">Shirts</a>
                                                             <a href="/develop?view=2" class="tab-item @(viewParam == "2" ? "tab-item-selected" : string.Empty)">T-Shirts</a>
                                                             <a href="/develop?view=12" class="tab-item @(viewParam == "12" ? "tab-item-selected" : string.Empty)">Pants</a>
                                                             <a href="/develop?view=38" class="tab-item tab-item-disabled @(viewParam == "38" ? "tab-item-selected" : string.Empty)">Plugins</a>
@@ -428,7 +428,7 @@
                                                             </div>
                                                         <td class=content-area>
                                                             <div class=items-container>
-                                                                @if (viewParam == "2" || viewParam == "12")
+                                                                @if (viewParam == "2" || viewParam == "11" || viewParam == "12")
                                                                 {
                                                                     <div class="items-container-inner"></div>
                                                                 }

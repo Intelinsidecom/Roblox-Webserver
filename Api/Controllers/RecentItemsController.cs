@@ -32,7 +32,7 @@ namespace Api.Controllers
             await conn.OpenAsync();
 
             // For now we only support the "All" type, which returns all clothing assets
-            // in the user's inventory that are relevant to the avatar editor (T-Shirts and Pants).
+            // in the user's inventory that are relevant to the avatar editor (T-Shirts, Shirts and Pants).
             // Later this can be extended to support other list types.
             string sql = @"select a.asset_id,
        a.name,
@@ -41,7 +41,7 @@ namespace Api.Controllers
 from user_assets ua
 join assets a on a.asset_id = ua.asset_id
 where ua.user_id = @user_id
-  and a.asset_type_id in (2, 12)
+  and a.asset_type_id in (2, 11, 12)
 order by ua.created_at desc
 limit 50;";
 
