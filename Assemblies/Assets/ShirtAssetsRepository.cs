@@ -35,7 +35,7 @@ namespace Assets
        a.thumbnail_url,
        i.asset_id as image_asset_id
 from user_assets ua
-join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 11
+join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 11 and a.owner_user_id = @uid
 left join assets i on i.owner_user_id = a.owner_user_id
                   and i.asset_type_id = 1
                   and i.name = a.name || ' Image'

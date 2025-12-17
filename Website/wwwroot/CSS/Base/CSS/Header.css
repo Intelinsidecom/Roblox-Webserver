@@ -5,3 +5,14 @@ div#testingSitePanelWrapper,
 	width: 970px;
 	background: white;
 }
+
+.rbx-navbar-login-container {
+	position: relative;
+}
+
+#iFrameLogin {
+	position: fixed;
+	top: 50px;
+	right: 10px;
+	z-index: 1000;
+}

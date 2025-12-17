@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
     <link rel="stylesheet" href="~/CSS/Legacy/Modal.css">
     <link rel="stylesheet" href="~/CSS/Base/CSS/Item.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Login/SignupOrLogInIframe.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Login/SignupOrLogInLegacy.css">
     <script async src="~/JS/lib/beacon/beacon.js"></script>
     <!-- Now we import the roblox js scripts, there is plenty of them -->
     <!-- dependencies other scripts may use or not, angular, ajax and so on -->
@@ -29,6 +31,15 @@
     <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/DropdownMenu.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/GroupImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/ItemImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/SurveyModal.js"></script>
     <script type="text/javascript">
       window.Roblox = window.Roblox || {};
       Roblox.Lang = Roblox.Lang || {};
@@ -182,6 +193,7 @@
 
     <partial name="_Footer" />
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
     <script type="text/javascript">
         $(function () {
             $(document).on("click", '[data-behavior="nav-notification"]', function (e) {

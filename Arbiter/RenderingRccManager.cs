@@ -29,8 +29,16 @@ namespace RCCArbiter
         public RenderingRccManager(IConfiguration config)
         {
             _config = config;
-            _maxPerInstance = 5; // threshold to scale
-            _idleTimeout = TimeSpan.FromMinutes(10);
+            // Allow tuning via configuration, with sensible defaults
+            if (!int.TryParse(_config["Rendering:MaxPerInstance"], out _maxPerInstance) || _maxPerInstance <= 0)
+            {
+                _maxPerInstance = 5; // threshold to scale
+            }
+            if (!int.TryParse(_config["Rendering:IdleTimeoutMinutes"], out var idleMinutes) || idleMinutes <= 0)
+            {
+                idleMinutes = 10;
+            }
+            _idleTimeout = TimeSpan.FromMinutes(idleMinutes);
             _sweeper = new Timer(SweepIdle, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
         }
 

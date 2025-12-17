@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Assets;
 using RobloxWebserver.Assemblies.Catalog;
 using Users;
+using Avatar;
 
 namespace RobloxWebserver.Controllers
 {
@@ -18,6 +19,7 @@ namespace RobloxWebserver.Controllers
         private readonly AssetMetadataRepository _assetMetadataRepository;
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
         private readonly AssetsRepository _assetsRepository = new AssetsRepository();
+        private readonly AvatarWornAssetsRepository _avatarWornAssetsRepository = new AvatarWornAssetsRepository();
 
         public CatalogController(ICatalogService catalogService, IConfiguration configuration)
         {
@@ -54,6 +56,7 @@ namespace RobloxWebserver.Controllers
             public bool AllowComments { get; set; }
             public bool IsOwned { get; set; }
             public bool IsFavorited { get; set; }
+            public bool IsWorn { get; set; }
         }
 
         [HttpGet("{id:long}/{itemName}")]
@@ -106,6 +109,7 @@ namespace RobloxWebserver.Controllers
             long userRobux = 0;
             bool isOwned = false;
             bool isFavorited = false;
+            bool isWorn = false;
             var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var currentUserId) && currentUserId > 0)
             {
@@ -114,6 +118,12 @@ namespace RobloxWebserver.Controllers
                     userRobux = await UserQueries.GetCurrencyByIdAsync(connectionString, currentUserId, "robux").ConfigureAwait(false);
                     isOwned = await _userAssetsRepository.UserOwnsAssetAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
                     isFavorited = await _assetsRepository.UserHasFavoritedAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
+
+                    if (isOwned)
+                    {
+                        var wornIds = await _avatarWornAssetsRepository.GetWornAssetIdsAsync(connectionString, currentUserId).ConfigureAwait(false);
+                        isWorn = wornIds != null && System.Array.IndexOf(wornIds, asset.AssetId) >= 0;
+                    }
                 }
                 catch
                 {
@@ -150,7 +160,8 @@ namespace RobloxWebserver.Controllers
                 UserRobuxBalance = userRobux,
                 AllowComments = asset.AllowComments,
                 IsOwned = isOwned,
-                IsFavorited = isFavorited
+                IsFavorited = isFavorited,
+                IsWorn = isWorn
             };
 
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);

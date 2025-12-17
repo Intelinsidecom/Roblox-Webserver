@@ -19,6 +19,31 @@
 
     var resolvedId = AssetHelpers.ResolveLinkedAssetId(connStr, itemId);
 
+    var userIdStr = Context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrWhiteSpace(userIdStr) || !long.TryParse(userIdStr, out var currentUserId) || currentUserId <= 0)
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
+    var repo = new AssetMetadataRepository();
+    AssetRecord record;
+    try
+    {
+        record = repo.GetAssetByIdAsync(connStr, resolvedId).GetAwaiter().GetResult();
+    }
+    catch
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
+    if (record == null || record.OwnerUserId != currentUserId)
+    {
+        Context.Response.Redirect("/404");
+        return;
+    }
+
     var isPost = string.Equals(Context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
     var action = isPost ? Context.Request.Form["Action"].ToString() : string.Empty;
     var updateSucceeded = false;
@@ -86,24 +111,6 @@
         catch
         {
         }
-    }
-
-    var repo = new AssetMetadataRepository();
-    AssetRecord record;
-    try
-    {
-        record = repo.GetAssetByIdAsync(connStr, resolvedId).GetAwaiter().GetResult();
-    }
-    catch
-    {
-        Context.Response.Redirect("/404");
-        return;
-    }
-
-    if (record == null)
-    {
-        Context.Response.Redirect("/404");
-        return;
     }
 
     var assetName = record.Name ?? string.Empty;
@@ -779,7 +786,7 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
             OKText: "OK"
         };
         //</sl:translate>
-        Roblox.MyItem.AlertImageUrl = "https://images.rbxcdn.com/cbb24e0c0f1fb97381a065bd1e056fcb.png";
+        Roblox.MyItem.AlertImageUrl = "/images/Warning.png";
     </script>
 
                     <div style="clear:both"></div>

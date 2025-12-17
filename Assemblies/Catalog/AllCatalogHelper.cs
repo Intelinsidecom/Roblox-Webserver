@@ -46,8 +46,39 @@ where coalesce(a.asset_image, false) = false
                 {
                     if (category.Value == 3)
                     {
-                        // Clothing: restrict to T-Shirts for now (asset_type_id = 2)
-                        sql += "\n  and a.asset_type_id = 2";
+                        // Clothing. The legacy web UI uses a Subcategory "type" value that does
+                        // not directly match asset_type_id. Map the known clothing subcategories:
+                        //   3  = All Clothing
+                        //   12 = Shirts
+                        //   13 = T-Shirts
+                        //   14 = Pants
+                        // If no subcategory is provided, treat it as "All Clothing".
+
+                        if (subcategory.HasValue)
+                        {
+                            switch (subcategory.Value)
+                            {
+                                case 12: // Shirts
+                                    sql += "\n  and a.asset_type_id = 11"; // Shirt
+                                    break;
+                                case 13: // T-Shirts
+                                    sql += "\n  and a.asset_type_id = 2"; // T-Shirt
+                                    break;
+                                case 14: // Pants
+                                    sql += "\n  and a.asset_type_id = 12"; // Pants
+                                    break;
+                                case 3: // All Clothing
+                                default:
+                                    // All clothing: T-Shirts, Shirts, Pants, and Packages
+                                    sql += "\n  and a.asset_type_id in (2, 11, 12, 32)";
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            // No explicit subcategory: show all clothing types
+                            sql += "\n  and a.asset_type_id in (2, 11, 12, 32)";
+                        }
                     }
                     else if (category.Value == 4)
                     {

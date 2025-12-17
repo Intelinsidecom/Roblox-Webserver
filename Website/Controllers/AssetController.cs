@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Npgsql;
 using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using Assets;
 using Users;
 
 namespace Website.Controllers
@@ -210,6 +213,67 @@ order by awa.asset_id";
         {
             return Content(string.Empty, "text/plain");
         }
+
+        [Authorize]
+        [HttpPost("delete-from-inventory")]
+        public async Task<IActionResult> DeleteFromInventory([FromForm] long assetId)
+        {
+            var userIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                return Unauthorized(new { isValid = false, success = false, error = "Authentication required" });
+
+            if (assetId <= 0)
+                return BadRequest(new { isValid = false, success = false, error = "Invalid assetId" });
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, new { isValid = false, success = false, error = "Database connection string is not configured." });
+
+            try
+            {
+                // First, ensure the asset exists and check if the current user is the creator.
+                long? ownerUserId = null;
+                await using (var conn = new NpgsqlConnection(connStr))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+
+                    const string getOwnerSql = @"select owner_user_id from assets where asset_id = @asset_id";
+                    await using var ownerCmd = new NpgsqlCommand(getOwnerSql, conn);
+                    ownerCmd.Parameters.AddWithValue("asset_id", assetId);
+
+                    var result = await ownerCmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (result != null && result != DBNull.Value)
+                    {
+                        ownerUserId = (long)result;
+                    }
+                }
+
+                if (!ownerUserId.HasValue)
+                {
+                    return Ok(new { isValid = false, success = false, error = "Asset not found." });
+                }
+
+                if (ownerUserId.Value == userId)
+                {
+                    return Ok(new { isValid = false, success = false, error = "You cannot remove an asset you created from your inventory." });
+                }
+
+                var repo = new UserAssetsRepository();
+
+                var owns = await repo.UserOwnsAssetAsync(connStr, userId, assetId).ConfigureAwait(false);
+                if (!owns)
+                {
+                    return Ok(new { isValid = false, success = false, error = "You do not own this item." });
+                }
+
+                await repo.RemoveUserAssetAsync(connStr, userId, assetId).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { isValid = false, success = false, error = "Failed to remove asset from inventory" });
+            }
+
+            return Ok(new { isValid = true, success = true });
+        }
     }
 }
-

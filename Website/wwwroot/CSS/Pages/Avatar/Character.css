@@ -143,6 +143,10 @@
   text-decoration: underline;
 }
 
+.modal-backdrop.in {
+  opacity: 0.5;
+}
+
 .outfits-container {
   margin: 9px 0 6px 0;
 }

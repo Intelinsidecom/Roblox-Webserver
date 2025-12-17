@@ -8,8 +8,10 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using Users;
 using Avatar;
+using Website.Services;
 
 namespace Website.Controllers;
 
@@ -19,11 +21,13 @@ public class AvatarV1Controller : ControllerBase
 {
     private readonly IThumbnailService _thumbnailService;
     private readonly IConfiguration _configuration;
+    private readonly AvatarThumbnailRefreshService _avatarThumbnailRefreshService;
 
-    public AvatarV1Controller(IThumbnailService thumbnailService, IConfiguration configuration)
+    public AvatarV1Controller(IThumbnailService thumbnailService, IConfiguration configuration, AvatarThumbnailRefreshService avatarThumbnailRefreshService)
     {
         _thumbnailService = thumbnailService;
         _configuration = configuration;
+        _avatarThumbnailRefreshService = avatarThumbnailRefreshService;
     }
 
     // GET v1/avatar
@@ -346,11 +350,17 @@ public class AvatarV1Controller : ControllerBase
         // detect that the avatar configuration has changed.
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
 
+        // Warm avatar and headshot thumbnails so that by the time
+        // downstream consumers request them, the URLs are likely
+        // already rendered and stored.
+        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+
         return Ok(new { success = true });
     }
 
     [Authorize]
     [HttpPost("set-wearing-assets")]
+    [HttpGet("set-wearing-assets")]
     public async Task<IActionResult> SetWearingAssets([FromBody] SetWearingAssetsModel model, CancellationToken cancellationToken)
     {
         var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -407,6 +417,86 @@ public class AvatarV1Controller : ControllerBase
         // Keep avatar_state_hash in sync with current body colors and
         // worn assets so downstream systems can see configuration changes.
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
+
+        // Warm thumbnails after an outfit change so that subsequent
+        // avatar/headshot requests can use the pre-rendered URLs
+        // without triggering an additional render.
+        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+
+        return Ok(new { success = true });
+    }
+
+    [Authorize]
+    [HttpPost("assets/{assetId:long}/wear")]
+    public async Task<IActionResult> WearAsset(long assetId, CancellationToken cancellationToken)
+    {
+        var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "Authentication required" });
+
+        if (assetId <= 0)
+            return BadRequest(new { error = "Invalid assetId" });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        var repo = new AvatarWornAssetsRepository();
+        var wearResult = await repo.WearAssetAsync(connStr, userId, assetId, cancellationToken).ConfigureAwait(false);
+
+        // If the asset is already worn, surface a clear error so callers like
+        // the catalog item context menu can show feedback instead of silently
+        // "succeeding" a no-op.
+        if (wearResult.AlreadyWorn)
+        {
+            return BadRequest(new
+            {
+                errors = new[]
+                {
+                    new { message = "You are already wearing this item." }
+                }
+            });
+        }
+
+        await repo.SetWornAssetIdsAsync(connStr, userId, wearResult.AssetIds, cancellationToken).ConfigureAwait(false);
+
+        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
+
+        // Warm thumbnails so wear operations immediately reflect in
+        // avatar/headshot images without requiring an explicit redraw.
+        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+
+        return Ok(new { success = true });
+    }
+
+    [Authorize]
+    [HttpPost("assets/{assetId:long}/remove")]
+    public async Task<IActionResult> RemoveAsset(long assetId, CancellationToken cancellationToken)
+    {
+        var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "Authentication required" });
+
+        if (assetId <= 0)
+            return BadRequest(new { error = "Invalid assetId" });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        var repo = new AvatarWornAssetsRepository();
+        var current = await repo.GetWornAssetIdsAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
+
+        var updated = current.Where(id => id != assetId).ToList();
+
+        await repo.SetWornAssetIdsAsync(connStr, userId, updated, cancellationToken).ConfigureAwait(false);
+
+        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
+
+        // Warm thumbnails after removing an asset so cached images stay
+        // in sync; await completion so consumers immediately see
+        // up-to-date avatar/headshot URLs.
+        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
 
         return Ok(new { success = true });
     }

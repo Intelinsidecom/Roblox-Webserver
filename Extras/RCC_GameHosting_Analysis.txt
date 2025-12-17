@@ -1,0 +1,343 @@
+RCC / Game Hosting Analysis for Blox
+===================================
+
+1. High-Level Role of RCCService
+--------------------------------
+- RCCService is the "Roblox Compute Cloud" node process, implemented in C++ in Blox\RCCService.
+- It is both:
+  - A Windows service (SERVICE_WIN32_OWN_PROCESS) that can be installed/uninstalled/started/stopped via SCM.
+  - A console application for local operation or debugging (with -Console, -CrashReporter etc.).
+- It exposes a SOAP web service (gSOAP) on a configurable TCP port.
+- Its primary responsibility is to host and manage multiple game server jobs inside one process, each backed by a DataModel instance.
+
+2. Entry Point, Startup and Service Lifecycle
+--------------------------------------------
+2.1. Main executable and modes
+- `_tmain` (RCCService.cpp) is the entry point.
+- Modes controlled by CLI switches:
+  - `-Install` / `-Uninstall`: register/unregister RCCService in SCM + add/remove EventLog entries.
+  - `-Start` / `-Stop`: control the running service through SCM.
+  - `-Console`: run as a foreground console host instead of as a Windows service.
+  - `-CrashReporter`: special console mode focused on crash uploading.
+  - `-Break`: request a `DebugBreak()` on first loop iteration, useful for debugging.
+  - `-Content:<path>`: override content directory (default `Content\`).
+  - `-PlaceId:<id>`: when in console mode, automatically issue `OpenJob` with a script to start a server for that place.
+  - Test build only: `-Md5:<hash>`, `-SettingsKey:<key>` for overriding settings.
+
+2.2. Windows Service path
+- Uses standard Windows Service APIs:
+  - `SvcInstall` registers the service as `RCCService` with display name `Roblox Compute Cloud Service`, start type AUTO_START.
+  - `ServiceMain` is the registered service entry; it:
+    - Creates `stopped` event.
+    - Registers a control handler `Handler` for `SERVICE_CONTROL_STOP`.
+    - Parses port/content arguments.
+    - Calls `startupRCC(port, contentDir, crashUploaderOnly=false)`.
+    - Marks status as `SERVICE_RUNNING`.
+    - Enters main loop calling `stepRCC()` to accept SOAP connections.
+- Shutdown:
+  - `Handler` switches state to `SERVICE_STOP_PENDING`, logs, calls `shutdownRCC()`, waits on `stopped` event, then sets state to `SERVICE_STOPPED`.
+
+2.3. Console path
+- With `-Console` (or `-CrashReporter`):
+  - Calls `startupRCC(parsePort, parseContent, isCrashUploader)`.
+  - If `-PlaceId` is specified, builds a script like:
+    - `start(<PlaceId>, 53640, '<BaseURL>')`.
+    - Reads optional `gameserver.txt` contents first (can prepend user-defined Lua commands), then appends the `start(...)` call.
+    - Uses an internal SOAP call `OpenJob` with job id `"Test"` and script `"Start Server"` containing that code.
+  - Creates a `Console` object that hooks Ctrl+C/CTRL_CLOSE events and sets `Console::done`.
+  - In a loop until ESC or console done:
+    - On key press, ESC stops, other keys trigger TaskScheduler diagnostics.
+    - Calls `stepRCC()` for each loop iteration.
+  - Finally calls `shutdownRCC()`.
+
+3. SOAP Infrastructure and Job Model
+------------------------------------
+3.1. SOAP server
+- `ExceptionAwareSoap<RCCServiceSoapService> service;`
+  - Wraps gSOAP server class to make exceptions visible to SOAP clients via `soap_receiver_fault(...)` instead of silently crashing.
+- `startupRCC`:
+  - Calls `start_CWebService(contentpath, crashUploaderOnly)` to initialize high-level web service state and DataModel-related configurations.
+  - Binds SOAP server socket: `service.bind(NULL, port, 100)`.
+  - Sets `service.accept_timeout = 1;` so the accept loop can periodically break to check other conditions.
+  - Logs to `StandardOut` and Windows EventLog.
+- `stepRCC`:
+  - Guard rails: if `requestCount > 100` throws with detailed counts for various operations.
+  - Calls `service.accept()`; if socket invalid and `errnum` set, throws.
+  - On success, obtains `RCCServiceSoapService* copy = service.copy()`.
+  - Enqueues each request to a separate worker thread via `QueueUserWorkItem(process_request_func, copy, WT_EXECUTELONGFUNCTION)`.
+- `process_request` increments `requestCount`, handles `service->serve()`, decrements, and triggers crash on unexpected exceptions.
+
+3.2. WSDL and operations (RCCService.wsdl)
+- WSDL defines operations exposed over SOAP:
+  - Diagnostics: `HelloWorld`, `GetVersion`, `GetStatus`, `Diag`, `DiagEx`.
+  - Job lifecycle:
+    - `OpenJob` / `OpenJobEx` (`Job + ScriptExecution` → returns Lua values).
+    - `RenewLease(jobID, expirationInSeconds)`.
+    - `GetExpiration(jobID)`.
+    - `CloseJob(jobID)`.
+    - `CloseExpiredJobs()` / `CloseAllJobs()`.
+    - `GetAllJobs` / `GetAllJobsEx` (array of jobs with id/expiration/category/cores).
+  - Execution:
+    - `Execute(jobID, ScriptExecution)` / `ExecuteEx`.
+    - `BatchJob` / `BatchJobEx` (job+script in one request).
+- Values are encoded via Lua-like structures:
+  - `LuaValue { type, value, table }` with types `LUA_TNIL`, `LUA_TBOOLEAN`, `LUA_TNUMBER`, `LUA_TSTRING`, `LUA_TTABLE`.
+
+3.3. JobItem and DataModel hosting (CWebService)
+- `CWebService` (in RCCServiceSoapServiceImpl.cpp) is the core orchestrator inside the process.
+- It owns:
+  - Performance counters, analytics/profiling/logging.
+  - Dynamic settings (RCCServiceSettings and RCCServiceDynamicSettings).
+  - Security updaters for MD5, security keys, memhashes.
+  - A `JobMap` of jobID → `JobItem`.
+- `JobItem` encapsulates one hosted game environment:
+  - Fields:
+    - `id` (jobID string).
+    - `shared_ptr<RBX::DataModel> dataModel`.
+    - `RBX::Time expirationTime`.
+    - `int category; double cores;` controlling scheduling/weighting.
+    - `jobCheckLeaseEvent` and `notifyAliveConnection` for lease management.
+    - State: `RUNNING_JOB`, `JOB_DONE`, `JOB_ERROR` plus errorMessage.
+  - Methods (not all visible in snippet but implied in code):
+    - `touch(seconds)` renews expiration.
+    - `secondsToTimeout()` to detect expired jobs.
+
+3.4. Creating and wiring a job
+- `createJob(const ns1__Job& job, bool startHeartbeat, shared_ptr<RBX::DataModel>& dataModel)`:
+  - Seeds random using `RBX::randomSeed()`.
+  - Creates a new DataModel: `DataModel::createDataModel(startHeartbeat, new RBX::NullVerb(NULL, ""), false)`.
+  - `setupServerConnections(dataModel.get())` wires up services like `AdService`.
+  - Obtains `Network::Players` service from the DataModel.
+  - Loads client settings from dynamic JSON (`LoadClientSettings(rccSettings)`), uses MD5s and Google Analytics config from RCCServiceSettings.
+  - Sets up golden MD5 hashes for client validation and optionally initializes Google Analytics.
+
+3.5. Executing code in a job
+- `execute(jobID, ScriptExecution* script, std::vector<ns1__LuaValue*>* result, soap* s)`:
+  - If `script->script` is an HTTP URL, fetches content via `RBX::Http`.
+  - Locates `DataModel` for `jobID` under lock.
+  - Converts SOAP `LuaValue` arguments into `RBX::Reflection::Variant` arguments.
+  - Acquires `DataModel::LegacyLock` with `DataModelJob::Write` (single-writer lock) and verifies DataModel is not closed.
+  - Creates/obtains `ScriptContext` service from DataModel.
+  - Executes code in a new thread with security context `Security::WebService` and `ProtectedString::fromTrustedSource(code)`.
+  - Collects results as a `Reflection::Tuple`, converts to LuaValue array, and returns over SOAP.
+
+3.6. Diagnostics and monitoring
+- `diag(type, jobID, ...)` returns a structured `ValueArray` with:
+  - Process-level performance counters (CPU, memory, working set, page faults, elapsed time).
+  - TaskScheduler state (thread pool, job queues, scheduler duty cycle per thread, scheduler rate).
+  - DataModel Jobs Info for the specific job.
+  - Machine configuration (RAM, CPU type, CPU count, speed).
+  - Memory counters for key instance types (Instance, Part, Model, Explosion, SoundChannel, signals, jobs, players etc.).
+  - Optional leak dump and heap stress test.
+  - Optional arbiter activity for each job.
+
+4. Security and Integrity Considerations
+----------------------------------------
+4.1. Access key and operational security
+- At startup, `ReadAccessKey` reads `AccessKey` from HKLM `Software\ROBLOX Corporation\Roblox\` and places it in `RBX::Http::accessKey`.
+- This key is used by HTTP client code (e.g., when fetching scripts or contacting central services) to authenticate RCC as a trusted node.
+- `OperationalSecurity.h` and SecurityDataUpdater/MD5Updater/SecurityKeyUpdater/MemHashUpdater coordinate:
+  - MD5 of client binaries (Windows/Mac/Beta) for golden hash checks.
+  - Security versions/hashes for anti-tampering.
+  - Memory hashing rules to detect cheating/tampering.
+
+4.2. Script execution surface
+- `Execute`, `OpenJob`, `BatchJob` all run arbitrary Lua code with `Security::WebService` privileges.
+- The code may be directly provided or fetched from a URL.
+- Risks:
+  - Misconfiguration that allows untrusted callers to reach RCC SOAP endpoint → full compromise of hosted game environment.
+  - Remote code execution if central web services are compromised, since they feed scripts to RCC.
+
+4.3. Network / client integrity
+- Uses `Network::Players` and golden MD5s/memhash configs to validate clients.
+- Misaligned settings (outdated MD5 / memhash) can either block legitimate clients or fail to detect tampered clients.
+
+4.4. Stability and resource exhaustion
+- RCC runs multiple DataModels in one process.
+- Major risks:
+  - `requestCount` > 100 triggers a crash, intended as a defensive guard; but if load is high and not balanced, this will kill the process.
+  - Leaked DataModels or jobs can cause long-lived memory usage and degrade performance.
+  - Intensive scripts (e.g., heavy physics or infinite loops) run by Execute/OpenJob will strain task scheduler.
+  - SecurityKey or MemHash fetch failures could reduce security or break connectivity.
+
+5. Operational Things to Watch Out For
+--------------------------------------
+5.1. Service deployment & SCM
+- Ensure `RCCService` is correctly installed and configured:
+  - Path to executable is stable and points to the expected binary.
+  - Failure actions configured by `SvcInstall` (3 retries with 5–60s delays) are appropriate for your environment.
+- EventLog configuration:
+  - `EventLogInstall` registers RCCService as a source so `SvcReportEvent` logs to Application log.
+  - Verify log volume to avoid log flooding under heavy error conditions.
+
+5.2. Port configuration and firewall
+- Default port from `parsePort` is `64989` unless overridden via CLI.
+- For in-process started server jobs (via `-PlaceId`/`gameserver.txt`) there is a hard-coded game server port `53640` used in the Lua `start(...)` call.
+- You must ensure:
+  - Firewall rules allow inbound connections on the game port (e.g., 53640) from clients.
+  - SOAP control port (e.g., 64989) is reachable only from trusted control plane (Arbiter/dispatcher, not the public Internet).
+
+5.3. Content path and base URL
+- `-Content:` argument defaults to `Content\` relative to working directory.
+- `GetBaseURL()` determines where scripts and metadata are fetched from.
+- Mismatched content path or base URL can lead to missing assets, outdated scripts, or inability to start games.
+
+5.4. Job expiration and leases
+- Jobs have `expirationInSeconds` and `RenewLease` mechanics.
+- If control-side code forgets to renew leases, jobs will expire and be closed.
+- If jobs never expire or are repeatedly renewed without proper termination, they can accumulate and starve the host.
+
+5.5. Multi-tenancy within a single process
+- Multiple `JobItem` instances share:
+  - Process memory space.
+  - TaskScheduler thread pool.
+  - Perf counters and security state.
+- Misbehaving or abusive jobs affect all others:
+  - CPU hogging, memory leaks, large numbers of connections.
+- Consider pinning `cores` and categories carefully if you adapt scheduling or load balancing.
+
+5.6. Diagnostics and observability
+- Use `Diag`/`DiagEx` to monitor:
+  - Per-job and total instance counts.
+  - Thread pool consumption.
+  - CPU and memory usage.
+- Always correlate spikes in `requestCount` and `dataModelCount` with workload patterns.
+
+6. UDP Forwarding Design for Game Hosting
+-----------------------------------------
+This repository’s RCCService is focused on SOAP control and HTTP; actual game traffic in classic Roblox architecture uses a separate game server/cell (often UDP-based or TCP+reliability layer). The following is a design to integrate effective UDP forwarding with this RCC/Arbiter-style environment.
+
+6.1. Goals
+- Allow players to connect to game servers that are running behind:
+  - NAT/port-mapped nodes, or
+  - A central entry point/load balancer.
+- Keep RCC’s control plane (SOAP) separate from data plane (UDP game traffic).
+- Make it easy for Arbiter or a web API to configure and inspect UDP mappings.
+
+6.2. Core concepts
+- **Control plane**:
+  - RCCService and Arbiter/Webserver use SOAP/HTTP to manage job lifetimes, start scripts, set ports.
+- **Data plane**:
+  - Clients connect using UDP on ports advertised by matchmaking/Arbiter.
+  - A dedicated UDP forwarder (or multiple instances) bridges between public-facing ports and actual game server endpoints.
+
+6.3. High-level architecture
+- Introduce a `UdpForwarder` service/process with the following responsibilities:
+  - Listens on a set of public UDP ports, e.g. 50000–51000.
+  - Maintains a mapping: `(publicPort, clientEndpoint) -> (backendHost, backendPort)`.
+  - For each incoming packet:
+    - Looks up mapping.
+    - Rewrites and forwards packet to the backend game server.
+  - For each packet from the backend:
+    - Performs reverse lookup to get the client’s public endpoint and forwards.
+- Mapping is created and updated via a control API that can be called by Arbiter or directly by RCC scripts.
+
+6.4. Where to tie into existing RCC/Arbiter environment
+- In `Roblox-Webserver\Arbiter` you already have:
+  - RCC process management.
+  - Rendering/game server orchestration (`RCCProcessManager`, `RenderingRccManager`, etc., as seen in other open files).
+- Extend the Arbiter’s knowledge of a job with:
+  - A chosen **public UDP port** (or range) from the UDP forwarder.
+  - The **internal server endpoint** where the DataModel/game server listens for UDP (e.g., NodeIP:GamePort).
+- When Arbiter schedules a job via RCC:
+  - It decides which node will host the game (RCC instance and its IP).
+  - It allocates a UDP mapping via the UDP forwarder’s control API.
+  - It records this mapping in matchmaking / join scripts so clients know which public IP:port to use.
+
+6.5. UDP Forwarder responsibilities and behaviour
+- **Mapping lifecycle**:
+  - Created when a job is opened or a place server is started.
+  - Uses the jobID as a logical key.
+  - Contains:
+    - `jobID`.
+    - `publicPort`.
+    - `backendHost` and `backendPort`.
+    - TTL/lease (e.g. synced with job expiration).
+  - Deleted automatically on job closure or expiration.
+- **Per-client mapping** (if needed):
+  - Basic variant: many clients share the same public UDP port and differentiate by client IP:port; mapping is `(publicPort, clientEndpoint) ↔ (backendHost, backendPort)`, where backendPort may be per-client or shared.
+  - More advanced variant: allocate unique public port per client, which simplifies backend but consumes more port space.
+- **Statefulness vs. statelessness**:
+  - Stateless NAT for UDP is possible but typically you want limited state to handle NAT traversal and timeouts.
+  - State should be garbage collected by idle timeout and by explicit signals when jobs/players disconnect.
+
+6.6. Control API design
+You can implement this as a small HTTP/JSON API inside `Roblox-Webserver\Api` or as a dedicated service.
+
+Endpoints sketch (conceptual):
+- `POST /udp/mappings`
+  - Body: `{ "jobId": "...", "backendHost": "10.0.0.5", "backendPort": 53640, "leaseSeconds": 600 }`
+  - Response: `{ "publicPort": 50001, "expiresAt": "..." }`.
+- `DELETE /udp/mappings/{jobId}`
+  - Tears down all mappings for that job.
+- `GET /udp/mappings/{jobId}`
+  - Returns current mapping(s), used by matchmaking to inform clients.
+
+Arbiter/RCC integration flow:
+1. Arbiter decides to start a game server job on a particular RCC node.
+2. Arbiter or a provisioning script:
+   - Calls RCC `OpenJob`/`BatchJob` to start the DataModel and game listener.
+   - Once server is listening on its internal UDP port, calls UDP forwarder `POST /udp/mappings` with the backend host (RCC node IP) and backend port (game port).
+3. Forwarder returns `publicPort`.
+4. Arbiter passes `(ForwarderPublicIP, publicPort)` to the join script, so clients connect there.
+5. On job end or crash, Arbiter calls `DELETE /udp/mappings/{jobId}` (or the forwarder GC detects the job is dead). 
+
+6.7. Implementation considerations for effective UDP forwarding
+- **Performance**:
+  - Use non-blocking sockets and an event loop (epoll/kqueue/IOCP depending on OS) instead of per-packet threads.
+  - Batch operations where possible; minimize per-packet allocations.
+- **Security**:
+  - Only allow control-plane operations (create/delete mappings) from trusted hosts (Arbiter, RCCs) via mTLS or IP allow-lists + auth tokens.
+  - Rate-limit mapping creation to avoid resource exhaustion.
+  - Consider filtering invalid/oversized packets and certain protocol anomalies at the forwarder to protect game servers.
+- **NAT timeout handling**:
+  - UDP NATs typically time out 30–120 seconds of inactivity.
+  - Game protocols usually send heartbeats; forwarder should allow these and can itself send optional keep-alives if needed.
+- **Logging and metrics**:
+  - Per-mapping counters: packets/bytes in/out, lastActivityTime.
+  - Global: packet rate, error rate, dropped packets.
+
+6.8. Placement of the UDP forwarder
+- **On each RCC node**:
+  - Each RCC instance runs a local forwarder binding to a custom IP or port range; clients connect directly to that node.
+  - Simplest when nodes have public IPs or static 1:1 NATs.
+- **Central edge forwarder(s)**:
+  - One or more forwarders at the network edge, behind load-balancer/anycast.
+  - They forward to internal RCC nodes (private IPs) over WAN/LAN.
+  - Adds one hop but simplifies external exposure.
+
+7. Checklist: What to Ensure When Running Game Hosting via RCC
+--------------------------------------------------------------
+- **Service and binary**
+  - RCCService installed correctly; executable path valid and updated during deployments.
+  - Failure actions configured and tested (service auto-recovers crashes but avoids tight crash loops).
+
+- **Ports and firewall**
+  - SOAP control port (e.g., 64989) open only to control plane (Arbiter, webserver), not public Internet.
+  - Game ports (e.g., 53640 or the range you adopt) open to players and correctly forwarded from any edge NAT.
+  - If using UDP forwarder, ensure its public port range is reachable and mapped.
+
+- **Security**
+  - HKLM `AccessKey` present and correct on all RCC nodes.
+  - MD5 / security key / memhash data fetch endpoints reachable and protected.
+  - RCC SOAP endpoints not exposed without ACLs/TLS; all callers must be authenticated.
+
+- **Settings and content**
+  - `Content` directory synchronized across RCC nodes with the expected version.
+  - ClientSettings, RCCServiceSettings JSON dynamic configs are validated in staging before rollout.
+
+- **Resource and lease management**
+  - Jobs are given realistic `expirationInSeconds` and reliably renewed only while needed.
+  - Arbiter or scheduler ensures `CloseJob` / `CloseAllJobs` is called for defunct jobs.
+  - Monitor `dataModelCount`, per-job memory and CPU.
+
+- **Diagnostics and observability**
+  - Use `Diag`/`DiagEx` periodically or on-demand.
+  - Collect crash dumps (`MainLogManager`) and correlate them with spikes in `requestCount` or job counts.
+
+- **UDP forwarder integration**
+  - Well-defined flow for: job start → internal game port → forwarder mapping → published join endpoint.
+  - Clear teardown path for mappings when jobs end.
+  - Monitoring on mapping count, per-mapping packet rates, and error metrics.
+
+This document should give you a solid conceptual model of how RCCService in the roblox repo handles game hosting and how to wrap that with a robust UDP forwarding layer, keeping control and data planes properly separated and observable.

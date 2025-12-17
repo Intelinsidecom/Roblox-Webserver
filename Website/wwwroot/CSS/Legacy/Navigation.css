@@ -2010,7 +2010,7 @@ input[type="button"].btn-block {
 }
 
 .fade.in {
-	opacity: 1;
+	opacity: 0.5;
 }
 
 .collapse {
@@ -6740,6 +6740,10 @@ textarea.form-control {
 
 .rbx-popover-content {
 	display: none;
+}
+
+.rbx-popover-content.show {
+	display: block;
 }
 
 .rbx-menu-item {

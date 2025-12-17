@@ -191,7 +191,7 @@ namespace RobloxWebserver.Controllers
        t.thumbnail_url,
        i.asset_id as image_asset_id
 from user_assets ua_t
-join assets t on t.asset_id = ua_t.asset_id and t.asset_type_id = 2
+join assets t on t.asset_id = ua_t.asset_id and t.asset_type_id = 2 and t.owner_user_id = @uid
 left join assets i on i.owner_user_id = t.owner_user_id
                   and i.asset_type_id = 1
                   and i.name = t.name || ' Image'
@@ -410,7 +410,8 @@ limit 50;";
 
                             sb.Append(@"        </div>");
 
-                            sb.Append(@"        <div id='shirt-dropdown-menu' style='display:none;'>");
+                            // Reuse the same dropdown menu id as T-Shirts/Pants so legacy JS treats shirts as clothing
+                            sb.Append(@"        <div id='tshirt-dropdown-menu' style='display:none;'>");
                             sb.Append(@"            <a href='#' data-action='configure'>Configure</a>");
                             sb.Append(@"            <a href='#' data-action='advertise' class='divider-top'>Advertise</a>");
                             sb.Append(@"        </div>");

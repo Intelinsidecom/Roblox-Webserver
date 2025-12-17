@@ -1,8 +1,7 @@
-@model RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel
+﻿@model RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel
 @{ Layout = "_Layout"; }
 <!DOCTYPE html><!--[if IE 8]><html class=ie8 ng-app=robloxApp><![endif]--> <!--[if gt IE 8]><!-->
-<html><!--<![endif]-->
-
+<div id=catalog-page-root><!--<![endif]-->
 
  <script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
  <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
@@ -73,6 +72,7 @@
  <script type="text/javascript" src="/JS/viewapp/pages/recommendations/services/recommendationsPageService.js"></script>
  <script type="text/javascript" src="/JS/GenericModal.js"></script>
  <script type="text/javascript" src="/JS/Item/ItemPage.js"></script>
+ <script type="text/javascript" src="/JS/Item/ContextMenu.js"></script>
  <script type="text/javascript" src="/JS/utilities/popover.js"></script>
  <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
  <script type="text/javascript" src="/JS/Bootstrap/GenericConfirmation.js"></script>
@@ -143,18 +143,14 @@
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
    
     <script>
-        if (Roblox && Roblox.EventStream) {
-            Roblox.EventStream.Init("//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/pe?t=studio", "//ecsv2.roblox.com/pe?t=diagnostic");
-        }
-    </script>
-    <script>
         if (Roblox && Roblox.PageHeartbeatEvent) {
             Roblox.PageHeartbeatEvent.Init([2, 8, 20, 60]);
         }
     </script>
   
 </head>
-<body id=rbx-body data-performance-relative-value=0.005 data-internal-page-name=CatalogItem data-send-event-percentage=0.01>
+<div id=rbx-body data-performance-relative-value=0.005 data-internal-page-name=CatalogItem data-send-event-percentage=0.01>
+
     <div id=roblox-linkify data-enabled=true data-regex="(https?:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;\&#64;#\/%%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags=gm data-as-http-regex=((wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.robloxlabs\.com)></div>
 
     <div id=image-retry-data data-image-retry-max-times=10 data-image-retry-timer=1500 data-ga-logging-percent=10></div>
@@ -164,7 +160,7 @@
             <div id=wrap class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled=false>
        </div>
             <div class="content item-page-main">
-                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type="Package" data-userasset-id="" data-is-purchase-enabled=true data-product-id="@Model.Id" data-bc-requirement=0 data-expected-currency="1" data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique="@Model.IsLimitedUnique" data-user-id="@User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" data-asset-granted=False data-forward-url="" data-avatar-wear-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="https://avatar.roblox.com/v1/avatar/assets/@Model.Id/remove" data-current-time="@DateTime.UtcNow">
+                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type="Package" data-userasset-id="" data-is-purchase-enabled=true data-product-id="@Model.Id" data-bc-requirement=0 data-expected-currency="1" data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique="@Model.IsLimitedUnique" data-user-id="@User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" data-asset-granted=False data-forward-url="" data-avatar-wear-url="/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="/v1/avatar/assets/@Model.Id/remove" data-current-time="@DateTime.UtcNow">
                     <div class=system-feedback>
                         <div class=alert-system-feedback>
                             <div class="alert alert-success">Purchase Completed</div>
@@ -231,7 +227,7 @@
                                 <div class=action-button>
                                     @if (Model.IsOwned)
                                     {
-                                        <a id=edit-avatar-button href="https://web.roblox.com/my/avatar" class="btn-fixed-width-lg btn-control-md" data-button-action=avatar> Edit Avatar </a>
+                                        <a id=edit-avatar-button href="/my/character" class="btn-fixed-width-lg btn-control-md" data-button-action=avatar> Edit Avatar </a>
                                     }
                                     else
                                     {
@@ -267,6 +263,40 @@
                                 <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=@Model.Id data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name"> <span class="text-favorite favoriteCount" id=result>@((Model.FavoritedCount ?? 0).ToString("N0"))</span>
                                         <div id=favorite-icon class="icon-favorite@(Model.IsFavorited ? " favorited" : string.Empty)"></div>
                                     </a></div>
+                            </li>
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                                long currentUserId;
+                                long.TryParse(userIdClaim, out currentUserId);
+                                var isOwner = currentUserId > 0 && Model.CreatorId == currentUserId;
+
+                                if (isOwner || Model.IsOwned)
+                                {
+                                    <li id=item-context-menu class=item-context-menu>
+                                        <a class="rbx-menu-item item-context-menu" data-toggle=popover data-bind=popover-content> <span class=icon-more></span> </a>
+                                        <div class="rbx-popover-content popover-content" data-toggle=popover-content>
+                                            <ul class=dropdown-menu role=menu>
+                                                <li><a class=toggle-wear data-toggle="@(Model.IsWorn ? "True" : "False")"> @(Model.IsWorn ? "Unwear" : "Wear") </a></li>
+
+                                                @if (Model.IsOwned && !isOwner)
+                                                {
+                                                    <li><a id=delete-item> Delete </a></li>
+                                                }
+
+                                                @if (isOwner)
+                                                {
+                                                    <li><a id=configure-item href="/my/item.aspx?id=@Model.Id"> Configure </a></li>
+                                                }
+                                                @if (Model.IsOwned)
+                                                {
+                                                <li><a class=toggle-profile data-toggle=False> Add to Profile </a></li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </li>
+                                }
+                            }
                         </ul>
                     </div>
                     <div ng-modules="robloxApp, recommendations">
@@ -295,6 +325,7 @@
                                                 <div class="text-overflow item-card-creator recommended-creator"><span class="xsmall text-label recommended-creator-by">By</span> <a class="xsmall text-overflow text-link" ng-href={{item.Creator.CreatorProfileLink}}>{{ item.Creator.Name }}</a></div>
                                                 <div class="text-overflow item-card-price"><span class=icon-robux-16x16 ng-show=item.HasPrice></span> <span class=text-robux ng-show=item.HasPrice>{{ item.Item.Price | abbreviate : 1 }}</span> <span class=text-label ng-hide=item.HasPrice> <span ng-if="item.Product.NoPriceText.length > 0" ng-class="{'text-robux': item.Product.NoPriceText === 'Free'}"> {{item.Product.NoPriceText}} </span> </span></div>
                                             </div>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -416,148 +447,6 @@
     <script>
         function urchinTracker() {}
     </script>
-    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=roblox-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
-        <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
-            <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
-            <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
-                <div id=Starting class="PlaceLauncherStatus MadStatusStarting" style=display:block>Starting Roblox...</div>
-                <div id=Waiting class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
-                <div id=StatusBackBuffer class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
-            </div>
-            <div style=text-align:center;margin-top:1em><input type=button class="Button CancelPlaceLauncherButton translate" value=Cancel></div>
-        </div>
-    </div>
-    <div id=ProtocolHandlerStartingDialog style=display:none class=protocol-handler-container>
-        <div class="modalPopup ph-modal-popup">
-            <div class=ph-modal-header></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
-            <div class=ph-areyouinstalleddialog-content>
-                <p class=larger-font-size>Roblox is now loading. Get ready to play!
-                <div class=ph-startingdialog-spinner-row><img src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif width=82 height=24></div>
-            </div>
-        </div>
-    </div>
-    <div id=ProtocolHandlerAreYouInstalled style=display:none class=protocol-handler-container>
-        <div class="modalPopup ph-modal-popup">
-            <div class=ph-modal-header><span class="icon-close simplemodal-close"></span></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
-            <div class=ph-areyouinstalleddialog-content>
-                <p class=larger-font-size>You're moments away from getting into the game!
-                <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button></div>
-                <div class=small><a href=https://en.help.roblox.com/hc/en-us/articles/204473560 class=text-name target=_blank>Click here for help</a></div>
-            </div>
-        </div>
-    </div>
-    <div id=ProtocolHandlerClickAlwaysAllowed class=ph-clickalwaysallowed style=display:none>
-        <p class=larger-font-size><span class=icon-moreinfo></span> Check <b>Remember my choice</b> and click <strong>OK</strong> in the dialog box above to join games faster in the future!
-    </div>
-    <div id=videoPrerollPanel style=display:none>
-        <div id=videoPrerollTitleDiv>Gameplay sponsored by:</div>
-        <div id=content><video id=contentElement style=width:0;height:0></div>
-        <div id=videoPrerollMainDiv></div>
-        <div id=videoPrerollCompanionAd></div>
-        <div id=videoPrerollLoadingDiv>Loading <span id=videoPrerollLoadingPercent>0%</span> - <span id=videoPrerollMadStatus class=MadStatusField>Starting game...</span><span id=videoPrerollMadStatusBackBuffer class=MadStatusBackBuffer></span>
-            <div id=videoPrerollLoadingBar>
-                <div id=videoPrerollLoadingBarCompleted></div>
-            </div>
-        </div>
-        <div id=videoPrerollJoinBC><span>Get more with Builders Club!</span> <a href="https://web.roblox.com/premium/membership?ctx=preroll" target=_blank class="btn-medium btn-primary" id=videoPrerollJoinBCButton>Join Builders Club</a></div>
-    </div>
-    <script>
-        $(function() {
-            var videoPreRollDFP = Roblox.VideoPreRollDFP;
-            if (videoPreRollDFP) {
-                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
-                videoPreRollDFP.showVideoPreRoll = false;
-                videoPreRollDFP.loadingBarMaxTime = 33000;
-                videoPreRollDFP.videoLoadingTimeout = 11000;
-                videoPreRollDFP.videoPlayingTimeout = 41000;
-                videoPreRollDFP.videoLogNote = "BuildersClub";
-                videoPreRollDFP.logsEnabled = true;
-                videoPreRollDFP.excludedPlaceIds = "32373412";
-                videoPreRollDFP.adUnit = "/1015347/VideoPrerollUnder13";
-                videoPreRollDFP.adTime = 15;
-                videoPreRollDFP.isSwfPreloaderEnabled = false;
-                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
-                videoPreRollDFP.isAgeTargetingEnabled = true;
-                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
-                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
-                customTargeting.userAge = "8";
-                customTargeting.userAgeOrSegment = "U13";
-                customTargeting.userGender = "Female";
-                customTargeting.gameGenres = "";
-                customTargeting.environment = "Production";
-                customTargeting.adTime = "15";
-                customTargeting.PLVU = false;
-                $(videoPreRollDFP.checkEligibility);
-            }
-        });
-    </script>
-    <div id=GuestModePrompt_BoyGirl class="Revised GuestModePromptModal" style=display:none>
-        <div class=simplemodal-close><a class="ImageButton closeBtnCircle_20h" style=cursor:pointer;margin-left:455px;top:7px;position:absolute></a></div>
-        <div class=Title>Choose Your Avatar</div>
-        <div style=min-height:275px;background-color:white>
-            <div style=clear:both;height:25px></div>
-            <div style=text-align:center>
-                <div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style=float:left;margin-left:45px></div>
-                <div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style=float:right;margin-right:45px></div>
-            </div>
-            <div style=clear:both;height:25px></div>
-            <div class=RevisedFooter>
-                <div style="width:200px;margin:10px auto 0 auto"><a href="https://web.roblox.com/?returnUrl=https%3A%2F%2Fweb.roblox.com%2Fcatalog%2F134082613%2FHeadless-Horseman">
-                        <div class=RevisedCharacterSelectSignup></div>
-                    </a> <a class=HaveAccount href="https://web.roblox.com/newlogin?returnUrl=https%3A%2F%2Fweb.roblox.com%2Fcatalog%2F134082613%2FHeadless-Horseman">I have an account</a></div>
-            </div>
-        </div>
-    </div>
-    <script>
-        function checkRobloxInstall() {
-            return RobloxLaunch.CheckRobloxInstall('https://web.roblox.com/install/download.aspx');
-        }
-    </script>
-    <div id=InstallationInstructions class=style2016 style=display:none>
-        <div class=ph-installinstructions>
-            <div class=ph-modal-header><span class="icon-close-16x16 simplemodal-close"></span>
-                <h5 class=title>Thanks for playing ROBLOX</h5>
-            </div>
-            <div class=modal-content-container>
-                <div class=ph-installinstructions-body>
-                    <ul class=modal-col-5>
-                        <li class=step1-of-5>
-                            <h2>1</h2>
-                            <p class=larger-font-size>Click <strong>Save File</strong> when the download window pops up</p><img data-delaysrc=https://images.rbxcdn.com/635085abe343ceec97e5da00103cbd8d.png>
-                        <li class=2-of-5>
-                            <h2>2</h2>
-                            <p class=larger-font-size>Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p><img data-delaysrc=https://images.rbxcdn.com/4791f147e474426b284e7885b8f91635.png>
-                        <li class=step3-of-5>
-                            <h2>3</h2>
-                            <p class=larger-font-size>Click <strong>Run</strong></p><img data-delaysrc=https://images.rbxcdn.com/27e0e77ae7b5d726ca231c5d338fa473.png>
-                        <li class=step4-of-5>
-                            <h2>4</h2>
-                            <p class=larger-font-size>Once installed, click <strong>Play</strong> to join the action!
-                            <div class="VisitButton VisitButtonContinueGLI"><a class="btn btn-primary-lg disabled btn-full-width">Play</a></div>
-                        <li class=step5-of-5>
-                            <h2>5</h2>
-                            <p class=larger-font-size>Click <strong>Ok</strong> when the alert pops up</p><img data-delaysrc=https://images.rbxcdn.com/f024c63845c2f79d30ccebe2b2f5818d.png>
-                    </ul>
-                </div>
-            </div>
-            <div class=xsmall>The ROBLOX installer should download shortly. If it doesn’t, start the <a href=# class=text-link onclick="Roblox.ProtocolHandlerClientInterface.manualDownload();return false">download now.</a></div>
-        </div>
-    </div>
-    <div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>
-    <div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div><iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
-   
-    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle=confirmation style=display:none><a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
-        <div class=Title></div>
-        <div class=GenericModalBody>
-            <div class=TopBody>
-                <div class="ImageContainer roblox-item-image" data-image-size=small data-no-overlays data-no-click><img class=GenericModalImage alt="generic image"></div>
-                <div class=Message></div>
-            </div>
-            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer"><a href="" id=roblox-confirm-btn><span></span></a> <a href="" id=roblox-decline-btn><span></span></a></div>
-            <div class=ConfirmationModalFooter></div>
-        </div>
         <script>
             Roblox = Roblox || {};
             Roblox.Resources = Roblox.Resources || {};
@@ -582,7 +471,7 @@
                         <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
                     </div>
                     <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
-                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
+                    <div class="loading modal-processing"><img class=loading-default src=/images/Loading.gif alt=Processing...></div>
                 </div>
                 <div class="modal-footer text-footer"></div>
             </div>
@@ -611,18 +500,6 @@
     </div>
     <div ng-modules=pageTemplateApp>
     </div>
-    <script>
-        Roblox.config.externalResources = [];
-        Roblox.config.paths['Pages.Catalog'] = 'https://js.rbxcdn.com/8d6821a4eed971155a4829a1e43336f4.js.gzip';
-        Roblox.config.paths['Pages.CatalogShared'] = 'https://js.rbxcdn.com/5c0ac85bd60f40a577bfff7e323e3690.js.gzip';
-        Roblox.config.paths['Widgets.AvatarImage'] = 'https://js.rbxcdn.com/823c7d686e6b3d8321275740fe498f9d.js.gzip';
-        Roblox.config.paths['Widgets.DropdownMenu'] = 'https://js.rbxcdn.com/5cf0eb71249768c86649bbf0c98591b0.js.gzip';
-        Roblox.config.paths['Widgets.GroupImage'] = 'https://js.rbxcdn.com/556af22c86bce192fb12defcd4d2121c.js.gzip';
-        Roblox.config.paths['Widgets.HierarchicalDropdown'] = 'https://js.rbxcdn.com/7689b2fd3f7467640cda2d19e5968409.js.gzip';
-        Roblox.config.paths['Widgets.ItemImage'] = 'https://js.rbxcdn.com/c2aa2fcc2b1e8ec82e1bacfdb9dfffea.js.gzip';
-        Roblox.config.paths['Widgets.PlaceImage'] = 'https://js.rbxcdn.com/52ff803e77bb661839e8b2c93bb5ba27.js.gzip';
-        Roblox.config.paths['Widgets.SurveyModal'] = 'https://js.rbxcdn.com/56ad7af86ee4f8bc82af94269ed50148.js.gzip';
-    </script>
     <script>
         Roblox.XsrfToken.setToken('gD0rq6yoHMBf');
     </script>
@@ -662,5 +539,5 @@
             }
         });
     </script>
-</body>
-</html>
+</div>
+</div>

@@ -98,6 +98,7 @@ $(function() {
             }
         })
     });
+
     i = $("#header"), i && i.data("isfriendshiprealtimeupdateenabled") && v();
     $(document).on("Roblox.Friends.CountChanged", function() {
         l()
@@ -105,6 +106,7 @@ $(function() {
     $('[data-behavior="nav-notification"]').click(function() {
         $('[data-behavior="left-col"]').toggleClass("nav-show", 100)
     });
+
     var t = $("#navbar-universal-search"),
         n = $("#navbar-universal-search #navbar-search-input"),
         u = $("#navbar-universal-search .rbx-navbar-search-option"),
@@ -151,25 +153,44 @@ $(function() {
     $("#nav-robux-icon").on("show.bs.popover", function() {
         $("body").scrollLeft(0)
     });
+
     e = function(n) {
         var t, i;
+        if (typeof n !== "string") {
+            return;
+        }
         if (n.indexOf("resize") != -1) {
             t = n.split(",");
             var h = t[1];
             $("#iframe-login").css({ height: h });
             $("#iFrameLogin").css({ height: h });
         }
-        n.indexOf("fbRegister") != -1 && (t = n.split("^"), i = "&fbname=" + encodeURIComponent(t[1]) + "&fbem=" + encodeURIComponent(t[2]) + "&fbdt=" + encodeURIComponent(t[3]), window.location.href = "../Login/Default.aspx?iFrameFacebookSync=true" + i)
-    }, $.receiveMessage(function(n) {
+        if (n.indexOf("fbRegister") != -1) {
+            t = n.split("^");
+            i = "&fbname=" + encodeURIComponent(t[1]) + "&fbem=" + encodeURIComponent(t[2]) + "&fbdt=" + encodeURIComponent(t[3]);
+            window.location.href = "../Login/Default.aspx?iFrameFacebookSync=true" + i;
+        }
+    }, typeof $.receiveMessage === "function" && ($.receiveMessage(function(n) {
         e(n.data)
-    });
+    }));
     $("body").on("click touchstart", function(n) {
         $('[data-behavior="univeral-search"]').each(function() {
             $(this).is(n.target) || $(this).has(n.target).length !== 0 || $(this).removeClass("rbx-navbar-search-open"), $(this).has(n.target).length === 0 && $('[data-toggle="toggle-search"]').has(n.target).length === 0 && $('[data-behavior="univeral-search"]').css("display") === "block" && $('[data-behavior="univeral-search"]').removeClass("show")
-        }), $(n.target).closest("#iFrameLogin").length || $(n.target).is("#iFrameLogin") || $(n.target).closest("#head-login").length || $(n.target).is("#head-login") || $("#iFrameLogin").hasClass("show") && $("#iFrameLogin").removeClass("show")
+        });
+        var isInsideIframeLogin = $(n.target).closest("#iFrameLogin").length || $(n.target).is("#iFrameLogin");
+        var isHeadLogin = $(n.target).closest("#head-login").length || $(n.target).is("#head-login");
+        var isHeaderLogin = $(n.target).closest("#header-login").length || $(n.target).is("#header-login");
+        if (!isInsideIframeLogin && !isHeadLogin && !isHeaderLogin && $("#iFrameLogin").hasClass("show")) {
+            $("#iFrameLogin").removeClass("show");
+        }
     });
+
     var f = function() {
-            $("#header-login").click(function() {
+        $("#header-login").click(function(evt) {
+            var hasSignupOrLogin = window.Roblox && Roblox.SignupOrLogin && Roblox.SignupOrLogin.SectionType;
+            var hasModal = window.Roblox && Roblox.SignupOrLoginModal && typeof Roblox.SignupOrLoginModal.show === "function";
+
+            if (hasSignupOrLogin && hasModal) {
                 var t = {
                     onSignupSuccess: function() {
                         window.location.reload()
@@ -179,69 +200,72 @@ $(function() {
                     },
                     sectionType: Roblox.SignupOrLogin.SectionType.login
                 };
-                if (window.Roblox && Roblox.SignupOrLoginModal && typeof Roblox.SignupOrLoginModal.show === "function") {
-                    Roblox.SignupOrLoginModal.show(t)
-                } else {
-                    // Fallback to legacy iframe login toggle: directly toggle #iFrameLogin like y()
-                    $("#iFrameLogin").toggleClass("show");
-                    if ($("#iFrameLogin").hasClass("show")) {
-                        var leftOffset = $("#header-login").offset().left - $("#iFrameLogin").offset().left - 250;
-                        if (leftOffset > 0) {
-                            $("#iFrameLogin").css("left", leftOffset)
-                        }
-                    }
-                }
-            }), $("#header-signup").click(function() {
-                var t = {
-                    onSignupSuccess: function() {
-                        window.location.reload()
-                    },
-                    onLoginSuccess: function() {
-                        window.location.reload()
-                    },
-                    sectionType: Roblox.SignupOrLogin.SectionType.signup
-                };
                 Roblox.SignupOrLoginModal.show(t)
-            })
-        },
-        y = function() {
-            function adjustIframeHeight() {
-                try {
-                    var ifr = document.getElementById('iframe-login');
-                    if (ifr && ifr.contentWindow && ifr.contentWindow.document) {
-                        var doc = ifr.contentWindow.document;
-                        var de = doc.documentElement;
-                        var h = Math.max(
-                            doc.body ? doc.body.scrollHeight : 0,
-                            doc.body ? doc.body.offsetHeight : 0,
-                            de ? de.clientHeight : 0,
-                            de ? de.scrollHeight : 0,
-                            de ? de.offsetHeight : 0
-                        );
-                        if (h && h > 0) {
-                            $("#iframe-login").css({ height: h + 'px' });
-                            $("#iFrameLogin").css({ height: h + 'px' });
-                        }
-                    }
-                } catch (e) { /* ignore */ }
-            }
-            $("#head-login").click(function() {
-                if ($("#iFrameLogin").toggleClass("show"), $("#iFrameLogin").hasClass("show")) {
-                    var t = $("#head-login").offset().left - $("#iFrameLogin").offset().left - 250;
-                    t > 0 && $("#iFrameLogin").css("left", t);
-                    // same-origin sizing fallback
-                    adjustIframeHeight();
-                    setTimeout(adjustIframeHeight, 50);
-                    setTimeout(adjustIframeHeight, 200);
-                    var ifr = document.getElementById('iframe-login');
-                    if (ifr) {
-                        $(ifr).on('load', function(){ adjustIframeHeight(); });
+            } else {
+                $("#iFrameLogin").toggleClass("show");
+                if ($("#iFrameLogin").hasClass("show")) {
+                    var leftOffset = $("#header-login").offset().left - $("#iFrameLogin").offset().left - 250;
+                    if (leftOffset > 0) {
+                        $("#iFrameLogin").css("left", leftOffset)
                     }
                 }
-            })
-        },
-        a = $("#signupOrLoginIframe");
+            }
+        }), $("#header-signup").click(function(evt) {
+            var t = {
+                onSignupSuccess: function() {
+                    window.location.reload()
+                },
+                onLoginSuccess: function() {
+                    window.location.reload()
+                },
+                sectionType: Roblox.SignupOrLogin.SectionType.signup
+            };
+            Roblox.SignupOrLoginModal.show(t)
+        })
+    },
+    y = function() {
+        function adjustIframeHeight() {
+            try {
+                var ifr = document.getElementById('iframe-login');
+                if (ifr && ifr.contentWindow && ifr.contentWindow.document) {
+                    var doc = ifr.contentWindow.document;
+                    var de = doc.documentElement;
+                    var h = Math.max(
+                        doc.body ? doc.body.scrollHeight : 0,
+                        doc.body ? doc.body.offsetHeight : 0,
+                        de ? de.clientHeight : 0,
+                        de ? de.scrollHeight : 0,
+                        de ? de.offsetHeight : 0
+                    );
+                    if (h && h > 0) {
+                        $("#iframe-login").css({ height: h + 'px' });
+                        $("#iFrameLogin").css({ height: h + 'px' });
+                    }
+                }
+            } catch (e) {
+            }
+        }
+        $("#head-login").click(function(evt) {
+            if ($("#iFrameLogin").toggleClass("show"), $("#iFrameLogin").hasClass("show")) {
+                var t = $("#head-login").offset().left - $("#iFrameLogin").offset().left - 250;
+                t > 0 && $("#iFrameLogin").css("left", t);
+                // same-origin sizing fallback
+                adjustIframeHeight();
+                setTimeout(adjustIframeHeight, 50);
+                setTimeout(adjustIframeHeight, 200);
+                var ifr = document.getElementById('iframe-login');
+                if (ifr) {
+                    $(ifr).on('load', function(){
+                        adjustIframeHeight();
+                    });
+                }
+            } else {
+            }
+        })
+    },
+    a = $("#signupOrLoginIframe");
     a.length ? a.load(function() {
         f()
-    }) : f(), y()
+    }) : f();
+    y()
 });

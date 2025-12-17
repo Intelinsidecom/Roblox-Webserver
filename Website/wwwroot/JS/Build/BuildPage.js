@@ -131,7 +131,8 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
             o = e.data("item-moderation-approved"),
             isTShirt = e.data("type") === "tshirts",
             isPants = e.data("type") === "pants",
-            isClothing = isTShirt || isPants,
+            isShirt = e.data("type") === "shirts",
+            isClothing = isTShirt || isPants || isShirt,
             dropdown = isClothing ? $("#tshirt-dropdown-menu") : r5;
 
         if (isClothing) {

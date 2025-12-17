@@ -55,22 +55,33 @@
                 break;
         }
     }
+
+    // Require authentication for this page and capture basic user info for meta tags.
+    if (!User.Identity.IsAuthenticated)
+    {
+        Context.Response.Redirect("/");
+        return;
+    }
+
+    var userIdStr = "0";
+    var userName = "Guest";
+    var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (!string.IsNullOrEmpty(idClaim))
+    {
+        userIdStr = idClaim;
+    }
+
+    var nameClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+    if (!string.IsNullOrEmpty(nameClaim))
+    {
+        userName = nameClaim;
+    }
 }
 <!DOCTYPE html>
 <html xml:lang=en xmlns:fb=http://www.facebook.com/2008/fbml>
 
 @section Head {
-    <script type=application/ld+json>
-        {
-            "@@context": "http://schema.org",
-            "@@type": "Organization",
-            "name": "Roblox",
-            "url": "https://www.roblox.com/",
-            "logo": "https://images.rbxcdn.com/c69b74f49e785df33b732273fad9dbe0.png",
-            "sameAs": ["https://www.facebook.com/ROBLOX/", "https://twitter.com/roblox", "https://www.linkedin.com/company/147977", "https://www.instagram.com/roblox/", "https://www.youtube.com/user/roblox", "https://plus.google.com/+roblox", "https://www.twitch.tv/roblox"]
-        }
-    </script>
-    <meta name=user-data data-userid=296890863 data-name=Loganh4005 data-isunder13=true>
+    <meta name="user-data" data-userid="@userIdStr" data-name="@userName" data-isunder13="false">
     <meta name=locale-data data-language-code=en_us data-language-name=English data-locale-api-url=https://locale.roblox.com>
     <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
     <meta name=page-meta data-internal-page-name=Create>
@@ -307,7 +318,6 @@
         Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
         Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
     </script>
-    <script onerror=Roblox.BundleDetector&amp;&amp;Roblox.BundleDetector.reportBundleError(this) data-monitor=true data-bundlename=angular src=https://jsd.rbxcdn.com/4b547f435344ed539d69e9cdec6ef1bc.js.gzip></script>
     <script>
         $(function() {
             Roblox.JSErrorTracker.initialize({
@@ -415,7 +425,7 @@
                                                                 </div>
                                                                 <div class=content>
                                                                     <div id=LeftColumn>
-                                                                        <div class=studio-icon><img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip></div>
+                                                                        <div class=studio-icon><img src=/images/StudioIcon.svg></div>
                                                                     </div>
                                                                     <div id=RightColumn>
                                                                         <ul>
@@ -487,7 +497,7 @@
                                                                 }
                                                             </div>
                                                             <div class=build-loading-container style=display:none>
-                                                                <div class=buildpage-loading-container><img alt=^_^ src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif></div>
+                                                                <div class=buildpage-loading-container><img alt=^_^ src=/images/LoadingSpinner.gif></div>
                                                             </div>
                                                 </table>
                                                 <div id=build-dropdown-menu><a href=# data-href-reference=configure-url>Configure Game</a> <a href=# data-require-root-place=true data-configure-place-template=https://web.roblox.com/places/0/update>Configure Start Place</a> <a href=# data-href-reference=configure-localization-url id=configure-localization-link>Configure Localization</a> <a href=# class=divider-top data-href-reference=create-badge-url data-require-root-place=true>Create Badge</a> <a href=# data-href-reference=create-gamepass-url data-require-root-place=true>Create Game Pass</a> <a href="https://web.roblox.com/catalog/browse.aspx?Category=5&amp;showInstructions=true" data-require-root-place=true>Add Gear</a> <a href=# data-href-reference=developerstats-url data-require-root-place=true>Developer Stats</a> <a href=# data-href-reference=advertise-url class=divider-top>Advertise</a> <a href=# class=sponsorGameLink data-href-template=https://web.roblox.com/sponsored-games/create/0 data-require-root-place=true>Sponsor</a> <a class="shutdown-all-servers-button divider-top" href=# data-require-root-place=true>Shut Down All Servers</a></div>
@@ -500,7 +510,7 @@
                                                                 <div id=PlaceSelectorPagerContainer class=place-selector-pager-container></div>
                                                             </div>
                                                             <div class="place-selector selectable template" title=Place style=display:none>
-                                                                <div class=place-image data-retry-url-template="/asset-thumbnail/json?height=100&amp;width=160&amp;format=jpeg&amp;returnAutoGenerated=True"><img alt=^_^ class=item-image src=https://images.rbxcdn.com/ec5c01d220bf1b73403fa51519267742.gif></div>
+                                                                <div class=place-image data-retry-url-template="/asset-thumbnail/json?height=100&amp;width=160&amp;format=jpeg&amp;returnAutoGenerated=True"><img alt=^_^ class=item-image src=/images/LoadingSpinnerModern.gif></div>
                                                                 <div class=InfoContainer>
                                                                     <div class=place-name></div>
                                                                     <div class=game-name><span class=form-label>Game: </span><span class=game-name-text></span></div>
@@ -532,7 +542,7 @@
                                                 <script>
                                                     Roblox = Roblox || {};
                                                     Roblox.BuildPage = Roblox.BuildPage || {};
-                                                    Roblox.BuildPage.AlertURL = "https://images.rbxcdn.com/43ac54175f3f3cd403536fedd9170c10.png";
+                                                    Roblox.BuildPage.AlertURL = "/images/BuildersClubHat.png";
                                                 </script>
                                             </div>
                                             <script>
@@ -587,7 +597,7 @@
                                                     deactivateTitle: "Make Game Private",
                                                     deactivateBody: "This will shut down any running games <br /><br />Do you still want to make this game private?",
                                                     deactivateButton: "Make Private",
-                                                    questionmarkImgUrl: "https://static.rbxcdn.com/images/Buttons/questionmark-12x12.png",
+                                                    questionmarkImgUrl: "/images/Buttons/questionmark-12x12.png",
                                                     activationRequestFailed: "Request to make game public failed. Please retry in a few minutes!",
                                                     deactivationRequestFailed: "Request to make game private failed. Please retry in a few minutes!",
                                                     tooManyActiveMessage: "You have reached the maximum number of public places for your membership level. Make one of your existing places private before making this place public.",
@@ -616,7 +626,7 @@
                                                                 </div>
                                                                 <div class=content>
                                                                     <div id=LeftColumn>
-                                                                        <div class=studio-icon><img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip></div>
+                                                                        <div class=studio-icon><img src=/images/StudioIcon.svg></div>
                                                                     </div>
                                                                     <div id=RightColumn>
                                                                         <ul>
@@ -641,7 +651,7 @@
                                                                 <div class=separator></div>
                                                             </div>
                                                             <div class=build-loading-container style=display:none>
-                                                                <div class=buildpage-loading-container><img alt=^_^ src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif></div>
+                                                                <div class=buildpage-loading-container><img alt=^_^ src=/images/LoadingSpinner.gif></div>
                                                             </div>
                                                 </table>
                                                 <div id=build-dropdown-menu><a href=# data-href-reference=configure-url>Configure Game</a> <a href=# data-require-root-place=true data-configure-place-template=https://web.roblox.com/places/0/update>Configure Start Place</a> <a href=# data-href-reference=configure-localization-url id=configure-localization-link>Configure Localization</a> <a href=# class=divider-top data-href-reference=create-badge-url data-require-root-place=true>Create Badge</a> <a href=# data-href-reference=create-gamepass-url data-require-root-place=true>Create Game Pass</a> <a href="https://web.roblox.com/catalog/browse.aspx?Category=5&amp;showInstructions=true" data-require-root-place=true>Add Gear</a> <a href=# data-href-reference=developerstats-url data-require-root-place=true>Developer Stats</a> <a href=# data-href-reference=advertise-url class=divider-top>Advertise</a> <a href=# class=sponsorGameLink data-href-template=https://web.roblox.com/sponsored-games/create/0 data-require-root-place=true>Sponsor</a> <a class="shutdown-all-servers-button divider-top" href=# data-require-root-place=true>Shut Down All Servers</a></div>
@@ -654,7 +664,7 @@
                                                                 <div id=PlaceSelectorPagerContainer class=place-selector-pager-container></div>
                                                             </div>
                                                             <div class="place-selector selectable template" title=Place style=display:none>
-                                                                <div class=place-image data-retry-url-template="/asset-thumbnail/json?height=100&amp;width=160&amp;format=jpeg&amp;returnAutoGenerated=True"><img alt=^_^ class=item-image src=https://images.rbxcdn.com/ec5c01d220bf1b73403fa51519267742.gif></div>
+                                                                <div class=place-image data-retry-url-template="/asset-thumbnail/json?height=100&amp;width=160&amp;format=jpeg&amp;returnAutoGenerated=True"><img alt=^_^ class=item-image src=/images/LoadingSpinnerModern.gif></div>
                                                                 <div class=InfoContainer>
                                                                     <div class=place-name></div>
                                                                     <div class=game-name><span class=form-label>Game: </span><span class=game-name-text></span></div>
@@ -686,13 +696,13 @@
                                                 <script>
                                                     Roblox = Roblox || {};
                                                     Roblox.BuildPage = Roblox.BuildPage || {};
-                                                    Roblox.BuildPage.AlertURL = "https://images.rbxcdn.com/43ac54175f3f3cd403536fedd9170c10.png";
+                                                    Roblox.BuildPage.AlertURL = "/images/BuildersClubHat.png";
                                                 </script>
                                             </div>
                                             <div class=Ads_WideSkyscraper></div>
                                         </div>
                                         <div id=LibraryTab>
-                                            <div class=loading id=LibraryLoadingIndicatorContainer><img id=LibraryLoadingIndicator src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif alt=Progress></div>
+                                            <div class=loading id=LibraryLoadingIndicatorContainer><img id=LibraryLoadingIndicator src=/images/LoadingSpinner.gif alt=Progress></div>
                                         </div>
                                     </div>
                                     <div id=AdPreviewModal class=simplemodal-data style=display:none>

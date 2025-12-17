@@ -11,6 +11,7 @@ using WebOptimizer;
 using Website.Extensions;
 using RobloxWebserver.Assemblies.Catalog;
 using RobloxWebserver.Assemblies.Catalog;
+using Website.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 // Thumbnails service
 builder.Services.AddSingleton<IThumbnailService>(sp => new ThumbnailService(sp.GetRequiredService<IConfiguration>()));
+
+// Avatar thumbnail warming service
+builder.Services.AddSingleton<AvatarThumbnailRefreshService>();
 
 // Catalog assembly services
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();

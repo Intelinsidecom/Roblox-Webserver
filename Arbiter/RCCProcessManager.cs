@@ -16,6 +16,7 @@ namespace RCCArbiter
         private readonly string _executable;
         private readonly string _arguments;
         private readonly string _workingDirectory;
+        private readonly bool _separateWindow;
 
         public RCCProcessManager(IConfiguration configuration, string configSection = "Rendering")
         {
@@ -23,6 +24,7 @@ namespace RCCArbiter
             _port = int.Parse(configuration[$"{configSection}:Port"] ?? "64989");
             _executable = configuration[$"{configSection}:Executable"] ?? "RCCService.exe";
             _arguments = configuration[$"{configSection}:Arguments"] ?? "-console";
+            _separateWindow = bool.TryParse(configuration[$"{configSection}:SeparateWindow"], out var sw) && sw;
 
             // Build path: RCC/{Year}/{Executable}
             var baseDir = Directory.GetCurrentDirectory();
@@ -76,18 +78,20 @@ namespace RCCArbiter
             Console.WriteLine($"  Service URL: {ServiceUrl}");
             Console.WriteLine();
 
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = executablePath,
+                Arguments = fullArguments,
+                WorkingDirectory = _workingDirectory,
+                UseShellExecute = _separateWindow,
+                CreateNoWindow = false,
+                RedirectStandardOutput = false,
+                RedirectStandardError = false
+            };
+
             _process = new Process
             {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = executablePath,
-                    Arguments = fullArguments,
-                    WorkingDirectory = _workingDirectory,
-                    UseShellExecute = false,
-                    CreateNoWindow = false,
-                    RedirectStandardOutput = false,
-                    RedirectStandardError = false
-                }
+                StartInfo = startInfo
             };
 
             try

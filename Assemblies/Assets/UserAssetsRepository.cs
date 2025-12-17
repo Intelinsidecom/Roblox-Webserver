@@ -31,6 +31,27 @@ on conflict (user_id, asset_id) do nothing;";
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task RemoveUserAssetAsync(string connectionString, long userId, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"delete from user_assets where user_id = @user_id and asset_id = @asset_id";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("user_id", userId);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task<bool> UserOwnsAssetAsync(string connectionString, long userId, long assetId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -80,7 +101,7 @@ on conflict (user_id, asset_id) do nothing;";
        a.thumbnail_url,
        i.asset_id as image_asset_id
 from user_assets ua
-join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 12
+join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 12 and a.owner_user_id = @uid
 left join assets i on i.owner_user_id = a.owner_user_id
                   and i.asset_type_id = 1
                   and i.name = a.name || ' Image'

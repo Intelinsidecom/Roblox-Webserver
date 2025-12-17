@@ -84,14 +84,15 @@ a.old-facebook-button span.right {
 	right: 0;
 	top: 26px;
 	width: 320px;
+	height: 300px;
 	padding: 0;
-	overflow: hidden;
+	overflow: visible;
 }
 
 .rbx-navbar-login-iframe {
 	display: block;
 	width: 100%;
-	height: auto;
+	height: 300px;
 	border: 0;
 }
 

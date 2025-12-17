@@ -11,8 +11,7 @@
         }
         </script>
     }
-    
-    
+
     
 <link rel="stylesheet" href="~/CSS/Pages/IDE/Login.css">
 <link rel="stylesheet" href="~/CSS/Pages/Login/Login.css">
@@ -23,11 +22,15 @@
         Roblox.jsConsoleEnabled = false;
     </script>
 
-        <script>
-            $(function () {
+    <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            if (window.Roblox && Roblox.DeveloperConsoleWarning && typeof Roblox.DeveloperConsoleWarning.showWarning === "function") {
                 Roblox.DeveloperConsoleWarning.showWarning();
-            });
-        </script>
+            }
+        });
+    </script>
 
 </head>
 <body id="rbx-body" class="" data-performance-relative-value="0.5" data-internal-page-name="NewLogin" data-send-event-percentage="0.01">
@@ -74,7 +77,6 @@
 
 
                 <div>
-                    <noscript><div class="alert-info">Please enable Javascript to use all the features on this site.</div></noscript>
                                                             <div id="BodyWrapper" class="">
                         <div id="RepositionBody">
                             <div id="Body" class="body-width">
@@ -110,7 +112,6 @@
         </div>
     </div>
 </div>
-        <form action="https://web.archive.org/web/20160429214141/https://www.roblox.com/newlogin" method="POST" id="loginForm" novalidate="novalidate">
 
             <div id="loginarea" class="divider-bottom" data-is-captcha-on="False">
                 <div id="leftArea">
@@ -147,9 +148,9 @@
                                             </a>
                                         </div>
 
-
 <div id="SocialIdentitiesInformation" data-rbx-login-redirect-url="/social/postlogin">
-</div>                        </span>
+    </div>              
+            </span>
                     </div>
                 </div>
                 <div id="rightArea" class="divider-left">
@@ -159,6 +160,7 @@
 <a roblox-js-onsignup="" class="btn-medium btn-primary">Sign Up</a>                    </div>
                 </div>
             </div>
+            <form>
             <input id="ReturnUrl" name="ReturnUrl" type="hidden" value="/games/189707/Natural-Disaster-Survival">
         </form>
 
@@ -212,72 +214,6 @@
         </div> 
     </div> 
 </div> 
-
-<div id="PlaceLauncherStatusPanel" style="display:none;width:300px" data-new-plugin-events-enabled="True" data-event-stream-for-plugin-enabled="True" data-event-stream-for-protocol-enabled="True" data-is-game-launch-interface-enabled="False" data-is-protocol-handler-launch-enabled="False" data-is-user-logged-in="False" data-os-name="Unknown" data-protocol-name-for-client="roblox-player" data-protocol-name-for-studio="roblox-studio" data-protocol-url-includes-launchtime="true" data-protocol-detection-enabled="true">
-    <div class="modalPopup blueAndWhite PlaceLauncherModal" style="min-height: 160px">
-        <div id="Spinner" class="Spinner" style="padding:20px 0;">
-            <img src="~/images/login/e998fb4c03e8c2e30792f2f3436e9416.gif" height="32" width="32" alt="Progress">
-        </div>
-        <div id="status" style="min-height:40px;text-align:center;margin:5px 20px">
-            <div id="Starting" class="PlaceLauncherStatus MadStatusStarting" style="display:block">
-                Starting Roblox...
-            </div>
-            <div id="Waiting" class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
-            <div id="StatusBackBuffer" class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
-        </div>
-        <div style="text-align:center;margin-top:1em">
-            <input type="button" class="Button CancelPlaceLauncherButton translate" value="Cancel">
-        </div>
-    </div>
-</div>
-<div id="ProtocolHandlerStartingDialog" style="display:none;">
-    <div class="modalPopup ph-modal-popup">
-        <div class="ph-modal-header">
-
-        </div>
-        <div class="ph-logo-row">
-            <img src="~/images/login/e060b59b57fdcc7874c820d13fdcee71.svg" width="90" height="90" alt="R">
-        </div>
-        <div class="ph-areyouinstalleddialog-content">
-            <p class="larger-font-size">
-                ROBLOX is now loading. Get ready to play!
-            </p>
-            <div class="ph-startingdialog-spinner-row">
-                <img src="~/images/login/4bed93c91f909002b1f17f05c0ce13d1.gif" width="82" height="24">
-            </div>
-        </div>
-    </div>
-</div>
-<div id="ProtocolHandlerAreYouInstalled" style="display:none;">
-    <div class="modalPopup ph-modal-popup">
-        <div class="ph-modal-header">
-            <span class="icon-close simplemodal-close"></span>
-        </div>
-        <div class="ph-logo-row">
-            <img src="~/images/login/e060b59b57fdcc7874c820d13fdcee71.svg" width="90" height="90" alt="R">
-        </div>
-        <div class="ph-areyouinstalleddialog-content">
-            <p class="larger-font-size">
-                You're moments away from getting into the game!
-            </p>
-            <div>
-                <button type="button" class="btn btn-primary-md" id="ProtocolHandlerInstallButton">
-                    Download and Install ROBLOX
-                </button>
-            </div>
-            <div class="small">
-                <a href="https://web.archive.org/web/20160429214141/https://en.help.roblox.com/hc/en-us/articles/204473560" class="text-name" target="_blank">Click here for help</a>
-            </div>
-
-        </div>
-    </div>
-</div>
-<div id="ProtocolHandlerClickAlwaysAllowed" class="ph-clickalwaysallowed" style="display:none;">
-    <p class="larger-font-size">
-        <span class="icon-moreinfo"></span>
-        Check <b>Remember my choice</b> and click <img src="~/images/login/7c8d7a39b4335931221857cca2b5430b.png" alt="Launch Application">  in the dialog box above to join games faster in the future!
-    </p>
-</div>
 
     <script type="text/javascript" src="~/JS/Login/Login.js"></script>
 
