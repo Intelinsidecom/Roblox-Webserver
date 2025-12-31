@@ -76,6 +76,58 @@ namespace RCCArbiter
             return Channel.GetVersion();
         }
 
+        public bool IsJsonPreferred(bool forceJson)
+        {
+            // 1) Per-call override always wins
+            if (forceJson)
+                return true;
+
+            try
+            {
+                // 2) AppSettings override: RCCService:ForceJson and Rendering:Year
+                var config = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .Build();
+
+                var forceJsonConfig = config["RCCService:ForceJson"];
+                if (string.Equals(forceJsonConfig, "true", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                var renderingYear = config["Rendering:Year"];
+                if (!string.IsNullOrWhiteSpace(renderingYear) && int.TryParse(renderingYear, out var cfgYear))
+                {
+                    // If a year is configured, trust it as the RCC vintage.
+                    // Treat 2018 and newer RCC as JSON-capable: prefer JSON when available.
+                    return cfgYear >= 2018;
+                }
+
+                // 3) Fallback: probe RCC version string over SOAP
+                var version = GetVersion();
+                if (string.IsNullOrWhiteSpace(version))
+                    return false;
+
+                // Very loose heuristic: look for a year > 2018 in the version string
+                // Examples: "Roblox RCC 2016.112.0", "RCCService 2019.1.0.0"
+                var parts = version.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var part in parts)
+                {
+                    if (part.Length >= 4 && int.TryParse(part.Substring(0, 4), out var year))
+                    {
+                        // Prefer JSON when RCC appears to be from 2018 or newer
+                        if (year >= 2018)
+                            return true;
+                    }
+                }
+            }
+            catch
+            {
+                // Fall back to Lua if version probing or configuration fails
+            }
+
+            return false;
+        }
+
         public Status GetStatus()
         {
             return Channel.GetStatus();

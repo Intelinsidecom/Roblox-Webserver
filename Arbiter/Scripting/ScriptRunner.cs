@@ -41,5 +41,25 @@ namespace RCCArbiter.Scripting
 
             return _client.BatchJobEx(job, scriptExecution);
         }
+
+        public LuaValue[] RunRawScript(string name, string script)
+        {
+            var job = new Job
+            {
+                id = Guid.NewGuid().ToString(),
+                expirationInSeconds = 60,
+                category = 0,
+                cores = 1
+            };
+
+            var scriptExecution = new ScriptExecution
+            {
+                name = name,
+                script = script,
+                arguments = null
+            };
+
+            return _client.BatchJobEx(job, scriptExecution);
+        }
     }
 }

@@ -230,6 +230,7 @@ namespace RCCArbiter
             var app = builder.Build();
 
             var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
+            var jsonRoot = Path.Combine(Directory.GetCurrentDirectory(), "Json");
             var provider = new FileScriptProvider(scriptsRoot);
             var renderer = new ScriptRenderer();
 
@@ -237,6 +238,124 @@ namespace RCCArbiter
             _renderMgr = new RenderingRccManager(builder.Configuration);
 
             app.MapGet("/health", () => Results.Ok(new { ok = true }));
+
+            app.MapGet("/version", () =>
+            {
+                var asm = Assembly.GetExecutingAssembly();
+                var name = asm.GetName();
+                var arbiterVersion = name.Version != null ? name.Version.ToString() : "unknown";
+
+                string currentRccUrl = rccUrl;
+                string? rccVersion = null;
+                int? rccEnvironmentCount = null;
+                string? rccError = null;
+
+                bool TryFetchStatus(string url)
+                {
+                    try
+                    {
+                        using var client = new RCCClient(url);
+                        var status = client.GetStatus();
+                        rccVersion = status.version;
+                        rccEnvironmentCount = status.environmentCount;
+                        rccError = null;
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        rccError = ex.Message;
+                        return false;
+                    }
+                }
+
+                if (!TryFetchStatus(currentRccUrl))
+                {
+                    try
+                    {
+                        if (_configuration != null)
+                        {
+                            if (_renderingRCC == null)
+                            {
+                                _renderingRCC = new RCCProcessManager(_configuration, "Rendering");
+                                _renderingRCC.Start();
+                            }
+
+                            currentRccUrl = _renderingRCC.ServiceUrl;
+                            TryFetchStatus(currentRccUrl);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        rccError = ex.Message;
+                    }
+                }
+
+                var payload = new
+                {
+                    arbiter = new
+                    {
+                        name = name.Name,
+                        version = arbiterVersion
+                    },
+                    rcc = new
+                    {
+                        url = currentRccUrl,
+                        version = rccVersion,
+                        environmentCount = rccEnvironmentCount,
+                        error = rccError
+                    }
+                };
+
+                return Results.Ok(payload);
+            });
+
+            app.MapGet("/status", async () =>
+            {
+                bool rccReachable = false;
+                string? rccError = null;
+
+                try
+                {
+                    if (Uri.TryCreate(rccUrl, UriKind.Absolute, out var uri))
+                    {
+                        var host = uri.Host;
+                        var port = uri.Port;
+                        using var client = new TcpClient();
+                        var connectTask = client.ConnectAsync(host, port);
+                        var timeoutTask = Task.Delay(1000);
+                        var completed = await Task.WhenAny(connectTask, timeoutTask);
+                        if (completed == connectTask && client.Connected)
+                        {
+                            rccReachable = true;
+                        }
+                        else if (!client.Connected)
+                        {
+                            rccError = "Timeout while connecting to RCC";
+                        }
+                    }
+                    else
+                    {
+                        rccError = "Invalid RCC URL";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    rccError = ex.Message;
+                }
+
+                var status = new
+                {
+                    ok = true,
+                    rcc = new
+                    {
+                        url = rccUrl,
+                        reachable = rccReachable,
+                        error = rccError
+                    }
+                };
+
+                return Results.Ok(status);
+            });
 
             // Use RenderingRccManager to acquire URL per request if triggered
 
@@ -364,9 +483,6 @@ namespace RCCArbiter
                     {
                         var mapped = endpoint.MapParameters(req);
 
-                        if (!provider.TryGetScript(endpoint.ScriptName, out var template))
-                            return Results.NotFound(new { error = $"Script '{endpoint.ScriptName}.lua' not found" });
-
                         // Treat compiled endpoint route as trigger route
                         string urlToUse = rccUrl;
                         IDisposable? lease = null;
@@ -381,9 +497,102 @@ namespace RCCArbiter
                         }
                         using (lease)
                         {
-                            using var client = new RCCClient(urlToUse);
-                            var runner = new ScriptRunner(client, renderer);
-                            var results = runner.RunScript(endpoint.ScriptName, template, mapped);
+                            const int maxAttempts = 3;
+                            LuaValue[] results = Array.Empty<LuaValue>();
+                            SocketException? lastConnectionException = null;
+
+                            for (int attempt = 1; attempt <= maxAttempts; attempt++)
+                            {
+                                try
+                                {
+                                    using var client = new RCCClient(urlToUse);
+
+                                    // Determine whether to use JSON-based request instead of Lua
+                                    bool forceJson = false;
+                                    if (req.Query.TryGetValue("ForceJson", out var fq) || req.Query.TryGetValue("forceJson", out fq))
+                                    {
+                                        var raw = fq.ToString();
+                                        if (!string.IsNullOrWhiteSpace(raw))
+                                        {
+                                            forceJson = string.Equals(raw, "true", StringComparison.OrdinalIgnoreCase) ||
+                                                        raw == "1";
+                                        }
+                                    }
+
+                                    bool preferJson = client.IsJsonPreferred(forceJson);
+
+                                    var runner = new ScriptRunner(client, renderer);
+
+                                    if (preferJson)
+                                    {
+                                        var jsonPath = Path.Combine(jsonRoot, endpoint.ScriptName + ".json");
+                                        if (!File.Exists(jsonPath))
+                                        {
+                                            // If JSON template is missing, fall back to Lua script as before
+                                            if (!provider.TryGetScript(endpoint.ScriptName, out var luaTemplateFallback))
+                                            {
+                                                return Results.NotFound(new { error = $"Script '{endpoint.ScriptName}.lua' or JSON template '{endpoint.ScriptName}.json' not found" });
+                                            }
+
+                                            results = runner.RunScript(endpoint.ScriptName, luaTemplateFallback, mapped);
+                                        }
+                                        else
+                                        {
+                                            var jsonTemplate = File.ReadAllText(jsonPath, Encoding.UTF8);
+                                            var renderedJson = renderer.Render(jsonTemplate, mapped);
+
+                                            // Send rendered JSON directly as the RCC script body, matching pekora game-renderer behavior
+                                            var scriptName = endpoint.ScriptName + "JsonPayload";
+                                            results = runner.RunRawScript(scriptName, renderedJson ?? string.Empty);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (!provider.TryGetScript(endpoint.ScriptName, out var template))
+                                        {
+                                            return Results.NotFound(new { error = $"Script '{endpoint.ScriptName}.lua' not found" });
+                                        }
+
+                                        results = runner.RunScript(endpoint.ScriptName, template, mapped);
+                                    }
+
+                                    lastConnectionException = null;
+                                    break;
+                                }
+                                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionRefused)
+                                {
+                                    lastConnectionException = ex;
+                                    if (attempt < maxAttempts)
+                                    {
+                                        await Task.Delay(500);
+                                    }
+                                }
+                            }
+
+                            if (lastConnectionException != null && (results == null || results.Length == 0))
+                            {
+                                throw lastConnectionException;
+                            }
+
+                            // Optional: for any endpoint, allow returning the PNG directly when requested
+                            if (req.Query.TryGetValue("GiveImage", out var giveImg) &&
+                                string.Equals(giveImg.ToString(), "true", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (results != null && results.Length > 0 && results[0].type == LuaType.LUA_TSTRING)
+                                {
+                                    try
+                                    {
+                                        var base64 = results[0].value as string ?? string.Empty;
+                                        var bytes = Convert.FromBase64String(base64);
+                                        return Results.File(bytes, "image/png");
+                                    }
+                                    catch
+                                    {
+                                        // If decoding fails, fall back to JSON representation
+                                    }
+                                }
+                            }
+
                             var formatted = FormatLuaValues(results);
                             return Results.Json(formatted);
                         }

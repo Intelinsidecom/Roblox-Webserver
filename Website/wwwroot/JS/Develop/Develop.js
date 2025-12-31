@@ -132,18 +132,28 @@ Roblox.DevelopPage = function() {
         var search = window.location.search || "";
         var match = search.match(/[?&](?:view|View)=(\d+)/);
         var viewValue = match && match[1] ? match[1] : null;
-        if (!viewValue) {
-            viewValue = "2";
-        }
-        if (viewValue === "2") {
-            console.log('[Develop.js] Detected T-Shirts view; loading content from /develop/asset-list/2');
-            $("#MyCreationsTab .items-container").load("/develop/asset-list/2");
-        } else if (viewValue === "11") {
-            console.log('[Develop.js] Detected Shirts view; loading content from /develop/asset-list/11');
-            $("#MyCreationsTab .items-container").load("/develop/asset-list/11");
-        } else if (viewValue === "12") {
-            console.log('[Develop.js] Detected Pants view; loading content from /develop/asset-list/12');
-            $("#MyCreationsTab .items-container").load("/develop/asset-list/12");
+        var pageMatch = search.match(/[?&](?:Page|page)=([^&]+)/);
+        var pageValue = pageMatch && pageMatch[1] ? pageMatch[1].toLowerCase() : null;
+
+        // If we're on the universes (Games) page and no explicit view is set,
+        // load the games HTML fragment from /develop/games-list into the items-container.
+        if (!viewValue && pageValue === "universes") {
+            console.log('[Develop.js] Detected universes page; loading games list from /develop/games-list');
+            $("#MyCreationsTab .items-container-inner").load("/develop/games-list");
+        } else {
+            if (!viewValue) {
+                viewValue = "2";
+            }
+            if (viewValue === "2") {
+                console.log('[Develop.js] Detected T-Shirts view; loading content from /develop/asset-list/2');
+                $("#MyCreationsTab .items-container").load("/develop/asset-list/2");
+            } else if (viewValue === "11") {
+                console.log('[Develop.js] Detected Shirts view; loading content from /develop/asset-list/11');
+                $("#MyCreationsTab .items-container").load("/develop/asset-list/11");
+            } else if (viewValue === "12") {
+                console.log('[Develop.js] Detected Pants view; loading content from /develop/asset-list/12');
+                $("#MyCreationsTab .items-container").load("/develop/asset-list/12");
+            }
         }
 
         // Handle Pants upload via AJAX so errors stay inline on the /develop page

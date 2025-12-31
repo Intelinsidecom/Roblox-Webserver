@@ -1,0 +1,38 @@
+Games / Universes model (work-in-progress)
+=========================================
+
+Schema
+------
+- universes
+  - universe_id (bigserial, PK)
+  - name (text)
+  - creator_user_id (bigint, FK to users.user_id)
+  - place_ids (bigint[]; each entry is a place asset_id, typically asset_type_id = 9)
+  - created_at (timestamptz)
+
+Creation flow
+-------------
+- The legacy /develop page has a "Create New Game" button.
+- That button now points to /games/create on the Website (same domain instead of web.roblox.com).
+- /games/create:
+  - Reads the logged-in user id from claims.
+  - Uses Games.GameCreationService.CreateUniverseWithRootPlaceAsync(connectionString, userId, "My First Game").
+  - That service:
+    - Inserts a new assets row (asset_type_id = 9) as the first place in the game.
+    - Inserts a universes row whose place_ids array contains that single place id.
+      The root/start place for now can be chosen as the lowest id in place_ids
+      or simply the first element.
+  - After creation, the user is redirected back to the universes view on /develop.
+
+Open work / TODO
+----------------
+- Implement a real universes listing instead of the current static HTML in BuildController and DevelopController.
+- Implement /universes/configure?id={universeId} page and backing controller to edit universe-level settings.
+- Flesh out PlacesController with:
+  - Configure start place + per-place settings endpoints.
+  - List places for a given universe by reading universes.place_ids (used by the
+    place selector modal and other UIs).
+  - Ability to append/remove place ids in universes.place_ids when adding/removing
+    places from a game.
+  - API hooks for shutting down servers, toggling public/private, etc.
+- Decide on how place content files (.rbxl/.rbxlx) are stored and associated with the assets row created here.
