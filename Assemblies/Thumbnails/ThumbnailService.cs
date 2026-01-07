@@ -386,6 +386,84 @@ public sealed class ThumbnailService : IThumbnailService
         return base64!;
     }
 
+    public async Task<ThumbnailSaveResult> RenderPlaceAsync(long placeId, int? x = null, int? y = null, CancellationToken cancellationToken = default)
+    {
+        var arbiterUrl = _configuration?["Thumbnails:ArbiterUrl"] ?? "http://localhost:5000";
+
+        var qb = new StringBuilder();
+        qb.Append("placeId=").Append(Uri.EscapeDataString(placeId.ToString()));
+        if (x.HasValue) qb.Append("&x=").Append(x.Value);
+        if (y.HasValue) qb.Append("&y=").Append(y.Value);
+        // If a Website base URL is configured, pass it explicitly so Arbiter doesn't infer its own host
+        var websiteBase = _configuration?["Thumbnails:WebsiteBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(websiteBase))
+        {
+            qb.Append("&baseUrl=").Append(Uri.EscapeDataString(websiteBase));
+        }
+
+        var requestUri = arbiterUrl.TrimEnd('/') + "/rendergame?" + qb.ToString();
+
+        using var http = new HttpClient();
+        using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
+        using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
+
+        var json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+        if (!resp.IsSuccessStatusCode)
+        {
+            var statusCode = (int)resp.StatusCode;
+            var reason = resp.ReasonPhrase ?? string.Empty;
+            throw new HttpRequestException($"Arbiter /rendergame returned {statusCode} {reason}. Body: {Trunc(json)}");
+        }
+
+        using var doc = JsonDocument.Parse(json);
+
+        // Extract base64 PNG from Arbiter response. Expected shapes:
+        // - Array of { type: "string", value: "<base64>" }
+        // - Object with { value: "<base64>" }
+        // - Raw string "<base64>"
+        string? base64 = null;
+
+        if (doc.RootElement.ValueKind == JsonValueKind.Array)
+        {
+            var len = doc.RootElement.GetArrayLength();
+            if (len == 0)
+                throw new InvalidOperationException("Unexpected response from Arbiter. Raw: " + Trunc(json));
+
+            // Walk from end to start to get the last value
+            for (int i = len - 1; i >= 0; i--)
+            {
+                var el = doc.RootElement[i];
+                if (el.ValueKind == JsonValueKind.Object && el.TryGetProperty("value", out var vEl) && vEl.ValueKind == JsonValueKind.String)
+                {
+                    base64 = vEl.GetString();
+                    if (!string.IsNullOrWhiteSpace(base64)) break;
+                }
+                else if (el.ValueKind == JsonValueKind.String)
+                {
+                    base64 = el.GetString();
+                    if (!string.IsNullOrWhiteSpace(base64)) break;
+                }
+            }
+        }
+        else if (doc.RootElement.ValueKind == JsonValueKind.Object)
+        {
+            if (doc.RootElement.TryGetProperty("value", out var vEl) && vEl.ValueKind == JsonValueKind.String)
+            {
+                base64 = vEl.GetString();
+            }
+        }
+        else if (doc.RootElement.ValueKind == JsonValueKind.String)
+        {
+            base64 = doc.RootElement.GetString();
+        }
+
+        if (string.IsNullOrWhiteSpace(base64))
+            throw new InvalidOperationException("Could not extract base64 PNG from Arbiter response. Raw: " + Trunc(json));
+
+        var save = await SaveBase64PngAsync(base64!, null, cancellationToken).ConfigureAwait(false);
+        return save;
+    }
+
     private string ResolveOutputDirectory(string? overrideOutputDirectory)
     {
         if (!string.IsNullOrWhiteSpace(overrideOutputDirectory))

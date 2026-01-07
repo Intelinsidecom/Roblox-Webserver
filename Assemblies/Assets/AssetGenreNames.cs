@@ -40,6 +40,8 @@ namespace Assets
                     return "Sports";
                 case 11:
                     return "Fantasy";
+                case 12:
+                    return "Building";
                 case 13:
                     return "FPS";
                 case 14:
@@ -48,6 +50,54 @@ namespace Assets
                     return "Wild West";
                 default:
                     return "All";
+            }
+        }
+
+        /// <summary>
+        /// Convert genre string to integer ID based on genre mapping
+        /// </summary>
+        public static int GetGenreIdFromString(string genre)
+        {
+            if (string.IsNullOrWhiteSpace(genre))
+                return 1; // Default to "All"
+
+            switch (genre)
+            {
+                case "All":
+                    return 1;
+                case "Adventure":
+                    return 2;
+                case "Horror":
+                    return 3;
+                case "Town and City":
+                    return 4;
+                case "Military":
+                    return 5;
+                case "Comedy":
+                    return 6;
+                case "Medieval":
+                    return 7;
+                case "Sci-Fi":
+                    return 8;
+                case "Naval":
+                    return 9;
+                case "Sports":
+                    return 10;
+                case "Fantasy":
+                    return 11;
+                case "Building":
+                    return 12;
+                case "FPS":
+                    return 13;
+                case "RPG":
+                    return 14;
+                case "Western":
+                case "Wild West":
+                    return 15;
+                case "Fighting":
+                    return 1; // Map to "All" since no available ID for Fighting
+                default:
+                    return 1; // Default to "All" for unknown genres
             }
         }
     }

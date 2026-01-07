@@ -22,6 +22,9 @@
     <!-- dependencies other scripts may use or not, angular, ajax and so on -->
     <script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="~/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
     <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
@@ -31,6 +34,8 @@
     <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
+    <script type="text/javascript" src="~/JS/roblox.js"></script>
+    <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
     <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
     <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
     <script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
@@ -194,14 +199,6 @@
     <partial name="_Footer" />
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            $(document).on("click", '[data-behavior="nav-notification"]', function (e) {
-                e.preventDefault();
-                $('[data-behavior="left-col"]').toggleClass("nav-show");
-            });
-        });
-    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

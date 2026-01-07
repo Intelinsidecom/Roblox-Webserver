@@ -1,55 +1,41 @@
 ﻿@{ Layout = "_Layout"; }
-<!DOCTYPE html>
 
-<link rel="stylesheet" href="/CSS/Pages/RobloxError/RobloxError.css">
-<body>
-
-<link rel="stylesheet" href="/CSS/Pages/RobloxError/RobloxError.css">
-
-    <title>ROBLOX.com</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
-
-
-
-    
-    
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
- 
+@section Head {
+    <link rel="stylesheet" href="/CSS/Pages/RobloxError/RobloxError.css">
+    <style>
+        @@media(max-width:1319px) {
+            .request-error-page-content {
+                padding-top: 100px;
+            }
+        }
+        
+        @@media(max-width:991px) {
+            .request-error-page-content {
+                padding-top: 100px;
+            }
+        }
+    </style>
+}
 
 <div id="image-retry-data" data-image-retry-max-times="10" data-image-retry-timer="1500" data-isnewexponentialbackoffforimageretryenabled="true" data-ga-logging-percent="10">
 </div>
 <div id="http-retry-data" data-http-retry-max-timeout="0" data-http-retry-base-timeout="0" data-http-retry-max-times="5">
 </div>
 
-    
-
-
 <div id="fb-root"></div>
 
 <div id="wrap" class="wrap no-gutter-ads logged-out" data-gutter-ads-enabled="false">
-
-
-
-    
-
-<div class="request-error-page-content">
-    <div class="default-error-page">
-        <div class="message-container">
+    <div class="request-error-page-content">
+        <div class="default-error-page">
+            <div class="message-container">
                 <h3 class="error-title">Page cannot be found or no longer exists</h3>
                 <h4 class="error-message">404 <span>|</span>Page Not found</h4>
-
-        </div>
-        <img src="/images/9281912c23312bc0d08ab750afa588cc.png" class="error-image" alt="Error Image">
-        <div class="action-buttons">
-            <a class="btn-primary-md btn-fixed-width" title="Go to Previous Page" onclick="history.back();return false;" href="404">Back</a>
-            <a class="btn-control-md btn-fixed-width" title="Return Home" href="/">Home</a>
+            </div>
+            <img src="/images/9281912c23312bc0d08ab750afa588cc.png" class="error-image" alt="Error Image">
+            <div class="action-buttons">
+                <a class="btn-primary-md btn-fixed-width" title="Go to Previous Page" onclick="history.back();return false;" href="404">Back</a>
+                <a class="btn-control-md btn-fixed-width" title="Return Home" href="/">Home</a>
+            </div>
         </div>
     </div>
 </div>
-            
-        </div>
-            </div> 
-
-
-
-</body></html>

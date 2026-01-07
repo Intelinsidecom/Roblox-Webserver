@@ -1114,7 +1114,9 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Npgsql": "8.0.4"
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
+          "Npgsql": "8.0.4",
+          "Thumbnails": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Games.dll": {}
@@ -3054,8 +3056,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Intel\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\Intel\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -3066,9 +3067,6 @@
       "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
         "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],

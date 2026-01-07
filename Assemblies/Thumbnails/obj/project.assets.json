@@ -1163,8 +1163,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Intel\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\Intel\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
@@ -1175,9 +1174,6 @@
       "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
         "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],

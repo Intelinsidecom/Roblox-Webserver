@@ -23,6 +23,8 @@ namespace Assets
         public long Price { get; set; }
         public bool AllowComments { get; set; }
         public int Genre { get; set; }
+        public bool IsPlace { get; set; }
+        public int PrivacyLevel { get; set; }
     }
 
     public sealed class AssetCreateParams

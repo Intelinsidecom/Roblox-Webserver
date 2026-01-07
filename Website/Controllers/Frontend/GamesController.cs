@@ -6,6 +6,7 @@ using Games;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Thumbnails;
 using Users;
 
 namespace RobloxWebserver.Controllers
@@ -21,10 +22,12 @@ namespace RobloxWebserver.Controllers
     public sealed class GamesController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly IThumbnailService _thumbnailService;
 
-        public GamesController(IConfiguration configuration)
+        public GamesController(IConfiguration configuration, IThumbnailService thumbnailService)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _thumbnailService = thumbnailService ?? throw new ArgumentNullException(nameof(thumbnailService));
         }
 
         /// <summary>
@@ -63,6 +66,8 @@ namespace RobloxWebserver.Controllers
                     assetsRoot,
                     starterPlacePath,
                     enableCooldown,
+                    _thumbnailService,
+                    _configuration,
                     cancellationToken);
             }
             catch

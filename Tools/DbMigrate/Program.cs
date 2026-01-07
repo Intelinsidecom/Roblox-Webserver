@@ -64,8 +64,9 @@ internal class Program
         Console.WriteLine("5) List users (id, name, created)");
         Console.WriteLine("6) View user details (by id or name)");
         Console.WriteLine("7) Asset maintenance (wipe all assets or a single asset)");
-Console.WriteLine("8) Add Robux/Tix to a user");
-        Console.Write("Enter choice (1-8): ");
+        Console.WriteLine("8) Add Robux/Tix to a user");
+        Console.WriteLine("9) Thumbnail maintenance (delete thumbnails from CDN and database)");
+        Console.Write("Enter choice (1-9): ");
         var key = Console.ReadKey(intercept: true).KeyChar;
         Console.WriteLine();
 
@@ -559,6 +560,322 @@ Console.WriteLine("8) Add Robux/Tix to a user");
             {
                 Console.Error.WriteLine(ex);
                 return -1;
+            }
+        }
+        else if (key == '9')
+        {
+            Console.WriteLine("Thumbnail maintenance:");
+            Console.WriteLine("1) Delete ALL thumbnails from CDN and clear database records");
+            Console.WriteLine("2) Delete specific user's thumbnails (avatar/headshot)");
+            Console.WriteLine("3) Delete specific asset thumbnails");
+            Console.Write("Enter choice (1-3): ");
+            var subKey = Console.ReadKey(intercept: true).KeyChar;
+            Console.WriteLine();
+
+            var websiteDir = Path.Combine(repoRoot, "Website");
+            string? thumbnailsDirectory = null;
+            string? avatar3DDirectory = null;
+            
+            if (Directory.Exists(websiteDir))
+            {
+                var cfg = new ConfigurationBuilder()
+                    .SetBasePath(websiteDir)
+                    .AddJsonFile("appsettings.json", optional: true)
+                    .AddJsonFile($"appsettings.{environment}.json", optional: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+                thumbnailsDirectory = cfg["Thumbnails:OutputDirectory"];
+                avatar3DDirectory = cfg["Thumbnails:Avatar3DDirectory"];
+            }
+
+            // Fallback to default CDN location if not configured
+            if (string.IsNullOrWhiteSpace(thumbnailsDirectory))
+            {
+                thumbnailsDirectory = Path.Combine(repoRoot, "CDN", "Assets", "thumbnails");
+            }
+
+            if (string.IsNullOrWhiteSpace(avatar3DDirectory))
+            {
+                avatar3DDirectory = Path.Combine(repoRoot, "CDN", "Assets", "3DAvatar");
+            }
+
+            if (subKey == '1')
+            {
+                Console.WriteLine();
+                Console.WriteLine("WARNING: This will DELETE ALL thumbnail files and clear thumbnail-related database records.");
+                Console.WriteLine($"Thumbnails directory: {thumbnailsDirectory}");
+                Console.WriteLine($"3D Avatar directory: {avatar3DDirectory}");
+                Console.Write("Type 'DELETE_ALL_THUMBNAILS' to continue (or anything else to cancel): ");
+                var confirm = Console.ReadLine();
+                if (!string.Equals(confirm, "DELETE_ALL_THUMBNAILS", StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine("Cancelled.");
+                    return 1;
+                }
+
+                try
+                {
+                    using var conn = new NpgsqlConnection(connectionString);
+                    conn.Open();
+                    using var tx = conn.BeginTransaction();
+
+                    // Collect thumbnail file hashes before clearing database
+                    var thumbnailHashes = new List<string>();
+                    
+                    // Get user thumbnail hashes from avatar_thumbnail_cache
+                    using (var cmd = new NpgsqlCommand("select distinct image_hash from avatar_thumbnail_cache", conn, tx))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var hash = reader.GetString(0);
+                            thumbnailHashes.Add(hash);
+                        }
+                    }
+
+                    // Clear database records
+                    using (var cmd = new NpgsqlCommand("delete from avatar_thumbnail_cache", conn, tx))
+                        cmd.ExecuteNonQuery();
+
+                    using (var cmd = new NpgsqlCommand("update users set avatar_thumbnail_url = null, headshot_thumbnail_url = null, avatar_render_urls = '{}'::jsonb", conn, tx))
+                        cmd.ExecuteNonQuery();
+
+                    using (var cmd = new NpgsqlCommand("update assets set thumbnail_url = null", conn, tx))
+                        cmd.ExecuteNonQuery();
+
+                    tx.Commit();
+
+                    // Delete thumbnail files
+                    int deletedFiles = 0;
+                    if (!string.IsNullOrWhiteSpace(thumbnailsDirectory) && Directory.Exists(thumbnailsDirectory))
+                    {
+                        foreach (var file in Directory.GetFiles(thumbnailsDirectory, "*", SearchOption.AllDirectories))
+                        {
+                            try
+                            {
+                                File.Delete(file);
+                                deletedFiles++;
+                            }
+                            catch
+                            {
+                                // Ignore file deletion errors
+                            }
+                        }
+                    }
+
+                    // Delete 3D avatar directories
+                    int deleted3DFolders = 0;
+                    if (!string.IsNullOrWhiteSpace(avatar3DDirectory) && Directory.Exists(avatar3DDirectory))
+                    {
+                        foreach (var dir in Directory.GetDirectories(avatar3DDirectory))
+                        {
+                            try
+                            {
+                                Directory.Delete(dir, true);
+                                deleted3DFolders++;
+                            }
+                            catch
+                            {
+                                // Ignore directory deletion errors
+                            }
+                        }
+                    }
+
+                    Console.WriteLine($"Deleted {deletedFiles} thumbnail files and {deleted3DFolders} 3D avatar directories.");
+                    Console.WriteLine("Cleared all thumbnail-related database records.");
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                    return -1;
+                }
+            }
+            else if (subKey == '2')
+            {
+                Console.Write("Enter user id: ");
+                var input = Console.ReadLine();
+                if (!long.TryParse(input, out var userId) || userId <= 0)
+                {
+                    Console.WriteLine("Invalid user id.");
+                    return 1;
+                }
+
+                try
+                {
+                    using var conn = new NpgsqlConnection(connectionString);
+                    conn.Open();
+                    using var tx = conn.BeginTransaction();
+
+                    // Get user's thumbnail hashes from cache
+                    var userThumbnailHashes = new List<string>();
+                    using (var cmd = new NpgsqlCommand("select image_hash from avatar_thumbnail_cache where config_hash like @pattern", conn, tx))
+                    {
+                        cmd.Parameters.AddWithValue("pattern", $"%{userId}%");
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                userThumbnailHashes.Add(reader.GetString(0));
+                            }
+                        }
+                    }
+
+                    // Clear user's thumbnail records
+                    using (var cmd = new NpgsqlCommand("delete from avatar_thumbnail_cache where config_hash like @pattern", conn, tx))
+                    {
+                        cmd.Parameters.AddWithValue("pattern", $"%{userId}%");
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    using (var cmd = new NpgsqlCommand("update users set avatar_thumbnail_url = null, headshot_thumbnail_url = null, avatar_render_urls = '{}'::jsonb where user_id = @id", conn, tx))
+                    {
+                        cmd.Parameters.AddWithValue("id", userId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    tx.Commit();
+
+                    // Delete user's thumbnail files
+                    int deletedFiles = 0;
+                    if (!string.IsNullOrWhiteSpace(thumbnailsDirectory) && Directory.Exists(thumbnailsDirectory))
+                    {
+                        foreach (var hash in userThumbnailHashes)
+                        {
+                            var possibleFiles = new[]
+                            {
+                                Path.Combine(thumbnailsDirectory, hash + ".png"),
+                                Path.Combine(thumbnailsDirectory, hash + ".jpg")
+                            };
+
+                            foreach (var file in possibleFiles)
+                            {
+                                if (File.Exists(file))
+                                {
+                                    try
+                                    {
+                                        File.Delete(file);
+                                        deletedFiles++;
+                                    }
+                                    catch
+                                    {
+                                        // Ignore file deletion errors
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Console.WriteLine($"Deleted {deletedFiles} thumbnail files for user {userId}.");
+                    Console.WriteLine("Cleared user's thumbnail database records.");
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                    return -1;
+                }
+            }
+            else if (subKey == '3')
+            {
+                Console.Write("Enter asset id (or 'all' for all assets): ");
+                var input = Console.ReadLine();
+
+                try
+                {
+                    using var conn = new NpgsqlConnection(connectionString);
+                    conn.Open();
+                    using var tx = conn.BeginTransaction();
+
+                    List<(long AssetId, string? ThumbnailUrl)> assetsToUpdate = new();
+
+                    if (string.Equals(input, "all", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Get all assets with thumbnails
+                        using (var cmd = new NpgsqlCommand("select asset_id, thumbnail_url from assets where thumbnail_url is not null", conn, tx))
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var assetId = reader.GetInt64(0);
+                                var thumbnailUrl = reader.IsDBNull(1) ? null : reader.GetString(1);
+                                assetsToUpdate.Add((assetId, thumbnailUrl));
+                            }
+                        }
+
+                        // Clear all asset thumbnail URLs
+                        using (var cmd = new NpgsqlCommand("update assets set thumbnail_url = null", conn, tx))
+                            cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        if (!long.TryParse(input, out var assetId) || assetId <= 0)
+                        {
+                            Console.WriteLine("Invalid asset id.");
+                            return 1;
+                        }
+
+                        // Get specific asset thumbnail URL
+                        using (var cmd = new NpgsqlCommand("select thumbnail_url from assets where asset_id = @id", conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("id", assetId);
+                            var thumbnailUrl = cmd.ExecuteScalar() as string;
+                            assetsToUpdate.Add((assetId, thumbnailUrl));
+                        }
+
+                        // Clear specific asset thumbnail URL
+                        using (var cmd = new NpgsqlCommand("update assets set thumbnail_url = null where asset_id = @id", conn, tx))
+                        {
+                            cmd.Parameters.AddWithValue("id", assetId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    tx.Commit();
+
+                    // Delete asset thumbnail files
+                    int deletedFiles = 0;
+                    if (!string.IsNullOrWhiteSpace(thumbnailsDirectory) && Directory.Exists(thumbnailsDirectory))
+                    {
+                        foreach (var (_, thumbnailUrl) in assetsToUpdate)
+                        {
+                            if (!string.IsNullOrWhiteSpace(thumbnailUrl))
+                            {
+                                // Extract hash from URL (assuming format like /thumbnails/hash.png)
+                                var uri = new Uri(thumbnailUrl, UriKind.RelativeOrAbsolute);
+                                var fileName = Path.GetFileName(uri.LocalPath);
+                                var filePath = Path.Combine(thumbnailsDirectory, fileName);
+
+                                if (File.Exists(filePath))
+                                {
+                                    try
+                                    {
+                                        File.Delete(filePath);
+                                        deletedFiles++;
+                                    }
+                                    catch
+                                    {
+                                        // Ignore file deletion errors
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Console.WriteLine($"Deleted {deletedFiles} asset thumbnail files.");
+                    Console.WriteLine($"Cleared thumbnail URLs for {assetsToUpdate.Count} asset(s).");
+                    return 0;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex);
+                    return -1;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid thumbnail maintenance choice.");
+                return 1;
             }
         }
         else

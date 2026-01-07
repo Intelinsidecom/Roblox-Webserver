@@ -13,6 +13,8 @@ namespace Assets
             {
                 case 2:
                     return "T-Shirt";
+                case 9:
+                    return "Game";
                 case 11:
                     return "Shirt";
                 case 12:
@@ -29,6 +31,8 @@ namespace Assets
             {
                 case 2:
                     return "T-Shirt";
+                case 9:
+                    return "Game";
                 case 11:
                     return "Shirt";
                 case 12:

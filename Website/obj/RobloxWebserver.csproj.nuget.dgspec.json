@@ -13,9 +13,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Api\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -111,9 +108,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Assets\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -183,9 +177,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Avatar\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -254,9 +245,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Catalog\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -326,9 +314,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Economy\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -394,9 +379,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Games\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -409,7 +391,11 @@
         "frameworks": {
           "netstandard2.0": {
             "targetAlias": "netstandard2.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj": {
+                "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\Thumbnails.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -427,6 +413,10 @@
         "netstandard2.0": {
           "targetAlias": "netstandard2.0",
           "dependencies": {
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "NETStandard.Library": {
               "suppressParent": "All",
               "target": "Package",
@@ -462,9 +452,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Thumbnails\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -542,9 +529,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Users\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
@@ -610,9 +594,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],

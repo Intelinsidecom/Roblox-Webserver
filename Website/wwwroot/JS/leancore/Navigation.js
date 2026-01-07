@@ -104,7 +104,8 @@ $(function() {
         l()
     });
     $('[data-behavior="nav-notification"]').click(function() {
-        $('[data-behavior="left-col"]').toggleClass("nav-show", 100)
+        var leftCol = $('[data-behavior="left-col"]');
+        leftCol.toggleClass("nav-show");
     });
 
     var t = $("#navbar-universal-search"),

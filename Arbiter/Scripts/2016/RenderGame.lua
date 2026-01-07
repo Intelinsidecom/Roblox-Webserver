@@ -3,7 +3,7 @@ local x = 400
 local y = 400
 local baseUrl = "http://www.freblx.xyz"
 universeId = 1
-local assetUrl = "http://www.freblx.xyz/asset/?id=19"
+local assetUrl = "http://www.freblx.xyz/asset/?id=%placeId%"
 local HttpService = game:GetService('HttpService')
 HttpService.HttpEnabled = true
 pcall(function() game:GetService("ContentProvider"):SetBaseUrl(baseUrl) end)

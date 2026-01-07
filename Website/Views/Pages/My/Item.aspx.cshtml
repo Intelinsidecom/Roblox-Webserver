@@ -49,6 +49,22 @@
     var updateSucceeded = false;
     DateTime? updateTime = null;
 
+    // Declare variables before POST handling to avoid CS0841 errors
+    var assetName = record.Name ?? string.Empty;
+    var assetTypeLabel = AssetTypeNames.GetConfigureLabel(record.AssetTypeId);
+    var assetDescription = record.Description ?? string.Empty;
+    var primaryThumb = string.IsNullOrWhiteSpace(record.HighResThumbnailUrl)
+        ? record.ThumbnailUrl
+        : record.HighResThumbnailUrl;
+    var assetThumbnail = string.IsNullOrWhiteSpace(primaryThumb)
+        ? "/images/RobloxLogo.png"
+        : primaryThumb;
+    var onSale = record.OnSale;
+    var assetPrice = record.Price;
+    var allowComments = record.AllowComments;
+    var assetGenre = record.Genre;
+    var minPrice = 2;
+
     if (isPost && string.Equals(action, "Cancel", StringComparison.OrdinalIgnoreCase))
     {
         Context.Response.Redirect($"/catalog/{itemId}/haaa");
@@ -107,26 +123,25 @@
 
             updateSucceeded = true;
             updateTime = DateTime.Now;
+            
+            // Update local variables to reflect the new values after successful save
+            assetGenre = parsedGenre;
+            if (!string.IsNullOrWhiteSpace(postedName))
+            {
+                assetName = postedName;
+            }
+            if (!string.IsNullOrWhiteSpace(postedDescription))
+            {
+                assetDescription = postedDescription;
+            }
+            onSale = onSalePosted;
+            assetPrice = parsedPrice;
+            allowComments = allowCommentsPosted;
         }
         catch
         {
         }
     }
-
-    var assetName = record.Name ?? string.Empty;
-    var assetTypeLabel = AssetTypeNames.GetConfigureLabel(record.AssetTypeId);
-    var assetDescription = record.Description ?? string.Empty;
-    var primaryThumb = string.IsNullOrWhiteSpace(record.HighResThumbnailUrl)
-        ? record.ThumbnailUrl
-        : record.HighResThumbnailUrl;
-    var assetThumbnail = string.IsNullOrWhiteSpace(primaryThumb)
-        ? "/images/RobloxLogo.png"
-        : primaryThumb;
-    var onSale = record.OnSale;
-    var assetPrice = record.Price;
-    var allowComments = record.AllowComments;
-    var assetGenre = record.Genre;
-    var minPrice = 2;
 }
 
 <!DOCTYPE html>
@@ -203,7 +218,6 @@
 <script type='text/javascript' src='/JS/leancore/libs/bootstrap.min.js'></script>
 <script type='text/javascript' src='/JS/leancore/libs/underscore-min.js'></script>
 <script type='text/javascript' src='/JS/leancore/BootstrapNamespacing.js'></script>
-<script type='text/javascript' src='/JS/leancore/Navigation.js'></script>
 <script type='text/javascript' src='/JS/Reference/widget.js'></script>
 <script type='text/javascript' src='/JS/jquery.simplemodal-1.3.5.js'></script>
 <script type='text/javascript' src='/JS/leancore/iesupport/jquery.placeholder.js'></script>
@@ -665,7 +679,7 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
                                                     <img src="/images/GenreIcons/Adventure.png" alt="Adventure" />
                                                     <label>
                                                         <input type="radio" onclick="addGenre($(this), false);" name="GenreButtons2" value="13"
-                                                            checked='checked' />
+                                                             />
                                                         Adventure
                                                     </label>
                                                 </li>
@@ -789,17 +803,6 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
         Roblox.MyItem.AlertImageUrl = "/images/Warning.png";
     </script>
 
-                    <div style="clear:both"></div>
-                </div>
-            </div>
-        </div> 
-        </div>
-
-        </div></div>
-    </div>
-
-
-    
 <script type="text/javascript">
 //<![CDATA[
 var Page_Validators =  new Array(document.getElementById("ctl00_cphRoblox_NTBRFV"));

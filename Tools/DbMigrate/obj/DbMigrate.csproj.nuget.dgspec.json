@@ -13,9 +13,6 @@
         "packagesPath": "C:\\Users\\Intel\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Tools\\DbMigrate\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
           "C:\\Users\\Intel\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],

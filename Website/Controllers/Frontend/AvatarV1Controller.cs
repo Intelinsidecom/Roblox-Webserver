@@ -293,24 +293,8 @@ public class AvatarV1Controller : ControllerBase
                 }
                 else if (renderType == "full")
                 {
-                    // "full" renders are not persisted directly, but we can use a
-                    // redraw as an opportunity to refresh both avatar and headshot
-                    // thumbnails so all variants are warm and consistent.
-                    try
-                    {
-                        var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", targetUserId, cancellationToken: cancellationToken);
-                        var avatarUrl = CombineUrl(baseUrl!, avatarSave.FileName);
-                        await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, avatarUrl, cancellationToken);
-
-                        var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", targetUserId, cancellationToken: cancellationToken);
-                        var headshotUrl = CombineUrl(baseUrl!, headshotSave.FileName);
-                        await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, headshotUrl, cancellationToken);
-                    }
-                    catch
-                    {
-                        // Best-effort only; failure to refresh thumbnails should not
-                        // cause the full render request itself to fail.
-                    }
+                    // "full" renders are not persisted directly.
+                    // Thumbnails are already refreshed above in the avatar/headshot branches.
                 }
             }
 

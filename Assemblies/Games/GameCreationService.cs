@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Thumbnails;
+using Microsoft.Extensions.Configuration;
 
 namespace Games;
 
@@ -17,6 +19,50 @@ public static class GameCreationService
         string? assetsRoot,
         string? starterPlacePath,
         bool enableCreationCooldown,
+        CancellationToken cancellationToken = default)
+    {
+        return await CreateUniverseWithRootPlaceAsync(
+            connectionString,
+            creatorUserId,
+            creatorUserName,
+            assetsRoot,
+            starterPlacePath,
+            enableCreationCooldown,
+            thumbnailService: null,
+            cancellationToken);
+    }
+
+    public static async Task<UniverseInfo> CreateUniverseWithRootPlaceAsync(
+        string? connectionString,
+        long creatorUserId,
+        string creatorUserName,
+        string? assetsRoot,
+        string? starterPlacePath,
+        bool enableCreationCooldown,
+        IThumbnailService? thumbnailService,
+        CancellationToken cancellationToken = default)
+    {
+        return await CreateUniverseWithRootPlaceAsync(
+            connectionString,
+            creatorUserId,
+            creatorUserName,
+            assetsRoot,
+            starterPlacePath,
+            enableCreationCooldown,
+            thumbnailService,
+            configuration: null,
+            cancellationToken);
+    }
+
+    public static async Task<UniverseInfo> CreateUniverseWithRootPlaceAsync(
+        string? connectionString,
+        long creatorUserId,
+        string creatorUserName,
+        string? assetsRoot,
+        string? starterPlacePath,
+        bool enableCreationCooldown,
+        IThumbnailService? thumbnailService,
+        IConfiguration? configuration,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -167,12 +213,55 @@ where user_id = @uid;";
 
         tx.Commit();
 
+        // Fire-and-forget thumbnail generation for the newly created place
+        if (thumbnailService != null)
+        {
+            // Don't await this - let it run in the background
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    // Render thumbnail for the root place
+                    var thumbnailResult = await thumbnailService.RenderPlaceAsync(rootPlaceId, x: 384, y: 216);
+                    
+                    // Generate CDN URL for the thumbnail
+                    var baseUrl = GetThumbnailBaseUrl(configuration);
+                    var thumbnailUrl = CombineUrl(baseUrl, thumbnailResult.FileName);
+                    
+                    // Update the place asset with thumbnail URL
+                    await UniverseThumbnailQueries.SetPlaceThumbnailUrlAsync(connectionString, rootPlaceId, thumbnailUrl);
+                    
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but don't fail anything
+                    Console.WriteLine($"Failed to generate thumbnail for place {rootPlaceId}: {ex.Message}");
+                }
+            });
+        }
+
         return new UniverseInfo
         {
             UniverseId = universeId,
             RootPlaceId = rootPlaceId,
             CreatorUserId = creatorUserId,
             Name = placeName,
+            ThumbnailUrl = null // Will be populated when background rendering completes
         };
+    }
+
+    private static string GetThumbnailBaseUrl(IConfiguration? configuration)
+    {
+        // Get the base URL from configuration, fallback to a default
+        var baseUrl = configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+        return baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
+    }
+
+    private static string CombineUrl(string baseUrl, string relative)
+    {
+        if (string.IsNullOrEmpty(baseUrl)) return relative;
+        if (string.IsNullOrEmpty(relative)) return baseUrl;
+        var trimmedBase = baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
+        return trimmedBase + relative.TrimStart('/');
     }
 }
