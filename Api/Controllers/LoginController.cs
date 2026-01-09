@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
-using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Common;
 using System.Security.Cryptography;
 using System.Net;
 using NpgsqlTypes;
@@ -99,19 +100,7 @@ namespace Api.Controllers
             }
 
             // Create Roblox-style opaque token and persist session
-            static string GenerateRobloxToken()
-            {
-                // Pattern similar to real: _|WARNING:-DO-NOT-SHARE-THIS.--|_ + random
-                Span<byte> bytes = stackalloc byte[48];
-                RandomNumberGenerator.Fill(bytes);
-                var b64 = Convert.ToBase64String(bytes)
-                    .Replace('+', '-')
-                    .Replace('/', '_')
-                    .TrimEnd('=');
-                return "_|WARNING:-DO-NOT-SHARE-THIS.--|_" + b64;
-            }
-
-            var token = GenerateRobloxToken();
+            var token = HashingUtilities.GenerateSecurityToken();
             var expires = DateTimeOffset.UtcNow.AddYears(1);
 
             try

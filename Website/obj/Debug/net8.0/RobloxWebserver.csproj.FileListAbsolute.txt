@@ -217,9 +217,6 @@ C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System.Composition.Runtime.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System.Composition.TypedParts.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System.Drawing.Common.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System.IO.Pipelines.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System.Text.Encodings.Web.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\System.Text.Json.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.resources.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.resources.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.resources.dll
@@ -275,7 +272,6 @@ C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\zh-Han
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Api.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Assets.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Avatar.dll
@@ -316,3 +312,5 @@ C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Econom
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Economy.pdb
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Games.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Games.pdb
+C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Common.dll
+C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Website\bin\Debug\net8.0\Common.pdb

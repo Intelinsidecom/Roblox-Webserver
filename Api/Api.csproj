@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Assemblies\Users\Users.csproj" />
     <ProjectReference Include="..\Assemblies\Games\Games.csproj" />
     <ProjectReference Include="..\Assemblies\Avatar\Avatar.csproj" />
+    <ProjectReference Include="..\Assemblies\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

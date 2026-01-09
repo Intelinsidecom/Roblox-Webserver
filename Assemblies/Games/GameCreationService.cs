@@ -5,8 +5,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Thumbnails;
+using Common;
 using Microsoft.Extensions.Configuration;
+using Thumbnails;
 
 namespace Games;
 
@@ -124,11 +125,7 @@ public static class GameCreationService
 
                 using (var sha = SHA256.Create())
                 {
-                    var hashBytes = sha.ComputeHash(bytes);
-                    var sb = new StringBuilder(hashBytes.Length * 2);
-                    foreach (var b in hashBytes)
-                        sb.Append(b.ToString("x2"));
-                    contentHash = sb.ToString();
+                    contentHash = HashingUtilities.GenerateFileHash(bytes);
                 }
 
                 var assetFolder = Path.Combine(assetsRoot, "asset");
@@ -155,8 +152,8 @@ public static class GameCreationService
         const int placeAssetTypeId = 9;
 
         const string insertPlaceSql = @"insert into assets
-(name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, is_place, privacy_level)
-values (@name, @assetTypeId, @ownerUserId, @contentHash, @fileExtension, @contentType, null, @isPlace, @privacyLevel)
+(name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, is_place, privacy_level, custom_icon, place_custom_icon_url, place_custom_icon_hash, generated_icon, place_generated_icon_url, place_generated_icon_hash)
+values (@name, @assetTypeId, @ownerUserId, @contentHash, @fileExtension, @contentType, null, @isPlace, @privacyLevel, @customIcon, @placeCustomIconUrl, @placeCustomIconHash, @generatedIcon, @placeGeneratedIconUrl, @placeGeneratedIconHash)
 returning asset_id;";
 
         using (var cmd = new NpgsqlCommand(insertPlaceSql, conn, (NpgsqlTransaction)tx))
@@ -170,6 +167,13 @@ returning asset_id;";
             cmd.Parameters.AddWithValue("isPlace", true);
             // 3 = Private, per privacy enum comment; user requested private by default.
             cmd.Parameters.AddWithValue("privacyLevel", (short)3);
+            // Icon fields - custom icons disabled by default, generated icons enabled by default
+            cmd.Parameters.AddWithValue("customIcon", false);
+            cmd.Parameters.AddWithValue("placeCustomIconUrl", (object?)null ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("placeCustomIconHash", (object?)null ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("generatedIcon", true);
+            cmd.Parameters.AddWithValue("placeGeneratedIconUrl", (object?)null ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("placeGeneratedIconHash", (object?)null ?? DBNull.Value);
 
             var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             rootPlaceId = (long)(obj ?? 0L);
@@ -213,7 +217,7 @@ where user_id = @uid;";
 
         tx.Commit();
 
-        // Fire-and-forget thumbnail generation for the newly created place
+        // Fire-and-forget thumbnail generation for newly created place
         if (thumbnailService != null)
         {
             // Don't await this - let it run in the background
@@ -221,16 +225,18 @@ where user_id = @uid;";
             {
                 try
                 {
-                    // Render thumbnail for the root place
-                    var thumbnailResult = await thumbnailService.RenderPlaceAsync(rootPlaceId, x: 384, y: 216);
+                    // Get place asset hash for caching
+                    var placeAssetHash = await GamesRepository.GetPlaceAssetHashAsync(connectionString, rootPlaceId, cancellationToken);
                     
-                    // Generate CDN URL for the thumbnail
-                    var baseUrl = GetThumbnailBaseUrl(configuration);
-                    var thumbnailUrl = CombineUrl(baseUrl, thumbnailResult.FileName);
-                    
-                    // Update the place asset with thumbnail URL
-                    await UniverseThumbnailQueries.SetPlaceThumbnailUrlAsync(connectionString, rootPlaceId, thumbnailUrl);
-                    
+                    // Generate thumbnail for the place
+                    await PlaceThumbnail.GeneratePlaceThumbnailAsync(thumbnailService, connectionString, rootPlaceId, placeAssetHash, GetThumbnailBaseUrl(configuration));
+
+                    // After generation (or cache hit), fetch the generated icon URL and apply it to the universe thumbnail
+                    var iconUrl = await GamesRepository.GetPlaceGeneratedIconUrlAsync(connectionString, rootPlaceId, cancellationToken);
+                    if (!string.IsNullOrWhiteSpace(iconUrl))
+                    {
+                        await UniverseThumbnailQueries.SetUniverseThumbnailUrlAsync(connectionString, universeId, iconUrl, cancellationToken);
+                    }
                 }
                 catch (Exception ex)
                 {

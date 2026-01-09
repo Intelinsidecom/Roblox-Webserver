@@ -183,8 +183,9 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.BuildPage == "undef
             // Horizontally: align the dropdown's right edge with the gear button's right edge
             finalLeft = h3.left + u5.outerWidth() - c3;
         } else {
-            finalTop = h3.top - s3.top + 21 + u5.outerHeight() + 9;
-            finalLeft = h3.left - s3.left + 15 - c3 + u5.outerWidth();
+            finalTop = h3.top - s3.top + u5.outerHeight() + 4;
+            // Horizontally: align dropdown's right edge with the gear button's right edge
+            finalLeft = h3.left - s3.left + u5.outerWidth() - c3;
         }
 
         // console.log('[BuildPage.js] a() positioning dropdown; isTShirt:', isTShirt, 'parent offset:', s3, 'dropdown width:', c3, 'button offset:', h3, 'finalTop:', finalTop, 'finalLeft:', finalLeft);

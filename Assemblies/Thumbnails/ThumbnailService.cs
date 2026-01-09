@@ -8,12 +8,15 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Text.Json;
 using System.IO.Compression;
+using Npgsql;
+using Assets;
 
 namespace Thumbnails;
 
 public sealed class ThumbnailService : IThumbnailService
 {
     private readonly IConfiguration? _configuration;
+    private readonly PlaceThumbnailCacheRepository _cacheRepository = new();
 
     public const string PrimaryConfigKey = "Thumbnails:OutputDirectory";
     public const string LegacyConfigKey = "ThumbnailOutputDirectory";
@@ -388,6 +391,57 @@ public sealed class ThumbnailService : IThumbnailService
 
     public async Task<ThumbnailSaveResult> RenderPlaceAsync(long placeId, int? x = null, int? y = null, CancellationToken cancellationToken = default)
     {
+        return await RenderPlaceAsync(placeId, x, y, null, null, cancellationToken);
+    }
+
+    public async Task<ThumbnailSaveResult> RenderPlaceAsync(long placeId, int? x, int? y, string? connectionString, CancellationToken cancellationToken = default)
+    {
+        return await RenderPlaceAsync(placeId, x, y, connectionString, null, cancellationToken);
+    }
+
+    public async Task<ThumbnailSaveResult> RenderPlaceAsync(long placeId, int? x, int? y, string? connectionString, string? placeAssetHash, CancellationToken cancellationToken = default)
+    {
+        // If connection string and place asset hash are provided, try to check cache first
+        if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(placeAssetHash))
+        {
+            try
+            {
+                // Check cache for existing thumbnails
+                var (found, cachedIconHash, cachedThumbnailHash) = await _cacheRepository.TryGetAsync(
+                    connectionString, placeAssetHash, cancellationToken);
+
+                if (found && !string.IsNullOrWhiteSpace(cachedIconHash))
+                {
+                    // Found cached entry - return cached result
+                    var outputDir = ResolveOutputDirectory(null);
+                    var fileName = cachedIconHash + ".png";
+                    var fullPath = Path.Combine(outputDir, fileName);
+                    
+                    // Check if the cached file actually exists on disk
+                    if (File.Exists(fullPath))
+                    {
+                        return new ThumbnailSaveResult
+                        {
+                            Hash = cachedIconHash,
+                            FileName = fileName,
+                            FullPath = fullPath,
+                            AlreadyExisted = true
+                        };
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[CACHE MISS] Cached thumbnail file not found on disk for place {placeId} with asset hash {placeAssetHash}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CACHE ERROR] Failed to check cache for place {placeId}: {ex.Message}");
+                // Continue with normal rendering if cache check fails
+            }
+        }
+
+        // Cache miss or no connection string provided - render new thumbnail
         var arbiterUrl = _configuration?["Thumbnails:ArbiterUrl"] ?? "http://localhost:5000";
 
         var qb = new StringBuilder();
@@ -460,8 +514,53 @@ public sealed class ThumbnailService : IThumbnailService
         if (string.IsNullOrWhiteSpace(base64))
             throw new InvalidOperationException("Could not extract base64 PNG from Arbiter response. Raw: " + Trunc(json));
 
-        var save = await SaveBase64PngAsync(base64!, null, cancellationToken).ConfigureAwait(false);
-        return save;
+        var saveResult = await SaveBase64PngAsync(base64!, null, cancellationToken).ConfigureAwait(false);
+
+        // If we have a connection string and place asset hash, cache the result
+        if (!string.IsNullOrWhiteSpace(connectionString) && !string.IsNullOrWhiteSpace(placeAssetHash) && !saveResult.AlreadyExisted)
+        {
+            try
+            {
+                // Cache the generated thumbnail
+                await _cacheRepository.UpsertAsync(
+                    connectionString, 
+                    placeAssetHash, 
+                    saveResult.Hash, 
+                    saveResult.Hash, // Using same hash for both icon and thumbnail for now
+                    cancellationToken);
+                
+                Console.WriteLine($"[CACHE STORE] Cached new thumbnail for place {placeId} with asset hash {placeAssetHash}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CACHE ERROR] Failed to cache thumbnail for place {placeId}: {ex.Message}");
+                // Don't fail the whole operation if caching fails
+            }
+        }
+
+        return saveResult;
+    }
+
+    /// <summary>
+    /// Check if a place has a custom icon set
+    /// </summary>
+    public async Task<bool> HasCustomIconAsync(long placeId, string connectionString, CancellationToken cancellationToken = default)
+    {
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT custom_icon 
+                               FROM assets 
+                               WHERE asset_id = @placeId AND is_place = true";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+        
+        var result = await cmd.ExecuteScalarAsync(cancellationToken);
+        if (result == null || result == DBNull.Value)
+            return false;
+            
+        return Convert.ToBoolean(result);
     }
 
     private string ResolveOutputDirectory(string? overrideOutputDirectory)

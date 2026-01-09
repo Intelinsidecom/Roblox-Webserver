@@ -131,5 +131,105 @@ namespace Thumbnails
             cmd.Parameters.AddWithValue("id", userId);
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        public static async Task UpdateAssetThumbnailUrlsAsync(string connectionString, long assetId, string thumbnailUrl, string? highResThumbnailUrl = null, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+            if (string.IsNullOrWhiteSpace(thumbnailUrl))
+                throw new ArgumentException("Thumbnail URL is required", nameof(thumbnailUrl));
+
+            const string sql = @"UPDATE assets 
+                               SET thumbnail_url = @thumbnailUrl,
+                                   high_res_thumbnail_url = @highResThumbnailUrl
+                               WHERE asset_id = @assetId AND is_place = true";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("thumbnailUrl", thumbnailUrl);
+            cmd.Parameters.AddWithValue("highResThumbnailUrl", highResThumbnailUrl ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("assetId", assetId);
+            
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public static async Task SetPlaceGeneratedIconFlagsAsync(string connectionString, long placeId, string iconUrl, string iconUrlHighRes, string iconHash, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (placeId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(placeId));
+            if (string.IsNullOrWhiteSpace(iconUrl))
+                throw new ArgumentException("Icon URL is required", nameof(iconUrl));
+
+            const string sql = @"UPDATE assets 
+                               SET generated_icon = true,
+                                   place_generated_icon_url = @iconUrl,
+                                   place_generated_icon_high_res_url = @iconUrlHighRes,
+                                   place_generated_icon_hash = @iconHash,
+                                   custom_icon = false
+                               WHERE asset_id = @placeId AND is_place = true";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("iconUrl", iconUrl);
+            cmd.Parameters.AddWithValue("iconUrlHighRes", iconUrlHighRes);
+            cmd.Parameters.AddWithValue("iconHash", iconHash);
+            cmd.Parameters.AddWithValue("placeId", placeId);
+            
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public static async Task ClearPlaceGeneratedIconAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (placeId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(placeId));
+
+            const string sql = @"UPDATE assets 
+                               SET generated_icon = false,
+                                   place_generated_icon_url = NULL,
+                                   place_generated_icon_high_res_url = NULL,
+                                   place_generated_icon_hash = NULL
+                               WHERE asset_id = @placeId AND is_place = true";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("placeId", placeId);
+            
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public static async Task ClearPlaceCustomIconAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (placeId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(placeId));
+
+            const string sql = @"UPDATE assets 
+                               SET custom_icon = false,
+                                   place_custom_icon_url = NULL,
+                                   place_custom_icon_high_res_url = NULL,
+                                   place_custom_icon_hash = NULL
+                               WHERE asset_id = @placeId AND is_place = true";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("placeId", placeId);
+            
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 }

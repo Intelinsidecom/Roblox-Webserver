@@ -49,7 +49,7 @@ div#simplemodal-container {
 .GenericModalButtonContainer .btn-neutral:visited {
 	border-color: #0852b7;
 	background-color: #0852b7;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-blue.png);
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-blue.png);
 	color: white;
 }
 
@@ -59,7 +59,7 @@ div#simplemodal-container {
 .GenericModalButtonContainer .btn-negative:visited {
 	border-color: #565656;
 	background-color: #565656;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-gray.png);
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-gray.png);
 	color: white;
 }
 
@@ -75,7 +75,7 @@ div#simplemodal-container {
 .simplemodal-container .btn-primary:visited {
 	border-color: #007001;
 	background-color: #007001;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-green.png) !important;
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-green.png) !important;
 	color: white;
 }
 
@@ -115,7 +115,7 @@ div#simplemodal-container {
 .simplemodal-container .btn-disabled-primary:active,
 .simplemodal-container .btn-disabled-primary:visited {
 	background-color: #99c699;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-green.png);
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-green.png);
 	border-color: #99c699;
 	color: white;
 }
@@ -126,7 +126,7 @@ div#simplemodal-container {
 .simplemodal-container .btn-negative:visited {
 	border-color: #565656;
 	background-color: #565656;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-gray.png);
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-gray.png);
 	color: white;
 }
 
@@ -140,7 +140,7 @@ div#simplemodal-container {
 .GenericModalButtonContainer .btn-primary:visited {
 	border-color: #007001;
 	background-color: #007001;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-green.png) !important;
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-green.png) !important;
 	color: white;
 }
 
@@ -150,7 +150,7 @@ div#simplemodal-container {
 .GenericModalButtonContainer .btn-negative:visited {
 	border-color: #565656;
 	background-color: #565656;
-	background-image: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/StyleGuide/bg-btn-gray.png);
+	background-image: url(/images/Buttons/StyleGuide/bg-btn-gray.png);
 	color: white;
 }
 
@@ -159,7 +159,7 @@ div#simplemodal-container {
 }
 
 .PurchaseModal .simplemodal-close a {
-	background: url("/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/btn-x.png") no-repeat top left;
+	background: url("/images/Buttons/btn-x.png") no-repeat top left;
 	display: block;
 	height: 20px;
 	width: 20px;
@@ -258,13 +258,13 @@ div#simplemodal-container {
 .CurrencyColor1 {
 	color: #080;
 	padding-left: 20px;
-	background: url(/web/20161107145052im_/https://static.rbxcdn.com/images/cssspecific/rbx2/head_infobox_icons.png) no-repeat 0 -42px;
+	background: url(/images/cssspecific/rbx2/head_infobox_icons.png) no-repeat 0 -42px;
 }
 
 .CurrencyColor2 {
 	color: #A61;
 	padding-left: 20px;
-	background: url(/web/20161107145052im_/https://static.rbxcdn.com/images/cssspecific/rbx2/head_infobox_icons.png) no-repeat 0 -122px;
+	background: url(/images/cssspecific/rbx2/head_infobox_icons.png) no-repeat 0 -122px;
 }
 
 .CurrencyColorFree {
@@ -280,7 +280,7 @@ div#simplemodal-container {
 #DeleteProductPromotionModal .thumbs-up-green {
 	width: 110px;
 	height: 110px;
-	background: url("/web/20161107145052im_/https://static.rbxcdn.com/images/Icons/thumbs_up.png") no-repeat;
+	background: url("/images/Icons/thumbs_up.png") no-repeat;
 	display: block;
 }
 
@@ -288,7 +288,7 @@ div#simplemodal-container {
 	height: 50px;
 	width: 102px;
 	display: inline-block;
-	background: url("/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/btn_blue_ok_l.png") top left no-repeat;
+	background: url("/images/Buttons/btn_blue_ok_l.png") top left no-repeat;
 }
 
 #DeleteProductPromotionModal .btn-blue-ok-sharp:hover {
@@ -316,7 +316,7 @@ div#simplemodal-container {
 .closeBtnCircle_35h {
 	width: 35px;
 	height: 35px;
-	background: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/closeBtnCircle_35h.png);
+	background: url(/images/Buttons/closeBtnCircle_35h.png);
 }
 
 .closeBtnCircle_20h:hover {
@@ -331,5 +331,5 @@ div#simplemodal-container {
 	position: absolute;
 	top: 5px;
 	left: 5px;
-	background: url(/web/20161107145052im_/https://static.rbxcdn.com/images/Buttons/btn-x.png);
+	background: url(/images/Buttons/btn-x.png);
 }

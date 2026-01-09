@@ -17,73 +17,191 @@ $(function() {
     }
 
     function f() {
-        var n = $("#Name").val().trim();
-        if ($(".name-error").hide(), n == "") {
-            $(".name-error").show();
-            return
+        var currentTab = $('.verticaltab.selected').data('maindiv');
+        console.log("Save button clicked, current tab:", currentTab);
+        
+        // Only validate name if we're on basic settings tab
+        if (currentTab === 'basicSettings') {
+            var n = $("#Name").val().trim();
+            if ($(".name-error").hide(), n == "") {
+                $(".name-error").show();
+                return
+            }
         }
         
-        // Show processing modal
+        // Show processing modal immediately when save is clicked
+        console.log("Showing processing modal");
         e();
         
-        // Gather form data
-        var idValue = $("#Id").val();
-        console.log("DEBUG JS: Id field value:", idValue);
-        var formData = {
-            Id: idValue,
-            Name: $("#Name").val(),
-            Description: $("#Description").val(),
-            Genre: $("#Genre").val(),
-            CharacterForce: $("input[name='CharacterForce']:checked").val(),
-            ScaleChoice: $("input[name='ScaleChoice']:checked").val()
-        };
-        console.log("DEBUG JS: Form data:", formData);
+        var savePromises = [];
         
-        // Submit via AJAX
-        $.ajax({
-            url: "/places/doconfigure2",
-            method: "POST",
-            headers: { "X-Requested-With": "XMLHttpRequest" },
-            data: formData,
-            traditional: true,
-            success: function(response) {
-                // Hide processing modal
-                $.modal.close();
+        // Function to get consistent basic info from global fields or visible fields
+        function getBasicInfo() {
+            var idElement = $("#GlobalId").length ? $("#GlobalId") : $("#Id");
+            var nameElement = $("#GlobalName").length ? $("#GlobalName") : $("#Name");
+            var descElement = $("#GlobalDescription").length ? $("#GlobalDescription") : $("#Description");
+            var genreElement = $("#GlobalGenre").length ? $("#GlobalGenre") : $("#Genre");
+            
+            return {
+                id: idElement.val() || "",
+                name: nameElement.val() || "",
+                description: descElement.val() || "",
+                genre: genreElement.val() || "All"
+            };
+        }
+        
+        // Only save basic info if we're on the basic settings tab
+        if (currentTab === 'basicSettings') {
+            var basicInfoPromise = new Promise(function(resolve, reject) {
+                var basicInfo = getBasicInfo();
                 
-                if (response.success) {
-                    // Success - reload page to show updated data
-                    location.reload();
-                } else {
-                    // Error returned from server
-                    alert(response.message || "An error occurred while saving.");
+                if (!basicInfo.id) {
+                    resolve({ hasError: false, type: 'basic' });
+                    return;
                 }
-            },
-            error: function(xhr, status, error) {
-                // Hide processing modal
-                $.modal.close();
-                
-                // Show error message
-                var errorMessage = "An error occurred while saving. Please try again.";
-                
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    // Handle validation errors
-                    var errors = xhr.responseJSON.errors;
-                    if (errors.Name) {
-                        errorMessage = errors.Name[0];
-                    } else if (errors.Description) {
-                        errorMessage = errors.Description[0];
-                    } else if (errors.Genre) {
-                        errorMessage = errors.Genre[0];
+            
+            var formData = {
+                Id: basicInfo.id,
+                Name: basicInfo.name,
+                Description: basicInfo.description,
+                Genre: basicInfo.genre,
+                CharacterForce: $("input[name='CharacterForce']:checked").val(),
+                ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
+                IconType: $('input[name="iconType"]:checked').val() || '',
+                            };
+            
+            $.ajax({
+                url: "/places/doconfigure2",
+                method: "POST",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                data: formData,
+                traditional: true,
+                success: function(response) {
+                    resolve({ hasError: false, type: 'basic' });
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = "An error occurred while saving basic info.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
                     }
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMessage = xhr.responseJSON.message;
-                } else if (xhr.responseJSON && xhr.responseJSON.title) {
-                    errorMessage = xhr.responseJSON.title;
+                    resolve({ hasError: true, error: errorMessage, type: 'basic' });
+                }
+            });
+        });
+        savePromises.push(basicInfoPromise);
+        }
+        
+        // If on icon tab, also save icon changes AND basic info
+        if (currentTab === 'icon') {
+            var iconPromise = new Promise(function(resolve, reject) {
+                var iconType = $('input[name="iconType"]:checked').val();
+                
+                if (iconType === 'image' && $('#iconImageFile')[0].files.length > 0) {
+                    // Upload custom image
+                    var formData = new FormData();
+                    formData.append('iconImageFile', $('#iconImageFile')[0].files[0]);
+                    formData.append('placeId', $('#IconDisplayContainer').data('place-id'));
+                    
+                    $.ajax({
+                        url: '/places/icons/add-icon',
+                        type: 'POST',
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            resolve({ hasError: false, type: 'icon' });
+                        },
+                        error: function(xhr, status, error) {
+                            var errorMessage = "An error occurred while uploading the icon.";
+                            if (xhr.responseJSON && xhr.responseJSON.error) {
+                                errorMessage = xhr.responseJSON.error;
+                            }
+                            resolve({ hasError: true, error: errorMessage, type: 'icon' });
+                        }
+                    });
+                } else {
+                    // For autogenerated icons or no changes, let doconfigure2 handle it
+                    // Skip the separate icon endpoint call to avoid duplicate processing
+                    setTimeout(function() {
+                        resolve({ hasError: false, type: 'icon', message: 'Icon type will be handled by main save' });
+                    }, 100); // Short delay to show processing
+                }
+            });
+            savePromises.push(iconPromise);
+            
+            // Also save basic info when on icon tab to ensure consistency across tabs
+            var basicInfoPromise = new Promise(function(resolve, reject) {
+                var basicInfo = getBasicInfo();
+                var iconType = $('input[name="iconType"]:checked').val();
+                
+                if (!basicInfo.id) {
+                    resolve({ hasError: false, type: 'basic' });
+                    return;
                 }
                 
-                // Show error message (you can customize this part)
-                alert(errorMessage);
+                var formData = {
+                    Id: basicInfo.id,
+                    Name: basicInfo.name,
+                    Description: basicInfo.description,
+                    Genre: basicInfo.genre,
+                    CharacterForce: $("input[name='CharacterForce']:checked").val(),
+                    ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
+                    IconType: iconType || ''
+                };
+                
+                $.ajax({
+                    url: "/places/doconfigure2",
+                    method: "POST",
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    data: formData,
+                    traditional: true,
+                    success: function(response) {
+                        resolve({ hasError: false, type: 'basic' });
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMessage = "An error occurred while saving basic info.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        resolve({ hasError: true, error: errorMessage, type: 'basic' });
+                    }
+                });
+            });
+            savePromises.push(basicInfoPromise);
+        }
+        
+        // If no promises were added (shouldn't happen with our logic), add a dummy one
+        if (savePromises.length === 0) {
+            savePromises.push(Promise.resolve({ hasError: false, type: 'none', message: 'No changes to save' }));
+        }
+        
+        
+        console.log("Total promises to execute:", savePromises.length);
+        
+        // Wait for all saves to complete
+        Promise.all(savePromises).then(function(results) {
+            console.log("All promises completed, results:", results);
+            var hasErrors = results.some(function(result) { return result.hasError; });
+            var errors = results.filter(function(result) { return result.hasError; });
+            
+            console.log("Has errors:", hasErrors, "Error count:", errors.length);
+            
+            if (hasErrors) {
+                // Show all error messages
+                errors.forEach(function(error) {
+                    alert(error.error);
+                });
+            } else {
+                // Success - reload page to show updated data
+                location.reload();
             }
+        }).catch(function(error) {
+            console.error('Save error:', error);
+            alert('An error occurred while saving. Please try again.');
+        }).finally(function() {
+            // Hide processing modal
+            $.modal.close();
         });
     }
 
@@ -137,7 +255,10 @@ $(function() {
     $(document).ready(function() {
         $(".gameavatartype:checked").click()
     }), $("#okButton").click(function() {
-        f()
+        f();
+    });
+    $("#icon").on("click", ".configure-save-button", function() {
+        f();
     });
     $("#universe-configure").on("click", ".add-place-button", function() {
         var n = this;

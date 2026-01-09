@@ -12,7 +12,7 @@ Roblox.ItemPurchase = function(n, t, i) {
     }
 
     function s() {
-        window.location.href = Roblox.Endpoints.getAbsoluteUrl("/login/Default.aspx") + "?ReturnUrl=" + encodeURIComponent(location.pathname + location.search)
+        window.location.href = Roblox.Endpoints.getAbsoluteUrl("/login") + "?ReturnUrl=" + encodeURIComponent(location.pathname + location.search)
     }
 
     function k(n) {

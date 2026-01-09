@@ -16,7 +16,7 @@ namespace Assets
             {
                 await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                const string sql = @"select asset_id, name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, high_res_thumbnail_url, description, asset_image, asset_link, on_sale, price, allow_comments, genre, is_place, privacy_level
+                const string sql = @"select asset_id, name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, high_res_thumbnail_url, description, asset_image, asset_link, on_sale, price, allow_comments, genre, is_place, privacy_level, custom_icon, place_custom_icon_url, place_custom_icon_high_res_url, place_custom_icon_hash, generated_icon, place_generated_icon_url, place_generated_icon_high_res_url, place_generated_icon_hash
 from assets
 where asset_id = @id";
 
@@ -48,7 +48,15 @@ where asset_id = @id";
                             AllowComments = reader.IsDBNull(14) || reader.GetBoolean(14),
                             Genre = reader.IsDBNull(15) ? 1 : reader.GetInt32(15),
                             IsPlace = !reader.IsDBNull(16) && reader.GetBoolean(16),
-                            PrivacyLevel = reader.IsDBNull(17) ? 1 : reader.GetInt32(17)
+                            PrivacyLevel = reader.IsDBNull(17) ? 1 : reader.GetInt32(17),
+                            CustomIcon = !reader.IsDBNull(18) && reader.GetBoolean(18),
+                            PlaceCustomIconUrl = reader.IsDBNull(19) ? null : reader.GetString(19),
+                            PlaceCustomIconHighResUrl = reader.IsDBNull(20) ? null : reader.GetString(20),
+                            PlaceCustomIconHash = reader.IsDBNull(21) ? null : reader.GetString(21),
+                            GeneratedIcon = !reader.IsDBNull(22) && reader.GetBoolean(22),
+                            PlaceGeneratedIconUrl = reader.IsDBNull(23) ? null : reader.GetString(23),
+                            PlaceGeneratedIconHighResUrl = reader.IsDBNull(24) ? null : reader.GetString(24),
+                            PlaceGeneratedIconHash = reader.IsDBNull(25) ? null : reader.GetString(25)
                         };
 
                         return record;
@@ -66,7 +74,7 @@ where asset_id = @id";
             {
                 await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                const string sql = @"select asset_id, name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, high_res_thumbnail_url, description, asset_image, asset_link, on_sale, price, allow_comments, genre, is_place, privacy_level
+                const string sql = @"select asset_id, name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, high_res_thumbnail_url, description, asset_image, asset_link, on_sale, price, allow_comments, genre, is_place, privacy_level, custom_icon, place_custom_icon_url, place_custom_icon_high_res_url, place_custom_icon_hash, generated_icon, place_generated_icon_url, place_generated_icon_high_res_url, place_generated_icon_hash, icon, icon_hash
 from assets
 where asset_id = @id and is_place = true";
 
@@ -98,7 +106,16 @@ where asset_id = @id and is_place = true";
                             AllowComments = reader.IsDBNull(14) || reader.GetBoolean(14),
                             Genre = reader.IsDBNull(15) ? 1 : reader.GetInt32(15),
                             IsPlace = !reader.IsDBNull(16) && reader.GetBoolean(16),
-                            PrivacyLevel = reader.IsDBNull(17) ? 1 : reader.GetInt32(17)
+                            PrivacyLevel = reader.IsDBNull(17) ? 1 : reader.GetInt32(17),
+                            CustomIcon = !reader.IsDBNull(18) && reader.GetBoolean(18),
+                            PlaceCustomIconUrl = reader.IsDBNull(19) ? null : reader.GetString(19),
+                            PlaceCustomIconHighResUrl = reader.IsDBNull(20) ? null : reader.GetString(20),
+                            PlaceCustomIconHash = reader.IsDBNull(21) ? null : reader.GetString(21),
+                            GeneratedIcon = !reader.IsDBNull(22) && reader.GetBoolean(22),
+                            PlaceGeneratedIconUrl = reader.IsDBNull(23) ? null : reader.GetString(23),
+                            PlaceGeneratedIconHighResUrl = reader.IsDBNull(24) ? null : reader.GetString(24),
+                            PlaceGeneratedIconHash = reader.IsDBNull(25) ? null : reader.GetString(25)
+                            // Note: icon and icon_hash fields (26, 27) are not mapped to AssetRecord properties
                         };
 
                         return record;

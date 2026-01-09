@@ -25,6 +25,14 @@ namespace Assets
         public int Genre { get; set; }
         public bool IsPlace { get; set; }
         public int PrivacyLevel { get; set; }
+        public bool CustomIcon { get; set; }
+        public string? PlaceCustomIconUrl { get; set; }
+        public string? PlaceCustomIconHighResUrl { get; set; }
+        public string? PlaceCustomIconHash { get; set; }
+        public bool GeneratedIcon { get; set; }
+        public string? PlaceGeneratedIconUrl { get; set; }
+        public string? PlaceGeneratedIconHighResUrl { get; set; }
+        public string? PlaceGeneratedIconHash { get; set; }
     }
 
     public sealed class AssetCreateParams
@@ -40,6 +48,14 @@ namespace Assets
         public string? Description { get; set; }
         public bool AssetImage { get; set; }
         public long? AssetLink { get; set; }
+        public bool CustomIcon { get; set; }
+        public string? PlaceCustomIconUrl { get; set; }
+        public string? PlaceCustomIconHighResUrl { get; set; }
+        public string? PlaceCustomIconHash { get; set; }
+        public bool GeneratedIcon { get; set; }
+        public string? PlaceGeneratedIconUrl { get; set; }
+        public string? PlaceGeneratedIconHighResUrl { get; set; }
+        public string? PlaceGeneratedIconHash { get; set; }
     }
 
     public sealed class AssetsRepository
@@ -79,7 +95,13 @@ namespace Assets
     high_res_thumbnail_url,
     description,
     asset_image,
-    asset_link
+    asset_link,
+    custom_icon,
+    place_custom_icon_url,
+    place_custom_icon_hash,
+    generated_icon,
+    place_generated_icon_url,
+    place_generated_icon_hash
 ) values (
     @name,
     @asset_type_id,
@@ -91,7 +113,13 @@ namespace Assets
     @high_res_thumbnail_url,
     @description,
     @asset_image,
-    @asset_link
+    @asset_link,
+    @custom_icon,
+    @place_custom_icon_url,
+    @place_custom_icon_hash,
+    @generated_icon,
+    @place_generated_icon_url,
+    @place_generated_icon_hash
 ) returning asset_id;";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -106,6 +134,12 @@ namespace Assets
             cmd.Parameters.AddWithValue("description", (object?)p.Description ?? DBNull.Value);
             cmd.Parameters.AddWithValue("asset_image", p.AssetImage);
             cmd.Parameters.AddWithValue("asset_link", (object?)p.AssetLink ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("custom_icon", p.CustomIcon);
+            cmd.Parameters.AddWithValue("place_custom_icon_url", (object?)p.PlaceCustomIconUrl ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("place_custom_icon_hash", (object?)p.PlaceCustomIconHash ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("generated_icon", p.GeneratedIcon);
+            cmd.Parameters.AddWithValue("place_generated_icon_url", (object?)p.PlaceGeneratedIconUrl ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("place_generated_icon_hash", (object?)p.PlaceGeneratedIconHash ?? DBNull.Value);
 
             var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             if (result == null || result == DBNull.Value)
@@ -380,5 +414,6 @@ where asset_id = @asset_id;";
 
             return 0;
         }
-    }
+
+        }
 }

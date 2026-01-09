@@ -1,6 +1,6 @@
 local format = "PNG"
-local x = 400
-local y = 400
+local x = %x%
+local y = %y%
 local baseUrl = "http://www.freblx.xyz"
 universeId = 1
 local assetUrl = "http://www.freblx.xyz/asset/?id=%placeId%"
