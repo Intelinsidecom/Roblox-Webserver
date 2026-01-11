@@ -113,6 +113,29 @@ if (enableRequestLogging)
 // Translate .ROBLOSECURITY into HttpContext.User by looking up sessions table
 app.Use(async (context, next) =>
 {
+    var originalResponseStream = context.Response.Body;
+    try
+    {
+        using var responseBodyStream = new MemoryStream();
+        context.Response.Body = responseBodyStream;
+        
+        await next();
+        
+        {
+            // For non-doconfigure2 requests, just pass through without logging
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            await responseBodyStream.CopyToAsync(originalResponseStream);
+        }
+    }
+    finally
+    {
+        context.Response.Body = originalResponseStream;
+    }
+});
+
+// Translate .ROBLOSECURITY into HttpContext.User by looking up sessions table
+app.Use(async (context, next) =>
+{
     var cookies = context.Request.Cookies;
     if (cookies.TryGetValue(".ROBLOSECURITY", out var raw))
     {

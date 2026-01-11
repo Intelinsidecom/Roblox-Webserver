@@ -406,9 +406,9 @@ public sealed class ThumbnailService : IThumbnailService
         {
             try
             {
-                // Check cache for existing thumbnails
+                // Check cache for existing thumbnails with specific dimensions
                 var (found, cachedIconHash, cachedThumbnailHash) = await _cacheRepository.TryGetAsync(
-                    connectionString, placeAssetHash, cancellationToken);
+                    connectionString, placeAssetHash, x, y, cancellationToken);
 
                 if (found && !string.IsNullOrWhiteSpace(cachedIconHash))
                 {
@@ -430,13 +430,11 @@ public sealed class ThumbnailService : IThumbnailService
                     }
                     else
                     {
-                        Console.WriteLine($"[CACHE MISS] Cached thumbnail file not found on disk for place {placeId} with asset hash {placeAssetHash}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[CACHE ERROR] Failed to check cache for place {placeId}: {ex.Message}");
                 // Continue with normal rendering if cache check fails
             }
         }
@@ -521,19 +519,18 @@ public sealed class ThumbnailService : IThumbnailService
         {
             try
             {
-                // Cache the generated thumbnail
+                // Cache the generated thumbnail with dimensions
                 await _cacheRepository.UpsertAsync(
                     connectionString, 
                     placeAssetHash, 
                     saveResult.Hash, 
                     saveResult.Hash, // Using same hash for both icon and thumbnail for now
+                    x, 
+                    y, 
                     cancellationToken);
-                
-                Console.WriteLine($"[CACHE STORE] Cached new thumbnail for place {placeId} with asset hash {placeAssetHash}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[CACHE ERROR] Failed to cache thumbnail for place {placeId}: {ex.Message}");
                 // Don't fail the whole operation if caching fails
             }
         }

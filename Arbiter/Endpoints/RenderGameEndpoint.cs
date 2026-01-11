@@ -39,8 +39,6 @@ namespace RCCArbiter.Endpoints
             p["y"] = y;
             p["baseUrl"] = baseUrl;
 
-            Console.WriteLine($"[RenderGame] Parameters: placeId={placeId}, x={x}, y={y}, baseUrl={baseUrl}");
-
             return p;
         }
     }

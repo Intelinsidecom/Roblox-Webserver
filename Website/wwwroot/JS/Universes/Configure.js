@@ -16,11 +16,51 @@ $(function() {
         })
     }
 
+    function showMessage(message, isError) {
+        var currentTab = $('.verticaltab.selected').data('maindiv');
+        var $messageContainer;
+        
+        if (currentTab === 'icon') {
+            $messageContainer = $('#UploadStatus');
+        } else if (currentTab === 'thumbnails') {
+            $messageContainer = $('#thumbnailResponse');
+        } else {
+            // For other tabs, we can use a general message container or create one
+            // For now, let's use the thumbnailResponse as a fallback
+            $messageContainer = $('#thumbnailResponse');
+        }
+        
+        if ($messageContainer.length === 0) {
+            // Fallback to alert if no container found
+            alert(message);
+            return;
+        }
+        
+        // Clear any existing content and set the message
+        $messageContainer.empty();
+        
+        // Create the message span with appropriate class
+        var $messageSpan = $('<span>')
+            .addClass(isError ? 'status-error' : 'status-confirm')
+            .text(message);
+        
+        $messageContainer.append($messageSpan);
+        $messageContainer.show();
+        
+        // Auto-hide after 5 seconds
+        setTimeout(function() {
+            $messageContainer.fadeOut(500, function() {
+                $messageContainer.empty();
+            });
+        }, 5000);
+    }
+
+    // Make showMessage globally available for other scripts
+    window.showMessage = showMessage;
+
     function f() {
         var currentTab = $('.verticaltab.selected').data('maindiv');
-        console.log("Save button clicked, current tab:", currentTab);
         
-        // Only validate name if we're on basic settings tab
         if (currentTab === 'basicSettings') {
             var n = $("#Name").val().trim();
             if ($(".name-error").hide(), n == "") {
@@ -29,8 +69,6 @@ $(function() {
             }
         }
         
-        // Show processing modal immediately when save is clicked
-        console.log("Showing processing modal");
         e();
         
         var savePromises = [];
@@ -77,7 +115,12 @@ $(function() {
                 data: formData,
                 traditional: true,
                 success: function(response) {
-                    resolve({ hasError: false, type: 'basic' });
+                    // Check if the response indicates an error even with HTTP 200
+                    if (response && response.success === false) {
+                        resolve({ hasError: true, error: response.message || 'An error occurred while saving basic info.', type: 'basic' });
+                    } else {
+                        resolve({ hasError: false, type: 'basic' });
+                    }
                 },
                 error: function(xhr, status, error) {
                     var errorMessage = "An error occurred while saving basic info.";
@@ -110,7 +153,12 @@ $(function() {
                         contentType: false,
                         processData: false,
                         success: function(response) {
-                            resolve({ hasError: false, type: 'icon' });
+                            // Check if the response indicates an error even with HTTP 200
+                            if (response && response.success === false) {
+                                resolve({ hasError: true, error: response.error || response.message || 'An error occurred while uploading the icon.', type: 'icon' });
+                            } else {
+                                resolve({ hasError: false, type: 'icon' });
+                            }
                         },
                         error: function(xhr, status, error) {
                             var errorMessage = "An error occurred while uploading the icon.";
@@ -157,7 +205,12 @@ $(function() {
                     data: formData,
                     traditional: true,
                     success: function(response) {
-                        resolve({ hasError: false, type: 'basic' });
+                        // Check if the response indicates an error even with HTTP 200
+                        if (response && response.success === false) {
+                            resolve({ hasError: true, error: response.message || 'An error occurred while saving basic info.', type: 'basic' });
+                        } else {
+                            resolve({ hasError: false, type: 'basic' });
+                        }
                     },
                     error: function(xhr, status, error) {
                         var errorMessage = "An error occurred while saving basic info.";
@@ -171,34 +224,83 @@ $(function() {
             savePromises.push(basicInfoPromise);
         }
         
+        // If on thumbnails tab, save basic info to maintain consistency with other tabs
+        if (currentTab === 'thumbnails') {
+            var thumbnailsPromise = new Promise(function(resolve, reject) {
+                var basicInfo = getBasicInfo();
+                var thumbnailType = $('input[name="thumbnailType"]:checked').val();
+                
+                if (!basicInfo.id) {
+                    resolve({ hasError: false, type: 'thumbnails' });
+                    return;
+                }
+                
+                var formData = {
+                    Id: basicInfo.id,
+                    Name: basicInfo.name,
+                    Description: basicInfo.description,
+                    Genre: basicInfo.genre,
+                    CharacterForce: $("input[name='CharacterForce']:checked").val(),
+                    ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
+                    IconType: $('input[name="iconType"]:checked').val() || '',
+                    ThumbnailType: thumbnailType || ''
+                };
+                
+                $.ajax({
+                    url: "/places/doconfigure2",
+                    method: "POST",
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                    data: formData,
+                    traditional: true,
+                    success: function(response) {
+                        // Check if the response indicates an error even with HTTP 200
+                        if (response && response.success === false) {
+                            resolve({ hasError: true, error: response.message || 'An error occurred while saving.', type: 'thumbnails' });
+                        } else {
+                            resolve({ hasError: false, type: 'thumbnails' });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMessage = "An error occurred while saving.";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        resolve({ hasError: true, error: errorMessage, type: 'thumbnails' });
+                    }
+                });
+            });
+            savePromises.push(thumbnailsPromise);
+        }
+        
         // If no promises were added (shouldn't happen with our logic), add a dummy one
         if (savePromises.length === 0) {
             savePromises.push(Promise.resolve({ hasError: false, type: 'none', message: 'No changes to save' }));
         }
         
-        
-        console.log("Total promises to execute:", savePromises.length);
+    
         
         // Wait for all saves to complete
         Promise.all(savePromises).then(function(results) {
-            console.log("All promises completed, results:", results);
             var hasErrors = results.some(function(result) { return result.hasError; });
             var errors = results.filter(function(result) { return result.hasError; });
-            
-            console.log("Has errors:", hasErrors, "Error count:", errors.length);
-            
+
             if (hasErrors) {
                 // Show all error messages
                 errors.forEach(function(error) {
-                    alert(error.error);
+                    showMessage(error.error, true);
                 });
             } else {
                 // Success - reload page to show updated data
+                // Preserve the current tab in sessionStorage before reload
+                var currentTab = $('.verticaltab.selected').data('maindiv');
+                if (currentTab) {
+                    sessionStorage.setItem('activeConfigureTab', currentTab);
+                }
                 location.reload();
             }
         }).catch(function(error) {
             console.error('Save error:', error);
-            alert('An error occurred while saving. Please try again.');
+            showMessage('An error occurred while saving. Please try again.', true);
         }).finally(function() {
             // Hide processing modal
             $.modal.close();
@@ -258,6 +360,9 @@ $(function() {
         f();
     });
     $("#icon").on("click", ".configure-save-button", function() {
+        f();
+    });
+    $("#thumbnails").on("click", ".configure-save-button", function() {
         f();
     });
     $("#universe-configure").on("click", ".add-place-button", function() {

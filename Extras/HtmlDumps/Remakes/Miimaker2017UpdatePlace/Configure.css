@@ -2447,22 +2447,15 @@ span.back-button {
     position: absolute;
     top: -10px;
     right: -10px;
-    z-index: 100;
+    z-index: 6;
 }
 
 .divSmallGalleryItem {
-    height: 67.5px;  /* Maintains 16:9 ratio (120 * 9/16 = 67.5) */
+    height: 70px;
     width: 120px;
     float: left;
     position: relative;
     margin: 5px;
-    overflow: visible;
-}
-
-.divSmallGalleryItem img {
-    width: 100%;
-    height: 100%;
-    object-position: center;
 }
 
 #divSmallGalleryItemBox {
@@ -2474,17 +2467,16 @@ span.back-button {
 }
 
 #divSmallGalleryScrollContainer {
-    margin: 5px 0;
-    display: flex;
-    flex-wrap: nowrap; /* keep thumbnails in a single horizontal row */
-    gap: 5px;
+    margin: 0 auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
     *display: inline;
     *zoom: 1;
 }
 
 .smallGalleryThumbItem {
-    float: none;
-    flex-shrink: 0; /* prevent items from shrinking and keep consistent size */
+    float: left;
 }
 
 .small-image-item {
@@ -2549,94 +2541,6 @@ span.back-button {
 #autogenerate .MainThumbnail {
     width: 120px;
     height: 70px;
-}
-
-/* Thumbnail tab styles */
-.thumbnail-tab {
-    
-}
-
-.thumbnailDiv {
-    position: fixed;
-}
-
-.thumbnail-section {
-    display: flex;
-    gap: 20px;
-}
-
-.thumbnail-preview img {
-    width: 100%;
-}
-
-.thumbnail-options {
-    flex: 1;
-    border-left: 1px solid #ccc;
-    padding-left: 20px;
-}
-
-.thumbnail-options label {
-    font-weight: bold;
-}
-
-#thumbnailResponse {
-    margin-top: 6px;
-}
-
-.media-type {
-    margin: 10px 0;
-}
-
-.file-upload {
-    margin: 10px 0;
-}
-
-.upload-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.upload-btn:hover {
-    background-color: #0056b3;
-}
-
-/* Thumbnail gallery styles */
-.thumbnail-gallery-bar {
-    margin-top: 10px;
-    max-width: 418px;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-.thumbnail-gallery {
-    display: flex;
-    gap: 10px;
-    padding: 5px;
-    overflow-x: auto;
-    max-width: 418px;
-}
-
-.thumbnail-gallery-item {
-    position: relative;
-    width: 120px;
-    flex-shrink: 0;
-}
-
-.thumbnail-gallery-item img {
-    width: 120px;
-    height: auto;
-    border: 1px solid #ddd;
-}
-
-.thumbnail-gallery-item .delete-btn {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    overflow: hidden;
 }
 
 #autogenerate .MainIcon {
@@ -2811,52 +2715,3 @@ span.back-button {
 #PrivateServerRadioButtons {
     margin-top: 10px;
 }
-
-
-        #mediaTypeSelection {
-            margin-bottom: 15px;
-        }
-        
-        #mediaTypeSelection .form-label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        .radio-selection {
-            display: block;
-            margin-bottom: 8px;
-            margin-left: 0;
-        }
-        
-        .radio-selection input {
-            margin-right: 8px;
-        }
-        
-        #ImageUpload, #autogenerate {
-            margin-bottom: 15px;
-        }
-        
-        .add-image-button, .add-generated-image-button {
-            margin-top: 10px;
-        }
-        
-        .game-icon-message {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #e3e3e3;
-        }
-        
-        .game-icon-message h3 {
-            font-size: 14px;
-            font-weight: 400;
-            margin: 0;
-        }
-        
-        .game-icon-message a {
-            color: #0054a6;
-            text-decoration: none;
-        }
-        
-        .game-icon-message a:hover {
-            text-decoration: underline;
-        }

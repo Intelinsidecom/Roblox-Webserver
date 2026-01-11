@@ -79,6 +79,14 @@ public static class CDNUtilities
     }
 
     /// <summary>
+    /// Generates a CDN URL for a place thumbnail file
+    /// </summary>
+    public static string GeneratePlaceThumbnailUrl(string baseUrl, string fileName)
+    {
+        return GenerateCDNUrl(baseUrl, "place-thumbnails", fileName);
+    }
+
+    /// <summary>
     /// Safely copies a file by reading bytes first to avoid file access issues
     /// </summary>
     public static bool SafeFileCopy(string sourcePath, string destinationPath)
