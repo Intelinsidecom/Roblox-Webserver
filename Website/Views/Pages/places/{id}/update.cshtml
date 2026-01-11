@@ -11,6 +11,7 @@
     var hasVideoThumbnail = ViewBag.hasVideoThumbnail ?? false;
 }
 @using System.Web
+@using Webserver.Common
 @removeTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:fb="http://www.facebook.com/2008/fbml">
@@ -518,18 +519,8 @@
 									
 									if (!string.IsNullOrEmpty(videoUrl))
 									{
-										// Extract YouTube video ID from URL
-										var videoId = "";
-										if (videoUrl.Contains("youtube.com/watch?v="))
-										{
-											var uri = new Uri(videoUrl);
-											var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-											videoId = query["v"] ?? "";
-										}
-										else if (videoUrl.Contains("youtu.be/"))
-										{
-											videoId = videoUrl.Split(new[] { "youtu.be/" }, StringSplitOptions.None).LastOrDefault()?.Split('?').FirstOrDefault() ?? "";
-										}
+										// Extract YouTube video ID from URL using utility
+										var videoId = YouTubeUtilities.ExtractVideoId(videoUrl);
 										
 										if (!string.IsNullOrEmpty(videoId))
 										{

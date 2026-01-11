@@ -383,7 +383,15 @@ Roblox.IDE = Roblox.IDE || {},
                                     success: function(n) {
                                         t(n),
                                             u.hide(),
-                                            r.show()
+                                            r.show(),
+                                            
+                                            // Set timeout to hide message and refresh page after 3 seconds
+                                            setTimeout(function() {
+                                                $('#thumbnailResponse').fadeOut(300, function() {
+                                                    // Refresh the page after message fades out
+                                                    window.location.reload();
+                                                });
+                                            }, 3000);
                                     },
                                     error: function(xhr, status, error) {
                                         var errorMessage = 'Error uploading thumbnail image';
@@ -448,7 +456,15 @@ Roblox.IDE = Roblox.IDE || {},
                                     success: function(n) {
                                         t(n),
                                             r.hide(),
-                                            i.show()
+                                            i.show(),
+                                            
+                                            // Set timeout to hide message and refresh page after 3 seconds
+                                            setTimeout(function() {
+                                                $('#thumbnailResponse').fadeOut(300, function() {
+                                                    // Refresh the page after message fades out
+                                                    window.location.reload();
+                                                });
+                                            }, 3000);
                                     },
                                     error: function() {
                                         r.hide(),
@@ -471,7 +487,7 @@ Roblox.IDE = Roblox.IDE || {},
                             bodyContent: Roblox.IDE.Resources.AddGeneratedThumbBodyText,
                             acceptText: Roblox.IDE.Resources.AddGeneratedThumbAcceptText,
                             declineText: Roblox.IDE.Resources.AddGeneratedThumbCancelText,
-                            onAccept: o
+                            onAccept: u
                         })
                     }
                 ),
@@ -500,6 +516,14 @@ Roblox.IDE = Roblox.IDE || {},
                                             } else {
                                                 $('#thumbnailResponse').show().find('.status-confirm').text(i.message || 'Video thumbnail added successfully');
                                             }
+                                            
+                                            // Set timeout to hide message and refresh page after 3 seconds
+                                            setTimeout(function() {
+                                                $('#thumbnailResponse').fadeOut(300, function() {
+                                                    // Refresh the page after message fades out
+                                                    window.location.reload();
+                                                });
+                                            }, 3000);
                                         }
                                         r.hide(),
                                             n.show()
