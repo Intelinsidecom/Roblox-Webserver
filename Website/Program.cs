@@ -12,6 +12,7 @@ using Website.Extensions;
 using RobloxWebserver.Assemblies.Catalog;
 using Assets;
 using Website.Services;
+using Website.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,9 @@ builder.Services.AddSingleton<ICatalogService, CatalogService>();
 
 // Assets assembly services
 builder.Services.AddSingleton<AssetMetadataRepository>();
+
+// Add memory cache for rate limiting
+builder.Services.AddMemoryCache();
 
 // WebOptimizer bundling/minification moved to extension for clarity
 builder.Services.AddWebOptimizerPipeline();
@@ -104,6 +108,9 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseRouting();
+
+// Apply rate limiting to API endpoints
+app.UseRateLimiting();
 
 if (enableRequestLogging)
 {

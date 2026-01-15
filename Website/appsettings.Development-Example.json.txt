@@ -25,5 +25,12 @@
   "Assets": {
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets",
     "PublicBaseUrl": "https://www.freblx.xyz"
+  },
+  "Games": {
+    "StarterPlacePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Places\\StartingPlace.rbxl",
+    "EnableCreationCooldown": false
+  },
+  "Apis": {
+    "DefaultApiRateLimitTimeInSeconds": 1
   }
 }

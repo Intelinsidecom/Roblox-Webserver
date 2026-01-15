@@ -2777,6 +2777,21 @@ span.back-button {
     border: 1px solid #A7A7A7;
 }
 
+#MaxPlayersInput {
+    border: 1px solid #A7A7A7;
+    border-radius: 1px;
+}
+
+#Access {
+    border: 1px solid #A7A7A7;
+    border-radius: 1px;
+}
+
+#FriendSlotsInput {
+    border: 1px solid #A7A7A7;
+    border-radius: 1px;
+}
+
 .deviceTypeSection {
     padding-bottom: 25px;
 }
@@ -2824,7 +2839,7 @@ span.back-button {
         
         .radio-selection {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 2px;
             margin-left: 0;
         }
         

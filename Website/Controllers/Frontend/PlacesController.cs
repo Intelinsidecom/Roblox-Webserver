@@ -56,20 +56,16 @@ namespace RobloxWebserver.Controllers
                     return Redirect("/login");
                 }
 
-                // Get place asset using Assets assembly
+                // Validate place ownership and type using Thumbnails assembly helper
                 var connectionString = _configuration.GetConnectionString("Default");
-                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
-                
-                if (placeAsset == null)
+                var isValidPlace = await PlaceValidationHelper.ValidatePlaceOwnershipAsync(id, currentUserId, connectionString, _assetRepository);
+                if (!isValidPlace)
                 {
                     return Redirect("/404");
                 }
 
-                // Check if user owns this place
-                if (placeAsset.OwnerUserId != currentUserId)
-                {
-                    return Redirect("/404"); // User doesn't own this place
-                }
+                // Get place asset using Assets assembly (now validated)
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
 
                 // Populate ViewBag with place data
                 ViewBag.gameid = placeAsset.AssetId;
@@ -138,6 +134,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/thumbnails/add-generated - Generate auto-generated thumbnail for a place
         /// </summary>
         [HttpPost("places/thumbnails/add-generated")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> AddGeneratedThumbnail()
         {
             try
@@ -248,6 +245,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/icons/add-generated-image - Handle generated icon selection for a place
         /// </summary>
         [HttpPost("places/icons/add-generated-image")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> AddGeneratedIcon([FromForm] bool force = false)
         {
             try
@@ -366,6 +364,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/icons/add-icon - Handle custom icon upload for a place
         /// </summary>
         [HttpPost("places/icons/add-icon")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> AddCustomIcon(IFormFile iconImageFile)
         {
             try
@@ -441,6 +440,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/icons/remove-icon - Handle icon removal for a place
         /// </summary>
         [HttpPost("places/icons/remove-icon")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> RemoveIcon()
         {
             try
@@ -500,6 +500,7 @@ namespace RobloxWebserver.Controllers
         /// GET /places/{id}/thumbnail - Get current thumbnail URL for a place
         /// </summary>
         [HttpGet("places/{id}/thumbnail")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> GetPlaceThumbnail(long id)
         {
             try
@@ -547,6 +548,7 @@ namespace RobloxWebserver.Controllers
         /// GET /places/{id}/thumbnails - Get all thumbnails for a place
         /// </summary>
         [HttpGet("places/{id}/thumbnails")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> GetPlaceThumbnails(long id)
         {
             try
@@ -574,6 +576,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/doconfigure2 - Handle place configuration form submission
         /// </summary>
         [HttpPost("places/doconfigure2")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> DoConfigure2()
         {
             long Id = 0;
@@ -932,6 +935,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/thumbnails/add-image - Handle thumbnail image upload for a place
         /// </summary>
         [HttpPost("places/thumbnails/add-image")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> AddThumbnailImage(IFormFile thumbnailImageFile)
         {
             try
@@ -976,6 +980,16 @@ namespace RobloxWebserver.Controllers
                     return Json(new { success = false, message = "Access denied" });
                 }
 
+                // Check thumbnail limit (max 10 thumbnails per place)
+                var existingThumbnails = await PlaceThumbnail.GetPlaceThumbnailsAsync(connectionString, placeId);
+                var imageThumbnailCount = existingThumbnails.Count(t => 
+                    t.GetType().GetProperty("type")?.GetValue(t)?.ToString() == "image");
+                
+                if (imageThumbnailCount >= 10)
+                {
+                    return Json(new { success = false, message = "Maximum limit of 10 thumbnails per place has been reached." });
+                }
+
                 // Process uploaded image using PlaceThumbnail helper
                 var baseUrl = _configuration["Thumbnails:ThumbnailUrl"] ?? $"{Request.Scheme}://{Request.Host}";
                 
@@ -1012,6 +1026,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/thumbnails/add-video - Handle thumbnail video upload for a place
         /// </summary>
         [HttpPost("places/thumbnails/add-video")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> AddThumbnailVideo()
         {
             try
@@ -1097,6 +1112,7 @@ namespace RobloxWebserver.Controllers
         /// POST /places/thumbnails/remove - Handle thumbnail removal for a place
         /// </summary>
         [HttpPost("places/thumbnails/remove")]
+        [Authorize] // Ensure authentication is required
         public async Task<IActionResult> RemoveThumbnail()
         {
             try
