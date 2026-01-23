@@ -108,8 +108,8 @@ typeof Roblox == 'undefined' &&
                 i = n.data('maxprice');
             t !== i &&
                 e(),
-                $('#MarketPlaceFee').html(h()),
-                $('#Profit').html(l())
+                $('#MarketPlaceFeeAmount').text(h()),
+                $('#ProfitAmount').text(l())
         }
 
         function s() {

@@ -38,6 +38,17 @@ namespace Assets
         public bool PlaceCustomThumbnail { get; set; }
         public bool PlaceVideoThumbnail { get; set; }
         public string? PlaceThumbnailVideo { get; set; }
+        public int MaxVisitorCount { get; set; } = 8;
+        public string? DeviceCompatibility { get; set; } = "[1, 2, 3]";
+        public int ServerFillType { get; set; } = 0;
+        public int NumberOfCustomSocialSlots { get; set; } = 4;
+        public int AccessType { get; set; } = 1; // 1 = Everyone, 2 = Friends
+        public bool PrivateServersAllowed { get; set; } = true; // Private servers allowed setting
+        public bool IsPrivateServersFree { get; set; } = true; // Private servers free setting
+        public int PrivateServersPrice { get; set; } = 100; // Private servers price setting
+        public bool PaidAccessEnabled { get; set; } = false; // Paid access enabled setting
+        public int PaidAccessPrice { get; set; } = 0; // Paid access price setting
+        public bool IsCopyingAllowed { get; set; } = false; // Allow copying setting
     }
 
     public sealed class AssetCreateParams
@@ -66,6 +77,17 @@ namespace Assets
         public bool PlaceCustomThumbnail { get; set; }
         public bool PlaceVideoThumbnail { get; set; }
         public string? PlaceThumbnailVideo { get; set; }
+        public int MaxVisitorCount { get; set; } = 8;
+        public string? DeviceCompatibility { get; set; } = "[1, 2, 3]";
+        public int ServerFillType { get; set; } = 0;
+        public int NumberOfCustomSocialSlots { get; set; } = 4;
+        public int AccessType { get; set; } = 1; // 1 = Everyone, 2 = Friends
+        public bool PrivateServersAllowed { get; set; } = true; // Private servers allowed setting
+        public bool IsPrivateServersFree { get; set; } = true; // Private servers free setting
+        public int PrivateServersPrice { get; set; } = 100; // Private servers price setting
+        public bool PaidAccessEnabled { get; set; } = false; // Paid access enabled setting
+        public int PaidAccessPrice { get; set; } = 0; // Paid access price setting
+        public bool IsCopyingAllowed { get; set; } = false; // Allow copying setting
     }
 
     public sealed class AssetsRepository
@@ -251,6 +273,30 @@ where asset_id = @asset_id;";
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("asset_id", assetId);
             cmd.Parameters.AddWithValue("allow_comments", allowComments);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task UpdateAssetMaxVisitorCountAsync(string connectionString, long assetId, int maxVisitorCount, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+            if (maxVisitorCount < 1 || maxVisitorCount > 100)
+                throw new ArgumentOutOfRangeException(nameof(maxVisitorCount), "Max visitor count must be between 1 and 100");
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set max_visitor_count = @max_visitor_count,
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("max_visitor_count", maxVisitorCount);
 
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }

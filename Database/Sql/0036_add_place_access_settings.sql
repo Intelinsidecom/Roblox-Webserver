@@ -12,7 +12,7 @@ alter table if exists assets
     add column if not exists server_fill_type integer not null default 0;
 
 alter table if exists assets
-    add column if not exists private_servers_allowed boolean not null default true;
+    add column if not exists private_servers_allowed boolean not null default false;
 
 alter table if exists assets
     add column if not exists private_servers_free boolean not null default true;

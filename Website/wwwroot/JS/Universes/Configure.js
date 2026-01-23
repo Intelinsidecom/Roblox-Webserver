@@ -71,42 +71,107 @@ $(function() {
         
         e();
         
-        var savePromises = [];
-        
-        // Function to get consistent basic info from global fields or visible fields
-        function getBasicInfo() {
-            var idElement = $("#GlobalId").length ? $("#GlobalId") : $("#Id");
-            var nameElement = $("#GlobalName").length ? $("#GlobalName") : $("#Name");
-            var descElement = $("#GlobalDescription").length ? $("#GlobalDescription") : $("#Description");
-            var genreElement = $("#GlobalGenre").length ? $("#GlobalGenre") : $("#Genre");
-            
-            return {
-                id: idElement.val() || "",
-                name: nameElement.val() || "",
-                description: descElement.val() || "",
-                genre: genreElement.val() || "All"
+        // Function to collect all form data dynamically from all tabs
+        function collectAllFormData() {
+            var basicInfo = {
+                id: $("#Id").val() || "",
+                name: $("#Name").val() || "",
+                description: $("#Description").val() || "",
+                genre: $("#Genre").val() || "All"
             };
-        }
-        
-        // Only save basic info if we're on the basic settings tab
-        if (currentTab === 'basicSettings') {
-            var basicInfoPromise = new Promise(function(resolve, reject) {
-                var basicInfo = getBasicInfo();
-                
-                if (!basicInfo.id) {
-                    resolve({ hasError: false, type: 'basic' });
-                    return;
-                }
             
+            // Collect device selections
+            var playableDevices = [];
+            $('input[name^="PlayableDevices"][type="checkbox"]:checked').each(function() {
+                var deviceType = $(this).siblings('input[name$=".DeviceType"]').val();
+                if (deviceType) {
+                    playableDevices.push(deviceType);
+                }
+            });
+            
+            // Build complete form data object with all fields from all tabs
             var formData = {
+                // Basic info
                 Id: basicInfo.id,
                 Name: basicInfo.name,
                 Description: basicInfo.description,
                 Genre: basicInfo.genre,
+                
+                // Character settings
                 CharacterForce: $("input[name='CharacterForce']:checked").val(),
                 ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
+                
+                // Icon settings
                 IconType: $('input[name="iconType"]:checked').val() || '',
-                            };
+                
+                // Thumbnail settings
+                ThumbnailType: $('input[name="thumbnailType"]:checked').val() || '',
+                
+                // Access settings
+                NumberOfPlayersMax: $('#MaxPlayersInput').val() || '8',
+                SocialSlotType: $('input[name="SocialSlotType"]:checked').val() || 'Automatic',
+                NumberOfCustomSocialSlots: $('#FriendSlotsInput').val() || '4',
+                Access: $('#Access').val() || 'Everyone',
+                ArePrivateServersAllowed: $('#AllowPrivateServersCheckbox').is(':checked'),
+                IsFreePrivateServer: $('input[name="IsFreePrivateServer"]:checked').val() === 'True',
+                PrivateServersPrice: $('#PrivateServerPriceInput').val() || '100',
+                PlayableDevices: playableDevices.join(', '),
+                // Paid access settings
+                SellGameAccess: $('#SellGameAccessCheckbox').is(':checked'),
+                Price: $('#PriceInput').val() || '0',
+                
+                // Permissions settings
+                IsCopyingAllowed: $('#IsCopyingAllowed').is(':checked'),
+                IsAllGenresAllowed: $('input[name="IsAllGenresAllowed"]:checked').val() === 'True',
+                AllowedGearTypes: collectAllowedGearTypes()
+            };
+            
+            return formData;
+        }
+        
+        // Function to collect allowed gear types from checkboxes
+        function collectAllowedGearTypes() {
+            var allowedGearTypes = [];
+            $('input[name^="AllowedGearTypes"][type="checkbox"]:checked').each(function() {
+                var categoryInput = $(this).siblings('input[name$=".Category"]');
+                if (categoryInput.length > 0) {
+                    var category = categoryInput.val();
+                    if (category) {
+                        // Map category names to IDs as per the database schema
+                        var categoryId = getGearTypeIdFromCategory(category);
+                        if (categoryId) {
+                            allowedGearTypes.push(categoryId);
+                        }
+                    }
+                }
+            });
+            return JSON.stringify(allowedGearTypes);
+        }
+        
+        // Function to map gear category names to IDs
+        function getGearTypeIdFromCategory(category) {
+            var categoryMap = {
+                'Melee': 1,
+                'PowerUps': 2,
+                'Ranged': 3,
+                'Navigation': 4,
+                'Explosive': 5,
+                'Musical': 6,
+                'Social': 7,
+                'PersonalTransport': 8,
+                'Building': 9
+            };
+            return categoryMap[category] || null;
+        }
+        
+        // Create single save promise with all form data
+        var savePromise = new Promise(function(resolve, reject) {
+            var formData = collectAllFormData();
+            
+            if (!formData.Id) {
+                resolve({ hasError: false, type: 'all' });
+                return;
+            }
             
             $.ajax({
                 url: "/places/doconfigure2",
@@ -115,183 +180,89 @@ $(function() {
                 data: formData,
                 traditional: true,
                 success: function(response) {
-                    // Check if the response indicates an error even with HTTP 200
+                    // Check if response indicates an error even with HTTP 200
                     if (response && response.success === false) {
-                        resolve({ hasError: true, error: response.message || 'An error occurred while saving basic info.', type: 'basic' });
+                        resolve({ hasError: true, error: response.message || 'An error occurred while saving.', type: 'all' });
                     } else {
-                        resolve({ hasError: false, type: 'basic' });
+                        resolve({ hasError: false, type: 'all' });
                     }
                 },
                 error: function(xhr, status, error) {
-                    var errorMessage = "An error occurred while saving basic info.";
+                    var errorMessage = "An error occurred while saving.";
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMessage = xhr.responseJSON.message;
                     }
-                    resolve({ hasError: true, error: errorMessage, type: 'basic' });
+                    resolve({ hasError: true, error: errorMessage, type: 'all' });
                 }
             });
         });
-        savePromises.push(basicInfoPromise);
-        }
         
-        // If on icon tab, also save icon changes AND basic info
+        // Handle file uploads separately if needed (for icon uploads)
         if (currentTab === 'icon') {
-            var iconPromise = new Promise(function(resolve, reject) {
-                var iconType = $('input[name="iconType"]:checked').val();
-                
-                if (iconType === 'image' && $('#iconImageFile')[0].files.length > 0) {
-                    // Upload custom image
-                    var formData = new FormData();
-                    formData.append('iconImageFile', $('#iconImageFile')[0].files[0]);
-                    formData.append('placeId', $('#IconDisplayContainer').data('place-id'));
+            var iconType = $('input[name="iconType"]:checked').val();
+            if (iconType === 'image' && $('#iconImageFile')[0].files.length > 0) {
+                var uploadPromise = new Promise(function(resolve, reject) {
+                    var uploadFormData = new FormData();
+                    uploadFormData.append('iconImageFile', $('#iconImageFile')[0].files[0]);
+                    uploadFormData.append('placeId', $('#IconDisplayContainer').data('place-id'));
                     
                     $.ajax({
                         url: '/places/icons/add-icon',
                         type: 'POST',
-                        data: formData,
+                        data: uploadFormData,
                         cache: false,
                         contentType: false,
                         processData: false,
                         success: function(response) {
-                            // Check if the response indicates an error even with HTTP 200
                             if (response && response.success === false) {
-                                resolve({ hasError: true, error: response.error || response.message || 'An error occurred while uploading the icon.', type: 'icon' });
+                                resolve({ hasError: true, error: response.error || response.message || 'An error occurred while uploading icon.', type: 'icon' });
                             } else {
                                 resolve({ hasError: false, type: 'icon' });
                             }
                         },
                         error: function(xhr, status, error) {
-                            var errorMessage = "An error occurred while uploading the icon.";
+                            var errorMessage = "An error occurred while uploading icon.";
                             if (xhr.responseJSON && xhr.responseJSON.error) {
                                 errorMessage = xhr.responseJSON.error;
                             }
                             resolve({ hasError: true, error: errorMessage, type: 'icon' });
                         }
                     });
-                } else {
-                    // For autogenerated icons or no changes, let doconfigure2 handle it
-                    // Skip the separate icon endpoint call to avoid duplicate processing
-                    setTimeout(function() {
-                        resolve({ hasError: false, type: 'icon', message: 'Icon type will be handled by main save' });
-                    }, 100); // Short delay to show processing
-                }
-            });
-            savePromises.push(iconPromise);
-            
-            // Also save basic info when on icon tab to ensure consistency across tabs
-            var basicInfoPromise = new Promise(function(resolve, reject) {
-                var basicInfo = getBasicInfo();
-                var iconType = $('input[name="iconType"]:checked').val();
+                });
                 
-                if (!basicInfo.id) {
-                    resolve({ hasError: false, type: 'basic' });
-                    return;
-                }
-                
-                var formData = {
-                    Id: basicInfo.id,
-                    Name: basicInfo.name,
-                    Description: basicInfo.description,
-                    Genre: basicInfo.genre,
-                    CharacterForce: $("input[name='CharacterForce']:checked").val(),
-                    ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
-                    IconType: iconType || ''
-                };
-                
-                $.ajax({
-                    url: "/places/doconfigure2",
-                    method: "POST",
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    data: formData,
-                    traditional: true,
-                    success: function(response) {
-                        // Check if the response indicates an error even with HTTP 200
-                        if (response && response.success === false) {
-                            resolve({ hasError: true, error: response.message || 'An error occurred while saving basic info.', type: 'basic' });
-                        } else {
-                            resolve({ hasError: false, type: 'basic' });
+                // Wait for both main save and icon upload to complete
+                Promise.all([savePromise, uploadPromise]).then(function(results) {
+                    var hasErrors = results.some(function(result) { return result.hasError; });
+                    var errors = results.filter(function(result) { return result.hasError; });
+                    
+                    if (hasErrors) {
+                        errors.forEach(function(error) {
+                            showMessage(error.error, true);
+                        });
+                    } else {
+                        // Success - reload page to show updated data
+                        var currentTab = $('.verticaltab.selected').data('maindiv');
+                        if (currentTab) {
+                            sessionStorage.setItem('activeConfigureTab', currentTab);
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        var errorMessage = "An error occurred while saving basic info.";
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        }
-                        resolve({ hasError: true, error: errorMessage, type: 'basic' });
+                        location.reload();
                     }
+                }).catch(function(error) {
+                    console.error('Save error:', error);
+                    showMessage('An error occurred while saving. Please try again.', true);
+                }).finally(function() {
+                    $.modal.close();
                 });
-            });
-            savePromises.push(basicInfoPromise);
+                return;
+            }
         }
         
-        // If on thumbnails tab, save basic info to maintain consistency with other tabs
-        if (currentTab === 'thumbnails') {
-            var thumbnailsPromise = new Promise(function(resolve, reject) {
-                var basicInfo = getBasicInfo();
-                var thumbnailType = $('input[name="thumbnailType"]:checked').val();
-                
-                if (!basicInfo.id) {
-                    resolve({ hasError: false, type: 'thumbnails' });
-                    return;
-                }
-                
-                var formData = {
-                    Id: basicInfo.id,
-                    Name: basicInfo.name,
-                    Description: basicInfo.description,
-                    Genre: basicInfo.genre,
-                    CharacterForce: $("input[name='CharacterForce']:checked").val(),
-                    ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
-                    IconType: $('input[name="iconType"]:checked').val() || '',
-                    ThumbnailType: thumbnailType || ''
-                };
-                
-                $.ajax({
-                    url: "/places/doconfigure2",
-                    method: "POST",
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                    data: formData,
-                    traditional: true,
-                    success: function(response) {
-                        // Check if the response indicates an error even with HTTP 200
-                        if (response && response.success === false) {
-                            resolve({ hasError: true, error: response.message || 'An error occurred while saving.', type: 'thumbnails' });
-                        } else {
-                            resolve({ hasError: false, type: 'thumbnails' });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        var errorMessage = "An error occurred while saving.";
-                        if (xhr.responseJSON && xhr.responseJSON.message) {
-                            errorMessage = xhr.responseJSON.message;
-                        }
-                        resolve({ hasError: true, error: errorMessage, type: 'thumbnails' });
-                    }
-                });
-            });
-            savePromises.push(thumbnailsPromise);
-        }
-        
-        // If no promises were added (shouldn't happen with our logic), add a dummy one
-        if (savePromises.length === 0) {
-            savePromises.push(Promise.resolve({ hasError: false, type: 'none', message: 'No changes to save' }));
-        }
-        
-    
-        
-        // Wait for all saves to complete
-        Promise.all(savePromises).then(function(results) {
-            var hasErrors = results.some(function(result) { return result.hasError; });
-            var errors = results.filter(function(result) { return result.hasError; });
-
-            if (hasErrors) {
-                // Show all error messages
-                errors.forEach(function(error) {
-                    showMessage(error.error, true);
-                });
+        // For non-icon uploads, just wait for main save
+        savePromise.then(function(result) {
+            if (result.hasError) {
+                showMessage(result.error, true);
             } else {
                 // Success - reload page to show updated data
-                // Preserve the current tab in sessionStorage before reload
                 var currentTab = $('.verticaltab.selected').data('maindiv');
                 if (currentTab) {
                     sessionStorage.setItem('activeConfigureTab', currentTab);
@@ -302,7 +273,6 @@ $(function() {
             console.error('Save error:', error);
             showMessage('An error occurred while saving. Please try again.', true);
         }).finally(function() {
-            // Hide processing modal
             $.modal.close();
         });
     }
@@ -363,6 +333,12 @@ $(function() {
         f();
     });
     $("#thumbnails").on("click", ".configure-save-button", function() {
+        f();
+    });
+    $("#access").on("click", ".configure-save-button", function() {
+        f();
+    });
+    $("#permissions").on("click", ".configure-save-button", function() {
         f();
     });
     $("#universe-configure").on("click", ".add-place-button", function() {

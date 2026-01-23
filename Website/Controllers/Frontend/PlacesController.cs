@@ -115,6 +115,42 @@ namespace RobloxWebserver.Controllers
                 ViewBag.hasCustomThumbnail = placeAsset.PlaceCustomThumbnail;
                 ViewBag.hasVideoThumbnail = placeAsset.PlaceVideoThumbnail;
 
+                // Add max visitor count for access tab
+                ViewBag.maxVisitorCount = placeAsset.MaxVisitorCount;
+
+                // Add device compatibility for access tab
+                var playableDevices = Games.DeviceCompatibilityHelper.ConvertFromDeviceCompatibilityJson(placeAsset.DeviceCompatibility ?? "[1, 2, 3]");
+                ViewBag.playableDevices = playableDevices;
+
+                // Add server fill type for access tab
+                ViewBag.serverFillType = Games.AccessSettingsChanger.GetServerFillTypeString(placeAsset.ServerFillType);
+
+                // Add number of custom social slots for access tab
+                ViewBag.numberOfCustomSocialSlots = placeAsset.NumberOfCustomSocialSlots;
+
+                // Add access type for access tab (convert from int to string)
+                ViewBag.accessType = Games.AccessSettingsChanger.GetAccessTypeString(placeAsset.AccessType);
+
+                // Add private servers allowed setting for access tab
+                ViewBag.privateServersAllowed = placeAsset.PrivateServersAllowed;
+
+                // Add private servers free setting for access tab
+                ViewBag.privateServersFree = placeAsset.IsPrivateServersFree;
+
+                // Add private servers price for access tab
+                ViewBag.privateServersPrice = placeAsset.PrivateServersPrice;
+
+                // Add paid access settings for access tab
+                ViewBag.paidAccessEnabled = placeAsset.PaidAccessEnabled;
+                ViewBag.paidAccessPrice = placeAsset.PaidAccessPrice;
+
+                // Add copying permission setting for permissions tab
+                ViewBag.isCopyingAllowed = placeAsset.IsCopyingAllowed;
+
+                // Add gear permission settings for permissions tab
+                ViewBag.isAllGenresAllowed = placeAsset.IsAllGenresAllowed;
+                ViewBag.allowedGearTypes = placeAsset.AllowedGearTypes;
+
                 // Load actual thumbnail data from database
                 var thumbnailData = await PlaceThumbnail.GetPlaceThumbnailsAsync(connectionString, id);
                 
@@ -622,6 +658,44 @@ namespace RobloxWebserver.Controllers
                 thumbnailType = Request.Form["ThumbnailType"].FirstOrDefault() ?? "";
                 iconImageFile = Request.Form.Files["iconImageFile"];
 
+                // Read and validate NumberOfPlayersMax
+                int numberOfPlayersMax = 8; // default value
+                var numberOfPlayersMaxStr = Request.Form["NumberOfPlayersMax"].FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(numberOfPlayersMaxStr) && int.TryParse(numberOfPlayersMaxStr, out var parsedMaxPlayers))
+                {
+                    if (parsedMaxPlayers < 1 || parsedMaxPlayers > 100)
+                    {
+                        if (isAjax)
+                        {
+                            return Json(new { success = false, message = "Maximum visitor count must be between 1 and 100" });
+                        }
+                        ViewBag.ErrorMessage = "Maximum visitor count must be between 1 and 100";
+                        return View("~/Views/Pages/places/{id}/update.cshtml");
+                    }
+                    numberOfPlayersMax = parsedMaxPlayers;
+                }
+
+                // Read and validate NumberOfCustomSocialSlots
+                var numberOfCustomSocialSlotsStr = Request.Form["NumberOfCustomSocialSlots"].FirstOrDefault();
+                int numberOfCustomSocialSlots = 0;
+                
+                if (!string.IsNullOrEmpty(numberOfCustomSocialSlotsStr))
+                {
+                    int.TryParse(numberOfCustomSocialSlotsStr, out numberOfCustomSocialSlots);
+                }
+
+
+                // Validate that custom social slots don't exceed max player count
+                if (numberOfCustomSocialSlots >= numberOfPlayersMax)
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Custom social slots must be less than maximum visitor count" });
+                    }
+                    ViewBag.ErrorMessage = "Custom social slots must be less than maximum visitor count";
+                    return View("~/Views/Pages/places/{id}/update.cshtml");
+                }
+
 
                 // Get place asset to verify ownership
                 var connectionString = _configuration.GetConnectionString("Default");
@@ -735,6 +809,116 @@ namespace RobloxWebserver.Controllers
                 // Also update the genre separately
                 var genreId = AssetGenreNames.GetGenreIdFromString(Genre);
                 await assetsRepo.UpdateAssetGenreAsync(connectionString, Id, genreId);
+
+                // Parse and validate paid access settings
+                bool sellGameAccessParsed = bool.TryParse(Request.Form["SellGameAccess"].FirstOrDefault(), out bool sellGameAccess);
+                int paidAccessPrice = 0;
+                int.TryParse(Request.Form["Price"].FirstOrDefault(), out paidAccessPrice);
+                
+                // Validate paid access price range (1-10000)
+                if (sellGameAccess && (paidAccessPrice < 1 || paidAccessPrice > 10000))
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Paid access price must be between 1 and 10000 Robux" });
+                    }
+                    ViewBag.gameid = Id;
+                    ViewBag.ErrorMessage = "Paid access price must be between 1 and 10000 Robux";
+                    return View("~/Views/Pages/places/{id}/update.cshtml");
+                }
+
+                // Parse access type and validate private servers setting
+                var accessValue = Request.Form["Access"].FirstOrDefault() ?? "Everyone";
+                bool arePrivateServersAllowed = true; // default to true
+                bool.TryParse(Request.Form["ArePrivateServersAllowed"].FirstOrDefault(), out bool parsedPrivateServersAllowed);
+                
+                // If access is Friends, private servers must be disabled
+                if (accessValue.ToLower() == "friends")
+                {
+                    arePrivateServersAllowed = false;
+                }
+                else
+                {
+                    // Only use the form value if access is not Friends
+                    arePrivateServersAllowed = parsedPrivateServersAllowed;
+                }
+
+                // Business rule validation: Paid access is not allowed when access is Friends
+                if (accessValue.ToLower() == "friends" && sellGameAccess)
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Paid access cannot be enabled when access is set to Friends only" });
+                    }
+                    ViewBag.gameid = Id;
+                    ViewBag.ErrorMessage = "Paid access cannot be enabled when access is set to Friends only";
+                    return View("~/Views/Pages/places/{id}/update.cshtml");
+                }
+
+                // Update access settings using Games assembly helper
+                bool privateServersPriceParsed = int.TryParse(Request.Form["PrivateServersPrice"].FirstOrDefault(), out int privateServersPrice);
+                bool isFreePrivateServer = Request.Form["IsFreePrivateServer"].FirstOrDefault() == "true";
+                
+                // Business rule validation: Private servers are not allowed when access is Friends
+                if (accessValue.ToLower() == "friends" && arePrivateServersAllowed)
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Private servers cannot be enabled when access is set to Friends only" });
+                    }
+                    ViewBag.gameid = Id;
+                    ViewBag.ErrorMessage = "Private servers cannot be enabled when access is set to Friends only";
+                    return View("~/Views/Pages/places/{id}/update.cshtml");
+                }
+                
+                // Validate private server price minimum of 10 (only when private servers are not free)
+                if (privateServersPriceParsed && !isFreePrivateServer && privateServersPrice < 10)
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Private server price must be at least 10 Robux" });
+                    }
+                    ViewBag.gameid = Id;
+                    ViewBag.ErrorMessage = "Private server price must be at least 10 Robux";
+                    return View("~/Views/Pages/places/{id}/update.cshtml");
+                }
+                
+                try
+                {
+                    // Parse PlayableDevices checkbox array into comma-separated string
+                    var playableDevicesList = Request.Form["PlayableDevices"].Where(v => !string.IsNullOrWhiteSpace(v));
+                    var playableDevices = string.Join(",", playableDevicesList);
+
+                    var accessSettingsUpdated = await Games.AccessSettingsChanger.UpdatePlaceAccessSettingsAsync(
+                        connectionString,
+                        Id,
+                        currentUserId,
+                        numberOfPlayersMax,
+                        Request.Form["SocialSlotType"].FirstOrDefault() ?? "Automatic",
+                        numberOfCustomSocialSlots,
+                        accessValue,
+                        arePrivateServersAllowed,
+                        isFreePrivateServer,
+                        privateServersPrice,
+                        playableDevices,
+                        sellGameAccess,
+                        paidAccessPrice
+                    );
+                    
+                   
+                }
+                catch (Exception ex)
+                {
+
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = $"Database error: {ex.Message}" });
+                    }
+                    
+                    ViewBag.gameid = Id;
+                    ViewBag.ErrorMessage = $"Database error occurred while saving access settings: {ex.Message}";
+                    return View("~/Views/Pages/places/{id}/update.cshtml");
+                }
 
                 // Handle icon changes if any
                 if (!string.IsNullOrWhiteSpace(iconType))
@@ -904,6 +1088,21 @@ namespace RobloxWebserver.Controllers
                     }
                 }
 
+                // Parse copying permission setting
+                bool isCopyingAllowed = false;
+                bool.TryParse(Request.Form["IsCopyingAllowed"].FirstOrDefault(), out isCopyingAllowed);
+
+                // Parse gear permission settings
+                bool isAllGenresAllowed = false;
+                bool.TryParse(Request.Form["IsAllGenresAllowed"].FirstOrDefault(), out isAllGenresAllowed);
+                
+                string allowedGearTypesJson = Request.Form["AllowedGearTypes"].FirstOrDefault() ?? "[]";
+
+                // Update permission settings using Games assembly
+                var permissionSettings = new Games.PermissionSettings();
+                await permissionSettings.UpdatePlaceCopyingAllowedAsync(connectionString, Id, isCopyingAllowed);
+                await permissionSettings.UpdatePlaceGearPermissionsAsync(connectionString, Id, isAllGenresAllowed, allowedGearTypesJson);
+
                 // Return JSON response for AJAX requests
                 if (isAjax)
                 {
@@ -1040,28 +1239,23 @@ namespace RobloxWebserver.Controllers
 
                 // Get video URL from form
                 var videoUrl = Request.Form["thumbnailYoutubeUrl"].FirstOrDefault();
-                Console.WriteLine($"[AddThumbnailVideo] Video URL received: '{videoUrl}'");
                 
                 if (string.IsNullOrWhiteSpace(videoUrl))
                 {
-                    Console.WriteLine($"[AddThumbnailVideo] Video URL is empty or null");
                     return Json(new { success = false, message = "Video URL is required" });
                 }
 
                 // Validate YouTube URL format
                 if (!IsValidYouTubeURL(videoUrl))
                 {
-                    Console.WriteLine($"[AddThumbnailVideo] Invalid YouTube URL format: '{videoUrl}'");
                     return Json(new { success = false, message = "Invalid YouTube URL." });
                 }
 
                 // Get place ID from form
                 var placeIdStr = Request.Form["id"].FirstOrDefault();
-                Console.WriteLine($"[AddThumbnailVideo] Place ID from form: '{placeIdStr}'");
                 
                 if (string.IsNullOrWhiteSpace(placeIdStr) || !long.TryParse(placeIdStr, out var placeId))
                 {
-                    Console.WriteLine($"[AddThumbnailVideo] Invalid place ID: '{placeIdStr}'");
                     return Json(new { success = false, message = "Invalid place ID" });
                 }
 
@@ -1071,23 +1265,17 @@ namespace RobloxWebserver.Controllers
                 
                 if (placeAsset == null)
                 {
-                    Console.WriteLine($"[AddThumbnailVideo] Place not found for ID: {placeId}");
                     return Json(new { success = false, message = "Place not found" });
                 }
 
                 // Check if user owns this place
                 if (placeAsset.OwnerUserId != currentUserId)
                 {
-                    Console.WriteLine($"[AddThumbnailVideo] Access denied - User {currentUserId} does not own place {placeId}");
                     return Json(new { success = false, message = "Access denied" });
                 }
 
-                Console.WriteLine($"[AddThumbnailVideo] All validations passed, proceeding to save video URL for place {placeId}");
-
                 // Update only the place_thumbnail_video field in assets table (temporary storage)
                 await PlaceThumbnail.SetPlaceVideoUrlTempAsync(connectionString, placeId, videoUrl);
-
-                Console.WriteLine($"[AddThumbnailVideo] Video URL saved successfully to place_thumbnail_video field");
 
                 // Do NOT update flags or set as primary thumbnail yet - wait for user to press save
                 // The video will only appear in main thumbnail box after save is pressed
@@ -1102,8 +1290,6 @@ namespace RobloxWebserver.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AddThumbnailVideo] Exception occurred: {ex.GetType().Name}: {ex.Message}");
-                Console.WriteLine($"[AddThumbnailVideo] Stack trace: {ex.StackTrace}");
                 return Json(new { success = false, message = "An error occurred while adding the video thumbnail. Please try again." });
             }
         }

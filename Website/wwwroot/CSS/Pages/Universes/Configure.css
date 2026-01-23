@@ -2331,9 +2331,13 @@ span.back-button {
 
 #placeForm ul#gearTypes {
     list-style-type: none;
-    width: 500px;
+    width: 100%;
+    max-width: 600px;
     overflow: hidden;
     margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px 2px;
 }
 
 #placeForm li.gearCheckbox {
@@ -2692,7 +2696,7 @@ span.back-button {
     margin-left: 5px;
     margin-right: 5px;
     margin-top: 3px;
-    text-align: left;
+    text-align: right;
 }
 
 .toppricingfield {
@@ -2700,7 +2704,7 @@ span.back-button {
     height: 24px;
     margin-left: 5px;
     margin-right: 5px;
-    text-align: left;
+    text-align: right;
 }
 
 .toppricingfield .perpurchase {
