@@ -7,7 +7,7 @@ $(function() {
     function t(t) {
         o(t);
         var i = t.data("maindiv");
-        $("#" + i).show(), i !== "places" || n() || Roblox.PlaceSelector.Init(), $.address.hash(i)
+        $("#" + i).show(), i !== "places" || n() || Roblox.PlaceSelector.Init(), $.address && $.address.hash(i)
     }
 
     function u(t) {
@@ -25,37 +25,28 @@ $(function() {
         } else if (currentTab === 'thumbnails') {
             $messageContainer = $('#thumbnailResponse');
         } else {
-            // For other tabs, we can use a general message container or create one
-            // For now, let's use the thumbnailResponse as a fallback
             $messageContainer = $('#thumbnailResponse');
         }
         
         if ($messageContainer.length === 0) {
-            // Fallback to alert if no container found
             alert(message);
             return;
         }
         
-        // Clear any existing content and set the message
         $messageContainer.empty();
-        
-        // Create the message span with appropriate class
         var $messageSpan = $('<span>')
             .addClass(isError ? 'status-error' : 'status-confirm')
             .text(message);
         
         $messageContainer.append($messageSpan);
         $messageContainer.show();
-        
-        // Auto-hide after 5 seconds
         setTimeout(function() {
             $messageContainer.fadeOut(500, function() {
                 $messageContainer.empty();
             });
         }, 5000);
     }
-
-    // Make showMessage globally available for other scripts
+    
     window.showMessage = showMessage;
 
     function f() {
@@ -71,7 +62,6 @@ $(function() {
         
         e();
         
-        // Function to collect all form data dynamically from all tabs
         function collectAllFormData() {
             var basicInfo = {
                 id: $("#Id").val() || "",
@@ -80,7 +70,6 @@ $(function() {
                 genre: $("#Genre").val() || "All"
             };
             
-            // Collect device selections
             var playableDevices = [];
             $('input[name^="PlayableDevices"][type="checkbox"]:checked').each(function() {
                 var deviceType = $(this).siblings('input[name$=".DeviceType"]').val();
@@ -89,25 +78,15 @@ $(function() {
                 }
             });
             
-            // Build complete form data object with all fields from all tabs
             var formData = {
-                // Basic info
                 Id: basicInfo.id,
                 Name: basicInfo.name,
                 Description: basicInfo.description,
                 Genre: basicInfo.genre,
-                
-                // Character settings
                 CharacterForce: $("input[name='CharacterForce']:checked").val(),
                 ScaleChoice: $("input[name='ScaleChoice']:checked").val(),
-                
-                // Icon settings
                 IconType: $('input[name="iconType"]:checked').val() || '',
-                
-                // Thumbnail settings
                 ThumbnailType: $('input[name="thumbnailType"]:checked').val() || '',
-                
-                // Access settings
                 NumberOfPlayersMax: $('#MaxPlayersInput').val() || '8',
                 SocialSlotType: $('input[name="SocialSlotType"]:checked').val() || 'Automatic',
                 NumberOfCustomSocialSlots: $('#FriendSlotsInput').val() || '4',
@@ -116,28 +95,25 @@ $(function() {
                 IsFreePrivateServer: $('input[name="IsFreePrivateServer"]:checked').val() === 'True',
                 PrivateServersPrice: $('#PrivateServerPriceInput').val() || '100',
                 PlayableDevices: playableDevices.join(', '),
-                // Paid access settings
                 SellGameAccess: $('#SellGameAccessCheckbox').is(':checked'),
                 Price: $('#PriceInput').val() || '0',
-                
-                // Permissions settings
                 IsCopyingAllowed: $('#IsCopyingAllowed').is(':checked'),
                 IsAllGenresAllowed: $('input[name="IsAllGenresAllowed"]:checked').val() === 'True',
-                AllowedGearTypes: collectAllowedGearTypes()
+                AllowedGearTypes: collectAllowedGearTypes(),
+                AllowPlaceToBeCopiedInGame: $('#AllowPlaceToBeCopiedInGame').is(':checked'),
+                AllowPlaceToBeUpdatedInGame: $('#AllowPlaceToBeUpdatedInGame').is(':checked')
             };
             
             return formData;
         }
-        
-        // Function to collect allowed gear types from checkboxes
+
         function collectAllowedGearTypes() {
             var allowedGearTypes = [];
             $('input[name^="AllowedGearTypes"][type="checkbox"]:checked').each(function() {
-                var categoryInput = $(this).siblings('input[name$=".Category"]');
+                var categoryInput = $(this).closest('li').find('input[name$=".Category"]');
                 if (categoryInput.length > 0) {
                     var category = categoryInput.val();
                     if (category) {
-                        // Map category names to IDs as per the database schema
                         var categoryId = getGearTypeIdFromCategory(category);
                         if (categoryId) {
                             allowedGearTypes.push(categoryId);
@@ -148,7 +124,6 @@ $(function() {
             return JSON.stringify(allowedGearTypes);
         }
         
-        // Function to map gear category names to IDs
         function getGearTypeIdFromCategory(category) {
             var categoryMap = {
                 'Melee': 1,
@@ -164,7 +139,6 @@ $(function() {
             return categoryMap[category] || null;
         }
         
-        // Create single save promise with all form data
         var savePromise = new Promise(function(resolve, reject) {
             var formData = collectAllFormData();
             
@@ -179,8 +153,7 @@ $(function() {
                 headers: { "X-Requested-With": "XMLHttpRequest" },
                 data: formData,
                 traditional: true,
-                success: function(response) {
-                    // Check if response indicates an error even with HTTP 200
+                success: function(response) {0
                     if (response && response.success === false) {
                         resolve({ hasError: true, error: response.message || 'An error occurred while saving.', type: 'all' });
                     } else {
@@ -197,7 +170,6 @@ $(function() {
             });
         });
         
-        // Handle file uploads separately if needed (for icon uploads)
         if (currentTab === 'icon') {
             var iconType = $('input[name="iconType"]:checked').val();
             if (iconType === 'image' && $('#iconImageFile')[0].files.length > 0) {
@@ -230,7 +202,6 @@ $(function() {
                     });
                 });
                 
-                // Wait for both main save and icon upload to complete
                 Promise.all([savePromise, uploadPromise]).then(function(results) {
                     var hasErrors = results.some(function(result) { return result.hasError; });
                     var errors = results.filter(function(result) { return result.hasError; });
@@ -240,7 +211,6 @@ $(function() {
                             showMessage(error.error, true);
                         });
                     } else {
-                        // Success - reload page to show updated data
                         var currentTab = $('.verticaltab.selected').data('maindiv');
                         if (currentTab) {
                             sessionStorage.setItem('activeConfigureTab', currentTab);
@@ -257,12 +227,10 @@ $(function() {
             }
         }
         
-        // For non-icon uploads, just wait for main save
         savePromise.then(function(result) {
             if (result.hasError) {
                 showMessage(result.error, true);
             } else {
-                // Success - reload page to show updated data
                 var currentTab = $('.verticaltab.selected').data('maindiv');
                 if (currentTab) {
                     sessionStorage.setItem('activeConfigureTab', currentTab);
@@ -316,7 +284,7 @@ $(function() {
     }
 
     function r() {
-        var n = $.address.hash(),
+        var n = $.address ? $.address.hash() : "",
             i;
         n = n.replace("/", "").escapeHTML(), n.length == 0 && (n = "basicSettings"), i = $('[data-maindiv="' + n + '"]'), i.length > 0 && t(i)
     }
@@ -339,6 +307,9 @@ $(function() {
         f();
     });
     $("#permissions").on("click", ".configure-save-button", function() {
+        f();
+    });
+    $("#games").on("click", ".configure-save-button", function() {
         f();
     });
     $("#universe-configure").on("click", ".add-place-button", function() {
@@ -377,5 +348,5 @@ $(function() {
             }
         }), !1
     });
-    $("[data-retry-url]").loadRobloxThumbnails(), r(), $.address.externalChange(r)
+    $("[data-retry-url]").loadRobloxThumbnails(), r(), $.address && $.address.externalChange(r)
 });

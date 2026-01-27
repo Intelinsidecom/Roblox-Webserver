@@ -45,6 +45,7 @@
     <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
     <link rel="stylesheet" href="~/CSS/Pages/Places/DeveloperProducts.css">
     <link rel="stylesheet" href="~/CSS/Pages/Notifications/Notifications.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
 
 
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
@@ -114,7 +115,6 @@
     <script type="text/javascript" src="~/JS/GenericModal.js"></script>
     <script type="text/javascript" src="~/JS/Universes/PlaceSelectorModal.js"></script>
     <script type="text/javascript" src="~/JS/Places/DeveloperProductsListing.js"></script>
-    <script type="text/javascript" src="~/JS/Places/CreateEditDeveloperProducts.js"></script>
     <script type="text/javascript" src="~/JS/pageStyleNotifications.js"></script>
     <script type="text/javascript" src="~/JS/Reference/jquery.twbsPagination.js"></script>
     <script type="text/javascript" src="~/JS/Universes/ConfigureGameUpdate.js"></script>
@@ -138,6 +138,7 @@
     <script type="text/javascript" src="~/JS/ClientInstaller.js"></script>
     <script type="text/javascript" src="~/JS/InstallationInstructions.js"></script>
     <script type="text/javascript" src="~/JS/IEMetroInstructions.js"></script>
+    <script type="text/javascript" src="~/JS/Places/CreateEditDeveloperProducts.js"></script>
 
     <script type='text/javascript' src='https://js.rbx2016.tk/86411e39f51e0ef39c7fa2f1f92fe7b3.js'></script>
 
@@ -304,6 +305,15 @@
                                     </div>
                                     <div class="verticaltab" data-maindiv="permissions">
                                         <a href="#">Permissions</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="versionHistory" id="versionHistoryTab">
+                                        <a href="#">Version History</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="developerProducts">
+                                        <a href="#">Developer Products</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="games">
+                                        <a href="#">Games</a>
                                     </div>
                                 </div>
                                 <div id="universe-configure" class="universe-content divider-left"
@@ -500,13 +510,11 @@
 							<div class="thumbnail-preview">
 								@if (hasVideoThumbnail == true)
 								{
-									// Find video thumbnail from placeThumbnails
 									var videoThumbnail = placeThumbnails.FirstOrDefault(t => t.GetType().GetProperty("type")?.GetValue(t)?.ToString() == "video");
 									var videoUrl = videoThumbnail?.GetType().GetProperty("videoUrl")?.GetValue(videoThumbnail)?.ToString() ?? "";
 									
 									if (!string.IsNullOrEmpty(videoUrl))
 									{
-										// Extract YouTube video ID from URL using utility
 										var videoId = YouTubeUtilities.ExtractVideoId(videoUrl);
 										
 										if (!string.IsNullOrEmpty(videoId))
@@ -525,29 +533,22 @@
 										}
 										else
 										{
-											// Fallback to image if video URL parsing fails
 											<img src="@mainThumbnailUrl" alt="Thumbnail Preview" style="height: 18em; width: 32em; object-fit: contain;">
 										}
 									}
 									else
 									{
-										// Fallback to image if no video URL found
 										<img src="@mainThumbnailUrl" alt="Thumbnail Preview" style="height: 18em; width: 32em; object-fit: contain;">
 									}
 								}
 								else
 								{
-									// Show regular image thumbnail
 									<img src="@mainThumbnailUrl" alt="Thumbnail Preview" style="height: 18em; width: 32em; object-fit: contain;">
 								}
 							</div>
 							<div class="thumbnail-gallery-bar">
 								<div id="divSmallGalleryScrollContainer">
 									@{
-										// Show custom image thumbnails in gallery when:
-										// - Image radio button is selected (regardless of auto-generated state)
-										// - Video radio button is selected (show custom images alongside video)
-										// Gallery should be hidden only when auto-generated is selected
 										var shouldShowCustomGallery = placeThumbnails != null && placeThumbnails.Any(t => 
 											t.GetType().GetProperty("type")?.GetValue(t)?.ToString() == "image");
 									}
@@ -574,8 +575,6 @@
 												? $"{thumbnailUrl}&_t={cacheBuster}" 
 												: $"{thumbnailUrl}?_t={cacheBuster}";
 											
-											// Only add outline to first image if video is NOT selected as primary thumbnail
-											// When video is primary, no image should have the outline
 											var isFirstImage = thumbnailIndex == 0;
 											var shouldShowOutline = isFirstImage && !hasVideoThumbnail;
 											
@@ -935,57 +934,129 @@
                                 <div id="permissions" class="configure-tab" style="display:none">
                                     <div class="headline">
                                         <h2>Gear Permissions</h2>
-                                        <img class="TipsyImg tooltip-bottom h2-tooltip" data-toggle="tooltip" title="The type of gear allowed in your experience. By default the same genre of gear is allowed as the genre of the experience." height="13" width="12" src="https://images.rbxcdn.com/65cb6e4009a00247ca02800047aafb87.png" alt="The type of gear allowed in your experience. By default the same genre of gear is allowed as the genre of the experience." />
+                                        <img class="TipsyImg tooltip-bottom h2-tooltip" data-toggle="tooltip" title="The type of gear allowed in your experience. By default the same genre of gear is allowed as the genre of the game." height="13" width="12" src="https://images.rbxcdn.com/65cb6e4009a00247ca02800047aafb87.png" alt="The type of gear allowed in your game. By default the same genre of gear is allowed as the genre of the game." />
                                     </div>
                                     <label class="form-label radio-button-label" for="IsAllGenresAllowed">Allowed Genre:</label>
+                                    @{
+                                        var isAllGenresAllowed = ViewBag.isAllGenresAllowed != null ? (bool)ViewBag.isAllGenresAllowed : false;
+                                        var isGameGenreChecked = !isAllGenresAllowed ? "checked=\"checked\"" : "";
+                                        var isAllGenresChecked = isAllGenresAllowed ? "checked=\"checked\"" : "";
+                                    }
                                     <label class="radio-selection">
-                                        <input checked="checked" data-val="true" data-val-required="The Allowed Genre: field is required." id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="False" />
-                                        <span class="checkboxListItem">Experience genre (<span id="advancedsettings_genre">All</span>)</span>
+                                        <input @isGameGenreChecked data-val="true" data-val-required="The Allowed Genre: field is required." id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="False" />
+                                        <span class="checkboxListItem">Game genre (<span id="advancedsettings_genre">All</span>)</span>
                                     </label>
                                     <label class="radio-selection-last">
-                                        <input id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="True" /><span class="checkboxListItem" style="margin-left: 10px;">All genres</span>
+                                        <input @isAllGenresChecked id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="True" /><span class="checkboxListItem" style="margin-left: 10px;">All genres</span>
                                     </label>
                                     <span class="field-validation-valid" data-valmsg-for="IsAllGenresAllowed" data-valmsg-replace="true"></span>
 
                                     <label class="form-label check-box-label" style="margin-top: 30px; display: block;">Gear types:</label>
-                                    <ul id="gearTypes" style="list-style-type: none; width: 500px; overflow: hidden; margin-bottom: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;">
-                                    <li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_0__IsSelected" name="AllowedGearTypes[0].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[0].IsSelected" type="hidden" value="false" /> Melee</label>
-                                        <input id="AllowedGearTypes_0__GearTypeDisplayName" name="AllowedGearTypes[0].GearTypeDisplayName" type="hidden" value="Melee" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_0__Category" name="AllowedGearTypes[0].Category" type="hidden" value="Melee" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_1__IsSelected" name="AllowedGearTypes[1].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[1].IsSelected" type="hidden" value="false" /> Power ups</label>
-                                        <input id="AllowedGearTypes_1__GearTypeDisplayName" name="AllowedGearTypes[1].GearTypeDisplayName" type="hidden" value="Power ups" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_1__Category" name="AllowedGearTypes[1].Category" type="hidden" value="PowerUps" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_2__IsSelected" name="AllowedGearTypes[2].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[2].IsSelected" type="hidden" value="false" /> Ranged</label>
-                                        <input id="AllowedGearTypes_2__GearTypeDisplayName" name="AllowedGearTypes[2].GearTypeDisplayName" type="hidden" value="Ranged" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_2__Category" name="AllowedGearTypes[2].Category" type="hidden" value="Ranged" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_3__IsSelected" name="AllowedGearTypes[3].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[3].IsSelected" type="hidden" value="false" /> Navigation</label>
-                                        <input id="AllowedGearTypes_3__GearTypeDisplayName" name="AllowedGearTypes[3].GearTypeDisplayName" type="hidden" value="Navigation" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_3__Category" name="AllowedGearTypes[3].Category" type="hidden" value="Navigation" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_4__IsSelected" name="AllowedGearTypes[4].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[4].IsSelected" type="hidden" value="false" /> Explosives</label>
-                                        <input id="AllowedGearTypes_4__GearTypeDisplayName" name="AllowedGearTypes[4].GearTypeDisplayName" type="hidden" value="Explosives" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_4__Category" name="AllowedGearTypes[4].Category" type="hidden" value="Explosive" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_5__IsSelected" name="AllowedGearTypes[5].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[5].IsSelected" type="hidden" value="false" /> Musical</label>
-                                        <input id="AllowedGearTypes_5__GearTypeDisplayName" name="AllowedGearTypes[5].GearTypeDisplayName" type="hidden" value="Musical" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_5__Category" name="AllowedGearTypes[5].Category" type="hidden" value="Musical" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_6__IsSelected" name="AllowedGearTypes[6].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[6].IsSelected" type="hidden" value="false" /> Social</label>
-                                        <input id="AllowedGearTypes_6__GearTypeDisplayName" name="AllowedGearTypes[6].GearTypeDisplayName" type="hidden" value="Social" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_6__Category" name="AllowedGearTypes[6].Category" type="hidden" value="Social" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_7__IsSelected" name="AllowedGearTypes[7].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[7].IsSelected" type="hidden" value="false" /> Transport</label>
-                                        <input id="AllowedGearTypes_7__GearTypeDisplayName" name="AllowedGearTypes[7].GearTypeDisplayName" type="hidden" value="Transport" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_7__Category" name="AllowedGearTypes[7].Category" type="hidden" value="PersonalTransport" />
-                                    </li><li class="gearCheckbox">
-                                        <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_8__IsSelected" name="AllowedGearTypes[8].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[8].IsSelected" type="hidden" value="false" /> Building</label>
-                                        <input id="AllowedGearTypes_8__GearTypeDisplayName" name="AllowedGearTypes[8].GearTypeDisplayName" type="hidden" value="Building" />
-                                        <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_8__Category" name="AllowedGearTypes[8].Category" type="hidden" value="Building" />
-                                    </li></ul>
+                                    <ul id="gearTypes" style="list-style-type: none; width: 500px; overflow: hidden; margin-bottom: 10px;">
+                                    @{
+
+                                        var allowedGearTypesJson = ViewBag.allowedGearTypes?.ToString() ?? "[]";
+                                        List<string> allowedGearTypes = new List<string>();
+                                        try 
+                                        {
+                                            if (!string.IsNullOrEmpty(allowedGearTypesJson) && allowedGearTypesJson != "[]")
+                                            {
+                                                var parsedTypeIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(allowedGearTypesJson) ?? new List<int>();
+                                                
+                                                var idToCategoryMap = new Dictionary<int, string>
+                                                {
+                                                    { 1, "Melee" },
+                                                    { 2, "PowerUps" },
+                                                    { 3, "Ranged" },
+                                                    { 4, "Navigation" },
+                                                    { 5, "Explosive" },
+                                                    { 6, "Musical" },
+                                                    { 7, "Social" },
+                                                    { 8, "PersonalTransport" },
+                                                    { 9, "Building" }
+                                                };
+                                                
+                                                foreach (var typeId in parsedTypeIds)
+                                                {
+                                                    if (idToCategoryMap.TryGetValue(typeId, out string categoryName))
+                                                    {
+                                                        allowedGearTypes.Add(categoryName);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        catch 
+                                        {
+                                            try
+                                            {
+                                                if (!string.IsNullOrEmpty(allowedGearTypesJson) && allowedGearTypesJson != "[]")
+                                                {
+                                                    var parsedTypes = System.Text.Json.JsonSerializer.Deserialize<List<string>>(allowedGearTypesJson) ?? new List<string>();
+                                                    
+                                                    foreach (var type in parsedTypes)
+                                                    {
+                                                        if (int.TryParse(type, out int typeId))
+                                                        {
+                                                            var legacyIdToCategoryMap = new Dictionary<string, string>
+                                                            {
+                                                                { "1", "Melee" },
+                                                                { "2", "PowerUps" },
+                                                                { "3", "Ranged" },
+                                                                { "4", "Navigation" },
+                                                                { "5", "Explosive" },
+                                                                { "6", "Musical" },
+                                                                { "7", "Social" },
+                                                                { "8", "PersonalTransport" },
+                                                                { "9", "Building" }
+                                                            };
+                                                            
+                                                            if (legacyIdToCategoryMap.TryGetValue(type, out string categoryName))
+                                                            {
+                                                                allowedGearTypes.Add(categoryName);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            allowedGearTypes.Add(type);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            catch
+                                            {
+                                                allowedGearTypes = new List<string>();
+                                            }
+                                        }
+
+                                        var gearTypes = new[]
+                                        {
+                                            new { DisplayName = "Melee", Category = "Melee" },
+                                            new { DisplayName = "Power ups", Category = "PowerUps" },
+                                            new { DisplayName = "Ranged", Category = "Ranged" },
+                                            new { DisplayName = "Navigation", Category = "Navigation" },
+                                            new { DisplayName = "Explosives", Category = "Explosive" },
+                                            new { DisplayName = "Musical", Category = "Musical" },
+                                            new { DisplayName = "Social", Category = "Social" },
+                                            new { DisplayName = "Transport", Category = "PersonalTransport" },
+                                            new { DisplayName = "Building", Category = "Building" }
+                                        };
+
+                                        for (int i = 0; i < gearTypes.Length; i++)
+                                        {
+                                            var gearType = gearTypes[i];
+                                            var isChecked = allowedGearTypes.Contains(gearType.Category) ? "checked=\"checked\"" : "";
+                                            <li class="gearCheckbox" style="width: 160px; float: left; margin-bottom: 2px;">
+                                                <label class="checkboxListItem">
+                                                    <input @isChecked data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_@(i)__IsSelected" name="AllowedGearTypes[@(i)].IsSelected" type="checkbox" value="true" />
+                                                    <input name="AllowedGearTypes[@(i)].IsSelected" type="hidden" value="false" />
+                                                    @gearType.DisplayName
+                                                </label>
+                                                <input id="AllowedGearTypes_@(i)__GearTypeDisplayName" name="AllowedGearTypes[@(i)].GearTypeDisplayName" type="hidden" value="@gearType.DisplayName" />
+                                                <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_@(i)__Category" name="AllowedGearTypes[@(i)].Category" type="hidden" value="@gearType.Category" />
+                                            </li>
+                                        }
+                                    }
+                                    </ul>
                                     <div class="divider-bottom spacing" style="margin-top: 15px;"></div>
                                     <div class="headline" style="margin-top: 10px;">
                                         <h2 id="otherSettings">Other Permissions</h2>
@@ -1009,9 +1080,191 @@
                                     </div>
                                 </div>
 
+                                <div id="versionHistory" class="configure-tab" style="display: none;">
+                                    <div class="version-history-container">
+                                        <div class="headline">
+                                            <h2>Version History</h2>
+                                        </div>
+
+                                        <div id="versionHistoryLoading"
+                                            style="text-align: center; padding-top: 180px; display: none;">
+                                            <img
+                                                src="https://images.rbxcdn.com/e0802687d8357fbc484a75914e4447dc.gif">
+                                        </div>
+                                        <div id="versionHistoryError" style="display:none;">
+                                            An error occurred getting the version history. Please try again later.
+                                        </div>
+                                        <div id="versionHistoryRevertError" style="display:none;">
+                                            An error occurred reverting your place. Please try again later.
+                                        </div>
+
+                                         <div id="versionHistoryDownloadError" style="display:none;">
+                                            An error occurred when trying to download your place. Please try again later.
+                                        </div>
+                                        <div id="versionHistoryItems" data-asset-id="@(gameid)"
+                                            data-revert-url="/places/revert"
+                                            data-version-history-items-url="/places/version-history-items"
+                                            data-show-popup="true">
+                                            <div class="versionHistoryTableContainer">
+                                                <table class="versionHistoryTable">
+                                                    <!-- Table content will be loaded via API -->
+                                                </table>
+                                            </div>
+                                            <div class="pagerContainer">
+                                                <span class="pager previous disabled"></span>
+                                                <span class="page text">
+                                                    Page <span class="robloxVersionHistoryPageNum">1</span> of 1
+                                                </span>
+                                                <span class="pager next "></span>
+                                            </div>
+                                        </div>
+
+                                        <script type="text/javascript">
+                                            $(function () {
+                                                if (typeof Roblox === "undefined") {
+                                                    Roblox = {};
+                                                }
+                                                if (typeof Roblox.IDE === "undefined") {
+                                                    Roblox.IDE = {};
+                                                }
+                                                if (typeof Roblox.IDE.Resources === "undefined") {
+                                                    Roblox.IDE.Resources = {};
+                                                }
+                                                if (typeof Roblox.Resources === "undefined") {
+                                                    Roblox.Resources = {};
+                                                }
+                                                if (typeof Roblox.Resources.Dialog === "undefined") {
+                                                    Roblox.Resources.Dialog = {};
+                                                }
+                                                $.extend(Roblox.IDE.Resources, {
+                                                    RevertTitleText: "Revert Place",
+                                                    RevertBodyContent: "Are you sure you want to revert to this version?",
+                                                    RevertAcceptText: "Revert",
+                                                    CancelText: "Cancel",
+                                                    VersionHistoryBehaviorTitleText: "Revert to a previous version",
+                                                    VersionHistoryBehaviorBodyText: "Reverting to a previous version will now save the place instead of publish. In order to publish the place please open the place in Roblox Studio and then go to, File > Publish to Roblox.",
+                                                    OkText: "OK"
+                                                });
+                                                $.extend(Roblox.Resources.Dialog, {
+                                                    yes: "Yes",
+                                                    No: "No",
+                                                    OK: "OK",
+                                                    Agree: "I Agree"
+                                                });
+                                                if (typeof Roblox.Resources.GenericConfirmation === "undefined") {
+                                                    Roblox.Resources.GenericConfirmation = {};
+                                                }
+                                                $.extend(Roblox.Resources.GenericConfirmation, {
+                                                    yes: "Yes",
+                                                    No: "No"
+                                                });
+                                                
+                                                $('#versionHistoryTab').on('click', function() {
+                                                    var assetId = $('#versionHistoryItems').data('asset-id');
+                                                    $('#versionHistoryItems .versionHistoryTable').html('');
+                                                    $('#versionHistoryLoading').show();
+                                                    $.ajax({
+                                                        url: $('#versionHistoryItems').data('version-history-items-url'),
+                                                        cache: false,
+                                                        data: {
+                                                            assetID: assetId,
+                                                            page: 1
+                                                        },
+                                                        success: function(data) {
+                                                            $('#versionHistoryLoading').hide();
+                                                            $('#versionHistoryItems .versionHistoryTable').html('');
+                                                            $('#versionHistoryItems .versionHistoryTable').html(data);
+                                                        },
+                                                        error: function() {
+                                                            $('#versionHistoryLoading').hide();
+                                                            $('#versionHistoryError').show();
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+
                                 <div id="gameUpdate" class="configure-tab" style="display: none">
 
 
+                                </div>
+
+                                <div id="developerProducts" class="configure-tab" style="display: none">
+                                    <div id="DevProducts" src="/places/@ViewBag.PlaceUniverseId/developer-products">
+                                        <div id="DeveloperProductsInnerContainer">
+                                            <div class="developerProductsContainer" style="padding-right: -10px;">
+                                                @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+                                                {
+                                                    <div class="success-message" style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border: 1px solid #c3e6cb; border-radius: 4px;">
+                                                        @ViewBag.SuccessMessage
+                                                    </div>
+                                                }
+                                                <div id="DeveloperProductsLoading" class="developerProductsLoadingImage">
+                                                    <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Loading..." />
+                                                </div>
+                                                <div id="DeveloperProductsError" style="display: none;">
+                                                    <p>Unable to load developer products. Please try again later.</p>
+                                                </div>
+                                                <div id="DeveloperProductsContent" style="padding-right: -10px;">
+                                                    <!-- Content will be loaded dynamically from API -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="games" class="configure-tab" style="display: none;">
+                                    <h2>Game</h2>
+                                    <div style="min-height: 250px;">
+                                        <div style="margin: 20px 0">
+                                            <span>This place is part of the Game:
+                                                <a href="/universes/configure?id=@ViewBag.PlaceUniverseId">@gamename</a>
+                                            </span>
+                                        </div>
+                                        <div class="divider-bottom spacing"></div>
+                                        <div class="headline" style="margin-top: 15px;">
+                                            <h2 id="otherSettings">In-Game Permissions</h2>
+                                        </div>
+
+                                        <div id="AllowCopyInGame">
+                                            <label id="AllowPlaceToBeCopied">
+                                                <input data-val="true"
+                                                    data-val-required="The AllowPlaceToBeCopiedInGame field is required."
+                                                    id="AllowPlaceToBeCopiedInGame"
+                                                    name="AllowPlaceToBeCopiedInGame" type="checkbox"
+                                                    value="true" @(ViewBag.allowPlaceToBeCopiedInGame == true ? "checked=\"checked\"" : "")><input name="AllowPlaceToBeCopiedInGame"
+                                                    type="hidden" value="false">
+                                                <span class="checkboxListItem">Allow this place to be copied as
+                                                    a template using the
+                                                    <a href="https://developer.rbx2016.nl/en-us/api-reference/function/AssetService/CreatePlaceAsync"
+                                                        target="blank">Create Place API</a>
+                                                    in your game.
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div id="AllowUpdateInGame">
+                                            <label id="AllowPlaceToBeUpdated">
+                                                <input data-val="true"
+                                                    data-val-required="The AllowPlaceToBeUpdatedInGame field is required."
+                                                    id="AllowPlaceToBeUpdatedInGame"
+                                                    name="AllowPlaceToBeUpdatedInGame" type="checkbox"
+                                                    value="true" @(ViewBag.allowPlaceToBeUpdatedInGame == true ? "checked=\"checked\"" : "")><input name="AllowPlaceToBeUpdatedInGame"
+                                                    type="hidden" value="false">
+                                                <span class="checkboxListItem">Allow this place to be updated
+                                                    using the
+                                                    <a href="https://developer.rbx2016.nl/en-us/api-reference/function/AssetService/SavePlaceAsync"
+                                                        target="blank">Save Place API</a>
+                                                    in your game.
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="universe-buttons">
+                                        <a class="btn-medium btn-neutral configure-save-button" id="okButton">Save</a>
+                                        <a href="/develop?Page=Universes" class="btn-medium btn-negative" id="cancelButton">Cancel</a>
+                                    </div>
                                 </div>
 
                                 <div id="ProcessingView" style="display: none">
@@ -1032,7 +1285,6 @@
                                         Roblox.UniverseConfigurePage = {};
                                     }
                                     
-                                    // Initialize AccessData to prevent JavaScript errors
                                     if (typeof Roblox.AccessData === "undefined") {
                                         Roblox.AccessData = {
                                             privateServersAllowed: @(ViewBag.privateServersAllowed == true ? "true" : "false"),
@@ -1041,21 +1293,26 @@
                                             vipServerConfigurationLink: "/universes/" + @(gameid) + "/configuration/vip-servers"
                                         };
                                     } else {
-                                        // Update existing AccessData with current values
                                         Roblox.AccessData.privateServersAllowed = @(ViewBag.privateServersAllowed == true ? "true" : "false");
                                         Roblox.AccessData.privateServersFree = @(ViewBag.privateServersFree == true ? "true" : "false");
                                     }
                                     
-                                    // Game Icon functionality
                                     $(document).ready(function() {
-                                        // Restore active tab from sessionStorage if available
+                                        var hash = window.location.hash;
+                                        if (hash && hash.includes('#developerProducts')) {
+                                            sessionStorage.setItem('activeConfigureTab', 'developerProducts');
+                                        }
+                                        
+                                        var serverTab = '@(ViewBag.ActiveTab ?? "")';
+                                        if (serverTab) {
+                                            sessionStorage.setItem('activeConfigureTab', serverTab);
+                                        }
+                                        
                                         var savedTab = sessionStorage.getItem('activeConfigureTab');
                                         if (savedTab) {
                                             var tabElement = $('[data-maindiv="' + savedTab + '"]');
                                             if (tabElement.length > 0) {
-                                                // Clear sessionStorage after use
                                                 sessionStorage.removeItem('activeConfigureTab');
-                                                // Switch to the saved tab
                                                 $('.verticaltab').removeClass('selected');
                                                 $('.configure-tab').hide();
                                                 tabElement.addClass('selected');
@@ -1065,13 +1322,10 @@
                                         
                                         var hasCustomIcon = @(ViewBag.hasCustomIcon == true ? "true" : "false");
                                         var hasGeneratedIcon = @(ViewBag.hasGeneratedIcon == true ? "true" : "false");
-                                        
-                                        // Thumbnail functionality - set radio buttons based on database state
                                         var hasAutoGeneratedThumbnail = @(ViewBag.hasAutoGeneratedThumbnail == true ? "true" : "false");
                                         var hasCustomThumbnail = @(ViewBag.hasCustomThumbnail == true ? "true" : "false");
                                         var hasVideoThumbnail = @(ViewBag.hasVideoThumbnail == true ? "true" : "false");
                                         
-                                        // Radio button change handler for icons
                                         $('input[name="iconType"]').change(function() {
                                             if ($(this).val() === 'autogenerated') {
                                                 $('#ImageUpload').hide();
@@ -1082,11 +1336,9 @@
                                             }
                                         });
                                         
-                                        // Radio button change handler for thumbnails
                                         $('input[name="thumbnailType"]').change(function() {
                                             var selectedType = $(this).val();
                                             
-                                            // Show/hide upload sections
                                             if (selectedType === 'image') {
                                                 $('#thumbnails #ImageUpload').show();
                                                 $('#thumbnails #VideoUpload').hide();
@@ -1101,7 +1353,6 @@
                                                 $('#thumbnails #autogenerate').show();
                                             }
                                             
-                                            // Show/hide custom thumbnail gallery based on selection
                                             if (selectedType === 'image' || selectedType === 'video') {
                                                 $('#divSmallGalleryScrollContainer .divSmallGalleryItem').show();
                                             } else {
@@ -1109,7 +1360,6 @@
                                             }
                                         });
                                         
-                                        // Set icon radio button based on database state
                                         if (hasCustomIcon === true) {
                                             $('#imageIcon').prop('checked', true);
                                             $('#ImageUpload').show();
@@ -1123,48 +1373,113 @@
                                             $('#ImageUpload').hide();
                                             $('#autogenerate').show();
                                         }
-                                        
-                                        // Set thumbnail radio button based on database state
-                                        // Use the same priority logic as the gallery: auto-generated > custom > video
                                         if (hasAutoGeneratedThumbnail === true) {
                                             $('#autogeneratedThumbnail').prop('checked', true);
                                             $('#thumbnails #ImageUpload').hide();
                                             $('#thumbnails #VideoUpload').hide();
                                             $('#thumbnails #autogenerate').show();
-                                            // Hide custom thumbnail gallery when auto-generated is selected
                                             $('#divSmallGalleryScrollContainer .divSmallGalleryItem').hide();
                                         } else if (hasCustomThumbnail === true) {
                                             $('#imageThumbnail').prop('checked', true);
                                             $('#thumbnails #ImageUpload').show();
                                             $('#thumbnails #VideoUpload').hide();
                                             $('#thumbnails #autogenerate').hide();
-                                            // Show custom thumbnail gallery when image is selected
                                             $('#divSmallGalleryScrollContainer .divSmallGalleryItem').show();
                                         } else if (hasVideoThumbnail === true) {
                                             $('#youtubeThumbnail').prop('checked', true);
                                             $('#thumbnails #ImageUpload').hide();
                                             $('#thumbnails #VideoUpload').show();
                                             $('#thumbnails #autogenerate').hide();
-                                            // Show custom thumbnail gallery when video is selected
                                             $('#divSmallGalleryScrollContainer .divSmallGalleryItem').show();
                                         } else {
-                                            // Default to auto-generated if nothing is set
                                             $('#autogeneratedThumbnail').prop('checked', true);
                                             $('#thumbnails #ImageUpload').hide();
                                             $('#thumbnails #VideoUpload').hide();
                                             $('#thumbnails #autogenerate').show();
-                                            // Hide custom thumbnail gallery when auto-generated is selected
                                             $('#divSmallGalleryScrollContainer .divSmallGalleryItem').hide();
                                         }
                                         
-                                        // Trigger change events to ensure consistency
+                                        var allowedGearTypes = @(Html.Raw(ViewBag.allowedGearTypes ?? "[]"));
+                                        if (Array.isArray(allowedGearTypes)) {
+                                            allowedGearTypes.forEach(function(gearTypeId) {
+                                                $('input[name$=".Category"]').each(function() {
+                                                    var category = $(this).val();
+                                                    var categoryId = getGearTypeIdFromCategory(category);
+                                                    if (categoryId === gearTypeId) {
+                                                        $(this).siblings('input[type="checkbox"]').prop('checked', true);
+                                                    }
+                                                });
+                                            });
+                                        }
+                                        function getGearTypeIdFromCategory(category) {
+                                            var categoryMap = {
+                                                'Melee': 1,
+                                                'PowerUps': 2,
+                                                'Ranged': 3,
+                                                'Navigation': 4,
+                                                'Explosive': 5,
+                                                'Musical': 6,
+                                                'Social': 7,
+                                                'PersonalTransport': 8,
+                                                'Building': 9
+                                            };
+                                            return categoryMap[category] || null;
+                                        }
+                                        
                                         $('input[name="iconType"]:checked').trigger('change');
                                         $('input[name="thumbnailType"]:checked').trigger('change');
                                         
-                                        // Initialize Thumbnail Gallery functionality
                                         if (typeof Roblox.IDE.ThumbnailGallery !== 'undefined' && 
                                             typeof Roblox.IDE.ThumbnailGallery.init === 'function') {
                                             Roblox.IDE.ThumbnailGallery.init();
+                                        }
+                                        
+                                        if (typeof Roblox.DeveloperProductsListing !== 'undefined' && 
+                                            typeof Roblox.DeveloperProductsListing.init === 'function') {
+                                            Roblox.DeveloperProductsListing.init();
+                                        }
+                                        
+                                        var observer = new MutationObserver(function(mutations) {
+                                            mutations.forEach(function(mutation) {
+                                                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                                    var target = $(mutation.target);
+                                                    if (target.attr('id') === 'developerProducts' && target.css('display') !== 'none') {
+                                                        initializeDeveloperProducts();
+                                                    }
+                                                }
+                                            });
+                                        });
+                                        
+                                        observer.observe(document.getElementById('developerProducts'), {
+                                            attributes: true,
+                                            attributeFilter: ['style']
+                                        });
+                                        
+                                        function initializeDeveloperProducts() {
+                                            if ($('#DevProducts').length > 0) {
+                                                var requestUrl = $('#DevProducts').attr('src');
+                                                $('#DevProducts').trigger('onRefreshed');
+                                                
+                                                if (typeof Roblox.DeveloperProductsListing !== 'undefined') {
+                                                    if (typeof Roblox.DeveloperProductsListing.init === 'function') {                                                    
+                                                        if (typeof Roblox.DeveloperProductsForm !== 'undefined' && typeof Roblox.DeveloperProductsForm.init === 'function') {
+                                                            Roblox.DeveloperProductsForm.init();
+                                                        } else {
+                                                            console.log('Roblox.DeveloperProductsForm is not available');
+                                                        }
+                                                    } else {
+                                                        console.log('Roblox.DeveloperProductsListing.init is not a function');
+                                                    }
+                                                } else {
+                                                    console.log('Roblox.DeveloperProductsListing is undefined');
+                                                }
+                                            } else {
+                                                console.log('DevProducts container not found');
+                                            }
+                                        }
+                                        
+                                        if ($('#developerProducts').css('display') !== 'none') {
+                                            initializeDeveloperProducts();
                                         }
                                     });
                                 </script>
@@ -1234,20 +1549,39 @@
 
             </div>
         </div>
-        <script type="text/javascript">
-            Roblox = Roblox || {};
-            Roblox.Resources = Roblox.Resources || {};
+    </div>
 
-            Roblox.Resources.GenericConfirmation = {
-                yes: "Yes",
-                No: "No",
+    <!-- Modal structure for Roblox.Dialog -->
+    <div class="modalPopup" data-modal-type="confirmation" style="display:none;">
+        <div class="modal-header">
+            <h3 class="modal-title"></h3>
+            <a class="close"></a>
+            <img class="modal-thumb" style="display:none;" />
+        </div>
+        <div class="modal-body">
+            <div class="modal-message"></div>
+            <div class="modal-footer"></div>
+            <div class="modal-btns">
+                <a id="confirm-btn" class="btn-large btn-neutral"></a>
+                <a id="decline-btn" class="btn-large btn-negative"></a>
+            </div>
+            <div class="modal-checkbox checkbox" style="display:none;">
+                <input type="checkbox" id="modal-checkbox-input" />
+                <label for="modal-checkbox-input"></label>
+            </div>
+            <div class="modal-processing" style="display:none;">
+                <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Processing..." />
+            </div>
+        </div>
+    </div>
+
                 Confirm: "Confirm",
                 Cancel: "Cancel"
             };
 
             Roblox.Resources.ConsoleAccess = {
                 ContentAgreementTitleText: "Content Agreement",
-                ContentAgreementBodyContent: "<div style='width: 350px; margin-left: 25px;'>Do you agree that your experience is controller compatible and contains NONE of the following? <ul style='text-align: left; margin-left: 110px; padding: 0;'><li style='list-style: disc;'>Blood or Gore</li> <li style='list-style: disc;'>Intense Violence</li> <li style='list-style: disc;'>Strong Language (Swearing)</li> <li style='list-style: disc;'>Robux Gambling</li> <li style='list-style: disc;'>Drug Reference or Use</li> <li style='list-style: disc;'>In-Experience Messaging (Text Chat)</li> </ul> </div>",
+                ContentAgreementBodyContent: "<div style='width: 350px; margin-left: 25px;'>Do you agree that your game is controller compatible and contains NONE of the following? <ul style='text-align: left; margin-left: 110px; padding: 0;'><li style='list-style: disc;'>Blood or Gore</li> <li style='list-style: disc;'>Intense Violence</li> <li style='list-style: disc;'>Strong Language (Swearing)</li> <li style='list-style: disc;'>Robux Gambling</li> <li style='list-style: disc;'>Drug Reference or Use</li> <li style='list-style: disc;'>In-Game Messaging (Text Chat)</li> </ul> </div>",
                 ContentAgreementAcceptText: "AGREE",
                 ContentAgreementDeclineText: "DISAGREE"
             };

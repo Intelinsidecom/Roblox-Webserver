@@ -7,23 +7,15 @@ using Thumbnails;
 using Npgsql;
 using Common;
 using System.Linq;
+using Games;
+using System.Text.Json;
+using Webserver.Common;
+using Users;
 
 namespace RobloxWebserver.Controllers
 {
     /// <summary>
     /// Controller for place (per-place) management endpoints.
-    ///
-    /// Implemented responsibilities:
-    /// - Configure Start Place: GET endpoint similar to Roblox's /places/{id}/update
-    ///   that allows editing name, description, and basic settings for a place inside a universe.
-    ///
-    /// Planned responsibilities (to be implemented later):
-    /// - List Places in a Universe: endpoint used by place selector modal
-    ///   (/universes/get-places-by-context today is stubbed by static HTML). The list of
-    ///   place ids comes from the universes.place_ids array.
-    /// - Add New Place to Universe: create an additional place asset and append its id to
-    ///   the universes.place_ids array for that universe.
-    /// - Toggle place public/private and shutdown servers knobs that the gear menu exposes.
     /// </summary>
     [ApiController]
     [Authorize]
@@ -49,6 +41,20 @@ namespace RobloxWebserver.Controllers
         {
             try
             {
+                // Check for success message in query string
+                var successMessage = Request.Query["success"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(successMessage))
+                {
+                    ViewBag.SuccessMessage = successMessage;
+                }
+
+                // Check for tab parameter and store it for JavaScript
+                var tabParam = Request.Query["tab"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(tabParam))
+                {
+                    ViewBag.ActiveTab = tabParam;
+                }
+
                 // Get current user ID from claims
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
@@ -57,7 +63,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Validate place ownership and type using Thumbnails assembly helper
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var isValidPlace = await PlaceValidationHelper.ValidatePlaceOwnershipAsync(id, currentUserId, connectionString, _assetRepository);
                 if (!isValidPlace)
                 {
@@ -67,23 +73,22 @@ namespace RobloxWebserver.Controllers
                 // Get place asset using Assets assembly (now validated)
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
 
-                // Populate ViewBag with place data
+                // Get universe ID for the place
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+
+
                 ViewBag.gameid = placeAsset.AssetId;
+                ViewBag.PlaceUniverseId = universeId;
                 ViewBag.gamename = placeAsset.Name ?? "";
                 ViewBag.gamedesc = placeAsset.Description ?? "";
-                ViewBag.gamegenre = AssetGenreNames.GetGenreLabel(placeAsset.Genre); // Use actual genre from database
-                ViewBag.xcsrftoken = ""; // Will be populated by anti-forgery system
+                ViewBag.gamegenre = AssetGenreNames.GetGenreLabel(placeAsset.Genre);
 
                 // Check if place has custom icon and get icon URLs
                 var hasCustomIcon = await _thumbnailService.HasCustomIconAsync(id, connectionString);
-                
-                
-                // Only check for custom icon URL if the flag is false (to catch edge cases)
                 if (!hasCustomIcon && !string.IsNullOrWhiteSpace(placeAsset.PlaceCustomIconUrl))
                 {
                     hasCustomIcon = true;
                 }
-                // Double-check: if custom icon URL is null/empty, ensure hasCustomIcon is false
                 else if (hasCustomIcon && string.IsNullOrWhiteSpace(placeAsset.PlaceCustomIconUrl))
                 {
                     hasCustomIcon = false;
@@ -91,65 +96,36 @@ namespace RobloxWebserver.Controllers
                 
                 ViewBag.hasCustomIcon = hasCustomIcon;
                 
-                // Check if custom icon URL matches thumbnail URL (for delete button visibility)
                 bool customIconIsThumbnail = !string.IsNullOrWhiteSpace(placeAsset.PlaceCustomIconUrl) && 
                                           placeAsset.PlaceCustomIconUrl == placeAsset.ThumbnailUrl;
                 ViewBag.customIconIsThumbnail = customIconIsThumbnail;
                 
-                // Get icon URLs for display
-                // Priority: custom icon (if still set) > generated icon > thumbnail URL > default
                 ViewBag.iconUrl = placeAsset.PlaceCustomIconUrl ?? 
                                  placeAsset.PlaceGeneratedIconUrl ?? 
                                  placeAsset.ThumbnailUrl ?? 
                                  $"/game-icons/image?assetId={id}&width=512&height=512&format=Png";
                 ViewBag.hasGeneratedIcon = placeAsset.GeneratedIcon;
-                
-                // Add place asset thumbnail URL for comparison
                 ViewBag.thumbnailUrl = placeAsset.ThumbnailUrl;
-
-                // Add auto-generated thumbnail information
                 ViewBag.hasAutoGeneratedThumbnail = placeAsset.PlaceAutoGeneratedThumbnail;
                 ViewBag.placeGeneratedThumbnailUrl = placeAsset.PlaceGeneratedThumbnailUrl;
-
-                // Add custom and video thumbnail flags for radio button selection
                 ViewBag.hasCustomThumbnail = placeAsset.PlaceCustomThumbnail;
                 ViewBag.hasVideoThumbnail = placeAsset.PlaceVideoThumbnail;
-
-                // Add max visitor count for access tab
                 ViewBag.maxVisitorCount = placeAsset.MaxVisitorCount;
-
-                // Add device compatibility for access tab
                 var playableDevices = Games.DeviceCompatibilityHelper.ConvertFromDeviceCompatibilityJson(placeAsset.DeviceCompatibility ?? "[1, 2, 3]");
                 ViewBag.playableDevices = playableDevices;
-
-                // Add server fill type for access tab
                 ViewBag.serverFillType = Games.AccessSettingsChanger.GetServerFillTypeString(placeAsset.ServerFillType);
-
-                // Add number of custom social slots for access tab
                 ViewBag.numberOfCustomSocialSlots = placeAsset.NumberOfCustomSocialSlots;
-
-                // Add access type for access tab (convert from int to string)
                 ViewBag.accessType = Games.AccessSettingsChanger.GetAccessTypeString(placeAsset.AccessType);
-
-                // Add private servers allowed setting for access tab
                 ViewBag.privateServersAllowed = placeAsset.PrivateServersAllowed;
-
-                // Add private servers free setting for access tab
                 ViewBag.privateServersFree = placeAsset.IsPrivateServersFree;
-
-                // Add private servers price for access tab
                 ViewBag.privateServersPrice = placeAsset.PrivateServersPrice;
-
-                // Add paid access settings for access tab
                 ViewBag.paidAccessEnabled = placeAsset.PaidAccessEnabled;
                 ViewBag.paidAccessPrice = placeAsset.PaidAccessPrice;
-
-                // Add copying permission setting for permissions tab
                 ViewBag.isCopyingAllowed = placeAsset.IsCopyingAllowed;
-
-                // Add gear permission settings for permissions tab
                 ViewBag.isAllGenresAllowed = placeAsset.IsAllGenresAllowed;
                 ViewBag.allowedGearTypes = placeAsset.AllowedGearTypes;
+                ViewBag.allowPlaceToBeCopiedInGame = placeAsset.AllowPlaceToBeCopiedInGame;
+                ViewBag.allowPlaceToBeUpdatedInGame = placeAsset.AllowPlaceToBeUpdatedInGame;
 
                 // Load actual thumbnail data from database
                 var thumbnailData = await PlaceThumbnail.GetPlaceThumbnailsAsync(connectionString, id);
@@ -157,7 +133,6 @@ namespace RobloxWebserver.Controllers
                 ViewBag.placeThumbnails = thumbnailData;
                 ViewBag.thumbnailCount = thumbnailData.Count;
 
-                // Return the update view
                 return View("~/Views/Pages/places/{id}/update.cshtml");
             }
             catch (Exception ex)
@@ -189,8 +164,7 @@ namespace RobloxWebserver.Controllers
                     return Json(new { success = false, message = "Invalid place ID" });
                 }
 
-                // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null)
@@ -198,18 +172,15 @@ namespace RobloxWebserver.Controllers
                     return Json(new { success = false, message = "Place not found" });
                 }
 
-                // Check if user owns this place
                 if (placeAsset.OwnerUserId != currentUserId)
                 {
                     return Json(new { success = false, message = "Access denied" });
                 }
 
-                // Generate auto-generated thumbnail (only 1280x720, skip if already exists)
                 var baseUrl = _configuration["Thumbnails:ThumbnailUrl"] ?? $"{Request.Scheme}://{Request.Host}";
                 
                 try
                 {
-                    // First check if auto-generated thumbnail already exists
                     var existingThumbnails = await PlaceThumbnail.GetPlaceThumbnailsAsync(connectionString, placeId);
                     var existingAutoGeneratedThumbnail = existingThumbnails.FirstOrDefault(t => 
                         t.GetType().GetProperty("type")?.GetValue(t)?.ToString() == "image" && 
@@ -219,7 +190,6 @@ namespace RobloxWebserver.Controllers
                     
                     if (existingAutoGeneratedThumbnail != null)
                     {
-                        // Thumbnail already exists, just return its URL
                         var urlProperty = existingAutoGeneratedThumbnail.GetType().GetProperty("url");
                         thumbnailUrl = urlProperty?.GetValue(existingAutoGeneratedThumbnail)?.ToString();
                     }
@@ -240,14 +210,11 @@ namespace RobloxWebserver.Controllers
                         
                         if (thumbnail1280x720Copied)
                         {
-                            // Generate CDN URL for 1280x720 thumbnail
                             thumbnailUrl = CDNUtilities.GeneratePlaceThumbnailUrl(baseUrl, renderedResult1280x720.FileName);
                             
-                            // Update auto-generated thumbnail URL field and clear other flags
                             await ThumbnailQueries.ClearPlaceCustomThumbnailAsync(connectionString, placeId);
                             await ThumbnailQueries.ClearPlaceVideoThumbnailAsync(connectionString, placeId);
                             
-                            // Generate auto-generated 720p thumbnail for place (1280x720)
                             await PlaceThumbnail.GenerateAutoGeneratedThumbnailAsync(
                                 _thumbnailService,
                                 connectionString,
@@ -304,8 +271,7 @@ namespace RobloxWebserver.Controllers
                 var forceStr = Request.Form["force"].FirstOrDefault();
                 force = !string.IsNullOrWhiteSpace(forceStr) && (forceStr.ToLower() == "true" || forceStr == "1");
 
-                // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null)
@@ -431,7 +397,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null)
@@ -496,7 +462,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null)
@@ -549,7 +515,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Get place asset using Assets assembly
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
                 
                 if (placeAsset == null)
@@ -698,7 +664,7 @@ namespace RobloxWebserver.Controllers
 
 
                 // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, Id);
                 
                 if (placeAsset == null)
@@ -748,7 +714,7 @@ namespace RobloxWebserver.Controllers
                     // Check if there's a video URL in the place_thumbnail_video field
                     if (!string.IsNullOrWhiteSpace(placeAsset.PlaceThumbnailVideo))
                     {
-                        hasValidVideoThumbnail = IsValidYouTubeURL(placeAsset.PlaceThumbnailVideo);
+                        hasValidVideoThumbnail = YouTubeUtilities.IsValidYouTubeURL(placeAsset.PlaceThumbnailVideo);
                     }
                     
                     // Also check legacy place_thumbnails table for existing videos
@@ -761,7 +727,7 @@ namespace RobloxWebserver.Controllers
                         {
                             var videoUrlProperty = videoThumbnail.GetType().GetProperty("videoUrl");
                             var videoUrl = videoUrlProperty?.GetValue(videoThumbnail)?.ToString();
-                            hasValidVideoThumbnail = !string.IsNullOrWhiteSpace(videoUrl) && IsValidYouTubeURL(videoUrl);
+                            hasValidVideoThumbnail = !string.IsNullOrWhiteSpace(videoUrl) && YouTubeUtilities.IsValidYouTubeURL(videoUrl);
                         }
                     }
 
@@ -814,6 +780,15 @@ namespace RobloxWebserver.Controllers
                 bool sellGameAccessParsed = bool.TryParse(Request.Form["SellGameAccess"].FirstOrDefault(), out bool sellGameAccess);
                 int paidAccessPrice = 0;
                 int.TryParse(Request.Form["Price"].FirstOrDefault(), out paidAccessPrice);
+                
+                // Parse copying permission setting (initialize to false, will be properly parsed later)
+                bool isCopyingAllowed = false;
+                
+                // Business rule: If sell game access is enabled, automatically disable copying
+                if (sellGameAccess)
+                {
+                    isCopyingAllowed = false;
+                }
                 
                 // Validate paid access price range (1-10000)
                 if (sellGameAccess && (paidAccessPrice < 1 || paidAccessPrice > 10000))
@@ -1089,19 +1064,114 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Parse copying permission setting
-                bool isCopyingAllowed = false;
                 bool.TryParse(Request.Form["IsCopyingAllowed"].FirstOrDefault(), out isCopyingAllowed);
+
+                // Business rule: If sell game access is enabled, automatically disable copying
+                if (sellGameAccess)
+                {
+                    isCopyingAllowed = false;
+                }
 
                 // Parse gear permission settings
                 bool isAllGenresAllowed = false;
                 bool.TryParse(Request.Form["IsAllGenresAllowed"].FirstOrDefault(), out isAllGenresAllowed);
                 
-                string allowedGearTypesJson = Request.Form["AllowedGearTypes"].FirstOrDefault() ?? "[]";
+                // Parse in-game permission settings
+                bool allowPlaceToBeCopiedInGame = false;
+                bool allowPlaceToBeUpdatedInGame = false;
+                bool.TryParse(Request.Form["AllowPlaceToBeCopiedInGame"].FirstOrDefault(), out allowPlaceToBeCopiedInGame);
+                bool.TryParse(Request.Form["AllowPlaceToBeUpdatedInGame"].FirstOrDefault(), out allowPlaceToBeUpdatedInGame);
+                
+                // Parse gear type checkboxes - collect all selected gear type categories
+                var selectedGearTypes = new List<string>();
+                
+                // Check if this is an AJAX request with JSON data (from Configure.js)
+                var allowedGearTypesFromForm = Request.Form["AllowedGearTypes"].FirstOrDefault();
+                
+                if (!string.IsNullOrEmpty(allowedGearTypesFromForm) && allowedGearTypesFromForm.StartsWith("["))
+                {
+                    // Parse JSON array of gear type IDs from JavaScript
+                    try
+                    {
+                        // Parse as List<int> and use the IDs directly for storage (more space efficient)
+                        var gearTypeIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(allowedGearTypesFromForm);
+                        
+                        if (gearTypeIds != null)
+                        {
+                            // Store the numeric IDs directly (more space efficient than category names)
+                            selectedGearTypes = gearTypeIds.Select(id => id.ToString()).ToList();
+                        }
+                    }
+                    catch (System.Text.Json.JsonException ex)
+                    {
+                        // If JSON parsing fails, fall back to empty array
+                        selectedGearTypes = new List<string>();
+                    }
+                }
+                else
+                {
+                    // Parse from form checkbox array (direct form submission)
+                    // Note: This path is rarely used since most submissions go through AJAX
+                    foreach (var key in Request.Form.Keys)
+                    {
+                        if (key.StartsWith("AllowedGearTypes[") && key.EndsWith(".IsSelected"))
+                        {
+                            var isSelected = Request.Form[key].FirstOrDefault() == "true";
+                            if (isSelected)
+                            {
+                                // Extract the index from the key (e.g., "AllowedGearTypes[0].IsSelected" -> "0")
+                                var indexStr = key.Substring("AllowedGearTypes[".Length, key.IndexOf("]") - "AllowedGearTypes[".Length);
+                                if (int.TryParse(indexStr, out var index))
+                                {
+                                    // Use the index + 1 as the gear type ID (since checkboxes are 0-indexed but gear types are 1-indexed)
+                                    selectedGearTypes.Add((index + 1).ToString());
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                
+                string allowedGearTypesJson = selectedGearTypes.Count > 0 
+                    ? System.Text.Json.JsonSerializer.Serialize(selectedGearTypes.Select(int.Parse)) 
+                    : "[]";
+                    
 
                 // Update permission settings using Games assembly
                 var permissionSettings = new Games.PermissionSettings();
-                await permissionSettings.UpdatePlaceCopyingAllowedAsync(connectionString, Id, isCopyingAllowed);
-                await permissionSettings.UpdatePlaceGearPermissionsAsync(connectionString, Id, isAllGenresAllowed, allowedGearTypesJson);
+                try
+                {
+                    await permissionSettings.UpdatePlaceCopyingAllowedAsync(connectionString, Id, isCopyingAllowed);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] Failed to update copying allowed for place {Id}: {ex.Message}");
+                    Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                    throw;
+                }
+                
+                try
+                {
+                    await permissionSettings.UpdatePlaceGearPermissionsAsync(connectionString, Id, isAllGenresAllowed, allowedGearTypesJson);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] Failed to update gear permissions for place {Id}: {ex.Message}");
+                    Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                    throw;
+                }
+
+                // Update in-game permissions using Games assembly
+                try
+                {
+                    await permissionSettings.UpdatePlaceInGamePermissionsAsync(connectionString, Id, allowPlaceToBeCopiedInGame, allowPlaceToBeUpdatedInGame);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] Failed to update in-game permissions for place {Id}: {ex.Message}");
+                    Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                    throw;
+                }
 
                 // Return JSON response for AJAX requests
                 if (isAjax)
@@ -1113,21 +1183,17 @@ namespace RobloxWebserver.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"[ERROR] Inner exception: {ex.InnerException?.Message}");
+                
                 if (isAjax)
                 {
-                    return Json(new { success = false, message = "An error occurred while saving. Please try again." });
+                    return Json(new { success = false, message = ex.Message });
                 }
                 
-                ViewBag.gameid = Id;
-                ViewBag.ErrorMessage = "An error occurred while saving. Please try again.";
-                return View("~/Views/Pages/places/{id}/update.cshtml");
+                ModelState.AddModelError("", "An error occurred while saving. Please try again.");
+                return View();
             }
-            
-            if (isAjax)
-            {
-                return Json(new { success = false, message = "Unexpected error occurred" });
-            }
-            return Redirect("/404");
         }
 
         /// <summary>
@@ -1165,7 +1231,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null)
@@ -1246,7 +1312,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Validate YouTube URL format
-                if (!IsValidYouTubeURL(videoUrl))
+                if (!YouTubeUtilities.IsValidYouTubeURL(videoUrl))
                 {
                     return Json(new { success = false, message = "Invalid YouTube URL." });
                 }
@@ -1260,7 +1326,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Get place asset to verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null)
@@ -1325,7 +1391,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 // Verify ownership
-                var connectionString = _configuration.GetConnectionString("Default");
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
                 if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
@@ -1359,28 +1425,875 @@ namespace RobloxWebserver.Controllers
     }
 }
 
-/// <summary>
-/// Validates if the provided URL is a valid YouTube URL
-/// </summary>
-/// <param name="url">The URL to validate</param>
-/// <returns>True if valid YouTube URL, false otherwise</returns>
-private static bool IsValidYouTubeURL(string url)
-{
-    if (string.IsNullOrWhiteSpace(url))
-        return false;
+        /// <summary>
+        /// GET /places/version-history-items - Get version history items for a place
+        /// </summary>
+        [HttpGet("places/version-history-items")]
+        [Authorize]
+        public async Task<IActionResult> GetVersionHistoryItems([FromQuery] long assetID, [FromQuery] int page = 1)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Content("<tbody><tr><td colspan='4'>User not authenticated</td></tr></tbody>", "text/html");
+                }
 
-    var trimmedUrl = url.Trim();
-            
-    // YouTube URL patterns
-    var youtubePatterns = new[]
-    {
-        @"^https?:\/\/(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]+$",
-        @"^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$",
-        @"^https?:\/\/youtu\.be\/[a-zA-Z0-9_-]+$",
-        @"^https?:\/\/(www\.)?youtube\.com\/v\/[a-zA-Z0-9_-]+$"
-    };
+                // Verify place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, assetID);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+                    return Content("<tbody><tr><td colspan='4'>Access denied</td></tr></tbody>", "text/html");
+                }
 
-    return youtubePatterns.Any(pattern => System.Text.RegularExpressions.Regex.IsMatch(trimmedUrl, pattern));
-}
+                // Generate complete HTML response including table headers
+                var randomDate = DateTime.Now.AddDays(-new Random().Next(0, 365)).ToString("M/d/yyyy h:mm:ss tt");
+                var html = $@"<thead>
+                                                        <tr>
+                                                            <th>Version number</th>
+                                                            <th>Created</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1</td>
+                                                            <td>{randomDate}</td>
+                                                            <td><span class=""icon-checkmark-16x16""></span></td>
+                                                            <td><span data-asset-version-id=""1""
+                                                                    class=""btn-control btn-control-medium revertLink"">Revert
+                                                                    to this version</span></td>
+                                                        </tr>
+                                                    </tbody>";
+
+                return Content(html, "text/html");
+            }
+            catch (Exception ex)
+            {
+                return Content("<tbody><tr><td colspan='4'>An error occurred while loading version history</td></tr></tbody>", "text/html");
+            }
+        }
+
+        /// <summary>
+        /// GET /places/{id}/developer-products - Get developer products listing for a place
+        /// </summary>
+        [HttpGet("places/{id}/developer-products")]
+        [Authorize]
+        public async Task<IActionResult> GetDeveloperProducts(long id, int page = 1)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Content("<div class=\"error\">User not authenticated</div>");
+                }
+
+                // Verify place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+                    return Content("<div class=\"error\">Access denied</div>");
+                }
+
+                // Get universe ID for the place
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+                if (!universeId.HasValue)
+                {
+                    return Content("<div class=\"error\">Universe not found for this place</div>");
+                }
+
+                // Get paginated developer products from universe
+                const int pageSize = 10;
+                var (developerProducts, totalCount) = await DevProductHandler.GetUniverseDeveloperProductsPaginatedAsync(connectionString, universeId.Value, page, pageSize);
+                
+                // Build status messages (success and error) using TempData so HTML is rendered by the view, not JS
+                var successMessageHtml = "";
+                var productCreated = TempData["DeveloperProductCreated"] as bool? ?? false;
+                var createdProductId = TempData["DeveloperProductId"] as string;
+                var productUpdated = TempData["DeveloperProductUpdated"] as bool? ?? false;
+                var updatedProductId = TempData["DeveloperProductId"] as string;
+
+                if (productCreated && !string.IsNullOrEmpty(createdProductId))
+                {
+                    successMessageHtml = $@"<div class=""status-confirm"" style=""margin-bottom: 10px; width: 60%;"">
+    Product {createdProductId} successfully created
+</div>";
+                }
+                else if (productUpdated && !string.IsNullOrEmpty(updatedProductId))
+                {
+                    successMessageHtml = $@"<div class=""status-confirm"" style=""margin-bottom: 10px; width: 60%;"">
+    Product {updatedProductId} successfully updated
+</div>";
+                }
+
+                var errorMessageHtml = "";
+                var errorMessage = TempData["DeveloperProductError"] as string;
+                if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    errorMessageHtml = $@"<div class=""status-error"" style=""margin-bottom: 10px; width: 60%;"">
+    {System.Net.WebUtility.HtmlEncode(errorMessage)}
+</div>";
+                }
+                
+                if (developerProducts == null || developerProducts.Count == 0)
+                {
+                    // Return empty state HTML
+                    var emptyHtml = $@"<div class=""headline"">
+    <h2 style=""display: inline-block; vertical-align: middle;"">Developer Products</h2>
+    <div class=""createNewButtonSection"" style=""display: inline-block; margin-left: 10px; vertical-align: middle; line-height: 1;"">
+        <a class=""btn-small btn-neutral developer-product-button"" id=""createNewButton"" data-form-post-url=""/places/{id}/developer-products/create"" data-url=""/places/{id}/developer-products/create"">Create new</a>
+    </div>
+    <div style=""clear: both;""></div>
+</div>
+{errorMessageHtml}{successMessageHtml}
+<p style=""margin: 0;"">You do not have any developer products. Click <a href=""https://create.roblox.com/docs/production/monetization/developer-products"" target=""_blank"">here</a> for more information on<br>developer products.</p>";
+                    
+                    return Content(emptyHtml, "text/html; charset=utf-8");
+                }
+
+                // Generate HTML for developer products listing
+                var productsHtmlList = developerProducts.Select(product => 
+                {
+                    var productId = product.GetProperty("developerProductId").GetInt64();
+                    var name = product.GetProperty("name").GetString() ?? "";
+                    var description = product.GetProperty("description").GetString() ?? "";
+                    var price = product.GetProperty("priceInRobux").GetInt32();
+                    
+                    var ticketPrice = DevProductHandler.GetTicketPriceFromJson(product);
+                    
+                    long? imageAssetId = null;
+                    if (product.TryGetProperty("imageAssetId", out var imageAssetElement) && imageAssetElement.ValueKind != System.Text.Json.JsonValueKind.Null)
+                    {
+                        imageAssetId = imageAssetElement.GetInt64();
+                    }
+                    
+                    var imageUrl = imageAssetId.HasValue ? $"/game-assets/image?assetId={imageAssetId.Value}&width=150&height=150" : "/images/empty-asset.png";
+                    
+                    return $@"<tr class=""dev-product-row"" data-product-id=""{productId}"">
+    <td class=""dev-product-id"">{productId}</td>
+    <td class=""dev-product-name"">
+        <div class=""dev-product-title"">{name}</div>
+    </td>
+    <td class=""dev-product-price"">
+        <span class=""robux-price"">{price} R$</span>
+    </td>
+    <td class=""dev-product-ticket-price"">
+        <span class=""ticket-price"">{ticketPrice} Tix</span>
+    </td>
+    <td class=""dev-product-actions"">
+        <a class=""btn-small btn-neutral edit"" style=""text-align: left;""data-form-post-url=""/places/{id}/developer-products/{productId}/configure"" data-url=""/places/{id}/developer-products/{productId}/configure"">Edit</a>
+    </td>
+</tr>";
+                }).ToList();
+                
+                var productsHtmlString = string.Join("", productsHtmlList);
+
+                // Calculate pagination info
+                var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+                var hasNextPage = page < totalPages;
+                var hasPreviousPage = page > 1;
+
+                var paginationHtml = "";
+                if (totalPages > 1)
+                {
+                    paginationHtml = $@"<div class=""developerProductpagerContainer"">
+    <a class=""pager first {(hasPreviousPage ? "" : "disabled")}"" data-page=""1""></a>
+    <a class=""pager previous {(hasPreviousPage ? "" : "disabled")}"" data-page=""{Math.Max(1, page - 1)}""></a>
+    <span class=""page text"">
+        Page <span class=""robloxDeveloperProductsPageNum"">{page}</span> of {totalPages}
+    </span>
+    <a class=""pager next {(hasNextPage ? "" : "disabled")}"" data-page=""{page + 1}""></a>
+    <a class=""pager last {(hasNextPage ? "" : "disabled")}"" data-page=""{totalPages}""></a>
+</div>";
+                }
+
+                var html = $@"<div class=""headline"">
+    <h2 style=""display: inline-block; vertical-align: middle;"">Developer Products</h2>
+    <div class=""createNewButtonSection"" style=""display: inline-block; margin-left: 10px; vertical-align: middle; line-height: 1;"">
+        <a class=""btn-small btn-neutral developer-product-button"" id=""createNewButton"" data-form-post-url=""/places/{id}/developer-products/create"" data-url=""/places/{id}/developer-products/create"">Create new</a>
+    </div>
+    <div style=""clear: both;""></div>
+</div>
+{errorMessageHtml}{successMessageHtml}
+<div class=""developerProductsTableContainer"">
+    <table id=""DeveloperProductsTable"">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price In Robux</th>
+                <th>Price In Tickets</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {productsHtmlString}
+        </tbody>
+    </table>
+    {paginationHtml}
+</div>";
+                
+                return Content(html, "text/html; charset=utf-8");
+            }
+            catch (Exception ex)
+            {
+                return Content("<div class=\"error\">An error occurred while loading developer products. Please try again.</div>", "text/html");
+            }
+        }
+
+        /// <summary>
+        /// GET /places/{id}/developer-products/create - Show developer product creation page
+        /// </summary>
+        [HttpGet("places/{id}/developer-products/create")]
+        [Authorize]
+        public async Task<IActionResult> CreateDeveloperProductPage(long id)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Redirect("/login");
+                }
+
+                // Verify place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+                    return Redirect("/404");
+                }
+
+                // Get universe ID for the place
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+                
+                // Set ViewBag data for the view
+                ViewBag.gameid = placeAsset.AssetId;
+                ViewBag.PlaceUniverseId = universeId ?? id; // Fallback to place ID if universe not found
+                ViewBag.gamename = placeAsset.Name ?? "";
+                ViewBag.gamedesc = placeAsset.Description ?? "";
+                
+                // Pass success message data if available
+                ViewBag.productCreated = TempData["DeveloperProductCreated"] as bool? ?? false;
+                ViewBag.productId = TempData["DeveloperProductId"] as string;
+                
+                // Return the specific developer products create view
+                return View("~/Views/Pages/places/{id}/developer-products/create.cshtml");
+            }
+            catch (Exception ex)
+            {
+                return Redirect("/404");
+            }
+        }
+
+        /// <summary>
+        /// GET /places/{id}/developer-products/{productId}/configure - Show developer product configuration page
+        /// </summary>
+        [HttpGet("places/{id}/developer-products/{productId}/configure")]
+        [Authorize]
+        public async Task<IActionResult> ConfigureDeveloperProductPage(long id, long productId)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Redirect("/login");
+                }
+
+                // Verify place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+                    return Redirect("/404");
+                }
+
+                // Get universe ID for the place
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+                
+                // Set ViewBag data for the view
+                ViewBag.gameid = placeAsset.AssetId;
+                ViewBag.PlaceUniverseId = universeId ?? id; // Fallback to place ID if universe not found
+                ViewBag.gamename = placeAsset.Name ?? "";
+                ViewBag.gamedesc = placeAsset.Description ?? "";
+                ViewBag.DeveloperProductId = productId;
+                
+                // Return the specific developer products configure view
+                return View("~/Views/Pages/places/{id}/developer-products/{id}/configure.cshtml");
+            }
+            catch (Exception ex)
+            {
+                return Redirect("/404");
+            }
+        }
+
+        /// <summary>
+        /// GET /places/{id}/developer-products/{productId}/data - Get developer product data for editing
+        /// </summary>
+        [HttpGet("places/{id}/developer-products/{productId}/data")]
+        [Authorize]
+        public async Task<IActionResult> GetDeveloperProductData(long id, long productId)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Json(new { success = false, message = "User not authenticated" });
+                }
+
+                // Verify place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+                    return Json(new { success = false, message = "Access denied" });
+                }
+
+                // Get universe ID for the place
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+                if (!universeId.HasValue)
+                {
+                    return Json(new { success = false, message = "Universe not found" });
+                }
+
+                // Get developer products from universe storage
+                var (products, _) = await DevProductHandler.GetUniverseDeveloperProductsPaginatedAsync(connectionString, universeId.Value, 1, 1000);
+                
+                if (products == null)
+                {
+                    return Json(new { success = false, message = "No products found" });
+                }
+
+                // Find the specific product
+                var product = products.FirstOrDefault(p => 
+                {
+                    if (p.TryGetProperty("developerProductId", out var idElement) && idElement.ValueKind != JsonValueKind.Null)
+                    {
+                        return idElement.GetInt64() == productId;
+                    }
+                    return false;
+                });
+
+                if (product.ValueKind == JsonValueKind.Undefined)
+                {
+                    return Json(new { success = false, message = "Product not found" });
+                }
+
+                // Extract product data
+                var productData = new
+                {
+                    developerProductId = productId,
+                    name = product.TryGetProperty("name", out var nameElement) && nameElement.ValueKind != JsonValueKind.Null ? nameElement.GetString() : "",
+                    description = product.TryGetProperty("description", out var descElement) && descElement.ValueKind != JsonValueKind.Null ? descElement.GetString() : "",
+                    priceInRobux = product.TryGetProperty("priceInRobux", out var robuxElement) && robuxElement.ValueKind != JsonValueKind.Null ? robuxElement.GetInt32() : 0,
+                    priceInTix = DevProductHandler.GetTicketPriceFromJson(product),
+                    imageAssetId = product.TryGetProperty("imageAssetId", out var imageElement) && imageElement.ValueKind != JsonValueKind.Null ? (long?)imageElement.GetInt64() : null
+                };
+
+                return Json(productData);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while loading product data" });
+            }
+        }
+
+        /// <summary>
+        /// POST /places/{id}/developer-products/upload-image - Handle developer product image upload
+        /// </summary>
+        [HttpPost("places/{id}/developer-products/upload-image")]
+        [Authorize]
+        public async Task<IActionResult> UploadDeveloperProductImage(long id, IFormFile? image)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Json(new { success = false, message = "User not authenticated" });
+                }
+
+                // Validate place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+                    return Json(new { success = false, message = "Access denied" });
+                }
+
+                // Also validate universe ownership
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+                if (universeId.HasValue)
+                {
+                    var universeOwner = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId.Value);
+                    if (universeOwner == null || universeOwner != currentUserId)
+                    {
+                        return Json(new { success = false, message = "Access denied - you do not own this universe" });
+                    }
+                }
+
+                if (image == null || image.Length == 0 || string.IsNullOrWhiteSpace(image.FileName))
+                {
+                    return Json(new { success = false, message = "No file uploaded or file is empty" });
+                }
+
+                // Validate file type
+                if (!image.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Json(new { success = false, message = "Invalid file type. Please upload an image file." });
+                }
+
+                // Additional validation for file size (max 10MB)
+                const long maxFileSize = 10 * 1024 * 1024; // 10MB
+                if (image.Length > maxFileSize)
+                {
+                    return Json(new { success = false, message = "File size too large. Maximum size is 10MB." });
+                }
+
+                // Create an asset record for the uploaded image
+                var baseUrl = _configuration["Thumbnails:ThumbnailUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+                
+                string imageUrl, fileHash;
+                try
+                {
+                    (imageUrl, fileHash) = await DevProductHandler.ProcessDeveloperProductImageAsync(
+                        image.OpenReadStream(), image.FileName, image.ContentType, baseUrl);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { 
+                        success = false, 
+                        message = $"Failed to process image: {ex.Message}",
+                        details = ex.ToString()
+                    });
+                }
+
+                // Create asset record for the developer product image
+                long imageAssetId;
+                try
+                {
+                    imageAssetId = await DevProductHandler.CreateDeveloperProductImageAsset(
+                        connectionString, 
+                        image.FileName, 
+                        imageUrl, 
+                        fileHash,
+                        currentUserId);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { 
+                        success = false, 
+                        message = $"Failed to create asset record: {ex.Message}",
+                        details = ex.ToString()
+                    });
+                }
+
+                return Content($@"<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 256px; 
+            min-width: 256px; 
+            overflow: hidden; 
+        }} 
+        img {{ 
+            display: block; 
+            width: 1000px; 
+            height: 256px; 
+            object-fit: contain; 
+        }}
+    </style>
+</head>
+<body>
+    <img src=""{imageUrl}"" alt=""Product Image"" />
+    <script>
+        // Communicate the asset ID back to the parent window
+        window.parent.postMessage({{
+            type: 'imageUploadComplete',
+            success: true,
+            assetId: {imageAssetId},
+            imageUrl: '{imageUrl}'
+        }}, '*');
+    </script>
+</body>
+</html>", "text/html");
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while uploading the image. Please try again." });
+            }
+        }
+
+        /// <summary>
+        /// Gets the CDN URL for a developer product image asset
+        /// </summary>
+        [HttpGet("places/{id}/developer-products/image/{assetId}")]
+        public async Task<IActionResult> GetDeveloperProductImage(long id, long assetId, int width = 150, int height = 150)
+        {
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+
+                // Get the asset information using DevProductHandler
+                var assetInfo = await DevProductHandler.GetDeveloperProductAssetAsync(connectionString, assetId);
+                if (assetInfo == null)
+                {
+                    return NotFound(new { error = "Product image asset not found" });
+                }
+
+                var (thumbnailUrl, fileName, contentHash) = assetInfo.Value;
+
+                // If we have a thumbnail URL, return it directly
+                if (!string.IsNullOrEmpty(thumbnailUrl))
+                {
+                    return Json(new { 
+                        success = true, 
+                        imageUrl = thumbnailUrl,
+                        assetId = assetId,
+                        fileName = fileName
+                    });
+                }
+
+                // Fallback: construct CDN URL from content hash
+                var baseUrl = _configuration["Thumbnails:ThumbnailUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+                var cdnUrl = $"{baseUrl.TrimEnd('/')}/dev-product-icons/{contentHash}.png";
+
+                return Json(new { 
+                    success = true, 
+                    imageUrl = cdnUrl,
+                    assetId = assetId,
+                    fileName = fileName
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Failed to retrieve product image", details = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// GET /places/{id}/developer-products/validate-name - Validate developer product name
+        /// </summary>
+        [HttpGet("places/{id}/developer-products/validate-name")]
+        [Authorize]
+        public async Task<IActionResult> ValidateDeveloperProductName(long id, string developerProductName, long? developerProductId = null)
+        {
+            try
+            {
+                // Get current user ID from claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                {
+                    return Json(new { Success = false, Message = "User not authenticated" });
+                }
+
+                // Validate place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var isValidPlace = await PlaceValidationHelper.ValidatePlaceOwnershipAsync(id, currentUserId, connectionString, _assetRepository);
+                if (!isValidPlace)
+                {
+                    return Json(new { Success = false, Message = "Access denied" });
+                }
+
+                // Also validate universe ownership and get universe ID
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id);
+                if (!universeId.HasValue)
+                {
+                    return Json(new { Success = false, Message = "Universe not found" });
+                }
+
+                var universeOwner = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId.Value);
+                if (universeOwner == null || universeOwner != currentUserId)
+                {
+                    return Json(new { Success = false, Message = "Access denied - you do not own this universe" });
+                }
+
+                // Validate name
+                if (string.IsNullOrWhiteSpace(developerProductName))
+                {
+                    return Json(new { Success = false, Message = "Name cannot be empty" });
+                }
+
+                if (developerProductName.Trim().Length == 0)
+                {
+                    return Json(new { Success = false, Message = "Name cannot be empty" });
+                }
+
+                if (developerProductName.Length > 50)
+                {
+                    return Json(new { Success = false, Message = "Name is too long (max 50 characters)" });
+                }
+
+                if (CharacterValidationUtility.ContainsDangerousContent(developerProductName))
+                {
+                    return Json(new { Success = false, Message = "Name contains invalid characters" });
+                }
+
+                // Check for duplicate names in the universe (excluding current product when editing)
+                var isUnique = await DevProductHandler.IsDeveloperProductNameUniqueAsync(
+                    connectionString,
+                    universeId.Value,
+                    developerProductName,
+                    developerProductId);
+
+                if (!isUnique)
+                {
+                    return Json(new { Success = false, Message = "A developer product with this name already exists in this universe" });
+                }
+
+                // Name is valid
+                return Json(new { Success = true, Message = "" });
+            }
+            catch (Exception)
+            {
+                return Json(new { Success = false, Message = "An error occurred while validating the name" });
+            }
+        }
+
+        /// <summary>
+        /// POST /places/{id}/developer-products/create - Create or update a developer product
+        /// </summary>
+        [HttpPost("places/{id}/developer-products/create")]
+        [Authorize]
+        public async Task<IActionResult> CreateDeveloperProduct(long id)
+        {
+            try
+            {
+
+                var (isAuthenticated, currentUserId) = AuthenticationHelper.GetCurrentUserId(User);
+                if (!isAuthenticated)
+                {
+                    return Json(new { success = false, message = "User not authenticated" });
+                }
+
+                // Validate place ownership
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, id);
+                
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                {
+
+                    return Json(new { success = false, message = "Access denied" });
+                }
+
+                var name = Request.Form["name"].FirstOrDefault();
+                var description = Request.Form["description"].FirstOrDefault();
+                var priceInRobuxStr = Request.Form["priceInRobux"].FirstOrDefault();
+                var priceInTixStr = Request.Form["priceInTix"].FirstOrDefault();
+                var imageAssetIdStr = Request.Form["imageAssetId"].FirstOrDefault();
+                var universeIdStr = Request.Form["universeId"].FirstOrDefault();
+                var productIdStr = Request.Form["developerProductId"].FirstOrDefault();
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return Json(new { success = false, message = "Product name is required" });
+                }
+
+                int priceInRobux = 0;
+                if (!string.IsNullOrWhiteSpace(priceInRobuxStr))
+                {
+                    if (!int.TryParse(priceInRobuxStr, out priceInRobux) || priceInRobux < 0)
+                    {
+                        return Json(new { success = false, message = "Robux price must be a non-negative number" });
+                    }
+                }
+
+                int priceInTix = 0;
+                if (!string.IsNullOrWhiteSpace(priceInTixStr))
+                {
+                    if (!int.TryParse(priceInTixStr, out priceInTix) || priceInTix < 0)
+                    {
+                        return Json(new { success = false, message = "Tickets price must be a non-negative number" });
+                    }
+                }
+
+                if (priceInRobux < 0 || priceInTix < 0)
+                {
+                    return Json(new { success = false, message = "Prices cannot be negative" });
+                }
+
+                if (!long.TryParse(universeIdStr, out var universeId) || universeId <= 0)
+                {
+                    return Json(new { success = false, message = "Valid universe ID is required" });
+                }
+
+
+                // Validate universe ownership
+                var universeOwner = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId);
+                if (universeOwner == null || universeOwner != currentUserId)
+                {
+                    return Json(new { success = false, message = "Access denied - you do not own this universe" });
+                }
+
+                // Parse image asset ID if provided
+                long? imageAssetId = null;
+                if (!string.IsNullOrWhiteSpace(imageAssetIdStr) && long.TryParse(imageAssetIdStr, out var parsedImageAssetId))
+                {
+                    imageAssetId = parsedImageAssetId;
+                }
+
+                // Check if this is an update (productId provided) or create
+                long existingProductId = 0;
+                bool isUpdate = !string.IsNullOrWhiteSpace(productIdStr) && long.TryParse(productIdStr, out existingProductId);
+                long productId;
+
+
+                // Enforce universe-scoped unique product names
+                var isUniqueName = await DevProductHandler.IsDeveloperProductNameUniqueAsync(
+                    connectionString,
+                    universeId,
+                    name,
+                    isUpdate ? (long?)existingProductId : null);
+
+                if (!isUniqueName)
+                {
+                    TempData["DeveloperProductError"] = "A developer product with this name already exists in this universe";
+                    return Json(new { 
+                        success = true, 
+                    });
+                }
+
+                if (isUpdate)
+                {
+                    productId = existingProductId;
+                    var updatedInUniverse = await DevProductHandler.UpdateDeveloperProductInUniverseAsync(
+                        connectionString, 
+                        universeId, 
+                        productId, 
+                        name, 
+                        description ?? "", 
+                        priceInRobux, 
+                        priceInTix, 
+                        imageAssetId);
+
+                    if (!updatedInUniverse)
+                    {
+                        return Json(new { success = false, message = "Failed to update developer product in universe" });
+                    }
+
+                    try
+                    {
+                        await DevProductHandler.UpdateDeveloperProductInDatabaseAsync(
+                            connectionString, 
+                            productId, 
+                            name, 
+                            description ?? "", 
+                            priceInRobux, 
+                            priceInTix, 
+                            imageAssetId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Warning: Failed to update database record: {ex.Message}");
+                        Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    }
+
+                    TempData["DeveloperProductUpdated"] = true;
+                    TempData["DeveloperProductId"] = productId.ToString();
+
+                    return Json(new { 
+                        success = true, 
+                        message = $"Product {productId} successfully updated",
+                        productId = productId,
+                        universeId = universeId
+                    });
+                }
+                else
+                {
+                    productId = await GamesRepository.GenerateUniverseDeveloperProductIdAsync(connectionString);
+                }
+
+                // Create developer product object for universe storage
+                var developerProduct = new
+                {
+                    developerProductId = productId,
+                    universeId = universeId,
+                    name = name,
+                    description = description ?? "",
+                    priceInRobux = priceInRobux,
+                    priceInTix = priceInTix,
+                    imageAssetId = imageAssetId,
+                    creatorUserId = currentUserId,
+                    createdAt = DateTime.UtcNow,
+                    placeId = id // Keep track of which place created it, but store in universe
+                };
+
+
+                // Add developer product to universe
+                var developerProductJson = JsonSerializer.SerializeToElement(developerProduct);
+                var addedToUniverse = await GamesRepository.AddDeveloperProductToUniverseAsync(
+                    connectionString, 
+                    universeId, 
+                    developerProductJson);
+
+                if (!addedToUniverse)
+                {
+                    return Json(new { success = false, message = "Failed to add developer product to universe" });
+                }
+
+                // Also create a database record for the developer product (for potential future use)
+                try
+                {
+                    await DevProductHandler.CreateDeveloperProduct(
+                        connectionString, 
+                        universeId, 
+                        name, 
+                        description ?? "", 
+                        priceInRobux, 
+                        priceInTix, 
+                        imageAssetId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Failed to create database record: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                }
+
+                // Set success message in TempData
+                TempData["DeveloperProductCreated"] = true;
+                TempData["DeveloperProductId"] = productId.ToString();
+
+                return Json(new { 
+                    success = true, 
+                    message = "Developer product created successfully",
+                    productId = productId,
+                    universeId = universeId
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"CreateDeveloperProduct EXCEPTION: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
+                return Json(new { success = false, message = "An error occurred while creating the developer product. Please try again." });
+            }
+        }
+
+
     }
 }

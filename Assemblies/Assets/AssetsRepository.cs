@@ -49,6 +49,10 @@ namespace Assets
         public bool PaidAccessEnabled { get; set; } = false; // Paid access enabled setting
         public int PaidAccessPrice { get; set; } = 0; // Paid access price setting
         public bool IsCopyingAllowed { get; set; } = false; // Allow copying setting
+        public bool IsAllGenresAllowed { get; set; } = false; // Allow all genres setting
+        public string? AllowedGearTypes { get; set; } = "[]"; // Allowed gear types JSON array
+        public bool AllowPlaceToBeCopiedInGame { get; set; } = false; // Allow place to be copied in game
+        public bool AllowPlaceToBeUpdatedInGame { get; set; } = false; // Allow place to be updated in game
     }
 
     public sealed class AssetCreateParams
@@ -88,6 +92,8 @@ namespace Assets
         public bool PaidAccessEnabled { get; set; } = false; // Paid access enabled setting
         public int PaidAccessPrice { get; set; } = 0; // Paid access price setting
         public bool IsCopyingAllowed { get; set; } = false; // Allow copying setting
+        public bool IsAllGenresAllowed { get; set; } = false; // Allow all genres setting
+        public string? AllowedGearTypes { get; set; } = "[]"; // Allowed gear types JSON array
     }
 
     public sealed class AssetsRepository

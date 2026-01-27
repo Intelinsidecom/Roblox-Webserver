@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Webserver.Common
 {
@@ -84,6 +85,30 @@ namespace Webserver.Common
                 return string.Empty;
 
             return $"https://img.youtube.com/vi/{videoId}/maxresdefault.jpg";
+        }
+
+        /// <summary>
+        /// Validates if the provided URL is a valid YouTube URL
+        /// </summary>
+        /// <param name="url">The URL to validate</param>
+        /// <returns>True if valid YouTube URL, false otherwise</returns>
+        public static bool IsValidYouTubeURL(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return false;
+
+            var trimmedUrl = url.Trim();
+                    
+            // YouTube URL patterns
+            var youtubePatterns = new[]
+            {
+                @"^https?:\/\/(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_-]+$",
+                @"^https?:\/\/(www\.)?youtube\.com\/embed\/[a-zA-Z0-9_-]+$",
+                @"^https?:\/\/youtu\.be\/[a-zA-Z0-9_-]+$",
+                @"^https?:\/\/(www\.)?youtube\.com\/v\/[a-zA-Z0-9_-]+$"
+            };
+
+            return youtubePatterns.Any(pattern => Regex.IsMatch(trimmedUrl, pattern));
         }
     }
 }

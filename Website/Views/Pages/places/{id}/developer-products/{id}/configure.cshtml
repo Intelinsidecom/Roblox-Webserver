@@ -1,0 +1,188 @@
+@{
+    var gameid = ViewBag.gameid ?? 0;
+    var gamename = ViewBag.gamename ?? "";
+    var gamedesc = ViewBag.gamedesc ?? "";
+}
+
+@using System.Web
+@using Webserver.Common
+@removeTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+
+
+<body>
+
+    <script type='text/javascript' src='/JS/jquery/jquery-1.11.1.min.js'></script>
+    <script type='text/javascript' src='/JS/jquery/jquery-migrate-1.2.1.min.js'></script>
+    <script type='text/javascript' src='/JS/jquery.tipsy.js'></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+        var Roblox = Roblox || {};
+    </script>
+
+    <script type='text/javascript' src='~/JS/Places/CreateEditDeveloperProducts.js'></script>
+    
+    <script type="text/javascript">
+        $(function() {
+            Roblox.DeveloperProductsForm.init();
+            
+            // Initialize Bootstrap tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+            
+            // Load existing product data if available
+            var productId = '@ViewBag.DeveloperProductId';
+            if (productId) {
+                loadDeveloperProductData(productId);
+            }
+            
+            // Hide existing image when new image is selected
+            $('#DeveloperProductImageFile').on('change', function() {
+                // Hide the current image container when user selects a new image
+                $('#CurrentImageContainer').hide();
+            });
+        });
+        
+        function loadDeveloperProductData(productId) {
+            $.ajax({
+                url: '/places/@ViewBag.PlaceUniverseId/developer-products/' + productId + '/data',
+                type: 'GET',
+                success: function(product) {
+                    if (product) {
+                        // Populate form fields
+                        $('#DeveloperProductName').val(product.name || '');
+                        $('#DeveloperProductDescription').val(product.description || '');
+                        $('#DeveloperProductPriceInRobux').val(product.priceInRobux || 0);
+                        $('#DeveloperProductPriceInTix').val(product.priceInTix || 0);
+                        $('#DeveloperProductID').val(product.developerProductId || productId);
+                        $('#DeveloperProductIconId').val(product.imageAssetId || '');
+                        
+                        if (product.imageAssetId) {
+                            loadExistingImage(product.imageAssetId);
+                        }
+                    }
+                },
+                error: function() {
+                    console.error('Failed to load developer product data');
+                }
+            });
+        }
+        
+        function loadExistingImage(imageAssetId) {
+            // Use the new API to get the product image URL
+            $.ajax({
+                url: '/places/@ViewBag.PlaceUniverseId/developer-products/image/' + imageAssetId,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success && response.imageUrl) {
+                        var iframe = $('#ImageDisplayIframe');
+                        
+                        // Show the current image container
+                        $('#CurrentImageContainer').show();
+                        
+                        // Create HTML content for the iframe matching the upload styling
+                        var iframeContent = '<!DOCTYPE html><html><head><style>body { margin: 0; padding: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 256px; min-width: 256px; } img { display: block; width: 1000px; height: 256px; object-fit: contain; }</style></head><body><img src="' + response.imageUrl + '" alt="Product Image" /></body></html>';
+                        
+                        // Set iframe content and style to match upload iframe
+                        iframe.attr('srcdoc', iframeContent);
+                        iframe.css({
+                            'width': 'auto',
+                            'height': 'auto',
+                            'min-width': '256px',
+                            'min-height': '256px',
+                            'border': '1px solid #ccc',
+                            'overflow': 'visible',
+                            'display': 'inline-block',
+                            'max-width': 'none',
+                            'max-height': 'none'
+                        });
+                        iframe.show();
+                    } else {
+                        $('#CurrentImageContainer').hide();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load product image:', error);
+                    $('#CurrentImageContainer').hide();
+                }
+            });
+        }
+    </script>
+
+    <link rel="stylesheet" href="~/CSS/Pages/Universes/Configure.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Places/DeveloperProducts.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
+
+
+    <div id="AddDeveloperProduct">
+        <div id="DeveloperProductsLoading" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; text-align: center;">
+            <img src="/images/LoadingSpinner.gif" alt="Loading..." />
+            <div>Loading...</div>
+        </div>
+        <div id="DeveloperProductsError" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; text-align: center;">
+            <div class="status-error">
+                An error occurred
+            </div>
+        </div>
+
+        <div id="AddDeveloperProductInnerContainer">
+            <div id="DeveloperProductsStatusMessage" class="status-error" style="display: none; margin-bottom: 10px; width: 60%;"></div>
+            <div class="developerProductModificationForm">
+                <h2>Configure Developer Product</h2>
+                
+                <div class="form-row" style="margin-top: 15px;">
+                    <label for="DeveloperProductName" class="form-label">Name:</label>
+                    <br />
+                    <input autofocus="" class="text-box text-box-medium universe-input" id="DeveloperProductName" maxlength="50" name="DeveloperProductName" type="text" value="" validation-url="/places/@ViewBag.PlaceUniverseId/developer-products/validate-name" invalid="false" />
+                    <div id="NameValidation" class="validationMessage" style="display: none;"></div>
+                </div>
+                
+                <div class="form-row">
+                    <label for="DeveloperProductDescription" class="form-label">Description:</label>
+                    <br />
+                    <textarea class="text-box text-area-medium universe-input" cols="80" id="DeveloperProductDescription" maxlength="1000" name="DeveloperProductDescription" rows="6"></textarea>
+                    <div id="DescriptionValidation" class="validationMessage" style="display: none;"></div>
+                </div>
+                
+                <div class="form-row">
+                    <label for="DeveloperProductPriceInRobux" class="form-label" style="margin-top: 3px;">Price In Robux:</label>
+                    <br />
+                    <input class="text-box text-area-medium" type="number" id="DeveloperProductPriceInRobux" name="DeveloperProductPriceInRobux" min="0" max="1000000000" value="" style="width: 85px;" />
+                    <div id="RobuxValidation" class="validationMessage" style="display: none;"></div>
+                </div>
+                
+                <div class="form-row">
+                    <label for="DeveloperProductPriceInTix" class="form-label" style="margin-top: 10px;">Price In Tickets:</label>
+                    <br />
+                    <input class="text-box text-area-medium" type="number" id="DeveloperProductPriceInTix" name="DeveloperProductPriceInTix" min="0" max="1000000000" value="" style="width: 85px;" />
+                    <div id="TixValidation" class="validationMessage" style="display: none;"></div>
+                </div>
+                
+                <div class="form-row">
+                    <label for="DeveloperProductImageFile" style="margin-top: 10px;">Select image:</label>
+                    <input type="file" id="DeveloperProductImageFile" name="DeveloperProductImageFile" accept="image/*" />
+                    <div id="ImageValidation" class="validationMessage" style="display: none;"></div>
+                </div>
+                
+                <div class="form-row" id="CurrentImageContainer" style="margin-top: 10px; display: none;">
+                    <br />
+                    <iframe id="ImageDisplayIframe" name="ImageDisplayIframe" style="width: 100px; height: 100px; border: 1px solid black;"></iframe>
+                </div>
+                
+                <form id="ImageUploadForm" action="/places/@ViewBag.PlaceUniverseId/developer-products/upload-image" method="post" enctype="multipart/form-data" target="ImageUploaderIframe" style="display: none;">
+                    <input type="file" name="image" />
+                </form>
+                <iframe id="ImageUploaderIframe" name="ImageUploaderIframe" style="display: none;"></iframe>
+                
+                <input type="hidden" id="DeveloperProductUniverseID" name="DeveloperProductUniverseID" value="@ViewBag.PlaceUniverseId" />
+                <input type="hidden" id="DeveloperProductID" name="DeveloperProductID" value="" />
+                <input type="hidden" id="DeveloperProductIconId" name="DeveloperProductIconId" value="" uploaded="false" />
+                
+                <div class="universe-buttons">
+                    <a href="#" class="btn-small btn-neutral developer-product-button" data-form-post-url="/places/@ViewBag.PlaceUniverseId/developer-products/create" data-url="/places/@ViewBag.PlaceUniverseId/developer-products/@ViewBag.DeveloperProductId/configure">Save</a>
+                    <a href="/places/@ViewBag.PlaceUniverseId/developer-products" class="btn-small btn-negative cancel-button" data-url="/places/@ViewBag.PlaceUniverseId/developer-products">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

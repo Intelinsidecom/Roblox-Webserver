@@ -98,7 +98,7 @@ Roblox.IDE = Roblox.IDE || {},
 
             function d() {
                 var t = typeof localStorage != 'undefined' &&
-                    Roblox.LocalStorage.isAvailable(),
+                    (typeof Roblox.LocalStorage === 'undefined' || Roblox.LocalStorage.isAvailable()),
                     n = 'Roblox.IDE.Update.versionHistoryMessageShown';
                 t &&
                     !localStorage.getItem(n) &&
@@ -116,7 +116,7 @@ Roblox.IDE = Roblox.IDE || {},
 
             function s(n) {
                 var t = $('#versionHistoryItems').data('asset-id');
-                $('#versionHistoryItems').html(''),
+                $('#versionHistoryItems .versionHistoryTable').html(''),
                     $('#versionHistoryLoading').show(),
                     $.ajax({
                         url: $('#versionHistoryItems').data('version-history-items-url'),
@@ -127,7 +127,8 @@ Roblox.IDE = Roblox.IDE || {},
                         },
                         success: function(n) {
                             $('#versionHistoryLoading').hide(),
-                                $('#versionHistoryItems').html(n)
+                                // Replace the entire table content to prevent header duplication
+                                $('#versionHistoryItems .versionHistoryTable').html(n)
                         },
                         error: function() {
                             $('#versionHistoryLoading').hide(),
