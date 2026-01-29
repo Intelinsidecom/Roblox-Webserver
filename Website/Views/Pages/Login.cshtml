@@ -91,6 +91,13 @@
 <![endif]-->
 <h1>Login to ROBLOX</h1>
 
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="error-message">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
 <div>
 
 
@@ -216,5 +223,27 @@
 </div> 
 
     <script type="text/javascript" src="~/JS/Login/Login.js"></script>
+    
+    <script type="text/javascript">
+        $(function() {
+            // Handle signup login failure errors
+            var urlParams = new URLSearchParams(window.location.search);
+            var error = urlParams.get('error');
+            
+            if (error === 'signup_login_failed') {
+                // Show error message for signup login failure
+                var errorHtml = '<div class="alert alert-warning" style="margin-bottom: 15px;">' +
+                               'Account created successfully! Please log in with your new credentials.' +
+                               '</div>';
+                $('.login-form').prepend(errorHtml);
+            } else if (error === 'no_credentials') {
+                // Show error message for missing credentials
+                var errorHtml = '<div class="alert alert-warning" style="margin-bottom: 15px;">' +
+                               'Account created! Please enter your username and password to log in.' +
+                               '</div>';
+                $('.login-form').prepend(errorHtml);
+            }
+        });
+    </script>
 
 </body></html>

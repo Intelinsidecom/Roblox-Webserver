@@ -104,13 +104,44 @@ $(function() {
 
             return !1
         };
-    $("[roblox-js-onclick]").click(t), $("[roblox-js-onsignup]").click(function() {
-        var n = $("#ReturnUrl").val(),
-            t = "/account/signupredir";
-        return typeof n == "string" && n.length > 0 && (t += "?returnUrl=" + encodeURIComponent(n)), window.location = t, !1
-    }), $("[roblox-js-oncancel]").click(function() {
-        return window.close(), !1
-    }), $("#MonthSelect").change(function() {
+    // IE11 compatible event binding
+    var signInButtons = document.querySelectorAll('[roblox-js-onclick]');
+    for (var i = 0; i < signInButtons.length; i++) {
+        if (signInButtons[i].addEventListener) {
+            signInButtons[i].addEventListener('click', t);
+        } else if (signInButtons[i].attachEvent) {
+            signInButtons[i].attachEvent('onclick', t);
+        }
+    }
+    var signUpButtons = document.querySelectorAll('[roblox-js-onsignup]');
+    for (var i = 0; i < signUpButtons.length; i++) {
+        (function(button) {
+            var handler = function() {
+                var n = $("#ReturnUrl").val(),
+                    t = "/account/signupredir";
+                return typeof n == "string" && n.length > 0 && (t += "?returnUrl=" + encodeURIComponent(n)), window.location = t, !1
+            };
+            if (button.addEventListener) {
+                button.addEventListener('click', handler);
+            } else if (button.attachEvent) {
+                button.attachEvent('onclick', handler);
+            }
+        })(signUpButtons[i]);
+    }
+    var cancelButtons = document.querySelectorAll('[roblox-js-oncancel]');
+    for (var i = 0; i < cancelButtons.length; i++) {
+        (function(button) {
+            var handler = function() {
+                return window.close(), !1
+            };
+            if (button.addEventListener) {
+                button.addEventListener('click', handler);
+            } else if (button.attachEvent) {
+                button.attachEvent('onclick', handler);
+            }
+        })(cancelButtons[i]);
+    }
+    $("#MonthSelect").change(function() {
         var n = $('select[name="Month"] option:selected').val(),
             t = $('select[name="Day"] option:selected').val(),
             i = $('select[name="Year"] option:selected').val(),

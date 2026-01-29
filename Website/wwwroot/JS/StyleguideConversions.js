@@ -12,7 +12,7 @@ typeof Roblox == 'undefined' &&
                                 r;
                             i.addClass('tool-tip'),
                                 r = i.text(),
-                                i.html('<img src="/img/UI/img-tail-left.png" class="right">' + r)
+                                i.html('<img src="/images/UI/img-tail-left.png" class="right">' + r)
                         }
                     )
             }

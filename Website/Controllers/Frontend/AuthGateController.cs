@@ -29,10 +29,27 @@ namespace RobloxWebserver.Controllers
         }
 
         [HttpGet("newlogin")]
-        public IActionResult NewLogin()
+        public IActionResult NewLogin(int? failureReason)
         {
             if (User?.Identity?.IsAuthenticated == true)
                 return Redirect("/home");
+            
+            string errorMessage = null;
+            
+            if (failureReason.HasValue)
+            {
+                switch (failureReason.Value)
+                {
+                    case 3: // credentials error
+                        errorMessage = "Username or password is incorrect!";
+                        break;
+                    default:
+                        errorMessage = "Login failed. Please try again.";
+                        break;
+                }
+            }
+            
+            ViewBag.ErrorMessage = errorMessage;
             return View("~/Views/Pages/Login.cshtml");
         }
 

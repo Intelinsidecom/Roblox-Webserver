@@ -74,6 +74,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNcTXlcSXRlbS5hc3B4VW51c2VkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Intel/Documents/GitHub/Roblox-Webserver/Website/Views/Pages/places/create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNccGxhY2VzXGNyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Intel/Documents/GitHub/Roblox-Webserver/Website/Views/Pages/places/\{id\}/developer-products/create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFnZXNccGxhY2VzXHtpZH1cZGV2ZWxvcGVyLXByb2R1Y3RzXGNyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

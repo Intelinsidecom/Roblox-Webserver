@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Common;
 using Microsoft.Extensions.Configuration;
 using Thumbnails;
+using Assets;
 
 namespace Games;
 
@@ -20,7 +21,8 @@ public static class GameCreationService
         string? assetsRoot,
         string? starterPlacePath,
         bool enableCreationCooldown,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        string? templateContentHash = null)
     {
         return await CreateUniverseWithRootPlaceAsync(
             connectionString,
@@ -30,7 +32,10 @@ public static class GameCreationService
             starterPlacePath,
             enableCreationCooldown,
             thumbnailService: null,
-            cancellationToken);
+            configuration: null,
+            cancellationToken,
+            customName: null,
+            templateContentHash: templateContentHash);
     }
 
     public static async Task<UniverseInfo> CreateUniverseWithRootPlaceAsync(
@@ -41,7 +46,8 @@ public static class GameCreationService
         string? starterPlacePath,
         bool enableCreationCooldown,
         IThumbnailService? thumbnailService,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        string? templateContentHash = null)
     {
         return await CreateUniverseWithRootPlaceAsync(
             connectionString,
@@ -52,7 +58,9 @@ public static class GameCreationService
             enableCreationCooldown,
             thumbnailService,
             configuration: null,
-            cancellationToken);
+            cancellationToken,
+            customName: null,
+            templateContentHash: templateContentHash);
     }
 
     public static async Task<UniverseInfo> CreateUniverseWithRootPlaceAsync(
@@ -64,7 +72,9 @@ public static class GameCreationService
         bool enableCreationCooldown,
         IThumbnailService? thumbnailService,
         IConfiguration? configuration,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken,
+        string? customName = null,
+        string? templateContentHash = null)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Connection string is required", nameof(connectionString));
@@ -106,46 +116,66 @@ public static class GameCreationService
         }
 
         var safeUserName = string.IsNullOrWhiteSpace(creatorUserName) ? "Player" : creatorUserName;
-        var placeName = $"{safeUserName}'s Place Number: {nextPlaceNumber}";
+        
+        // Use custom name if provided, otherwise use auto-generated name
+        string placeName;
+        if (!string.IsNullOrWhiteSpace(customName))
+        {
+            placeName = customName;
+        }
+        else
+        {
+            placeName = $"{safeUserName}'s Place Number: {nextPlaceNumber}";
+        }
 
-        // Attempt to hash and save the Starter Place .rbxl into the asset directory.
-        // If anything fails, we fall back to a placeholder content hash.
-        string contentHash = "pending-place-content";
+        // Use template content hash if provided, otherwise process starter place
+        string contentHash;
         const string fileExtension = ".rbxl";
 
-        try
+        if (!string.IsNullOrWhiteSpace(templateContentHash))
         {
-            if (!string.IsNullOrWhiteSpace(assetsRoot) &&
-                !string.IsNullOrWhiteSpace(starterPlacePath) &&
-                File.Exists(starterPlacePath))
+            // Template was pre-processed, use its hash directly
+            contentHash = templateContentHash;
+        }
+        else
+        {
+            // No template provided, process starter place as before
+            contentHash = "pending-place-content";
+            
+            try
             {
-                // Older target frameworks for this assembly do not support File.ReadAllBytesAsync,
-                // so use the synchronous variant here.
-                var bytes = File.ReadAllBytes(starterPlacePath);
-
-                using (var sha = SHA256.Create())
+                if (!string.IsNullOrWhiteSpace(assetsRoot) &&
+                    !string.IsNullOrWhiteSpace(starterPlacePath) &&
+                    File.Exists(starterPlacePath))
                 {
-                    contentHash = HashingUtilities.GenerateFileHash(bytes);
-                }
-
-                var assetFolder = Path.Combine(assetsRoot, "asset");
-                Directory.CreateDirectory(assetFolder);
-
-                var fileName = contentHash + fileExtension;
-                var fullPath = Path.Combine(assetFolder, fileName);
-
-                if (!File.Exists(fullPath))
-                {
-                    // Older target frameworks for this assembly do not support File.WriteAllBytesAsync,
+                    // Older target frameworks for this assembly do not support File.ReadAllBytesAsync,
                     // so use the synchronous variant here.
-                    File.WriteAllBytes(fullPath, bytes);
+                    var bytes = File.ReadAllBytes(starterPlacePath);
+
+                    using (var sha = SHA256.Create())
+                    {
+                        contentHash = HashingUtilities.GenerateFileHash(bytes);
+                    }
+
+                    var assetFolder = Path.Combine(assetsRoot, "asset");
+                    Directory.CreateDirectory(assetFolder);
+
+                    var fileName = contentHash + fileExtension;
+                    var fullPath = Path.Combine(assetFolder, fileName);
+
+                    if (!File.Exists(fullPath))
+                    {
+                        // Older target frameworks for this assembly do not support File.WriteAllBytesAsync,
+                        // so use the synchronous variant here.
+                        File.WriteAllBytes(fullPath, bytes);
+                    }
                 }
             }
-        }
-        catch
-        {
-            // Swallow any errors and keep using the placeholder content hash.
-            contentHash = "pending-place-content";
+            catch
+            {
+                // Swallow any errors and keep using the placeholder content hash.
+                contentHash = "pending-place-content";
+            }
         }
 
         long rootPlaceId;
@@ -254,11 +284,227 @@ where user_id = @uid;";
         };
     }
 
+    /// <summary>
+    /// Converts social slot type string to database integer value
+    /// </summary>
+    /// <param name="socialSlotType">Social slot type string</param>
+    /// <returns>Integer value for database storage</returns>
+    private static int GetServerFillTypeValue(string socialSlotType)
+    {
+        return socialSlotType?.ToLower() switch
+        {
+            "automatic" => 0,
+            "empty" => 1,
+            "custom" => 2,
+            _ => 0 // default to automatic
+        };
+    }
+
+    /// <summary>
+    /// Converts access string to database integer value
+    /// </summary>
+    /// <param name="access">Access string ("Everyone" or "Friends")</param>
+    /// <returns>Integer value for database storage (1 = Everyone, 2 = Friends)</returns>
+    private static int GetAccessTypeValue(string access)
+    {
+        return access?.ToLower() switch
+        {
+            "friends" => 2,
+            "everyone" => 1,
+            _ => 1 // default to everyone
+        };
+    }
+
+    /// <summary>
+        /// Update place settings after creation
+        /// </summary>
+        public static async Task UpdatePlaceSettingsAsync(
+            long placeId,
+            string? connectionString,
+            string? description,
+            string? genre,
+            int maxPlayers,
+            string? serverFillType,
+            int customSocialSlots,
+            string? accessType,
+            bool privateServersAllowed,
+            bool privateServersFree,
+            int privateServersPrice,
+            List<int> deviceCompatibility,
+            bool isAllGenresAllowed,
+            List<string> allowedGearTypes,
+            bool isCopyingAllowed,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (placeId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(placeId));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string updateSql = @"
+                UPDATE assets SET 
+                    description = @description,
+                    genre = @genre,
+                    max_visitor_count = @maxPlayers,
+                    server_fill_type = @serverFillType,
+                    number_of_custom_social_slots = @customSocialSlots,
+                    access_type = @accessType,
+                    private_servers_allowed = @privateServersAllowed,
+                    private_servers_free = @privateServersFree,
+                    private_servers_price = @privateServersPrice,
+                    device_compatibility = @deviceCompatibility::jsonb,
+                    is_all_genres_allowed = @isAllGenresAllowed,
+                    allowed_gear_types = @allowedGearTypes::jsonb,
+                    is_copying_allowed = @isCopyingAllowed
+                WHERE asset_id = @placeId";
+
+            using (var cmd = new NpgsqlCommand(updateSql, conn))
+            {
+                cmd.Parameters.AddWithValue("description", (object?)description ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("genre", AssetGenreNames.GetGenreIdFromString(genre ?? "All"));
+                cmd.Parameters.AddWithValue("maxPlayers", maxPlayers);
+                cmd.Parameters.AddWithValue("serverFillType", GetServerFillTypeValue(serverFillType ?? "Automatic"));
+                cmd.Parameters.AddWithValue("customSocialSlots", customSocialSlots);
+                cmd.Parameters.AddWithValue("accessType", GetAccessTypeValue(accessType ?? "Everyone"));
+                cmd.Parameters.AddWithValue("privateServersAllowed", privateServersAllowed);
+                cmd.Parameters.AddWithValue("privateServersFree", privateServersFree);
+                cmd.Parameters.AddWithValue("privateServersPrice", privateServersPrice);
+                cmd.Parameters.AddWithValue("deviceCompatibility", System.Text.Json.JsonSerializer.Serialize(deviceCompatibility));
+                cmd.Parameters.AddWithValue("isAllGenresAllowed", isAllGenresAllowed);
+                cmd.Parameters.AddWithValue("allowedGearTypes", System.Text.Json.JsonSerializer.Serialize(allowedGearTypes));
+                cmd.Parameters.AddWithValue("isCopyingAllowed", isCopyingAllowed);
+                cmd.Parameters.AddWithValue("placeId", placeId);
+
+
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update universe name
+        /// </summary>
+        public static async Task UpdateUniverseNameAsync(
+            long universeId,
+            string? connectionString,
+            string name,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (universeId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(universeId));
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required", nameof(name));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string updateUniverseSql = @"
+                UPDATE universes SET 
+                    name = @name
+                WHERE universe_id = @universeId";
+
+            using (var cmd = new NpgsqlCommand(updateUniverseSql, conn))
+            {
+                cmd.Parameters.AddWithValue("name", name);
+                cmd.Parameters.AddWithValue("universeId", universeId);
+
+                await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            }
+        }
+
     private static string GetThumbnailBaseUrl(IConfiguration? configuration)
     {
         // Get the base URL from configuration, fallback to a default
         var baseUrl = configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
         return baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
+    }
+
+    public static async Task<UniverseInfo?> CreateUsersFirstPlaceAsync(
+        long userId,
+        string username,
+        string connectionString,
+        IConfiguration? configuration,
+        CancellationToken cancellationToken = default)
+    {
+        var starterPlacePath = configuration?["Games:StarterPlacePath"];
+        var assetsRoot = configuration?["Assets:Directory"];
+        var enableCreationCooldown = bool.TryParse(configuration?["Games:EnableCreationCooldown"], out var cooldown) && cooldown;
+        
+        if (string.IsNullOrWhiteSpace(starterPlacePath) || string.IsNullOrWhiteSpace(assetsRoot))
+        {
+            return null;
+        }
+
+        try
+        {
+            var universeInfo = await CreateUniverseWithRootPlaceAsync(
+                connectionString,
+                userId,
+                username,
+                assetsRoot,
+                starterPlacePath,
+                enableCreationCooldown,
+                thumbnailService: null,
+                configuration: configuration,
+                cancellationToken,
+                customName: $"{username}'s Place");
+
+            // Generate thumbnail for the starter place
+            if (configuration != null)
+            {
+                try
+                {
+                    var placeAssetHash = await GamesRepository.GetPlaceAssetHashAsync(connectionString, universeInfo.RootPlaceId, cancellationToken);
+                    var thumbnailService = new ThumbnailService(configuration);
+                    
+                    // Generate icon thumbnails (256x256 and 1024x1024) for the place
+                    await PlaceThumbnail.GeneratePlaceThumbnailAsync(thumbnailService, connectionString, universeInfo.RootPlaceId, placeAssetHash, GetThumbnailBaseUrl(configuration), placeName: $"{username}'s Place", cancellationToken: cancellationToken);
+
+                    // Generate 720p auto-generated thumbnail for the place
+                    await PlaceThumbnail.GenerateAutoGeneratedThumbnailAsync(thumbnailService, connectionString, universeInfo.RootPlaceId, placeAssetHash, GetThumbnailBaseUrl(configuration), cancellationToken: cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to generate thumbnail for starter place {universeInfo.RootPlaceId}: {ex.Message}");
+                }
+            }
+
+            await UpdatePlaceSettingsAsync(
+                universeInfo.RootPlaceId,
+                connectionString,
+                description: "This is your very first Roblox creation. Check it out, then make it your own with Roblox Studio!",
+                genre: "All",
+                maxPlayers: 10,
+                serverFillType: "Automatic",
+                customSocialSlots: 0,
+                accessType: "Everyone",
+                privateServersAllowed: false,
+                privateServersFree: false,
+                privateServersPrice: 0,
+                deviceCompatibility: new List<int> { 1, 2, 3 },
+                isAllGenresAllowed: true,
+                allowedGearTypes: new List<string>(),
+                isCopyingAllowed: true,
+                cancellationToken);
+
+            return universeInfo;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to create starter place for user {userId}: {ex.Message}");
+            return null;
+        }
     }
 
     private static string CombineUrl(string baseUrl, string relative)
@@ -267,5 +513,47 @@ where user_id = @uid;";
         if (string.IsNullOrEmpty(relative)) return baseUrl;
         var trimmedBase = baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
         return trimmedBase + relative.TrimStart('/');
+    }
+
+    /// <summary>
+    /// Wipes all thumbnail-related URLs for a place to ensure fresh regeneration
+    /// </summary>
+    /// <param name="placeId">The place ID to clear thumbnails for</param>
+    /// <param name="connectionString">Database connection string</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    public static async Task ClearPlaceThumbnailUrlsAsync(
+        long placeId,
+        string connectionString,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        // Clear all thumbnail-related URLs and reset flags to defaults
+        const string clearThumbnailsSql = @"
+            UPDATE assets SET 
+                thumbnail_url = NULL,
+                place_custom_icon_url = NULL,
+                place_custom_icon_high_res_url = NULL,
+                place_custom_icon_hash = NULL,
+                place_generated_icon_url = NULL,
+                place_generated_icon_high_res_url = NULL,
+                place_generated_icon_hash = NULL,
+                place_generated_thumbnail_url = NULL,
+                place_custom_thumbnail = false,
+                place_video_thumbnail = false,
+                place_autogenerated_thumbnail = false,
+                generated_icon = true,
+                custom_icon = false
+            WHERE asset_id = @placeId";
+
+        using var cmd = new NpgsqlCommand(clearThumbnailsSql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+        await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
     }
 }

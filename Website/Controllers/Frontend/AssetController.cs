@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Net.Http;
 using Assets;
 using Users;
 
@@ -17,10 +18,12 @@ namespace Website.Controllers
     public class AssetController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AssetController(IConfiguration configuration)
+        public AssetController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
+            _httpClientFactory = httpClientFactory;
         }
 
         // GET /Asset?id={assetId}
@@ -74,7 +77,14 @@ namespace Website.Controllers
             var fullPath = Path.Combine(assetFolder, fileName);
 
             if (!System.IO.File.Exists(fullPath))
+            {
+                var enableRobloxDelivery = _configuration.GetValue<bool>("RobloxAssetDelivery:Enabled", false);
+                if (enableRobloxDelivery)
+                {
+                    return await TryFetchFromRobloxAssetDelivery(id.Value, contentType);
+                }
                 return NotFound(new { error = "Asset file not found" });
+            }
 
             var ct = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType;
             var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
@@ -274,6 +284,30 @@ order by awa.asset_id";
             }
 
             return Ok(new { isValid = true, success = true });
+        }
+
+        private async Task<IActionResult> TryFetchFromRobloxAssetDelivery(long assetId, string? contentType)
+        {
+            try
+            {
+                var baseUrl = _configuration["RobloxAssetDelivery:BaseUrl"] ?? "https://assetdelivery.roblox.com";
+                var client = _httpClientFactory.CreateClient();
+                
+                var response = await client.GetAsync($"{baseUrl}/v1/asset/?id={assetId}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    return NotFound(new { error = "Asset not found locally or on Roblox asset delivery" });
+                }
+
+                var stream = await response.Content.ReadAsStreamAsync();
+                var ct = string.IsNullOrWhiteSpace(contentType) ? response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream" : contentType;
+                
+                return File(stream, ct);
+            }
+            catch (Exception)
+            {
+                return NotFound(new { error = "Failed to fetch asset from Roblox asset delivery" });
+            }
         }
     }
 }

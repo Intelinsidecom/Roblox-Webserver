@@ -28,14 +28,11 @@ signupOrLogin.factory("signupService", ["$http", "captchaService", "displayServi
                 crossDomain: !0,
                 withCredentials: !0
             }).success(function(n) {
-                // Notify signup success but do not redirect or treat as logged in yet.
                 Roblox.SignupOrLogin.onSignupSuccess(n.userId);
 
                 var username = r.signup && r.signup.username;
                 var password = r.signup && r.signup.password;
 
-                // Only after we successfully call the login API (which sets the cookie)
-                // do we run the login-success handler and redirect.
                 if (username && password) {
                     $.ajax({
                         type: "POST",
@@ -46,19 +43,41 @@ signupOrLogin.factory("signupService", ["$http", "captchaService", "displayServi
                         success: function(t) {
                             if (t && t.userId) {
                                 Roblox.SignupOrLogin.onLoginSuccess(t.userId);
+                                
+                                var maxWaitTime = 3000;
+                                var checkInterval = 100;
+                                var elapsedTime = 0;
+                                
+                                var checkCookie = setInterval(function() {
+                                    elapsedTime += checkInterval;
+                                    var cookies = document.cookie.split(';');
+                                    var hasAuthCookie = false;
+                                    for (var i = 0; i < cookies.length; i++) {
+                                        var cookie = cookies[i].trim();
+                                        if (cookie.indexOf('.ROBLOSECURITY=') === 0) {
+                                            var cookieValue = cookie.substring('.ROBLOSECURITY='.length);
+                                            if (cookieValue.length > 0) {
+                                                hasAuthCookie = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    if (hasAuthCookie || elapsedTime >= maxWaitTime) {
+                                        clearInterval(checkCookie);
+                                        window.location = "/games";
+                                    }
+                                }, checkInterval);
+                            } else {
+                                window.location = "/newlogin?failureReason=3";
                             }
-                            window.location = "/home";
                         },
                         error: function(xhr) {
-                            // If the login API rejects (e.g., 403), fall back to the login page
-                            // so the user can try manually.
-                            window.location = "/login";
+                            window.location = "/newlogin?failureReason=3";
                         }
                     });
-                } else if (n && n.userId) {
-                    // As a very last fallback (no username/password captured),
-                    // just go to home and let server auth logic decide.
-                    window.location = "/home";
+                } else {
+                    window.location = "/newlogin?failureReason=3";
                 }
             }).error(function(n, u) {
                 if (r.badSubmit = !0, r.isSubmitting = !1, u === 403) {

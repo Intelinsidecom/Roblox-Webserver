@@ -8,6 +8,7 @@ using Users;
 using Npgsql;
 using System.Text.Json;
 using System.IO;
+using Games;
 
 namespace Api.Controllers
 {
@@ -190,37 +191,18 @@ namespace Api.Controllers
             {
                 var repo = new UsersRepository();
                 await repo.CreateUserAsync(connString, createParams, failIfExists: true);
+
+                await GameCreationService.CreateUsersFirstPlaceAsync(
+                    newUserId,
+                    username,
+                    connString,
+                    config,
+                    CancellationToken.None);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { errors = new[] { new { code = 7, message = "Failed to create user" } }, detail = ex.Message });
             }
-
-            // Set .ROBLOSECURITY cookie to remember the user
-            var cookieValue = $"UserId={newUserId}";
-
-            var isHttps = Request.IsHttps;
-            var cookieDomain = config["Auth:CookieDomain"];
-            var sameSiteConfig = (config["Auth:CookieSameSite"] ?? "Lax").Trim();
-            var sameSite = SameSiteMode.Lax;
-            if (sameSiteConfig.Equals("None", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.None;
-            else if (sameSiteConfig.Equals("Strict", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.Strict;
-            if (sameSite == SameSiteMode.None) isHttps = true;
-
-            Response.Cookies.Append(
-                ".ROBLOSECURITY",
-                cookieValue,
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = isHttps,
-                    SameSite = sameSite,
-                    Expires = DateTimeOffset.UtcNow.AddYears(1),
-                    Path = "/",
-                    Domain = string.IsNullOrWhiteSpace(cookieDomain) ? null : cookieDomain
-                }
-            );
-
             return Ok(new { userId = newUserId, username });
         }
 
@@ -229,6 +211,7 @@ namespace Api.Controllers
             var g = (input ?? string.Empty).Trim().ToLowerInvariant();
             if (g == "2" || g == "male") return "male";
             if (g == "3" || g == "female") return "female";
+            if (g == "1" || g == "unknown") return "none";
             return "none";
         }
 

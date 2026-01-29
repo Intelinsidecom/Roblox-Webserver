@@ -44,6 +44,13 @@
         return;
     }
 
+    // Prevent places (AssetType 9) from loading in ASPX edit page
+    if (record.AssetTypeId == 9)
+    {
+        Context.Response.Redirect($"/places/{itemId}/update");
+        return;
+    }
+
     var isPost = string.Equals(Context.Request.Method, "POST", StringComparison.OrdinalIgnoreCase);
     var action = isPost ? Context.Request.Form["Action"].ToString() : string.Empty;
     var updateSucceeded = false;

@@ -140,7 +140,7 @@ $(function() {
         i.length > 0 && t.addClass("rbx-navbar-search-open")
     });
     $('[data-toggle="toggle-search"]').on("click touchstart", function(n) {
-        return n.stopPropagation(), $('[data-behavior="univeral-search"]').toggleClass("show"), !1
+        return n.stopPropagation(), $('[data-behavior="univeral-search"]').toggleClass("show").toggleClass("rbx-navbar-search-open"), !1
     });
     $(".rbx-navbar-right").on("click touchstart", '[data-behavior="logout"]', function(n) {
         var i, t;

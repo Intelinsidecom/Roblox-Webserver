@@ -49,7 +49,7 @@ namespace RobloxWebserver.Controllers
             var sb = new StringBuilder();
 
             // Header + create button (mirrors the previous static fragment)
-            sb.Append("<a href='/games/create' id='CreatePlace' class='create-new-button btn-medium btn-primary'>Create New Game</a>");
+            sb.Append("<a href='/places/create' id='CreatePlace' class='create-new-button btn-medium btn-primary'>Create New Game</a>");
             sb.Append("<table class='section-header'>");
             sb.Append("    <tr>");
             sb.Append("        <td class='content-title'>");

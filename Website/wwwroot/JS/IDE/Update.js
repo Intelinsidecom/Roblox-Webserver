@@ -148,8 +148,10 @@ Roblox.IDE = Roblox.IDE || {},
                     disabledClass: t
                 }, [{
                     input: y,
-                    errorSpan: $('#nameRow span')
+                    errorSpan: $('.description-field-container .name-error')
                 }], !0);
+            
+            
             o.click(k),
                 $(document).ready(function() {
                     $('#basicSettingsTab').click()

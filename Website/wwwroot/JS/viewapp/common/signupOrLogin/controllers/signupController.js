@@ -12,7 +12,7 @@ signupOrLogin.controller("SignupController", ["$scope", "$http", "displayService
             r;
         return Object.prototype.toString.call(i) !== "[object Date]" || isNaN(i.getTime()) ? !1 : i.getDate().toString() != t ? !1 : (r = new Date, i.getTime() < r.getTime() && i.getFullYear() > r.getFullYear() - 100)
     }, n.badSubmit = !1, n.isSubmitting = !1, n.submitSignup = function() {
-        if (n.signupForm.$valid && n.signup.gender !== Roblox.SignupOrLogin.GenderType.unknown && n.isValidBirthday(n.signup.birthdayDay)) n.badSubmit = !1;
+        if (n.signupForm.$valid && (n.signup.gender === Roblox.SignupOrLogin.GenderType.unknown || n.signup.gender === Roblox.SignupOrLogin.GenderType.male || n.signup.gender === Roblox.SignupOrLogin.GenderType.female) && n.isValidBirthday(n.signup.birthdayDay)) n.badSubmit = !1;
         else {
             n.badSubmit = !0;
             return

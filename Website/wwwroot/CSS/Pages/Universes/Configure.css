@@ -1723,9 +1723,10 @@ a:hover .icon-female-white {
 }
 
 .name-error {
-    top: -3px;
-    position: absolute;
-    left: 405px;
+    color: #a00;
+    width: auto;
+    position: relative;
+    display: inline-block;
 }
 
 .name-field-container {

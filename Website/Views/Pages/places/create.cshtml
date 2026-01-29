@@ -1,0 +1,811 @@
+@{ Layout = "_Layout"; }
+
+ <script type='text/javascript' src='/js/jquery-1.11.1.min.js'></script>
+    <script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'></script>
+    <script type='text/javascript' src='/js/jquery-migrate-1.2.1.min.js'></script>
+    <script type='text/javascript' src='/js/jquery-migrate-1.2.1.js'></script>
+
+    <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Places/DeveloperProducts.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Notifications/Notifications.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Places/Create.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Places/Templates.css">
+
+
+
+    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="~/JS/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="~/JS/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
+    <script type="text/javascript" src="~/JS/XsrfToken.js"></script>
+    <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
+    <script type="text/javascript" src="~/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="~/JS/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="~/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="~/JS/json2.min.js"></script>
+    <script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="~/JS/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="~/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="~/JS/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="~/JS/Linkify.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/stringFormat.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="~/JS/VideoPreRollDFP.js"></script>
+    <script type="text/javascript" src="~/JS/CharacterSelect.js"></script>
+    <script type="text/javascript" src="~/JS/MadStatus.js"></script>
+    <script type="text/javascript" src="~/JS/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="~/JS/GameLauncher.js"></script>
+    <script type="text/javascript" src="~/JS/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="~/JS/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="~/JS/GameLaunchAdRefresher.js"></script>
+    <script type="text/javascript" src="~/JS/GPTAdScript.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="~/JS/roblox.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/ItemImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
+    <script type="text/javascript" src="~/JS/jquery/jquery.address-1.5.min.js"></script>
+    <script type="text/javascript" src="~/JS/DataPager.js"></script>
+    <script type="text/javascript" src="~/JS/Universes/Configure.js"></script>
+    <script type="text/javascript" src="~/JS/GenericModal.js"></script>
+    <script type="text/javascript" src="~/JS/Universes/PlaceSelectorModal.js"></script>
+    <script type="text/javascript" src="~/JS/Places/DeveloperProductsListing.js"></script>
+    <script type="text/javascript" src="~/JS/pageStyleNotifications.js"></script>
+    <script type="text/javascript" src="~/JS/Reference/jquery.twbsPagination.js"></script>
+    <script type="text/javascript" src="~/JS/Universes/ConfigureGameUpdate.js"></script>
+    <script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/dialog.js"></script>
+    <script type="text/javascript" src="~/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="~/JS/common/deviceMeta.js"></script>
+    <script type="text/javascript" src="~/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+    <script type="text/javascript" src="~/JS/StyleguideConversions.js"></script>
+    <script type="text/javascript" src="~/JS/swfobject/swfobject.js"></script>
+    <script type="text/javascript" src="~/JS/YouTube/RobloxYouTube.js"></script>
+    <script type="text/javascript" src="~/JS/IDE/Icon.js"></script>
+    <script type="text/javascript" src="~/JS/IDE/validator.js"></script>
+    <script type="text/javascript" src="~/JS/IDE/Update.js"></script>
+    <script type="text/javascript" src="~/JS/jquery/jquery-ui-sortable-1.10.4.min.js"></script>
+    <script type="text/javascript" src="~/JS/places/Access.js"></script>
+    <script type="text/javascript" src="~/JS/Places/DeviceSelection.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/DropdownMenu.js"></script>
+    <script type="text/javascript" src="~/JS/EventTracker.js"></script>
+    <script type="text/javascript" src="~/JS/ClientInstaller.js"></script>
+    <script type="text/javascript" src="~/JS/InstallationInstructions.js"></script>
+    <script type="text/javascript" src="~/JS/IEMetroInstructions.js"></script>
+    <script type="text/javascript" src="~/JS/Places/CreateEditDeveloperProducts.js"></script>
+    <script type="text/javascript" src="~/JS/Places/Templates.js"></script>
+    <script type="text/javascript" src="~/JS/Places/Create.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#ActivePrivateServersSubscriptions').hide();
+        $('#PrivateServerDetailsError').hide();
+        $('#ActivePrivateServersCount').hide();
+
+        if (typeof Roblox === "undefined") {
+            Roblox = {};
+        }
+        if (typeof Roblox.Resources === "undefined") {
+            Roblox.Resources = {};
+        }
+        if (typeof Roblox.Resources.GenericConfirmation === "undefined") {
+            Roblox.Resources.GenericConfirmation = {};
+        }
+        $.extend(Roblox.Resources.GenericConfirmation, {
+            yes: "Yes",
+            No: "No"
+        });
+    });
+</script>
+
+<div class="placeholder" style="margin-top: 50px;">
+</div>
+                <div id="container-main" tabindex="-1">
+                    <div class="alert-container">
+
+                        <noscript><div class="alert-info">Please enable Javascript to use all the features on this site.</div></noscript>
+                        
+                    </div>
+
+                                        <div id="BodyWrapper" class="">
+                        <div id="RepositionBody">
+                            <div id="Body" class="body-width">
+                                        <div id="TosAgreementInfo"
+                                             data-terms-check-needed="True">
+                                        </div>
+
+                                
+
+<h1>Create Place</h1>
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger" style="margin-bottom: 20px;">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+<div data-isBC="false">
+
+
+    <form id="placeForm" method="POST" action="/places/create">
+        <div class="validation-summary-valid" data-valmsg-summary="true"><ul><li style="display:none"></li>
+</ul></div>
+        <input name="__RequestVerificationToken" type="hidden" value="223i624crn1qCMgkuNzc8EtzkiXmuRIRaih_SVSnNHg8XYl5mWTJLBpEylFNWrnPHN1P6q0AAfQ_2uTA8Nlco2_TZ301" />
+        <div class="tab-container">
+            <div class="tab active" data-id="templates_tab">Templates</div>
+            <div class="tab" data-id="basicsettings_tab">Basic Settings</div>
+            <div class="tab" data-id="access_tab">Access</div>
+            <div class="tab" data-id="advancedsettings_tab">Advanced Settings</div>
+        </div>
+        <div>
+            <div class="tab-content tab-active" id="templates_tab">
+                
+<h2 id="StudioGameTemplates">TEMPLATES</h2>
+<div class="templatetypes">
+    <ul class="templatetypes">
+            <li data-templatetype="All"><a href="#All">All</a></li>
+            <li data-templatetype="Generic"><a href="#Generic">Generic</a></li>
+            <li data-templatetype="Theme"><a href="#Theme">Theme</a></li>
+            <li data-templatetype="Gameplay"><a href="#Gameplay">Gameplay</a></li>
+    </ul>
+</div>  
+    <div class="templates" data-templatetype="All">
+            <div class="template" placeid="95206881">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Baseplate.jpg'/></a>
+                <p>Baseplate</p>
+            </div>
+            <div class="template" placeid="95206192">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/FlatTerrain.jpg'/></a>
+                <p>Flat Terrain</p>
+            </div>
+            <div class="template" placeid="520390648">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Village.jpg'/></a>
+                <p>Village</p>
+            </div>
+            <div class="template" placeid="203810088">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Castle.jpg'/></a>
+                <p>Castle</p>
+            </div>
+            <div class="template" placeid="366130569">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Suburban.jpg'/></a>
+                <p>Suburban</p>
+            </div>
+            <div class="template" placeid="215383192">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Racing.jpg'/></a>
+                <p>Racing</p>
+            </div>
+            <div class="template" placeid="264719325">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/PirateIsland.jpg'/></a>
+                <p>Pirate Island</p>
+            </div>
+            <div class="template" placeid="366120910">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Western.jpg'/></a>
+                <p>Western</p>
+            </div>
+            <div class="template" placeid="203783329">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/City.jpg'/></a>
+                <p>City</p>
+            </div>
+            <div class="template" placeid="203812057">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Obby.jpg'/></a>
+                <p>Obby</p>
+            </div>
+            <div class="template" placeid="379736082">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/StartingPlace.jpg'/></a>
+                <p>Starting Place</p>
+            </div>
+            <div class="template" placeid="301530843">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/LineRunner.jpg'/></a>
+                <p>Line Runner</p>
+            </div>
+            <div class="template" placeid="264715997">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/InfiniteRunner.jpg'/></a>
+                <p>Infinite Runner</p>
+            </div>
+            <div class="template" placeid="92721754">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/CaptureTheFlag.jpg'/></a>
+                <p>Capture The Flag</p>
+            </div>
+            <div class="template" placeid="301529772">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/TeamFFAArena.jpg'/></a>
+                <p>Team/FFA Arena</p>
+            </div>
+            <div class="template" placeid="203885589">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Combat.jpg'/></a>
+                <p>Combat</p>
+            </div>
+    </div>
+    <div class="templates" data-templatetype="Generic">
+            <div class="template" placeid="95206881">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Baseplate.jpg'/></a>
+                <p>Baseplate</p>
+            </div>
+            <div class="template" placeid="95206192">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/FlatTerrain.jpg'/></a>
+                <p>Flat Terrain</p>
+            </div>
+    </div>
+    <div class="templates" data-templatetype="Theme">
+            <div class="template" placeid="520390648">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Village.jpg'/></a>
+                <p>Village</p>
+            </div>
+            <div class="template" placeid="203810088">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Castle.jpg'/></a>
+                <p>Castle</p>
+            </div>
+            <div class="template" placeid="366130569">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Suburban.jpg'/></a>
+                <p>Suburban</p>
+            </div>
+            <div class="template" placeid="264719325">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/PirateIsland.jpg'/></a>
+                <p>Pirate Island</p>
+            </div>
+            <div class="template" placeid="366120910">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Western.jpg'/></a>
+                <p>Western</p>
+            </div>
+            <div class="template" placeid="203783329">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Castle.jpg'/></a>
+                <p>City</p>
+            </div>
+            <div class="template" placeid="379736082">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/StartingPlace.jpg'/></a>
+                <p>Starting Place</p>
+            </div>
+    </div>
+    <div class="templates" data-templatetype="Gameplay">
+            <div class="template" placeid="215383192">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Racing.jpg'/></a>
+                <p>Racing</p>
+            </div>
+            <div class="template" placeid="203812057">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Obby.jpg'/></a>
+                <p>Obby</p>
+            </div>
+            <div class="template" placeid="301530843">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/LineRunner.jpg'/></a>
+                <p>Line Runner</p>
+            </div>
+            <div class="template" placeid="92721754">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/CaptureTheFlag.jpg'/></a>
+                <p>Capture The Flag</p>
+            </div>
+            <div class="template" placeid="301529772">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/TeamFFAArena.jpg'/></a>
+                <p>Team/FFA Arena</p>
+            </div>
+            <div class="template" placeid="203885589">
+                <a href="" class="game-image" ><img  class='' style="max-width: 200px; max-height: 150px;" src='/images/TemplateThumbnails/Combat.jpg'/></a>
+                <p>Combat</p>
+            </div>
+    </div>
+
+            </div>
+            <div class="tab-content" id="basicsettings_tab">
+                <div class="headline">
+    <h2>Basic Settings</h2>
+</div>
+<span id="userData" style="display: none;" data-name="@(ViewBag.UserName ?? "Player")" data-place-number="@(ViewBag.NextPlaceNumber ?? 1)">@(ViewBag.UserName ?? "Player")&#39;s Place Number: @(ViewBag.NextPlaceNumber ?? 1)</span>
+<label class="form-label" for="Name">Name:</label>
+<input autofocus="" class="text-box text-box-medium" data-val="true" data-val-regex="Illegal characters" data-val-regex-pattern="^[^&lt;>]+$" data-val-required="Name is required" id="Name" name="Name" type="text" value="" />
+<span id="nameRow"><span class="field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span></span>
+
+<label class="form-label" for="Description">Description:</label>
+<textarea class="text-box text-area-medium" cols="80" id="Description" maxlength="1000" name="Description" rows="6">
+</textarea>
+<span class="field-validation-valid" data-valmsg-for="Description" data-valmsg-replace="true"></span>
+
+
+<label class="form-label" for="Genre">Genre:</label>
+<select class="form-select no-margins" id="Genre" name="Genre"><option selected="selected">All</option>
+<option>Adventure</option>
+<option>Building</option>
+<option>Comedy</option>
+<option>Fighting</option>
+<option>FPS</option>
+<option>Horror</option>
+<option>Medieval</option>
+<option>Military</option>
+<option>Naval</option>
+<option>RPG</option>
+<option>Sci-Fi</option>
+<option>Sports</option>
+<option>Town and City</option>
+<option>Western</option>
+</select>
+<span class="field-validation-valid" data-valmsg-for="Genre" data-valmsg-replace="true"></span>
+
+<input data-val="true" data-val-number="The field TemplateID must be a number." id="TemplateID" name="TemplateID" type="hidden" value="95206881" />
+            </div>
+            <div class="tab-content" id="access_tab">
+                
+
+<div class="headline">
+    <h2>Access</h2>
+</div>
+<script type="text/javascript">
+
+    var Roblox = Roblox || {};
+    Roblox.AccessData = {"isDevelopSiteForVipServersEnabled":true,"vipServerConfigurationLink":"https://develop.roblox.com/v1/universes//configuration/vip-servers"};
+</script>
+
+<!-- Checkbox list needs custom extensions in the current version of mvc. -->    
+    <div class="deviceTypeSection" data-console-agreement-enabled="True">
+        <label class="form-label" for="DeviceSectionHeader">Playable devices:</label>
+            <label class="checkboxListItem" data-device="Computer">
+                <input checked="checked" data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_0__Selected" name="PlayableDevices[0].Selected" type="checkbox" value="true" /><input name="PlayableDevices[0].Selected" type="hidden" value="false" />
+                <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_0__DeviceType" name="PlayableDevices[0].DeviceType" type="hidden" value="Computer" />
+                Computer
+            </label>
+            <label class="checkboxListItem" data-device="Phone">
+                <input checked="checked" data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_1__Selected" name="PlayableDevices[1].Selected" type="checkbox" value="true" /><input name="PlayableDevices[1].Selected" type="hidden" value="false" />
+                <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_1__DeviceType" name="PlayableDevices[1].DeviceType" type="hidden" value="Phone" />
+                Phone
+            </label>
+            <label class="checkboxListItem" data-device="Tablet">
+                <input checked="checked" data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_2__Selected" name="PlayableDevices[2].Selected" type="checkbox" value="true" /><input name="PlayableDevices[2].Selected" type="hidden" value="false" />
+                <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_2__DeviceType" name="PlayableDevices[2].DeviceType" type="hidden" value="Tablet" />
+                Tablet
+            </label>
+            <label class="checkboxListItem" data-device="Console">
+                <input data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_3__Selected" name="PlayableDevices[3].Selected" type="checkbox" value="true" /><input name="PlayableDevices[3].Selected" type="hidden" value="false" />
+                <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_3__DeviceType" name="PlayableDevices[3].DeviceType" type="hidden" value="Console" />
+                Console
+            </label>
+        <div id="device-type-error" class="error-message">You must select one or more playable devices.</div>
+    </div>
+
+<div id="NumPlayers">
+    <div class="access-label">
+        <label class="form-label" for="NumberOfPlayersMax">Maximum Visitor Count:</label>
+    </div>
+<select class="form-select" data-val="true" data-val-number="The field Maximum Visitor Count: must be a number." data-val-required="The Maximum Visitor Count: field is required." id="MaxPlayersInput" name="NumberOfPlayersMax"><option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option selected="selected">8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+<option>13</option>
+<option>14</option>
+<option>15</option>
+<option>16</option>
+<option>17</option>
+<option>18</option>
+<option>19</option>
+<option>20</option>
+<option>21</option>
+<option>22</option>
+<option>23</option>
+<option>24</option>
+<option>25</option>
+<option>26</option>
+<option>27</option>
+<option>28</option>
+<option>29</option>
+<option>30</option>
+<option>31</option>
+<option>32</option>
+<option>33</option>
+<option>34</option>
+<option>35</option>
+<option>36</option>
+<option>37</option>
+<option>38</option>
+<option>39</option>
+<option>40</option>
+<option>41</option>
+<option>42</option>
+<option>43</option>
+<option>44</option>
+<option>45</option>
+<option>46</option>
+<option>47</option>
+<option>48</option>
+<option>49</option>
+<option>50</option>
+<option>51</option>
+<option>52</option>
+<option>53</option>
+<option>54</option>
+<option>55</option>
+<option>56</option>
+<option>57</option>
+<option>58</option>
+<option>59</option>
+<option>60</option>
+<option>61</option>
+<option>62</option>
+<option>63</option>
+<option>64</option>
+<option>65</option>
+<option>66</option>
+<option>67</option>
+<option>68</option>
+<option>69</option>
+<option>70</option>
+<option>71</option>
+<option>72</option>
+<option>73</option>
+<option>74</option>
+<option>75</option>
+<option>76</option>
+<option>77</option>
+<option>78</option>
+<option>79</option>
+<option>80</option>
+<option>81</option>
+<option>82</option>
+<option>83</option>
+<option>84</option>
+<option>85</option>
+<option>86</option>
+<option>87</option>
+<option>88</option>
+<option>89</option>
+<option>90</option>
+<option>91</option>
+<option>92</option>
+<option>93</option>
+<option>94</option>
+<option>95</option>
+<option>96</option>
+<option>97</option>
+<option>98</option>
+<option>99</option>
+<option>100</option>
+</select>    <img class="TipsyImg tooltip-bottom h2-tooltip number-of-players-max-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" title="The maximum number of people allowed in one instance of the game." />
+    <span class="field-validation-valid" data-valmsg-for="NumberOfPlayersMax" data-valmsg-replace="true"></span>
+
+    <div class="access-label">
+        <label class="form-label" for="SocialSlotType">Server Fill:</label>
+    </div>
+
+    <div class="formRadio" id="FriendSlotRadioButtons">
+        <label class="checkboxListItem"> <input checked="checked" data-val="true" data-val-required="The Server Fill: field is required." id="AutomaticFriendSlots" name="SocialSlotType" type="radio" value="Automatic" /> <span class="checkboxListItem">Roblox optimizes server fill for me</span> <img class="TipsyImg tooltip-bottom h2-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" title="Roblox will fill your server to optimize for the best social experience." /> </label>
+        <label class="checkboxListItem"> <input id="EmptyFriendSlots" name="SocialSlotType" type="radio" value="Empty" /> <span class="checkboxListItem">Fill each server as full as possible</span></label>
+        <div id="EmptyFriendSlotError" hidden="hidden">
+            <p class="status-error" id="FriendSlotWarning">Choosing this option will cause you to lose out on engagement time and Robux earned.</p>
+        </div>
+        <label class="checkboxListItem"> <input id="CustomFriendSlots" name="SocialSlotType" type="radio" value="Custom" /> <span class="checkboxListItem">Customize how many server slots to reserve</span> <img class="TipsyImg tooltip-bottom h2-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" title="Friends are more likely to join people in your game if you reserve more slots." /> </label>
+        <div id="CustomFriendSlotDropdown" style="margin-left:3%" hidden="hidden">
+<select class="form-select" data-val="true" data-val-number="The field NumberOfCustomSocialSlots must be a number." data-val-required="The NumberOfCustomSocialSlots field is required." id="FriendSlotsInput" name="NumberOfCustomSocialSlots"><option>1</option>
+<option>2</option>
+<option>3</option>
+<option selected="selected">4</option>
+<option>5</option>
+<option>6</option>
+<option>7</option>
+<option>8</option>
+<option>9</option>
+<option>10</option>
+<option>11</option>
+<option>12</option>
+<option>13</option>
+<option>14</option>
+<option>15</option>
+<option>16</option>
+<option>17</option>
+<option>18</option>
+<option>19</option>
+<option>20</option>
+<option>21</option>
+<option>22</option>
+<option>23</option>
+<option>24</option>
+<option>25</option>
+<option>26</option>
+<option>27</option>
+<option>28</option>
+<option>29</option>
+<option>30</option>
+<option>31</option>
+<option>32</option>
+<option>33</option>
+<option>34</option>
+<option>35</option>
+<option>36</option>
+<option>37</option>
+<option>38</option>
+<option>39</option>
+<option>40</option>
+<option>41</option>
+<option>42</option>
+<option>43</option>
+<option>44</option>
+<option>45</option>
+<option>46</option>
+<option>47</option>
+<option>48</option>
+<option>49</option>
+</select>        </div>
+        <span class="field-validation-valid" data-valmsg-for="SocialSlotType" data-valmsg-replace="true"></span>
+    </div>
+</div>
+
+<br />
+
+<div id="GamePlaceAccess">
+    <label class="form-label" for="Access">Access:</label>
+    <select class="form-select" id="Access" name="Access"><option selected="selected">Everyone</option>
+<option>Friends</option>
+</select>
+    <img class="TipsyImg tooltip-bottom h2-tooltip place-access-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" alt="To restrict who may access this place, first you must disable VIP servers and not sell game access." title="To restrict who may access this place, first you must disable VIP servers and not sell game access." />
+    <span class="field-validation-valid" data-valmsg-for="Access" data-valmsg-replace="true"></span>
+</div>
+
+
+    <div id="PrivateServersAccess" class="privateserversaccess">
+        <label class="form-label" for="ArePrivateServersAllowed">VIP Servers:</label>
+        <label id="PrivateServerAccessLabel" class="checkboxListItem">
+            <input data-val="true" data-val-required="The ArePrivateServersAllowed field is required." id="AllowPrivateServersCheckbox" name="ArePrivateServersAllowed" type="checkbox" value="true" /><input name="ArePrivateServersAllowed" type="hidden" value="false" />
+            <span>
+                Allow VIP Servers                     <a href="https://developer.roblox.com/en-us/articles/Creating-a-VIP-Server-on-Roblox" target="_blank">
+                        <img class="h2-tooltip private-server-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" alt="Click here to learn about VIP servers" data-toggle="tooltip" title="Click here to learn about VIP servers" />
+                    </a>
+            </span>
+        </label>
+        <div id="PrivateServerDetails">
+            <div id="ActivePrivateServersCount">There are currently 0 VIP servers active for this place. Disabling VIP servers will disable all of these VIP servers.</div>
+                <div id="PrivateServerDetailsError" class="status-error">Unable to load private server subscriptions.</div>
+                <div id="ActivePrivateServersSubscriptions">
+                    <img src="/images/e0802687d8357fbc484a75914e4447dc.gif" alt="Loading private server subscriptions...">
+                    Loading private server subscriptions...
+                </div>
+            <div class="formRadio" id="PrivateServerRadioButtons">
+                <label class="checkboxListItem"> <input data-val="true" data-val-required="The IsFreePrivateServer field is required." id="FreePrivateServers" name="IsFreePrivateServer" type="radio" value="True" /> <span class="checkboxListItem">Free</span></label>
+                <label class="checkboxListItem"> <input checked="checked" id="PaidPrivateServers" name="IsFreePrivateServer" type="radio" value="False" /> <span class="checkboxListItem">Paid</span></label>
+            </div>
+<div id="PrivateServerPriceContainer" data-minprice="10" data-defaultprice="100" data-taxrate="0.3">
+    <div id="PrivateServerPrice" class="pricingrow">
+        <div class="pricinglabel">Price: <span class="robux" style="margin-left: 5px;">&nbsp;</span></div>
+        <div class="toppricingfield">
+            <span class="icon-robux-16x16"></span><input class="TextBox priceinput" data-val="true" data-val-number="The field Price: must be a number." data-val-required="The Price: field is required." id="PrivateServerPriceInput" name="PrivateServersPrice" type="text" value="@(ViewBag.privateServersPrice ?? 100)" />
+        </div>
+        <span id="PrivateServerPricingError" class="status-error priceerror">
+        The minimum price for this item is
+        <span class="icon-robux-16x16"></span><span>10</span>
+        </span>
+        <div style="clear: both"></div>
+    </div>
+    <div id="PrivateServerMarketplaceFee" class="pricingrow">
+                                                        <div class="pricinglabel">
+                                                            Marketplace Fee <img class="h2-tooltip private-server-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" data-toggle-mobile="true" data-original-title="30% - minimum 1" />: <span class="robux" style="margin-left: 5px;">&nbsp;</span><br />
+                                                        </div>
+                                                        <div class="pricingfield">
+                                                            <span class="icon-robux-16x16"></span><span id="PrivateServerMarketplaceFeeText"></span>
+                                                        </div>
+                                                        <div style="clear: both"></div>
+                                                    </div>
+                                                    <div id="PrivateServerUserProfit" class="pricingrow">
+                                                        <div class="pricinglabel">You Earn: <span class="robux" style="margin-left: 5px;">&nbsp;</span></div>
+                                                        <div class="pricingfield">
+                                                            <span class="icon-robux-16x16"></span><span id="PrivateServerUserProfitText"></span>
+                                                        </div>
+                                                        <div style="clear: both"></div>
+                                                    </div>
+                                                </div>
+            <div id="PrivateServerPriceChangeWarning" class="status-error">Warning: Changing the price of VIP servers will cancel all existing subscriptions.</div>
+        </div>
+        <div id="PrivateServersError" class="status-error">To create a private server for this game, you must first allow access to Everyone, and you must disable Paid Access.</div>
+    </div>
+<div style="clear:both;"></div>
+<script type="text/javascript">
+    Roblox.PlayerAccess.strings = {
+        SellingSuspendedTitleText: "Selling Suspended",
+        SellingSuspendedBodyContent: "Your account has had the privilege of selling paid access to any of your places on Roblox suspended.",
+        OKText: "OK",
+        UsernameDoesNotExist: "That username does not exist.",
+        UserAlreadyAdded: "You've already added that username.",
+        UserLimitReached: "You've reached the user name limit.",
+        SearchingFor: "Searching for ",
+        InviteList: "Invite List",
+        SellingSuspendedTitleText: "Selling Suspended",
+        SellingSuspendedBodyContent: "Your account has had the privilege of selling paid access to any of your places on Roblox suspended.",
+        OKText: "OK",
+
+        ConsoleAccessContentAgreementTitleText: "Content Agreement",
+        ConsoleAccessContentAgreementBodyContent: "<div style='width: 350px; margin-left: 25px;'>Do you agree that your game is controller compatible and contains NONE of the following? <ul style='text-align: left; margin-left: 110px; padding: 0;'><li style='list-style: disc;'>Blood or Gore</li> <li style='list-style: disc;'>Intense Violence</li> <li style='list-style: disc;'>Strong Language (Swearing)</li> <li style='list-style: disc;'>Robux Gambling</li> <li style='list-style: disc;'>Drug Reference or Use</li> <li style='list-style: disc;'>In-Game Messaging (Text Chat)</li> </ul> </div>",
+        ConsoleAccessContentAgreementAcceptText: "AGREE",
+        ConsoleAccessContentAgreementDeclineText: "DISAGREE"
+    };
+    Roblox.PlayerAccess.AlertImageUrl = '/imagescbb24e0c0f1fb97381a065bd1e056fcb.png';
+    Roblox.PlayerAccess.tailLeftImage = '/images77c4414271016f8257c136305b7888b4.png';
+</script>
+
+            </div>
+            <div class="tab-content" id="advancedsettings_tab">
+                
+<div class="headline">
+    <h2>Gear Permissions</h2>
+    <img class="TipsyImg tooltip-bottom h2-tooltip" data-toggle="tooltip" title="The type of gear allowed in your game. By default the same genre of gear is allowed as the genre of the game." height="13" width="12" src="/images/65cb6e4009a00247ca02800047aafb87.png" alt="The type of gear allowed in your game. By default the same genre of gear is allowed as the genre of the game." />
+</div>
+<label class="form-label radio-button-label" for="IsAllGenresAllowed">Allowed Genre:</label>
+<label class="radio-selection">
+    <input checked="checked" data-val="true" data-val-required="The Allowed Genre: field is required." id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="False" />
+    <span class="checkboxListItem">Game genre (<span id="advancedsettings_genre">All</span>)</span>
+</label>
+<label class="radio-selection-last">
+    <input id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="True" /><span class="checkboxListItem">All genres</span>
+</label>
+<span class="field-validation-valid" data-valmsg-for="IsAllGenresAllowed" data-valmsg-replace="true"></span>
+
+<label class="form-label check-box-label">Gear types:</label>
+<ul id="gearTypes">
+<li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_0__IsSelected" name="AllowedGearTypes[0].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[0].IsSelected" type="hidden" value="false" /> Melee</label>
+    <input id="AllowedGearTypes_0__GearTypeDisplayName" name="AllowedGearTypes[0].GearTypeDisplayName" type="hidden" value="Melee" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_0__Category" name="AllowedGearTypes[0].Category" type="hidden" value="Melee" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_1__IsSelected" name="AllowedGearTypes[1].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[1].IsSelected" type="hidden" value="false" /> Power ups</label>
+    <input id="AllowedGearTypes_1__GearTypeDisplayName" name="AllowedGearTypes[1].GearTypeDisplayName" type="hidden" value="Power ups" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_1__Category" name="AllowedGearTypes[1].Category" type="hidden" value="PowerUps" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_2__IsSelected" name="AllowedGearTypes[2].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[2].IsSelected" type="hidden" value="false" /> Ranged</label>
+    <input id="AllowedGearTypes_2__GearTypeDisplayName" name="AllowedGearTypes[2].GearTypeDisplayName" type="hidden" value="Ranged" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_2__Category" name="AllowedGearTypes[2].Category" type="hidden" value="Ranged" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_3__IsSelected" name="AllowedGearTypes[3].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[3].IsSelected" type="hidden" value="false" /> Navigation</label>
+    <input id="AllowedGearTypes_3__GearTypeDisplayName" name="AllowedGearTypes[3].GearTypeDisplayName" type="hidden" value="Navigation" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_3__Category" name="AllowedGearTypes[3].Category" type="hidden" value="Navigation" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_4__IsSelected" name="AllowedGearTypes[4].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[4].IsSelected" type="hidden" value="false" /> Explosives</label>
+    <input id="AllowedGearTypes_4__GearTypeDisplayName" name="AllowedGearTypes[4].GearTypeDisplayName" type="hidden" value="Explosives" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_4__Category" name="AllowedGearTypes[4].Category" type="hidden" value="Explosive" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_5__IsSelected" name="AllowedGearTypes[5].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[5].IsSelected" type="hidden" value="false" /> Musical</label>
+    <input id="AllowedGearTypes_5__GearTypeDisplayName" name="AllowedGearTypes[5].GearTypeDisplayName" type="hidden" value="Musical" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_5__Category" name="AllowedGearTypes[5].Category" type="hidden" value="Musical" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_6__IsSelected" name="AllowedGearTypes[6].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[6].IsSelected" type="hidden" value="false" /> Social</label>
+    <input id="AllowedGearTypes_6__GearTypeDisplayName" name="AllowedGearTypes[6].GearTypeDisplayName" type="hidden" value="Social" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_6__Category" name="AllowedGearTypes[6].Category" type="hidden" value="Social" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_7__IsSelected" name="AllowedGearTypes[7].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[7].IsSelected" type="hidden" value="false" /> Transport</label>
+    <input id="AllowedGearTypes_7__GearTypeDisplayName" name="AllowedGearTypes[7].GearTypeDisplayName" type="hidden" value="Transport" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_7__Category" name="AllowedGearTypes[7].Category" type="hidden" value="PersonalTransport" />
+</li><li class="gearCheckbox">
+    <label class="checkboxListItem"><input data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_8__IsSelected" name="AllowedGearTypes[8].IsSelected" type="checkbox" value="true" /><input name="AllowedGearTypes[8].IsSelected" type="hidden" value="false" /> Building</label>
+    <input id="AllowedGearTypes_8__GearTypeDisplayName" name="AllowedGearTypes[8].GearTypeDisplayName" type="hidden" value="Building" />
+    <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_8__Category" name="AllowedGearTypes[8].Category" type="hidden" value="Building" />
+</li></ul>
+<div class="divider-bottom spacing"></div>
+<div class="headline">
+    <h2 id="otherSettings">Other Permissions</h2>
+</div>
+
+<input id="ChatType" name="ChatType" type="hidden" value="Classic" />
+
+<fieldset>
+    By checking this box, <b>you are granting every other user of Roblox the right to use</b> (in various ways) the content you are now sharing. <b>If you do not want to grant this right, please do not check this box</b>. For more information about sharing content, please review the Roblox <a class='text-link' href='https://www.roblox.com/info/terms' class='rbx-link'>Terms of Use</a>.
+    <label id="copyLock">
+        <input data-val="true" data-val-required="The Allow Copying field is required." id="IsCopyingAllowed" name="IsCopyingAllowed" type="checkbox" value="true" /><input name="IsCopyingAllowed" type="hidden" value="false" /> <span class="checkboxListItem">Allow Copying</span>
+    </label>
+</fieldset>
+
+<input data-val="true" data-val-required="The Avatar Appearance Override: field is required." id="OverridesDefaultAvatar" name="OverridesDefaultAvatar" type="hidden" value="False" />
+
+<script type="text/javascript">
+    $(function () {
+        if (typeof Roblox === "undefined") {
+            Roblox = {};
+        }
+        if (typeof Roblox.IDE === "undefined") {
+            Roblox.IDE = {};
+        }
+        if (typeof Roblox.IDE.Resources === "undefined") {
+            Roblox.IDE.Resources = {};
+        }
+        $.extend(Roblox.IDE.Resources, {
+            AllowCopyingTitleText: "Allow Copying",
+            AllowCopyingTitleContent: "Are you sure you want to allow this place to be copied?",
+            AllowCopyingAcceptText: "Save",
+            AllowCopyingCancelText: "Cancel",
+
+            DisableVIPServersWarningTitleText: "Turn Off VIP servers",
+            DisableVIPServersWarningBodyContent: "Are you sure you want to turn off VIP servers? All private server subscriptions will be cancelled.",
+            DisableVIPServersWarningAcceptText: "Turn Off",
+            DisableVIPServersWarningDeclineText: "Cancel"
+        });
+    });
+</script>
+            </div>
+        </div>
+        <div>
+            <div id="buttonRow">
+                <a  class="btn-medium btn-primary" id="finishButton">Create Place</a>
+                <a  data-return-url="/develop" class="btn-medium btn-negative" id="cancelButton">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="ProcessingView" style="display:none">
+    <div class="ProcessingModalBody">
+        <p class="processing-indicator"><img src='/images/ec4e85b0c4396cf753a06fade0a8d8af.gif' alt="Creating place..." /></p>
+        <p class="processing-text">Creating place...</p>
+    </div>
+</div>
+
+<!-- Confirmation Modal structure -->
+<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
+    <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+    <div class="Title"></div>
+    <div class="GenericModalBody">
+        <div class="TopBody">
+            <div class="Message"></div>
+        </div>
+        <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+            <a href id="roblox-confirm-btn"><span></span></a>
+            <a href id="roblox-decline-btn"><span></span></a>
+        </div>
+        <div class="ConfirmationModalFooter">
+        </div>
+    </div>
+</div>
+
+<!-- Modal structure for Roblox.Dialog -->
+<div class="modalPopup" data-modal-type="confirmation" style="display:none;">
+    <div class="modal-header">
+        <h3 class="modal-title"></h3>
+        <a class="close"></a>
+        <img class="modal-thumb" style="display:none;" />
+    </div>
+    <div class="modal-body">
+        <div class="modal-message"></div>
+        <div class="modal-footer"></div>
+        <div class="modal-btns">
+            <a id="confirm-btn" class="btn-large btn-neutral"></a>
+            <a id="decline-btn" class="btn-large btn-negative"></a>
+        </div>
+        <div class="modal-checkbox checkbox" style="display:none;">
+            <input type="checkbox" id="modal-checkbox-input" />
+            <label for="modal-checkbox-input"></label>
+        </div>
+        <div class="modal-processing" style="display:none;">
+            <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Processing..." />
+        </div>
+    </div>
+</div>
+
+                                <div style="clear: both"></div>
+                            </div>
+                        </div>
+                    </div>

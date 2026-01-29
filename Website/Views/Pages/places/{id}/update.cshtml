@@ -14,28 +14,7 @@
 @using Webserver.Common
 @removeTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:fb="http://www.facebook.com/2008/fbml">
-
-<head data-machine-id="WEB1269">
-    <!-- MachineID: WEB1269 -->
-    <title>Configure Place - ROBLOX</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Roblox Corporation" />
-    <meta name="description" content="Roblox is a global platform that brings people together through play." />
-    <meta name="keywords"
-        content="free games, online games, building games, virtual worlds, free mmo, gaming cloud, physics engine" />
-
-    <meta name="apple-itunes-app" content="app-id=431946152" />
-
-
-
-    <link rel="canonical" href="https://www.rbx2016.tk/universes/configure?id=@gameid" />
-
-    <link href="/images/9c0e562131139fc909c6fbb3d691c249.ico.gzip" rel="icon" />
-
-
+<head>
     <script type='text/javascript' src='/js/jquery-1.11.1.min.js'></script>
     <script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'></script>
     <script type='text/javascript' src='/js/jquery-migrate-1.2.1.min.js'></script>
@@ -338,8 +317,8 @@
                                             <div class="description-field-container">
                                                 <input autofocus="" class="text-box text-box-medium universe-input"
                                                     id="Name" maxlength="50" name="Name" type="text"
-                                                    value="@gamename" />
-                                                <div class="tool-tip warning-text name-error" style="display: none">
+                                                    value="@gamename" data-val-required="Name cannot be empty" />
+                                                <div class="field-validation-valid warning-text name-error">
                                                     Name cannot be empty
                                                     <img src="/images/77c4414271016f8257c136305b7888b4.png"
                                                         class="right">
@@ -1192,7 +1171,7 @@
                                 </div>
 
                                 <div id="developerProducts" class="configure-tab" style="display: none">
-                                    <div id="DevProducts" src="/places/@ViewBag.PlaceUniverseId/developer-products">
+                                    <div id="DevProducts" src="/universes/@ViewBag.PlaceUniverseId/developer-products">
                                         <div id="DeveloperProductsInnerContainer">
                                             <div class="developerProductsContainer" style="padding-right: -10px;">
                                                 @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
@@ -1587,6 +1566,7 @@
             };
         </script>
     </div>
+    
 </body>
 
 </html>

@@ -1,8 +1,8 @@
 @{
     ViewData["Title"] = "Roblox Webserver";
  }
-
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style><script async="" src="~/JS/lib/beacon/beacon.js"></script><script src="~/JS/lib/athena/athena.js" type="text/javascript"></script>
+<!DOCTYPE html>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style><script src="~/JS/lib/athena/athena.js" type="text/javascript"></script>
     <title>Roblox 2016 Webserver</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
 
@@ -20,57 +20,97 @@
 <link rel="stylesheet" href="~/css/signup/SignupOrLogInIframe.css">
 <link rel="stylesheet" href="~/css/signup/SignupOrLogInLegacy.css">
 
-<!-- Sign up uses its own kind of pair and isnt associated with the other pages that have layout applied -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- IE 9 compatibility scripts -->
+    <!--[if IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/console-polyfill/0.2.2/console.min.js"></script>
+    <![endif]-->
+
+    <!--[if IE 10]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+<![endif]-->
+
     <script type="text/javascript" src="~/JS/lib/jquery/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="~/JS/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
+    
+    <script type="text/javascript">
+        if (typeof jQuery == 'undefined') {
+            document.write(unescape("%3Cscript type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'%3E%3C/script%3E"));
+            document.write(unescape("%3Cscript type='text/javascript' src='https://code.jquery.com/jquery-migrate-1.2.1.min.js'%3E%3C/script%3E"));
+        }
+    </script>
+    
+    <script type="text/javascript">
+        (function() {
+            var checkJQuery = function() {
+                if (typeof jQuery != 'undefined') {
+                    // jQuery is loaded, continue
+                    return;
+                }
+                setTimeout(checkJQuery, 100);
+            };
+            checkJQuery();
+        })();
+    </script>
+    
     <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
 
-    <script src="~/JS/Landing/RollerCoaster/RollerCoaster.js"></script>
-
-    <script type="text/javascript" src="~/JS/angular/angular.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
-
-    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="~/JS/lib/beacon/beacon.js"></script>
     <script type="text/javascript" src="~/JS/roblox.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
     <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
     <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
-    <script type="text/javascript" src="~/JS/Tracking/FormEvents.js"></script>
-    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
-    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
     <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
     <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
     <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    
     <script type="text/javascript">
       window.Roblox = window.Roblox || {};
       if (Roblox.EventStream && Roblox.EventStream.Init) {
         Roblox.EventStream.Init("", "", "", "");
       }
     </script>
+    
+    <script type="text/javascript" src="~/JS/Tracking/FormEvents.js"></script>
+    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
+    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
     <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
     <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
     <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
     <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
     <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
-    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
-
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/formEvents.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/signupOrLogin.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
+    
+    <script src="~/JS/Landing/RollerCoaster/RollerCoaster.js"></script>
+    
     <script type="text/javascript" src="~/JS/SignupFormValidatorGeneric.js"></script>
     <script type="text/javascript" src="~/JS/Login/SignupOrLogIn.js"></script>
     <script type="text/javascript" src="~/JS/Login/SignupOrLoginContainer.js"></script>
     <script type="text/javascript" src="~/JS/Login/Login.js"></script>
+    
+    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/formEvents.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/signupOrLogin.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formContext.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidation.js"></script>
@@ -90,7 +130,7 @@
     <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/helpers.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
- 
+    
     <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupOrLoginController.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupController.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/loginController.js"></script>
@@ -104,14 +144,15 @@
     <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/displayService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/loginService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/signupService.js"></script>
-    
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    
 
- 
+    <title>Roblox 2016 Webserver</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="ROBLOX Corporation">
+<meta name="description" content="This Webserver is designed for testing Clients and for learning how everything works, this is not any kind of revival or anything.">
+<meta property="og:image" content="~/images/fb70fd2b56107a0d43f2f98658885702.jpg">
+<link href="~/images/7aee41db80c1071f60377c3575a0ed87.ico" rel="icon">
 
     <div id="roblox-linkify" data-enabled="true" data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags="gm" data-as-http-regex="((blog|wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.roblox\.com|robloxlabs\.com)"></div>
 <div id="image-retry-data" data-image-retry-max-times="10" data-image-retry-timer="1500">
@@ -788,7 +829,7 @@
         </ul>
         <!-- NOTE: "ROBLOX Corporation" is a healthcheck; be careful when updating! -->
         <p class="text-footer footer-note">
-            2026 Intelinsidecomputer, not affiliated with ROBLOX.
+            2016 ROBLOX Corporation
                 <br>
                 <span class="footer-kid-safe-logo">
 
@@ -810,130 +851,15 @@
 
 
         <!-- Inline inits placed at end since no layout -->
+        <script>
+            $(function () {
+                Roblox.DeveloperConsoleWarning.showWarning();
+            });
+        </script>
         <script type="text/javascript">
-            (function(){
-                try {
-                    console.log("[Index.cshtml] Debug: signup debug logger initializing");
-
-                    if (window.angular) {
-                        console.log("[Index.cshtml] Debug: angular detected");
-                    } else {
-                        console.warn("[Index.cshtml] Debug: angular NOT detected, signup will not work");
-                    }
-
-                    $(function(){
-                        var $btn = $("#signup-button");
-                        if ($btn.length) {
-                            console.log("[Index.cshtml] Debug: found #signup-button", {
-                                signupApiUrl: $btn.attr("data-signup-api-url") || null
-                            });
-
-                            $btn.on("click.signupDebug keypress.signupDebug", function(ev){
-                                if (ev.type === "keypress" && ev.which && ev.which !== 13 && ev.which !== 32) {
-                                    return;
-                                }
-
-                                try {
-                                    var username = $("#signup-username").val() || "";
-                                    var birthdayMonth = $("#MonthDropdown").val() || "";
-                                    var birthdayDay = $("#DayDropdown").val() || "";
-                                    var birthdayYear = $("#YearDropdown").val() || "";
-
-                                    console.log("[Index.cshtml] Debug: signup button activated", {
-                                        eventType: ev.type,
-                                        usernameLength: username.length,
-                                        birthdayMonth: birthdayMonth,
-                                        birthdayDay: birthdayDay,
-                                        birthdayYear: birthdayYear,
-                                        signupApiUrl: $btn.attr("data-signup-api-url") || null
-                                    });
-                                } catch (ex) {
-                                    console.error("[Index.cshtml] Debug: error while logging signup click", ex);
-                                }
-                            });
-                        } else {
-                            console.warn("[Index.cshtml] Debug: #signup-button not found, cannot log signup clicks");
-                        }
-                    });
-
-                    (function(){
-                        var NativeXHR = window.XMLHttpRequest;
-                        if (!NativeXHR || NativeXHR.__signupDebugWrapped) {
-                            return;
-                        }
-                        function WrappedXHR(){
-                            var xhr = new NativeXHR();
-                            try {
-                                var _open = xhr.open;
-                                var _send = xhr.send;
-                                var meta = { method: null, url: null, bodySize: null };
-
-                                xhr.open = function(method, url){
-                                    meta.method = method;
-                                    meta.url = url;
-                                    if (url && url.toString().toLowerCase().indexOf("/signup") !== -1) {
-                                        console.log("[Index.cshtml] Debug: XHR.open for signup", { method: method, url: url });
-                                    }
-                                    return _open.apply(xhr, arguments);
-                                };
-
-                                xhr.send = function(body){
-                                    try {
-                                        if (body && typeof body === "string") {
-                                            meta.bodySize = body.length;
-                                        }
-                                        if (meta.url && meta.url.toString().toLowerCase().indexOf("/signup") !== -1) {
-                                            console.log("[Index.cshtml] Debug: XHR.send for signup", {
-                                                method: meta.method,
-                                                url: meta.url,
-                                                bodySize: meta.bodySize
-                                            });
-
-                                            xhr.addEventListener("load", function(){
-                                                try {
-                                                    var text = xhr.responseText || "";
-                                                    var snippet = text.length > 500 ? text.substring(0, 500) + "..." : text;
-                                                    console.log("[Index.cshtml] Debug: XHR.load for signup", {
-                                                        status: xhr.status,
-                                                        readyState: xhr.readyState,
-                                                        url: meta.url,
-                                                        responseSnippet: snippet
-                                                    });
-                                                    console.log("[Index.cshtml] Debug: post-signup cookies", {
-                                                        location: window.location.href,
-                                                        cookieLength: document.cookie ? document.cookie.length : 0
-                                                    });
-                                                } catch (ex2) {
-                                                    console.error("[Index.cshtml] Debug: error while logging XHR load", ex2);
-                                                }
-                                            });
-
-                                            xhr.addEventListener("error", function(){
-                                                console.error("[Index.cshtml] Debug: XHR.error for signup", {
-                                                    status: xhr.status,
-                                                    readyState: xhr.readyState,
-                                                    url: meta.url
-                                                });
-                                            });
-                                        }
-                                    } catch (exSend) {
-                                        console.error("[Index.cshtml] Debug: error in XHR.send wrapper", exSend);
-                                    }
-                                    return _send.apply(xhr, arguments);
-                                };
-                            } catch (ex) {
-                                console.error("[Index.cshtml] Debug: failed to wrap XHR", ex);
-                            }
-                            return xhr;
-                        }
-                        WrappedXHR.__signupDebugWrapped = true;
-                        window.XMLHttpRequest = WrappedXHR;
-                        console.log("[Index.cshtml] Debug: XHR wrapper for signup installed");
-                    })();
-                } catch (outerEx) {
-                    console.error("[Index.cshtml] Debug: unexpected error in signup debug bootstrap", outerEx);
-                }
-            })();
+            $(function () {
+                Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true });
+            });
         </script>
         <script type="text/javascript">
             (function(){

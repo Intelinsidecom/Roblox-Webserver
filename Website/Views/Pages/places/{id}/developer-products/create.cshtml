@@ -55,7 +55,7 @@
                 <div class="form-row" style="margin-top: 15px;">
                     <label for="DeveloperProductName" class="form-label">Name:</label>
                     <br />
-                    <input autofocus="" class="text-box text-box-medium universe-input" id="DeveloperProductName" maxlength="50" name="DeveloperProductName" type="text" value="" validation-url="/places/@ViewBag.PlaceUniverseId/developer-products/validate-name" invalid="false" />
+                    <input autofocus="" class="text-box text-box-medium universe-input" id="DeveloperProductName" maxlength="50" name="DeveloperProductName" type="text" value="" validation-url="/places/@gameid/developer-products/validate-name" invalid="false" />
                     <div id="NameValidation" class="validationMessage" style="display: none;"></div>
                 </div>
                 
@@ -86,7 +86,7 @@
                     <div id="ImageValidation" class="validationMessage" style="display: none;"></div>
                 </div>
                 
-                <form id="ImageUploadForm" action="/places/@ViewBag.PlaceUniverseId/developer-products/upload-image" method="post" enctype="multipart/form-data" target="ImageUploaderIframe" style="display: none;">
+                <form id="ImageUploadForm" action="/places/@gameid/developer-products/upload-image" method="post" enctype="multipart/form-data" target="ImageUploaderIframe" style="display: none;">
                     <input type="file" name="image" />
                 </form>
                 <iframe id="ImageUploaderIframe" name="ImageUploaderIframe" style="display: none;"></iframe>
@@ -96,8 +96,8 @@
                 <input type="hidden" id="DeveloperProductIconId" name="DeveloperProductIconId" value="" uploaded="false" />
                 
                 <div class="universe-buttons">
-                    <a href="#" class="btn-small btn-neutral developer-product-button" data-form-post-url="/places/@ViewBag.PlaceUniverseId/developer-products/create" data-url="/places/@ViewBag.PlaceUniverseId/developer-products/create">Create</a>
-                    <a href="/places/@ViewBag.PlaceUniverseId/developer-products" class="btn-small btn-negative cancel-button" data-url="/places/@ViewBag.PlaceUniverseId/developer-products">Cancel</a>
+                    <a href="#" class="btn-small btn-neutral developer-product-button" data-form-post-url="/places/@gameid/developer-products/create" data-url="/places/@gameid/developer-products/create">Create</a>
+                    <a href="/places/@gameid/developer-products" class="btn-small btn-negative cancel-button" data-url="/places/@gameid/developer-products">Cancel</a>
                 </div>
             </div>
         </div>

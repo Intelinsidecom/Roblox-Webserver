@@ -46,6 +46,9 @@ builder.Services.AddSingleton<AssetMetadataRepository>();
 // Add memory cache for rate limiting
 builder.Services.AddMemoryCache();
 
+// Add HttpClient for Roblox asset delivery
+builder.Services.AddHttpClient();
+
 // WebOptimizer bundling/minification moved to extension for clarity
 builder.Services.AddWebOptimizerPipeline();
 

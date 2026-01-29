@@ -334,8 +334,10 @@ typeof Roblox == 'undefined' &&
                 ot.tipsy(),
                 et.hide(),
                 d.hide(),
-                ct.is(':checked') &&
-                Roblox.PlayerAccess.calculatePrivateServerFeeAndProfit(),
+                ct.is(':checked') && (
+                    $(r).show(),
+                    Roblox.PlayerAccess.calculatePrivateServerFeeAndProfit()
+                ),
                 Roblox.PlayerAccess.checkSaleOptions(),
                 a.click(function() {
                     o(),
