@@ -733,6 +733,7 @@ namespace RobloxWebserver.Controllers
         /// </summary>
         [HttpPost("universes/doconfigure")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DoConfigure()
         {
             try
@@ -987,6 +988,7 @@ namespace RobloxWebserver.Controllers
         /// </summary>
         [HttpPost("universes/set-start-place")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetStartPlace()
         {
             try
@@ -1045,6 +1047,7 @@ namespace RobloxWebserver.Controllers
         /// </summary>
         [HttpPost("universes/remove-start-place")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemoveStartPlace()
         {
             try
@@ -1109,6 +1112,7 @@ namespace RobloxWebserver.Controllers
         /// </summary>
         [HttpPost("universes/addplace")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPlaceToUniverse()
         {
             try
@@ -1208,6 +1212,7 @@ namespace RobloxWebserver.Controllers
         /// </summary>
         [HttpPost("universes/removeplace")]
         [Authorize]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemovePlaceFromUniverse()
         {
             try

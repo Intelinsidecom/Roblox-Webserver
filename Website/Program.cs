@@ -19,10 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
-    .AddControllersWithViews(options =>
-    {
-        options.Filters.Add<GlobalValidateAntiForgeryTokenAttribute>();
-    })
+    .AddControllersWithViews()
     .AddApplicationPart(typeof(LoginController).Assembly);
 
 builder.Services.AddAntiforgery(options =>
