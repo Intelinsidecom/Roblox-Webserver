@@ -687,6 +687,11 @@ namespace RobloxWebserver.Controllers
         {
             try
             {
+                if (universeId <= 0)
+                {
+                    return Redirect("/404");
+                }
+
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
                 {

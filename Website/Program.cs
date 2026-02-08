@@ -13,13 +13,26 @@ using RobloxWebserver.Assemblies.Catalog;
 using Assets;
 using Website.Services;
 using Website.Middleware;
+using RobloxWebserver.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
-    .AddControllersWithViews()
+    .AddControllersWithViews(options =>
+    {
+        options.Filters.Add<GlobalValidateAntiForgeryTokenAttribute>();
+    })
     .AddApplicationPart(typeof(LoginController).Assembly);
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "XSRF-COOKIE";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.SameAsRequest;
+    options.FormFieldName = "__RequestVerificationToken";
+});
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("Default"),
@@ -28,31 +41,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 // Thumbnails service
 builder.Services.AddSingleton<IThumbnailService>(sp => new ThumbnailService(sp.GetRequiredService<IConfiguration>()));
-
-// Avatar thumbnail warming service
 builder.Services.AddSingleton<AvatarThumbnailRefreshService>();
-
-// Catalog assembly services
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
-
-// Catalog assembly services
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
-
-// Assets assembly services
 builder.Services.AddSingleton<AssetMetadataRepository>();
-
-// Add memory cache for rate limiting
 builder.Services.AddMemoryCache();
-
-// Add HttpClient for Roblox asset delivery
 builder.Services.AddHttpClient();
-
-// WebOptimizer bundling/minification moved to extension for clarity
 builder.Services.AddWebOptimizerPipeline();
-
-// Minimal auth: use the ClaimsPrincipal you set from .ROBLOSECURITY as the auth source
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "Passthrough";
@@ -60,7 +57,6 @@ builder.Services.AddAuthentication(options =>
     options.DefaultSignInScheme = "Passthrough";
 })
 .AddScheme<AuthenticationSchemeOptions, PassthroughAuthHandler>("Passthrough", options => { });
-// Respect reverse proxy headers (e.g., Cloudflare) so Request.Scheme/IsHttps are accurate
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedHost;
@@ -87,20 +83,16 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-// Apply forwarded headers BEFORE HTTPS redirection/static files/routing
 app.UseForwardedHeaders();
 
 app.UseHttpsRedirection();
 
-// Optimize and serve bundled/minified assets
 app.UseWebOptimizer();
 
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
-// Add mapping for .file extension
 provider.Mappings[".file"] = "application/octet-stream";
 
 app.UseStaticFiles(new StaticFileOptions
@@ -112,7 +104,6 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 
-// Apply rate limiting to API endpoints
 app.UseRateLimiting();
 
 if (enableRequestLogging)
@@ -120,7 +111,6 @@ if (enableRequestLogging)
     app.UseHttpLogging();
 }
 
-// Translate .ROBLOSECURITY into HttpContext.User by looking up sessions table
 app.Use(async (context, next) =>
 {
     var originalResponseStream = context.Response.Body;
@@ -132,7 +122,6 @@ app.Use(async (context, next) =>
         await next();
         
         {
-            // For non-doconfigure2 requests, just pass through without logging
             responseBodyStream.Seek(0, SeekOrigin.Begin);
             await responseBodyStream.CopyToAsync(originalResponseStream);
         }
@@ -143,7 +132,6 @@ app.Use(async (context, next) =>
     }
 });
 
-// Translate .ROBLOSECURITY into HttpContext.User by looking up sessions table
 app.Use(async (context, next) =>
 {
     var cookies = context.Request.Cookies;
@@ -179,15 +167,12 @@ app.Use(async (context, next) =>
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Enable attribute-routed controllers (e.g., AuthGateController for /, /login, /newlogin)
 app.MapControllers();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Pages routing: placed AFTER default so specific controllers (e.g., /login/v1) win first
-// Exclude static file extensions from catch-all route
 app.MapControllerRoute(
     name: "pages",
     pattern: "{*path}",

@@ -390,25 +390,26 @@ namespace Games
                         }
                     }
 
-                    // For NonGameCreation context in universe configure, filter places
                     var ignoreRootPlace = creationContext == "NonGameCreation";
                     var shouldInclude = false;
 
                     if (creationContext == "NonGameCreation" && universeId > 0)
                     {
-                        // Universe configure modal: only show places in current universe or unassigned
-                        if (placeUniverseId == universeId)
+                        if (placeUniverseId == 0)
                         {
-                            shouldInclude = true;
+                            shouldInclude = true; // Places not in any universe
                         }
-                        else if (placeUniverseId == 0)
+                        else if (placeUniverseId == universeId && !isRootPlace)
+                        {
+                            shouldInclude = false;
+                        }
+                        else if (placeUniverseId == universeId && isRootPlace)
                         {
                             shouldInclude = true;
                         }
                     }
                     else
                     {
-                        // Other contexts: include all places
                         shouldInclude = true;
                     }
 
@@ -429,10 +430,8 @@ namespace Games
                     }
                 }
 
-                // Apply pagination to filtered results
                 totalCount = filteredPlaces.Count;
                 var pagedPlaces = filteredPlaces.Skip(startIndex).Take(maxRows).ToList();
-                
                 var totalPages = (int)Math.Ceiling((double)totalCount / maxRows);
                 var pageNumber = (startIndex / maxRows) + 1;
 
