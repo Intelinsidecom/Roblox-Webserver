@@ -27,7 +27,6 @@
     <link rel="stylesheet" href="~/CSS/Pages/Places/DeveloperProducts.css">
     <link rel="stylesheet" href="~/CSS/Pages/Notifications/Notifications.css">
     <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
-
     
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
@@ -145,13 +144,9 @@
 
     <script type='text/javascript' src='https://js.roblox.com/c6b47ce9ee4cd0423d35c985917d2b4e.js'></script>
 
-
-
-
     <script type="text/javascript">
         Roblox.FixedUI.gutterAdsEnabled = false;
     </script>
-
 
     <script type="text/javascript">
         var Roblox = Roblox || {};
@@ -236,6 +231,7 @@
                                     data-removeplaceurl="/universes/removeplace"
                                     data-configureplaceurl="/universes/configure-universe-places"
                                     data-loadmoreplacesurl="/universes/get-universe-places"
+                                    data-place-loader-url="/universes/get-places-by-context?creationContext=NonGameCreation&universeId=@gameid"
                                     data-universe-name="@gamename"
                                     data-universe-description="@gamedesc">
 
@@ -421,23 +417,26 @@
                                                         <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Loading..." />
                                                     </div>
                                                     <div class="no-start-place" style="display: none;">
+                                                        <a class="btn-small btn-neutral set-startplace-button">Set</a>
                                                         <div class="missing-start-place blank-box">
-                                                            <span>No start place set.</span>
-                                                            <a class="btn-small btn-primary set-startplace-button">Set Start Place</a>
+                                                            <span style="color: red; display: block; margin-left: 0;">You need to set a start place and set the place as Active in order to make your game playable.</span>
                                                         </div>
                                                     </div>
                                                     <div class="start-place-content" style="display: none;">
-                                                        <div class="universe-place-container">
+                                                        <div class="universe-place-container start-place">
                                                             <div class="universe-place-thumb">
                                                                 <a href="#" class="universe-place">
-                                                                    <img class='universe-place-image' data-retry-url="" src="/images/ec5e01d220bf1b73403fa51519267742.gif" alt="Place thumbnail" />
+                                                                    <div data-retry-url="" style="width: 160px; height: 100px; overflow: hidden;">
+                                                                        <img class='universe-place-image' 
+                                                                             style="width: 160px; height: 100px; object-fit: cover; display: block;"
+                                                                             src="/images/ec5e01d220bf1b73403fa51519267742.gif" alt="Place thumbnail" />
+                                                                    </div>
                                                                 </a>
                                                             </div>
                                                             <div class="universe-detail">
                                                                 <a href="#" class="start-place-name"></a>
                                                                 <div class="start-place-actions">
-                                                                    <a class="btn-small btn-negative remove-startplace-button" data-placeid="">Remove</a>
-                                                                    <a class="btn-small btn-primary change-startplace-button" data-placeid="">Change</a>
+                                                                    <a class="btn-small btn-primary remove-startplace-button" data-placeid="">Remove</a>
                                                                 </div>
                                                             </div>
                                                             <div class="clear"></div>
@@ -469,7 +468,10 @@
                                                         </div>
                                                         <div class="universe-detail">
                                                             <a
-                                                                href="https://www.roblox.com/games/@gameid">@gamename</a>
+                                                                href="https://www.roblox.com/games/@gameid" class="place-name">@gamename</a>
+                                                            <div class="place-actions">
+                                                                <a class="btn-small btn-primary remove-place-button" data-placeid="@gameid">Remove</a>
+                                                            </div>
                                                         </div>
                                                         <div class="clear"></div>
                                                     </div>
@@ -486,8 +488,8 @@
                                         <div class="PlaceSelectorModal modalPopup unifiedModal" style="display:none;">
                                             <div class="Title">Select Place</div>
                                             <div class="GenericModalBody text">
-                                                <div class="place-selector-modal"
-                                                    data-place-loader-url="/universes/get-places-by-context?creationContext=NonGameCreation&amp;universeId=0">
+                                                <div class="place-selector-content"
+                                                    data-place-loader-url="/universes/get-places-by-context?creationContext=NonGameCreation&universeId=@gameid">
                                                     <div class="place-selector-container">
                                                         <div id="PlaceSelectorItemContainer"
                                                             class="place-selector-item-container"></div>
@@ -497,7 +499,7 @@
                                                     <div class="place-selector selectable template" title="Place"
                                                         style="display: none">
                                                         <div class="place-image"
-                                                            data-retry-url-template="https://thumbnails.roblox.com/v1/v1/assets?size=160x100&amp;format=jpeg&amp;returnPolicy=AutoGenerated">
+                                                            data-retry-url-template="/game-thumbnails/json?assetId=PLACE_ID">
                                                             <img alt="^_^" class="item-image"
                                                                 src="/images/ec5c01d220bf1b73403fa51519267742.gif" />
                                                         </div>
@@ -578,7 +580,9 @@
                                     </div>
 
                                 <div id="developerProducts" class="configure-tab" style="display:none">
-                                    <div id="DevProducts" src="/universes/@gameid/developer-products">
+                                    <div id="DevProducts" 
+                                         data-universe-id="@gameid"
+                                         data-load-url="/universes/@gameid/developer-products">
                                         <div id="DeveloperProductsInnerContainer">
                                             <div class="developerProductsContainer" style="padding-right: -10px;">
                                                 @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
@@ -587,7 +591,7 @@
                                                         @ViewBag.SuccessMessage
                                                     </div>
                                                 }
-                                                <div id="DeveloperProductsLoading" class="developerProductsLoadingImage">
+                                                <div id="DeveloperProductsLoading" class="loading-start-place">
                                                     <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Loading..." />
                                                 </div>
                                                 <div id="DeveloperProductsError" style="display: none;">
@@ -624,28 +628,18 @@
                             
                             <script type="text/javascript">
 
-                                console.log('Developer Products: Standard initialization starting');
                                 
                                 function initializeDeveloperProducts() {
-                                    console.log('Developer Products: initializeDeveloperProducts() called');
                                     var devProductsElement = $('#DevProducts');
-                                    
                                     if (devProductsElement.length > 0) {
-                                        // Initialize Listing (which binds onRefreshed)
                                         if (typeof Roblox.DeveloperProductsListing !== 'undefined' && typeof Roblox.DeveloperProductsListing.init === 'function') {
-                                            console.log('Developer Products: Calling Roblox.DeveloperProductsListing.init()');
                                             Roblox.DeveloperProductsListing.init();
                                         } else {
-                                            console.error('Developer Products: Roblox.DeveloperProductsListing is missing');
+                                            console.error('Developer Products: Roblox.DeveloperProductsListing.init not found');
                                         }
 
-                                        // Trigger refresh to load content
-                                        console.log('Developer Products: Triggering onRefreshed');
-                                        devProductsElement.trigger('onRefreshed');
-                                        
-                                        // Initialize Form if available
+                                        devProductsElement.trigger('onRefreshed');    
                                         if (typeof Roblox.DeveloperProductsForm !== 'undefined' && typeof Roblox.DeveloperProductsForm.init === 'function') {
-                                            console.log('Developer Products: Calling Roblox.DeveloperProductsForm.init()');
                                             Roblox.DeveloperProductsForm.init();
                                         }
                                     } else {
@@ -654,13 +648,11 @@
                                 }
 
                                 $(document).ready(function() {
-                                    // Initial check if tab is already visible
                                     var devProductsTab = $('#developerProducts');
                                     if (devProductsTab.css('display') !== 'none') {
                                         initializeDeveloperProducts();
                                     }
 
-                                    // Observer for tab switching
                                     var observer = new MutationObserver(function(mutations) {
                                         mutations.forEach(function(mutation) {
                                             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
@@ -1006,6 +998,24 @@
             };
         </script>
     </div>
+
+    <script>
+        $(function() {
+            var universeId = $("#universe-configure").data("universeid");
+            var configurePlaceUrl = $("#universe-configure").data("configureplaceurl");   
+            if (universeId && configurePlaceUrl) {
+                $.ajax({
+                    url: configurePlaceUrl,
+                    data: { universeId: universeId },
+                    success: function(response) {
+                        $("#places").html(response);
+                        $("[data-retry-url]").loadRobloxThumbnails();
+                    },
+                    cache: false
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

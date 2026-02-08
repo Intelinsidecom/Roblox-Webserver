@@ -35,8 +35,9 @@ $(function () {
 
                     Roblox.DeveloperProductsListing.currentPage = newPage;
 
-                    var baseUrl = $("#DevProducts").attr("src");
-                    if (baseUrl) {
+                    var baseUrl = $("#DevProducts").data("load-url");
+                    var universeId = $("#DevProducts").data("universe-id");
+                    if (baseUrl && universeId) {
                         var url = baseUrl + "?page=" + newPage;
 
                         Roblox.DeveloperProductsListing.onAjaxStart();
@@ -94,10 +95,11 @@ $(function () {
 
         n.unbind("onRefreshed").bind("onRefreshed", function () {
             var t = $(this);
+            var loadUrl = $("#DevProducts").data("load-url");
             Roblox.DeveloperProductsListing.onAjaxStart(), $.ajax({
                 cache: !1,
                 type: "GET",
-                url: t.attr("src")
+                url: loadUrl
             }).done(function (n) {
                 Roblox.DeveloperProductsListing.onDeveloperProductsReceived(n, t)
             }).fail(function () {

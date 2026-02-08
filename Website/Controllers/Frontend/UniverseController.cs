@@ -679,11 +679,11 @@ namespace RobloxWebserver.Controllers
         }
 
         /// <summary>
-        /// GET /universes/{universeId}/configure - Configure universe page
+        /// GET /universes/configure - Configure universe page
         /// </summary>
-        [HttpGet("universes/{universeId}/configure")]
+        [HttpGet("universes/configure")]
         [Authorize]
-        public async Task<IActionResult> ConfigureUniversePage(long universeId)
+        public async Task<IActionResult> ConfigureUniversePage([FromQuery(Name = "id")] long universeId)
         {
             try
             {
@@ -715,7 +715,7 @@ namespace RobloxWebserver.Controllers
                 ViewBag.privacyLevel = universeInfo.PrivacyLevel;
                 ViewBag.studioAccessToApis = universeInfo.Studio_Access_To_APIs;
                 
-                return View("~/Views/Pages/universes/{id}/configure.cshtml");
+                return View("~/Views/Pages/universes/configure.cshtml");
             }
             catch (Exception ex)
             {

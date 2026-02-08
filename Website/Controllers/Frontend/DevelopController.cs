@@ -107,7 +107,9 @@ namespace RobloxWebserver.Controllers
                     sb.Append(universe.UniverseId);
                     sb.Append("' data-rootplace-id='");
                     sb.Append(universe.RootPlaceId);
-                    sb.Append("' data-type='universes'>");
+                    sb.Append("' data-type='universes' data-configure-url='");
+                    sb.Append(configureUrl);
+                    sb.Append("'>");
                     sb.Append("        <tr>");
                     sb.Append("            <td class='image-col universe-image-col' style='text-align:center;'>");
                     sb.Append("                <a href='");

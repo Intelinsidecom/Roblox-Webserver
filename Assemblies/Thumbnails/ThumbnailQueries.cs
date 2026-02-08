@@ -356,5 +356,28 @@ namespace Thumbnails
             
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        public static async Task<string?> GetFirstPlaceThumbnailUrlAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (placeId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(placeId));
+
+            const string sql = @"SELECT url 
+                               FROM place_thumbnails 
+                               WHERE place_id = @placeId AND thumbnail_type = 'image' 
+                               ORDER BY sort_order ASC, created_at ASC 
+                               LIMIT 1";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("placeId", placeId);
+            
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result is string url && !string.IsNullOrWhiteSpace(url) ? url : null;
+        }
     }
 }
