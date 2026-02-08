@@ -70,7 +70,7 @@
 
 .FeaturedGameButton.International,
 .FeaturedGameButton.International:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/StyleGuide/I18N_play_now.png) top;
+	background: url(/images/StyleGuide/I18N_play_now.png) top;
 	height: 214px;
 	width: 215px;
 	cursor: pointer;
@@ -82,7 +82,7 @@
 
 .FeaturedGameButtonABTest,
 .FeaturedGameButtonABTest:hover {
-	background-image: url(/web/20160429201715im_/https://static.rbxcdn.com/images/buttons/playRoblox01.png);
+	background-image: url(/images/buttons/playRoblox01.png);
 	background-position: 0 0;
 	background-repeat: no-repeat;
 	position: absolute;

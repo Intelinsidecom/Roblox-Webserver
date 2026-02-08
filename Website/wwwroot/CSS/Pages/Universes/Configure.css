@@ -1,4 +1,35 @@
 /* ~/CSS/Pages/Universes/Configure.css */
+
+@media (max-width: 991px) {
+    .body-width h1 {
+        margin-top: 50px !important;
+    }
+    
+    #universe-configure {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .body-width h1 {
+        margin-top: 40px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .body-width h1 {
+        margin-top: 40px !important;
+    }
+}
+
+#Body {
+    padding-top: 20px;
+}
+
+.universe-content {
+    margin-top: 15px;
+}
 .icon-default-negative,
 .icon-report.active,
 .icon-remove,
@@ -9,7 +40,7 @@
 .icon-turn-off,
 .icon-warning-orange,
 .icon-report-darkgray {
-    background-image: url(/img/Shared/negative_06142018.svg);
+    background-image: url(/images/Shared/negative_06142018.svg);
     background-repeat: no-repeat;
     background-size: 200% auto;
     width: 20px;
@@ -28,7 +59,7 @@
 .dark-theme .icon-turn-off,
 .dark-theme .icon-warning-orange,
 .dark-theme .icon-report-darkgray {
-    background-image: url("/img/Shared/negative_06282017.svg");
+    background-image: url("/images/Shared/negative_dark_09282018.svg");
 }
 
 .light-theme .icon-default-negative,
@@ -41,7 +72,7 @@
 .light-theme .icon-turn-off,
 .light-theme .icon-warning-orange,
 .light-theme .icon-report-darkgray {
-    background-image: url("/img/Shared/negative_06282017.svg");
+    background-image: url("/images/Shared/negative_light_10232018.svg");
 }
 
 .icon-report.active {
@@ -201,7 +232,7 @@ a:hover .icon-turn-off {
 .icon-trash-bin,
 .icon-male-white,
 .icon-female-white {
-    background-image: url(/img/Shared/generic_09152017.svg);
+    background-image: url(/images/Shared/generic_01312019.svg);
     background-repeat: no-repeat;
     background-size: 200% auto;
     width: 28px;
@@ -284,7 +315,7 @@ a:hover .icon-turn-off {
 .dark-theme .icon-trash-bin,
 .dark-theme .icon-male-white,
 .dark-theme .icon-female-white {
-    background-image: url("/img/Shared/generic_09152017.svg");
+    background-image: url("/images/Shared/generic_dark_11062018.svg");
 }
 
 .light-theme .icon-default-generic,
@@ -361,7 +392,7 @@ a:hover .icon-turn-off {
 .light-theme .icon-trash-bin,
 .light-theme .icon-male-white,
 .light-theme .icon-female-white {
-    background-image: url("/img/Shared/generic_09152017.svg");
+    background-image: url("/images/Shared/generic_light_10232018.svg");
 }
 
 .icon-default-generic-16x16,
@@ -376,7 +407,7 @@ a:hover .icon-turn-off {
 .icon-close-16x16,
 .icon-red-timer-16x16,
 .icon-close-gray-16x16 {
-    background-image: url(/img/Shared/generic_09152017.svg);
+    background-image: url(/images/Shared/generic_01312019.svg);
     background-repeat: no-repeat;
     background-size: 32px auto;
     width: 16px;
@@ -397,7 +428,7 @@ a:hover .icon-turn-off {
 .dark-theme .icon-close-16x16,
 .dark-theme .icon-red-timer-16x16,
 .dark-theme .icon-close-gray-16x16 {
-    background-image: url("/img/Shared/generic_09152017.svg");
+    background-image: url("/images/Shared/generic_dark_11062018.svg");
 }
 
 .light-theme .icon-default-generic-16x16,
@@ -412,7 +443,7 @@ a:hover .icon-turn-off {
 .light-theme .icon-close-16x16,
 .light-theme .icon-red-timer-16x16,
 .light-theme .icon-close-gray-16x16 {
-    background-image: url("/img/Shared/generic_09152017.svg");
+    background-image: url("/images/Shared/generic_light_10232018.svg");
 }
 
 .icon-home {
@@ -1254,7 +1285,7 @@ a:hover .icon-female-white {
 }
 
 .configure-game-update .game-update-history-container .game-update-history-pager .pager-link .pager-link-icon {
-    background-image: url(/img/Shared/generic_01312019.svg);
+    background-image: url(/images/Shared/generic_01312019.svg);
     background-repeat: no-repeat;
     background-size: 32px auto;
     width: 16px;
@@ -1656,20 +1687,60 @@ a:hover .icon-female-white {
     width: 120px;
 }
 
+
+
 .universe-detail {
     float: left;
-    width: 200px;
-    margin-left: 10px;
-    margin-top: 25px;
+    width: 600px;
+    margin-left: 55px;
+    margin-top: 35px;
 }
 
-.universe-remove {
+.place-name {
+    float: left;
+    margin-right: 70px;
+    margin-top: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.place-actions {
+    float: left;
+    margin-top: 0px;
+}
+
+.start-place-name {
+    float: left;
+    margin-right: 50px;
+    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.start-place-actions {
+    float: left;
+    margin-top: 5px;
+}
+
+.place-actions {
+    float: left;
+    margin-top: 5px;
+}
+
+.start-place-actions a {
+    margin-right: 8px;
+}
+
+.universe-root-set {
     float: left;
     margin-left: 10px;
     margin-top: 20px;
 }
 
-.universe-root-set {
+.universe-remove {
     float: left;
     margin-left: 10px;
     margin-top: 20px;
@@ -1723,10 +1794,9 @@ a:hover .icon-female-white {
 }
 
 .name-error {
-    color: #a00;
-    width: auto;
-    position: relative;
-    display: inline-block;
+    top: -3px;
+    position: absolute;
+    left: 405px;
 }
 
 .name-field-container {
@@ -1772,1111 +1842,3 @@ span.back-button {
 .privacy-label {
     margin-top: -5px;
 }
-
-/* ~/CSS/Pages/Universes/PlaceSelectorModal.css */
-.place-selector {
-    float: left;
-    margin-right: 5px;
-    width: 110px;
-}
-
-.place-selector.selectable {
-    cursor: pointer;
-}
-
-.place-selector.not-selectable {
-    opacity: .6;
-}
-
-.place-selector-item-container .root-place {
-    font-weight: 600;
-    opacity: 1.0;
-    color: #f00;
-}
-
-.place-selector-container {
-    width: 575px;
-}
-
-.place-image {
-    width: 110px;
-    height: 75px;
-}
-
-.item-image {
-    width: 110px;
-    height: 68px;
-}
-
-.place-selector-item-container {
-    margin-top: 5px;
-    text-align: left;
-}
-
-.place-selector-pager-container {
-    margin-top: 10px;
-}
-
-.place-name {
-    width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 36px;
-}
-
-.game-name {
-    width: 100px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 54px;
-}
-
-.PlaceSelectorModal {
-    padding: 5px;
-}
-
-.PlaceSelectorModal .Title {
-    margin: 5px;
-    font-weight: bold;
-    font-size: 27px;
-    color: #363636;
-    margin: 5px;
-    letter-spacing: -1px;
-}
-
-/* ~/CSS/Pages/Places/DeveloperProducts.css */
-#DeveloperProductsLoading {
-    min-height: 460px;
-    display: none;
-    text-align: center;
-}
-
-#DeveloperProductsError {
-    min-height: 460px;
-    display: none;
-}
-
-#DeveloperProductsInnerContainer {
-    min-height: 460px;
-}
-
-.developerProductsContainer {
-    width: 60%;
-}
-
-.developerProductModificationForm {
-    width: 60%;
-}
-
-.developerProductUpdateStatus {
-    margin-bottom: 10px;
-}
-
-.developerProductsTableContainer {
-    min-height: 350px;
-}
-
-.developerProductpagerContainer {
-    margin-top: 10px;
-    text-align: center;
-}
-
-.developerProductsLoadingImage {
-    margin-top: 215px;
-}
-
-.createNewButtonSection {
-    margin-top: 16px;
-    position: relative;
-    top: -5px;
-}
-
-#DeveloperProductsTable {
-    width: 100%;
-}
-
-#DeveloperProductsTable td {
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-left: 0;
-    border-right: 0;
-    margin: 0;
-    text-align: left;
-}
-
-.validationMessageInvalid {
-    color: Red;
-}
-
-.imageUpload {
-    height: 22px;
-}
-
-.nameColumn {
-    min-width: 117px;
-}
-
-.priceBox {
-    width: 85px;
-}
-
-.nameBox {
-    width: 372px;
-}
-
-#ImageUploadForm {
-    padding-bottom: 10px;
-}
-
-.developerProductsImageUploadIframe {
-    width: 450px;
-    height: 220px;
-}
-
-.hideTicket {
-    display: none;
-}
-
-/* ~/CSS/Pages/Notifications/Notifications.css */
-.feedification {
-    overflow: auto;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.feedification-icon {
-    float: left;
-    margin-right: 13px;
-    width: 60px;
-    height: 70px;
-}
-
-.feedification-icon img {
-    position: relative;
-    top: 1px;
-    left: -1px;
-}
-
-.pagification {
-    overflow: hidden;
-    padding: 10px;
-    position: relative;
-    margin-bottom: 10px;
-}
-
-.pagification-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    margin: 10px;
-}
-
-.pagification-icon .icon-logo-r {
-    background-size: 58px 58px;
-    height: 58px;
-    width: 58px;
-}
-
-.pagification-body {
-    float: left;
-    overflow: hidden;
-    margin-left: 68px;
-}
-
-.BuildPageContent .pagification-body {
-    width: 530px;
-}
-
-.pagification-message {
-    overflow: hidden;
-}
-
-.pagification-showall {
-    display: none;
-}
-
-.pagification-collapse {
-    display: inline;
-}
-
-.collapsed .pagification-message {
-    height: 2.6em;
-}
-
-.collapsed .pagification-showall {
-    display: inline;
-}
-
-.collapsed .pagification-collapse {
-    display: none;
-}
-
-.pagification-links {
-    text-align: right;
-}
-
-#gametype {
-    border: 1px solid white;
-    font-size: 12px;
-    height: 21px;
-    width: 120px;
-    -webkit-appearance: none;
-    -webkit-border-radius: 0;
-    background-color: #fff;
-    background-image: url(/images/UI/Catalog/dropdown.png);
-    background-position: right top;
-    background-repeat: no-repeat;
-}
-
-#gametype:hover,
-#gametype:focus {
-    background-position: right bottom;
-}
-
-#configureUniverseForm .checkboxListItem {
-    position: relative;
-    float: none;
-}
-
-
-#configureUniverseForm select.form-select {
-    margin: 5px 0 30px 0;
-    border: 1px solid #A7A7A7;
-}
-
-.deviceTypeSection {
-    padding-bottom: 25px;
-}
-
-#configureUniverseForm .checkboxListItem {
-    position: relative;
-    float: none;
-}
-
-#configureUniverseForm label:not(.form-label):not(.media-option) {
-    display: block;
-    margin-bottom: 5px;
-}
-
-#configureUniverseForm .media-option {
-    margin-bottom: 5px;
-
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-#navbar {
-    float: left;
-    width: 156px;
-}
-
-#content {
-    margin-left: 156px;
-    padding-left: 20px;
-    height: 100%;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    position: relative;
-    width: 792px;
-}
-
-.default-hidden {
-    display: none;
-}
-
-#playerAccess {
-    position: relative;
-    z-index: 2;
-}
-
-#placeForm .field-validation-error {
-    color: #a00;
-    width: auto;
-    position: relative;
-    *top: -2px;
-    *display: inline-block;
-}
-
-#placeForm #basicSettings span#nameRow .field-validation-error {
-    *top: -10px;
-}
-
-#placeForm .tool-tip img {
-    *margin-top: -5px;
-}
-
-#placeForm .privacy-label {
-    margin-top: 5px;
-}
-
-#placeForm select.form-select.last-form-element {
-    margin-bottom: 0;
-}
-
-#placeForm select.form-select.no-margins {
-    margin: 0;
-}
-
-#placeForm select.form-select.SelectRank {
-    margin-top: 5px;
-    width: 150px;
-}
-
-#placeForm label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-#placeForm .access-label label {
-    display: inline-block;
-}
-
-#placeForm select.form-select {
-    margin: 5px 0 20px 0;
-    border: 1px solid #A7A7A7;
-}
-
-#placeForm .footnote {
-    font-weight: normal;
-    text-transform: none;
-}
-
-#placeForm .headline {
-    margin-bottom: 20px;
-}
-
-#placeForm #StudioGameTemplates {
-    margin-bottom: 10px;
-}
-
-#placeForm .headline h2 {
-    display: inline;
-    margin-right: 4px;
-}
-
-#placeForm h2 {
-    margin: 0;
-    padding: 0;
-}
-
-#placeForm .headline-banner {
-    padding: 25px 20px;
-    margin: 13px 0;
-    background: #F7F7F7;
-}
-
-#placeForm div.tab-content {
-    padding-top: 20px;
-    padding-left: 10px;
-}
-
-#placeForm .form-text-box {
-    resize: none;
-}
-
-#placeForm .text-box {
-    margin-bottom: 10px;
-}
-
-#placeForm .text-box#Name {
-    width: 372px;
-}
-
-#placeForm .radio-button-label {
-    margin-bottom: 10px;
-}
-
-#placeForm .check-box-label {
-    margin-bottom: 10px;
-}
-
-#placeForm label.radio-selection {
-    margin-bottom: 10px;
-}
-
-#placeForm label.radio-selection-last {
-    margin-bottom: 30px;
-}
-
-#placeForm div.TabContent h2 {
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-
-#placeForm #access_tab table {
-    border-collapse: collapse;
-}
-
-#placeForm .subsection {
-    margin-bottom: 20px;
-}
-
-#placeForm td {
-    border: 10px solid white;
-    border-width: 10px 0;
-}
-
-#placeForm fieldset {
-    padding-bottom: 5px;
-    border: none;
-}
-
-#placeForm span.tooltip-margin {
-    margin-right: 5px;
-}
-
-#placeForm textarea {
-    width: 372px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-}
-
-#placeForm label.associate-group-label {
-    float: none;
-}
-
-#placeForm label.has-tooltip {
-    display: inline-block;
-}
-
-#placeForm #buttonRow {
-    margin: 20px 20px 0 0;
-    overflow: hidden;
-    position: relative;
-}
-
-#placeForm #buttonRow a {
-    margin-right: 10px;
-}
-
-#placeForm fieldset#gearTypes {
-    border-bottom: 1px solid;
-    border-color: #a7a7a7;
-}
-
-#placeForm .h2-tooltip {
-    margin-bottom: 1px;
-}
-
-#placeForm img.copylock-tooltip {
-    width: 12px;
-    height: 13px;
-    margin-left: 4px;
-}
-
-#placeForm div.roleset-name {
-    font-weight: bold;
-}
-
-#placeForm div.username-listitem {
-    color: gray;
-    margin-top: 5px;
-    float: left;
-}
-
-#placeForm span.invalid-name {
-    color: Red;
-    font-weight: bold;
-    display: none;
-}
-
-#placeForm span.nameRow {
-    *line-height: 15px;
-}
-
-#placeForm a.roleset-tooltip {
-    margin-left: 1px;
-}
-
-#placeForm img.roleset-tooltip {
-    position: relative;
-    top: -3px;
-    vertical-align: middle;
-}
-
-#placeForm div.GroupAccess {
-    margin-top: 15px;
-}
-
-#placeForm div#AssignPermissions {
-    margin-bottom: 20px;
-}
-
-#placeForm div.GroupRoleSets {
-    margin-left: 20px;
-}
-
-#placeForm input[type='checkbox'] {
-    margin: 3px 7px 3px 0;
-}
-
-#placeForm input[type='radio'] {
-    margin-right: 9px;
-}
-
-#placeForm #gearTypes ul {
-    list-style-type: none;
-    width: 350px;
-    overflow: hidden;
-    margin: 0;
-}
-
-#placeForm a.roleset-tooltip {
-    vertical-align: middle;
-}
-
-#placeForm ul#gearTypes {
-    list-style-type: none;
-    width: 100%;
-    max-width: 600px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px 2px;
-}
-
-#placeForm li.gearCheckbox {
-    float: left;
-    display: inline;
-    width: 33%;
-}
-
-#placeForm .TipsyImg {
-    vertical-align: middle;
-    margin-top: -10px;
-}
-
-#placeForm .checkboxListItem {
-    position: relative;
-    float: none;
-}
-
-#placeForm #groupPlace {
-    margin-bottom: 20px;
-}
-
-#placeForm div.placetype-warning {
-    color: red;
-    margin-top: -20px;
-    margin-bottom: 30px;
-}
-
-.error-msg-disable-pbs {
-    color: red;
-    display: none;
-    margin: 6px 0;
-}
-
-#placeForm a.tooltip {
-    float: none;
-    position: inherit;
-    margin-left: 1px;
-}
-
-#placeForm img.h2_tooltip {
-    width: 12px;
-    height: 13px;
-    margin-left: 4px;
-}
-
-#placeForm #TabsContentContainer {
-    min-height: 300px;
-}
-
-#placeForm div.spacing {
-    margin-bottom: 10px;
-}
-
-#placeForm .defaultText {
-    width: 100%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-#placeForm .defaultTextActive {
-    color: #a1a1a1;
-    font-style: italic;
-}
-
-.youTubeVideoOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 120px;
-    height: 70px;
-    z-index: 5;
-    cursor: pointer;
-    background: white;
-    opacity: .0;
-    filter: alpha(opacity=0);
-}
-
-#updateAltTextFormGroup {
-    width: 420px;
-}
-
-#updateAltTextSuccess {
-    margin: 5px 0;
-}
-
-#AltText {
-    margin-bottom: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box;
-}
-
-#updateAltTextFormGroup .form-control-label {
-    float: left;
-}
-
-#saveAltTextButton {
-    margin-bottom: 10px;
-    margin-top: 5px;
-    float: right;
-}
-
-.SelectedYouTubeGalleryIcon {
-    top: -3px;
-    margin: 2px !important;
-    border: 3px solid black;
-}
-
-.RemoveYouTubeGalleryImage {
-    cursor: pointer;
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    z-index: 100;
-}
-
-.divSmallGalleryItem {
-    height: 67.5px;  /* Maintains 16:9 ratio (120 * 9/16 = 67.5) */
-    width: 120px;
-    float: left;
-    position: relative;
-    margin: 5px;
-    overflow: visible;
-}
-
-.divSmallGalleryItem img {
-    width: 100%;
-    height: 100%;
-    object-position: center;
-}
-
-#divSmallGalleryItemBox {
-    width: 420px;
-    height: 100px;
-    position: relative;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-#divSmallGalleryScrollContainer {
-    margin: 5px 0;
-    display: flex;
-    flex-wrap: nowrap; /* keep thumbnails in a single horizontal row */
-    gap: 5px;
-    *display: inline;
-    *zoom: 1;
-}
-
-.smallGalleryThumbItem {
-    float: none;
-    flex-shrink: 0; /* prevent items from shrinking and keep consistent size */
-}
-
-.small-image-item {
-    height: 70px;
-    width: 120px;
-}
-
-#VideoUpload .moderation-note {
-    display: block;
-    margin-top: 10px;
-    width: 242px;
-}
-
-.thumbnail-purchase-container {
-    float: left;
-    padding-left: 30px;
-    border-left: 1px solid #ccc;
-    height: 350px;
-}
-
-.thumbnail-display-container {
-    float: left;
-    margin-right: 20px;
-    position: relative;
-}
-
-.icon-purchase-container {
-    width: 240px;
-    height: 550px;
-    padding-left: 19px;
-}
-
-.icon-display-container {
-    height: 550px;
-}
-
-.icon-thumbnail {
-    height: 512px;
-    width: 482px;
-}
-
-.game-icon-message {
-    padding-top: 40px;
-}
-
-.icon-special {
-    font-style: italic;
-}
-
-.icon-note {
-    color: gray;
-}
-
-.add-image-button {
-    margin-top: 10px;
-}
-
-.add-media-title {
-    margin-bottom: 10px;
-}
-
-#autogenerate .MainThumbnail {
-    width: 120px;
-    height: 70px;
-}
-
-/* Thumbnail tab styles */
-.thumbnail-tab {
-    
-}
-
-.thumbnailDiv {
-    position: fixed;
-}
-
-.thumbnail-section {
-    display: flex;
-    gap: 20px;
-}
-
-.thumbnail-preview img {
-    width: 100%;
-}
-
-.thumbnail-options {
-    flex: 1;
-    border-left: 1px solid #ccc;
-    padding-left: 20px;
-}
-
-.thumbnail-options label {
-    font-weight: bold;
-}
-
-#thumbnailResponse {
-    margin-top: 6px;
-}
-
-.media-type {
-    margin: 10px 0;
-}
-
-.file-upload {
-    margin: 10px 0;
-}
-
-.upload-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.upload-btn:hover {
-    background-color: #0056b3;
-}
-
-/* Thumbnail gallery styles */
-.thumbnail-gallery-bar {
-    margin-top: 10px;
-    max-width: 418px;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
-.thumbnail-gallery {
-    display: flex;
-    gap: 10px;
-    padding: 5px;
-    overflow-x: auto;
-    max-width: 418px;
-}
-
-.thumbnail-gallery-item {
-    position: relative;
-    width: 120px;
-    flex-shrink: 0;
-}
-
-.thumbnail-gallery-item img {
-    width: 120px;
-    height: auto;
-    border: 1px solid #ddd;
-}
-
-.thumbnail-gallery-item .delete-btn {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    overflow: hidden;
-}
-
-#autogenerate .MainIcon {
-    width: 120px;
-    height: 120px;
-}
-
-#ImageUpload .iconImageFile {
-    width: 150px;
-}
-
-#autogenerate {
-    display: none;
-}
-
-#versionHistory {
-    min-height: 415px;
-}
-
-.versionHistoryTableContainer {
-    height: 322px;
-    overflow: hidden;
-}
-
-.versionHistoryTable {
-    width: 100%;
-}
-
-#versionHistoryItems .versionHistoryTable th,
-#versionHistoryItems .versionHistoryTable td {
-    text-align: center;
-    border: 0 none;
-    padding-top: 5px;
-}
-
-.pagerContainer {
-    text-align: center;
-    padding-top: 18px;
-}
-
-.pricinglabel {
-    float: left;
-    font-weight: bold;
-    line-height: 24px;
-    margin-right: 5px;
-    text-align: right;
-    width: 155px;
-}
-
-.pricingfield {
-    float: left;
-    height: 24px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 3px;
-    text-align: right;
-}
-
-.toppricingfield {
-    float: left;
-    height: 24px;
-    margin-left: 5px;
-    margin-right: 5px;
-    text-align: right;
-}
-
-.toppricingfield .perpurchase {
-    line-height: 24px;
-    margin-left: 5px;
-}
-
-.sellgameaccess {
-    margin-bottom: 20px;
-}
-
-.privateserversaccess {
-    margin-top: 20px;
-}
-
-.priceinput {
-    border: 1px solid #ccc;
-}
-
-.priceerror {
-    display: inline-block;
-}
-
-.priceinput {
-    width: 75px;
-}
-
-.pricingrow {
-    margin-top: 10px;
-}
-
-.robuxspan {
-    margin-top: 5px;
-    float: left;
-}
-
-.perpurchase {
-    margin-left: 3px;
-}
-
-.chzn-container {
-    width: 300px;
-    left: 25px;
-}
-
-#customlist_chzn {
-    width: 550px;
-}
-
-#customlist_chzn .chzn-choices {
-    overflow: auto;
-    width: 300px;
-}
-
-#customlist_chzn .chzn-drop {
-    width: 300px;
-    z-index: 10000;
-}
-
-#placeForm .customlist-error .field-validation-error {
-    *top: -6px;
-    *left: 10px;
-}
-
-.customlist-error {
-    position: absolute;
-    display: inline-block;
-    height: 0;
-    *zoom: 1;
-    *display: inline;
-}
-
-#NumberOfPlayers {
-    border: 1px solid #A7A7A7;
-}
-
-#MaxPlayersInput {
-    border: 1px solid #A7A7A7;
-    border-radius: 1px;
-}
-
-#Access {
-    border: 1px solid #A7A7A7;
-    border-radius: 1px;
-}
-
-#FriendSlotsInput {
-    border: 1px solid #A7A7A7;
-    border-radius: 1px;
-}
-
-.deviceTypeSection {
-    padding-bottom: 25px;
-}
-
-#device-type-error {
-    width: 270px;
-}
-
-#PrivateServersError,
-#PrivateServerPriceChangeWarning {
-    width: 538px;
-    margin-top: 5px;
-    display: none;
-}
-
-#SellGameAccessLabel.disabled,
-#Access.disabled,
-#BuildersClubOnlyAccessLabel.disabled,
-#PrivateServerAccessLabel.disabled {
-    cursor: not-allowed;
-}
-
-.sell-access-tooltip,
-.place-access-tooltip,
-.private-server-tooltip,
-.builders-club-only-tooltip {
-    width: 12px;
-    height: 13px;
-    margin-bottom: -5px;
-}
-
-#PrivateServerRadioButtons {
-    margin-top: 10px;
-}
-
-
-        #mediaTypeSelection {
-            margin-bottom: 15px;
-        }
-        
-        #mediaTypeSelection .form-label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        
-        .radio-selection {
-            display: block;
-            margin-bottom: 2px;
-            margin-left: 0;
-        }
-        
-        .radio-selection input {
-            margin-right: 8px;
-        }
-        
-        #ImageUpload, #autogenerate {
-            margin-bottom: 15px;
-        }
-        
-        .add-image-button, .add-generated-image-button {
-            margin-top: 10px;
-        }
-        
-        .game-icon-message {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #e3e3e3;
-        }
-        
-        .game-icon-message h3 {
-            font-size: 14px;
-            font-weight: 400;
-            margin: 0;
-        }
-        
-        .game-icon-message a {
-            color: #0054a6;
-            text-decoration: none;
-        }
-        
-        .game-icon-message a:hover {
-            text-decoration: underline;
-        }

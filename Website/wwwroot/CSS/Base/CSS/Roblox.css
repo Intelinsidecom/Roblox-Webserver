@@ -141,7 +141,7 @@ a img {
 	width: 140px;
 	margin: 0;
 	float: none;
-	background: url("/web/20160429201715im_/https://static.rbxcdn.com/images/cssthemes/base/img-robloxlogo.png") no-repeat;
+	background: url("/images/cssthemes/base/img-robloxlogo.png") no-repeat;
 }
 
 .Panel {
@@ -384,7 +384,7 @@ div.SystemAlert {
 }
 
 .WhiteSquareTabsContainer {
-	background: url('/web/20160429201715im_/https://static.rbxcdn.com/images/Icons/MyMoney_fakeborderbg2.png') bottom repeat-x;
+	background: url('/images/Icons/MyMoney_fakeborderbg2.png') bottom repeat-x;
 	width: 100%;
 	position: relative;
 	padding: 0 0 0 5px;

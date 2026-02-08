@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Thumbnails;
@@ -11,6 +12,7 @@ using Avatar;
 using System.Security.Cryptography;
 using Assets;
 using System.Data;
+using Common;
 
 namespace Website.Controllers;
 
@@ -49,7 +51,7 @@ public class ThumbnailsController : ControllerBase
     // JSONP endpoint used by JS/modules/Widgets/ItemImage.js
     // GET /item-thumbnails?jsoncallback=foo&params=[{...}]
     [HttpGet("item-thumbnails")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> ItemThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
     {
         var results = new List<object?>();
@@ -143,7 +145,7 @@ public class ThumbnailsController : ControllerBase
     // JSONP endpoint used by JS/modules/Widgets/AvatarImage.js
     // GET /avatar-thumbnails?jsoncallback=foo&params=[{...}]
     [HttpGet("avatar-thumbnails")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> AvatarThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
     {
         var results = new List<object?>();
@@ -204,7 +206,6 @@ public class ThumbnailsController : ControllerBase
                             string? existingUrl = null;
                             try
                             {
-                                // For avatar widgets we serve the user's headshot image.
                                 existingUrl = await ThumbnailQueries.GetUserHeadshotUrlAsync(connStr!, userId).ConfigureAwait(false);
                             }
                             catch
@@ -213,25 +214,17 @@ public class ThumbnailsController : ControllerBase
 
                             if (!string.IsNullOrWhiteSpace(existingUrl))
                             {
-                                // Normal path: use the stored headshot URL.
                                 thumbUrl = existingUrl!;
                                 thumbnailFinal = true;
                             }
                             else
                             {
-                                // No stored headshot yet. Instead of leaving the avatar
-                                // in a permanently pending/blocked state, fall back to the
-                                // headshot-thumbnail endpoint, which will trigger Arbiter
-                                // rendering and then redirect the browser to the final URL.
                                 thumbUrl = $"/headshot-thumbnail/image?userId={userId}";
                                 thumbnailFinal = true;
                             }
                         }
                         else
                         {
-                            // Fallback when DB is not configured: use the existing
-                            // headshot-thumbnail/image endpoint as a best-effort
-                            // avatar representation.
                             thumbUrl = $"/headshot-thumbnail/image?userId={userId}";
                             thumbnailFinal = true;
                         }
@@ -267,7 +260,7 @@ public class ThumbnailsController : ControllerBase
     // Legacy endpoint used by AjaxAvatarThumbnail.js
     // GET /thumbs/rawavatar.ashx?UserID=<id>&ThumbnailFormatID=<fmt>
     [HttpGet("thumbs/rawavatar.ashx")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> RawAvatar([FromQuery] long UserID, [FromQuery] int ThumbnailFormatID)
     {
         try
@@ -288,7 +281,6 @@ public class ThumbnailsController : ControllerBase
             {
                 return Content(url!, "text/plain");
             }
-            // Legacy polling contract: do not trigger rendering here
             return Content("PENDING", "text/plain");
         }
         catch (Exception ex)
@@ -297,7 +289,6 @@ public class ThumbnailsController : ControllerBase
         }
     }
 
-    // Disabled duplicate: handled by AvatarV1Controller
     [NonAction]
     public async Task<IActionResult> RedrawThumbnail([FromQuery] string? type, CancellationToken cancellationToken)
     {
@@ -346,7 +337,7 @@ public class ThumbnailsController : ControllerBase
 
     // GET /headshot-thumbnail/image
     [HttpGet("headshot-thumbnail/image")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> Headshot([FromQuery] long userId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, CancellationToken cancellationToken)
     {
         if (userId <= 0) return BadRequest(new { error = "userId is required" });
@@ -361,7 +352,6 @@ public class ThumbnailsController : ControllerBase
         if (!string.IsNullOrWhiteSpace(url))
             return Redirect(url);
 
-        // If no headshot URL yet, render now and persist, then redirect
         var save = await _thumbnailService.RenderAvatarAsync("headshot", userId, cancellationToken: cancellationToken);
         var hash = save.Hash;
         var baseUrl = _configuration["Thumbnails:ThumbnailUrl"];
@@ -380,7 +370,7 @@ public class ThumbnailsController : ControllerBase
     // Always re-renders the avatar via Arbiter using the requested width/height
     // and updates the user's headshot_url before redirecting to the CDN URL.
     [HttpGet("bust-thumbnail/image")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> Bust([FromQuery] long userId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, CancellationToken cancellationToken)
     {
         if (userId <= 0) return BadRequest(new { error = "userId is required" });
@@ -392,11 +382,8 @@ public class ThumbnailsController : ControllerBase
         var exists = await UserQueries.UserExistsAsync(connStr, userId, cancellationToken);
         if (!exists)
             return NotFound(new { error = "User not found" });
-
-        // Resolve target size for Arbiter. Default to 420x420 if not specified.
         var targetWidth = width.GetValueOrDefault(420);
         var targetHeight = height.GetValueOrDefault(420);
-        // Build a canonical avatar configuration JSON for global caching
         var configBuilder = new AvatarRenderConfigBuilder();
         var config = await configBuilder
             .BuildAvatarRenderConfigAsync(connStr, userId, "avatar", targetWidth, targetHeight, cancellationToken)
@@ -404,7 +391,6 @@ public class ThumbnailsController : ControllerBase
 
         var configHash = config.configHash;
 
-        // Global cache lookup by configuration hash
         try
         {
             var cacheRepo = new AvatarThumbnailCacheRepository();
@@ -418,17 +404,12 @@ public class ThumbnailsController : ControllerBase
         }
         catch
         {
-            // Cache is best-effort; fall back to rendering on errors.
         }
 
-        // Render a fresh avatar thumbnail directly at the requested size.
         var save = await _thumbnailService.RenderAvatarAsync("avatar", userId, targetWidth, targetHeight, cancellationToken);
-
-        // Compose full CDN URL for the rendered file.
         var baseUrl = GetCdnBaseUrl();
         var fullUrl = CombineUrl(baseUrl, save.FileName);
 
-        // Store in global avatar thumbnail cache (best-effort)
         try
         {
             var cacheRepo = new AvatarThumbnailCacheRepository();
@@ -438,14 +419,13 @@ public class ThumbnailsController : ControllerBase
         {
         }
 
-        // Optionally persist the avatar render URL without touching the headshot entry.
         try
         {
             await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr, userId, fullUrl, cancellationToken);
         }
         catch
         {
-            // Best-effort persistence; continue even if update fails.
+            // continue even if update fails.
         }
 
         return Redirect(fullUrl);
@@ -453,31 +433,26 @@ public class ThumbnailsController : ControllerBase
 
     // GET /outfit-thumbnail/image
     [HttpGet("outfit-thumbnail/image")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public IActionResult Outfit([FromQuery] long userOutfitId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format)
         => NotFound(new { error = "outfit thumbnails not implemented" });
 
-    // GET /game-thumbnails/image
-    [HttpGet("game-thumbnails/image")]
-    [Authorize] // Ensure authentication is required
-    public async Task<IActionResult> GameThumbnail([FromQuery] long assetId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, [FromQuery] bool ignoreAssetMedia = false, [FromQuery] bool returnAutoGenerated = false, CancellationToken cancellationToken = default)
+    [HttpGet("game-thumbnails/json")]
+    public async Task<IActionResult> GameThumbnailJson([FromQuery] long assetId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, [FromQuery] bool ignoreAssetMedia = false, [FromQuery] bool returnAutoGenerated = false, CancellationToken cancellationToken = default)
     {
         if (assetId <= 0) return BadRequest(new { error = "assetId is required" });
         var connStr = _configuration.GetConnectionString("Default");
         if (string.IsNullOrWhiteSpace(connStr))
             return Problem("Database not configured");
 
-        // Get asset information
         var asset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
         if (asset == null)
             return NotFound(new { error = "Asset not found" });
 
-        // Get auto-generated thumbnail from assets table first
         string? thumbnailUrl = null;
         
         try
         {
-            // Check if there's already an auto-generated thumbnail URL in the assets table
             if (!string.IsNullOrWhiteSpace(asset.PlaceGeneratedThumbnailUrl))
             {
                 thumbnailUrl = asset.PlaceGeneratedThumbnailUrl;
@@ -487,13 +462,8 @@ public class ThumbnailsController : ControllerBase
         {
         }
 
-        // If the place already has a custom or video thumbnail selected, honour that choice and
-        // avoid (re)generating an auto-generated thumbnail which would flip the database flag back
-        // to auto-generated. When returnAutoGenerated=true, we should force auto-generated regardless.
         if (returnAutoGenerated && (asset.PlaceCustomThumbnail || asset.PlaceVideoThumbnail))
         {
-            // When returnAutoGenerated=true, ignore the current selection and force auto-generated
-            // Use the place's generated thumbnail URL instead of null
             thumbnailUrl = asset.PlaceGeneratedThumbnailUrl;
         }
         else if (string.IsNullOrWhiteSpace(thumbnailUrl) && returnAutoGenerated)
@@ -512,7 +482,6 @@ public class ThumbnailsController : ControllerBase
                     asset?.Name ?? string.Empty,
                     cancellationToken);
 
-                // Reload asset to fetch the newly stored generated thumbnail URL
                 var updatedAsset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
                 if (updatedAsset?.PlaceAutoGeneratedThumbnail == true && !string.IsNullOrWhiteSpace(updatedAsset.PlaceGeneratedThumbnailUrl))
                 {
@@ -525,19 +494,148 @@ public class ThumbnailsController : ControllerBase
             }
         }
 
-        // If we have a thumbnail URL, redirect to it
+        if (string.IsNullOrWhiteSpace(thumbnailUrl))
+        {
+            thumbnailUrl = "/images/RobloxLogo.png";
+        }
+
+        var response = new GameThumbnailJsonResponse
+        {
+            Url = thumbnailUrl,
+            Final = true
+        };
+        
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = null
+        };
+        
+        var json = JsonSerializer.Serialize(response, jsonOptions);
+        return Content(json, "application/json");
+    }
+
+    public sealed class GameThumbnailJsonResponse
+    {
+        [JsonPropertyName("Url")]
+        public string Url { get; set; } = "";
+        
+        [JsonPropertyName("Final")]
+        public bool Final { get; set; }
+    }
+
+    // GET /game-thumbnails/image
+    [HttpGet("game-thumbnails/image")]
+    public async Task<IActionResult> GameThumbnail([FromQuery] long assetId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, [FromQuery] bool ignoreAssetMedia = false, [FromQuery] bool returnAutoGenerated = false, CancellationToken cancellationToken = default)
+    {
+        if (assetId <= 0) return BadRequest(new { error = "assetId is required" });
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        var asset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
+        if (asset == null)
+            return NotFound(new { error = "Asset not found" });
+        string? thumbnailUrl = null;
+        
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(asset.PlaceGeneratedThumbnailUrl))
+            {
+                thumbnailUrl = asset.PlaceGeneratedThumbnailUrl;
+            }
+        }
+        catch (Exception ex)
+        {
+        }
+
+
+        if (returnAutoGenerated && (asset.PlaceCustomThumbnail || asset.PlaceVideoThumbnail))
+        {
+            thumbnailUrl = asset.PlaceGeneratedThumbnailUrl;
+        }
+        else if (string.IsNullOrWhiteSpace(thumbnailUrl) && returnAutoGenerated)
+        {
+            try
+            {
+                var baseUrl = GetCdnBaseUrl();
+                await PlaceThumbnail.GeneratePlaceThumbnailAsync(
+                    _thumbnailService,
+                    connStr,
+                    assetId,
+                    asset.ContentHash ?? string.Empty,
+                    baseUrl,
+                    width,
+                    height,
+                    asset?.Name ?? string.Empty,
+                    cancellationToken);
+
+                var updatedAsset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
+                if (updatedAsset?.PlaceAutoGeneratedThumbnail == true && !string.IsNullOrWhiteSpace(updatedAsset.PlaceGeneratedThumbnailUrl))
+                {
+                    thumbnailUrl = updatedAsset.PlaceGeneratedThumbnailUrl;
+                }
+            }
+            catch
+            {
+                // If generation fails, continue to fallback
+            }
+        }
+
         if (!string.IsNullOrWhiteSpace(thumbnailUrl))
         {
+            if (width.HasValue && height.HasValue && width > 0 && height > 0)
+            {
+                try
+                {
+                    var hash = CDNUtilities.ExtractHashFromUrl(thumbnailUrl);
+                    if (!string.IsNullOrWhiteSpace(hash))
+                    {
+                        var resizedImageBytes = CDNUtilities.ResizePlaceThumbnailFromCDN(hash, width.Value, height.Value, format);
+                        if (resizedImageBytes != null)
+                        {
+                            var contentType = CDNUtilities.GetContentType(format);
+                            return File(resizedImageBytes, contentType);
+                        }
+                    }
+                }
+                catch
+                {
+                    // If resizing fails, fall back to original redirect
+                }
+            }
+            
+            if (Request.Headers.ContainsKey("X-Requested-With") || 
+                Request.Headers.ContainsKey("Authorization") ||
+                Request.Query.ContainsKey("_"))
+            {
+                try
+                {
+                    var hash = CDNUtilities.ExtractHashFromUrl(thumbnailUrl);
+                    if (!string.IsNullOrWhiteSpace(hash))
+                    {
+                        // Try to fetch and serve the image directly
+                        var imageBytes = CDNUtilities.GetPlaceThumbnailFromCDN(hash);
+                        if (imageBytes != null)
+                        {
+                            var contentType = CDNUtilities.GetContentType(format) ?? "image/png";
+                            return File(imageBytes, contentType);
+                        }
+                    }
+                }
+                catch
+                {
+                    // If direct fetch fails, fall back to redirect
+                }
+            }
+            
             return Redirect(thumbnailUrl);
         }
 
-        // Fallback to placeholder image
         return Redirect("/images/RobloxLogo.png");
     }
 
     // GET /game-icons/json
     [HttpGet("game-icons/json")]
-    [Authorize] // Ensure authentication is required
     public async Task<IActionResult> GameIconJson([FromQuery] long assetId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, [FromQuery] bool ignoreAssetMedia = false, [FromQuery] bool returnAutoGenerated = false, CancellationToken cancellationToken = default)
     {
         if (assetId <= 0) return BadRequest(new { error = "assetId is required" });
@@ -545,15 +643,10 @@ public class ThumbnailsController : ControllerBase
         if (string.IsNullOrWhiteSpace(connStr))
             return Problem("Database not configured");
 
-        // Get asset information
         var asset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
         if (asset == null)
             return NotFound(new { error = "Asset not found" });
 
-        // Determine which icon URL to return based on parameters.
-        // Behavior:
-        // - returnAutoGenerated = true  => use generated icon URL if present
-        // - returnAutoGenerated = false => prefer custom icon URL, then thumbnail_url
         string? iconUrl = null;
 
         if (returnAutoGenerated)
@@ -565,7 +658,6 @@ public class ThumbnailsController : ControllerBase
         }
         else
         {
-            // Prefer custom icon if it exists; otherwise fall back to thumbnail_url
             if (asset.CustomIcon && !string.IsNullOrWhiteSpace(asset.PlaceCustomIconUrl))
             {
                 iconUrl = asset.PlaceCustomIconUrl;
@@ -576,7 +668,6 @@ public class ThumbnailsController : ControllerBase
             }
         }
 
-        // Fallback to placeholder image if the requested type does not exist
         if (string.IsNullOrWhiteSpace(iconUrl))
         {
             iconUrl = "/images/RobloxLogo.png";
@@ -593,7 +684,7 @@ public class ThumbnailsController : ControllerBase
 
     // GET /game-icons/image
     [HttpGet("game-icons/image")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> GameIcon([FromQuery] long assetId, [FromQuery] int? width, [FromQuery] int? height, [FromQuery] string? format, [FromQuery] bool ignoreAssetMedia = false, [FromQuery] bool returnAutoGenerated = false, CancellationToken cancellationToken = default)
     {
         if (assetId <= 0) return BadRequest(new { error = "assetId is required" });
@@ -601,15 +692,10 @@ public class ThumbnailsController : ControllerBase
         if (string.IsNullOrWhiteSpace(connStr))
             return Problem("Database not configured");
 
-        // Get asset information
         var asset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
         if (asset == null)
             return NotFound(new { error = "Asset not found" });
 
-        // Determine which icon to return based on parameters.
-        // Behavior:
-        // - returnAutoGenerated = true  => use generated icon URL if present
-        // - returnAutoGenerated = false => prefer custom icon URL, then thumbnail_url
         string? iconUrl = null;
 
         if (returnAutoGenerated)
@@ -620,13 +706,10 @@ public class ThumbnailsController : ControllerBase
             }
             else
             {
-                // No generated icon exists yet, generate one on-demand
                 try
                 {
                     var baseUrl = GetCdnBaseUrl();
                     await PlaceThumbnail.GeneratePlaceThumbnailAsync(_thumbnailService, connStr, assetId, asset.ContentHash ?? "", baseUrl, width, height, asset?.Name ?? "", cancellationToken);
-                    
-                    // Get the updated asset to retrieve the generated icon URL
                     var updatedAsset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
                     if (!string.IsNullOrWhiteSpace(updatedAsset?.PlaceGeneratedIconUrl))
                     {
@@ -635,13 +718,11 @@ public class ThumbnailsController : ControllerBase
                 }
                 catch
                 {
-                    // If generation fails, continue to fallback
                 }
             }
         }
         else
         {
-            // Prefer custom icon if it exists; otherwise fall back to thumbnail_url
             if (asset.CustomIcon && !string.IsNullOrWhiteSpace(asset.PlaceCustomIconUrl))
             {
                 iconUrl = asset.PlaceCustomIconUrl;
@@ -652,13 +733,11 @@ public class ThumbnailsController : ControllerBase
             }
         }
 
-        // If we have a URL, redirect to it
         if (!string.IsNullOrWhiteSpace(iconUrl))
         {
             return Redirect(iconUrl);
         }
 
-        // Fallback to placeholder image
         return Redirect("/images/RobloxLogo.png");
     }
 
@@ -697,12 +776,11 @@ public class ThumbnailsController : ControllerBase
     /// Legacy endpoint that matches original Roblox URL pattern
     /// </summary>
     [HttpGet("Thumbs/AssetMedia/PlaceMediaItemSortHandler.ashx")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> PlaceMediaItemSortHandler([FromQuery] string sort)
     {
         try
         {
-            // Get current user ID from claims
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
             {
@@ -714,7 +792,6 @@ public class ThumbnailsController : ControllerBase
                 return Ok(new { success = false, message = "Sort parameter is required" });
             }
 
-            // Parse comma-separated thumbnail IDs
             var thumbnailIds = sort.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(id => id.Trim())
                 .Where(id => long.TryParse(id, out _))
@@ -732,7 +809,6 @@ public class ThumbnailsController : ControllerBase
                 return Ok(new { success = false, message = "Database not configured" });
             }
 
-            // Verify user owns the place that contains these thumbnails
             var (placeId, isValid) = await PlaceThumbnail.GetThumbnailPlaceAndOwnershipAsync(
                 connectionString, thumbnailIds[0], currentUserId);
 
@@ -741,7 +817,6 @@ public class ThumbnailsController : ControllerBase
                 return Ok(new { success = false, message = "Access denied" });
             }
 
-            // Update sort orders for all thumbnails
             var success = await PlaceThumbnail.UpdateThumbnailSortOrderAsync(
                 connectionString, placeId, thumbnailIds);
 
@@ -768,10 +843,9 @@ public class ThumbnailsController : ControllerBase
     /// POST /thumbnail/set-asset-media-sort-order - Modern endpoint for thumbnail sorting
     /// </summary>
     [HttpPost("thumbnail/set-asset-media-sort-order")]
-    [Authorize] // Ensure authentication is required
+    [Authorize]
     public async Task<IActionResult> SetAssetMediaSortOrder([FromForm] string sort)
     {
-        // This endpoint uses the same logic as the legacy one
         return await PlaceMediaItemSortHandler(sort);
     }
 }

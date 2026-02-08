@@ -1,0 +1,78 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+$(function () {
+    var tc = $(".tab-container"),
+        managesHash = tc.filter(".tab-history-hash");
+
+    /////////// Tab Change handler.
+    function changeTab(tabTop) {
+        var tabButton = $(tabTop),
+            tabSet = tabButton.parent(),
+            tabContainer = tabSet.next().children().eq(tabButton.index());
+
+        $.each([tabButton, tabContainer], function (idx, jqElement) {
+            jqElement.addClass('tab-active').siblings().removeClass('tab-active');
+        });        
+    }
+    tc.children("div").on("click", function (ev) {
+        var tabButton = $(this);
+        changeTab(this);
+        tabButton.parent().trigger("tabsactivate", { newTab: tabButton });
+    });
+
+
+    ////////// Hash manager: To use, have friendly IDs on content divs. Top div has .tab-history-hash
+    if (managesHash.length) {
+        function getCurrentContentTabSelector() {
+            return "#" + managesHash.next().children(".tab-active").attr('id');
+        }
+        function changeTabToGivenContentSelector(cs) {
+            var idx = $(cs).index();
+            if (idx !== -1) {
+                changeTab(managesHash.children().eq(idx));
+            }
+        }
+
+        if (!window.location.hash) {
+            var baseTab = getCurrentContentTabSelector();
+        } else {
+                changeTabToGivenContentSelector(window.location.hash);
+        }
+
+        managesHash.on("tabsactivate", function() {
+            history.pushState({}, "", getCurrentContentTabSelector());
+        });
+        $(window).on("popstate", function (ev) {    // on back-button
+            changeTabToGivenContentSelector(!window.location.hash ? baseTab : window.location.hash);
+        }); 
+    }
+});
+}
+
+/*
+     FILE ARCHIVED ON 22:25:50 May 16, 2014 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 13:05:39 Feb 01, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.747
+  exclusion.robots: 0.029
+  exclusion.robots.policy: 0.014
+  esindex: 0.015
+  cdx.remote: 29.554
+  LoadShardBlock: 227.07 (3)
+  PetaboxLoader3.datanode: 132.166 (4)
+  load_resource: 155.679
+  PetaboxLoader3.resolve: 105.873
+*/

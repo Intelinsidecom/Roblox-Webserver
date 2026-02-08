@@ -1,0 +1,95 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+Roblox.define('Widgets.DropdownMenu', ['jQuery'], function ($) {
+
+    function LazyInitializeDropdown(parentSelector) {
+        $(parentSelector).on("click", ".button", function () {
+            var target = $(this);
+            if (!target.hasClass('init')) {
+                var buttonWidth = $(this).outerWidth() - parseInt(target.css('border-left-width')) - parseInt(target.css('border-right-width'));
+                target.siblings('.dropdown-list').css('min-width', buttonWidth);
+                var rightAlignList = target.siblings('.dropdown-list[data-align="right"]').first();
+                rightAlignList.css('right', 0);
+                target.addClass('init');
+            }
+
+            if (target.hasClass('active')) {
+                target.removeClass('active');
+                target.siblings('.dropdown-list').hide();
+            } else {
+                target.addClass('active');
+                target.siblings('.dropdown-list').show();
+            }
+
+            $(document).click(function () {
+                $('.button.init.active').removeClass('active');
+                $('.dropdown-list').hide();
+            });
+
+            return false;
+
+        });
+    }
+
+    function InitializeDropdown() {
+        var browseButton = $('.button').not('.init');
+        browseButton.each(function () {
+            var buttonWidth = $(this).outerWidth() - parseInt($(this).css('border-left-width')) - parseInt($(this).css('border-right-width'));
+            $(this).siblings('.dropdown-list').css('min-width', buttonWidth);
+            var rightAlignList = $(this).siblings('.dropdown-list[data-align="right"]').first();
+            rightAlignList.css('right', 0);
+        });
+        $('.dropdown-list').hide();
+
+        browseButton.click(function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active');
+                $(this).siblings('.dropdown-list').hide();
+            } else {
+                $(this).addClass('active');
+                $(this).siblings('.dropdown-list').show();
+            }
+            return false;
+        });
+
+        $(document).click(function () {
+            browseButton.removeClass('active');
+            $('.dropdown-list').hide();
+        });
+        browseButton.addClass('init');
+    }
+    return {
+        InitializeDropdown: InitializeDropdown,
+        LazyInitializeDropdown: LazyInitializeDropdown
+    };
+
+});
+}
+
+/*
+     FILE ARCHIVED ON 22:25:34 May 16, 2014 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 13:05:42 Feb 01, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 1.925
+  exclusion.robots: 0.028
+  exclusion.robots.policy: 0.012
+  esindex: 0.016
+  cdx.remote: 35.129
+  LoadShardBlock: 474.653 (3)
+  PetaboxLoader3.datanode: 214.923 (4)
+  PetaboxLoader3.resolve: 46.193 (2)
+  load_resource: 109.643
+*/

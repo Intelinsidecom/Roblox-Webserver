@@ -76,7 +76,7 @@ function DataPager(n, t, i, r, u, f, e, o) {
             l.append('<div style="clear:both;"></div>'), n = i.totalItems, c != Math.ceil(n / t) && (c = Math.ceil(n / t), p()), b()
         };
     return function() {
-        a.FetchItemsOnLoad && v(1, t), n > t && p()
+        a.FetchItemsOnLoad && v(0, t), n > t && p()
     }(), {
         getItemsPaged: v,
         update: k,

@@ -28,7 +28,7 @@
 }
 
 .SetAddButtonAlreadyContainsItem {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/accept.png) no-repeat right 2px;
+	background: url(/images/accept.png) no-repeat right 2px;
 }
 
 .SetDescription {
@@ -55,7 +55,7 @@
 }
 
 .SetList .NewVersionAvailableBanner {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Sets/img-update_available-left.png) no-repeat;
+	background: url(/images/Sets/img-update_available-left.png) no-repeat;
 	height: 14px;
 	width: 87px;
 	position: absolute;
@@ -66,7 +66,7 @@
 
 .SetList a.btn-dropdown,
 a.btn-dropdown-active {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Sets/bg-drop_down_btn.png) no-repeat right top;
+	background: url(/images/Sets/bg-drop_down_btn.png) no-repeat right top;
 	border: 1px solid #777;
 	padding: 6px 17px 0 8px;
 	height: 19px;
@@ -254,7 +254,7 @@ a.btn-dropdown-active {
 }
 
 .FeaturedGameButton {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/buttons/btn-playnow_big2.png) no-repeat;
+	background: url(/images/buttons/btn-playnow_big2.png) no-repeat;
 	height: 214px;
 	width: 214px;
 	height: 214px;
@@ -449,7 +449,7 @@ div#ErrorPage .divideTitleAndBackButtons {
 }
 
 .FeaturedGameButton {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/buttons/btn-playnow_big2.png) no-repeat;
+	background: url(/images/buttons/btn-playnow_big2.png) no-repeat;
 	height: 214px;
 	width: 214px;
 	height: 214px;

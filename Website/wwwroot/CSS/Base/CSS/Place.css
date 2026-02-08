@@ -43,7 +43,7 @@
 }
 
 .AddRemoveFavorite {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/favoriteStar_20h.png) no-repeat 0 -20px;
+	background: url(/images/cssspecific/rbx2/favoriteStar_20h.png) no-repeat 0 -20px;
 	margin: 0;
 	display: inline-block;
 	position: relative;
@@ -76,7 +76,7 @@
 }
 
 .EditButton {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/EditMode2.png);
+	background: url(/images/cssspecific/rbx2/EditMode2.png);
 	width: 143px;
 	height: 48px;
 	float: left;
@@ -104,11 +104,11 @@
 }
 
 .iUnlocked {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/icon_public.png);
+	background: url(/images/cssspecific/rbx2/icon_public.png);
 }
 
 .iLocked {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/icon_public.png);
+	background: url(/images/cssspecific/rbx2/icon_public.png);
 	background-position: -20px;
 }
 

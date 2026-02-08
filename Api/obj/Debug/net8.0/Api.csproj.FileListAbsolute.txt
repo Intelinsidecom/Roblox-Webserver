@@ -152,6 +152,8 @@ C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\System.Com
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\System.Composition.Runtime.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\System.Composition.TypedParts.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\System.Drawing.Common.dll
+C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\System.Private.Windows.Core.dll
+C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\System.Private.Windows.GdiPlus.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\cs\Microsoft.CodeAnalysis.resources.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\de\Microsoft.CodeAnalysis.resources.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\es\Microsoft.CodeAnalysis.resources.dll
@@ -204,9 +206,7 @@ C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\ru\Microso
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
-C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\Assets.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\Avatar.dll
 C:\Users\Intel\Documents\GitHub\Roblox-Webserver\Api\bin\Debug\net8.0\Common.dll

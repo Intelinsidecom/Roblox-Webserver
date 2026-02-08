@@ -1,0 +1,1019 @@
+@{
+    Layout = "_Layout";
+    
+    // Initialize ViewBags for universe data
+    var gameid = ViewBag.gameid ?? 0;
+    var gamename = ViewBag.gamename ?? "Unknown Game";
+    var gamedesc = ViewBag.gamedesc ?? "";
+    var PlaceUniverseId = ViewBag.PlaceUniverseId ?? gameid;
+    var theme = ViewBag.theme ?? "";
+    var xcsrftoken = ViewBag.xcsrftoken ?? "";
+}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:fb="http://www.facebook.com/2008/fbml">
+
+<head data-machine-id="WEB1269">
+    <title>Configure Game - @gamename</title>
+ 
+
+    <link rel="canonical" href="/universes/configure?id=@gameid" />
+
+    <script type='text/javascript' src='/js/jquery/jquery-1.11.1.min.js'></script>
+    <script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.min.js'></script>
+
+    <link rel="stylesheet" href="~/CSS/Pages/Universes/Configure.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Places/DeveloperProducts.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Notifications/Notifications.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
+    
+    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="~/JS/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="~/JS/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
+    <script type="text/javascript" src="~/JS/XsrfToken.js"></script>
+    <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
+    <script type="text/javascript" src="~/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="~/JS/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="~/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="~/JS/json2.min.js"></script>
+    <script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="~/JS/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="~/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="~/JS/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="~/JS/Linkify.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/stringFormat.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="~/JS/VideoPreRollDFP.js"></script>
+    <script type="text/javascript" src="~/JS/CharacterSelect.js"></script>
+    <script type="text/javascript" src="~/JS/MadStatus.js"></script>
+    <script type="text/javascript" src="~/JS/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="~/JS/GameLauncher.js"></script>
+    <script type="text/javascript" src="~/JS/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="~/JS/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="~/JS/GameLaunchAdRefresher.js"></script>
+    <script type="text/javascript" src="~/JS/GPTAdScript.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="~/JS/roblox.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/ItemImage.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
+    <script type="text/javascript" src="~/JS/jquery/jquery.address-1.5.min.js"></script>
+    <script type="text/javascript" src="~/JS/DataPager.js"></script>
+    <script type="text/javascript" src="~/JS/Universes/Configure.js"></script>
+    <script type="text/javascript" src="~/JS/GenericModal.js"></script>
+    <script type="text/javascript" src="~/JS/Universes/PlaceSelectorModal.js"></script>
+    <script type="text/javascript" src="~/JS/Places/DeveloperProductsListing.js"></script>
+    <script type="text/javascript" src="~/JS/pageStyleNotifications.js"></script>
+    <script type="text/javascript" src="~/JS/Reference/jquery.twbsPagination.js"></script>
+    <script type="text/javascript" src="~/JS/Universes/ConfigureGameUpdate.js"></script>
+    <script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/dialog.js"></script>
+    <script type="text/javascript" src="~/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="~/JS/common/deviceMeta.js"></script>
+    <script type="text/javascript" src="~/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+    <script type="text/javascript" src="~/JS/StyleguideConversions.js"></script>
+    <script type="text/javascript" src="~/JS/swfobject/swfobject.js"></script>
+    <script type="text/javascript" src="~/JS/YouTube/RobloxYouTube.js"></script>
+    <script type="text/javascript" src="~/JS/IDE/validator.js"></script>
+    <script type="text/javascript" src="~/JS/IDE/Update.js"></script>
+    <script type="text/javascript" src="~/JS/jquery/jquery-ui-sortable-1.10.4.min.js"></script>
+    <script type="text/javascript" src="~/JS/modules/Widgets/DropdownMenu.js"></script>
+    <script type="text/javascript" src="~/JS/EventTracker.js"></script>
+    <script type="text/javascript" src="~/JS/ClientInstaller.js"></script>
+    <script type="text/javascript" src="~/JS/InstallationInstructions.js"></script>
+    <script type="text/javascript" src="~/JS/IEMetroInstructions.js"></script>
+    <script type="text/javascript" src="~/JS/Places/CreateEditDeveloperProducts.js"></script>
+
+
+    <script type="text/javascript">
+        if (Roblox && Roblox.EventStream) {
+            Roblox.EventStream.Init("//ecsv2.roblox.com/www/e.png",
+                "//ecsv2.roblox.com/www/e.png",
+                "//ecsv2.roblox.com/pe?t=studio",
+                "//ecsv2.roblox.com/pe?t=diagnostic");
+        }
+    </script>
+
+    <script type='text/javascript' src='https://js.roblox.com/54b73269bcd426ec956755cb8cac7033.js'></script>
+
+    <script type='text/javascript'>
+        Roblox.config.externalResources = [];
+        Roblox.config.paths['Pages.Catalog'] = 'https://js.roblox.com/109d883fe3988fca757e26e341ed0fe8.js';
+        Roblox.config.paths['Pages.CatalogShared'] = 'https://js.roblox.com/33126cd3e259a404a2563594f55a3f06.js';
+        Roblox.config.paths['Widgets.AvatarImage'] = 'https://js.roblox.com/7d49ac94271bd506077acc9d0130eebb.js';
+        Roblox.config.paths['Widgets.DropdownMenu'] = 'https://js.roblox.com/da553e6b77b3d79bec37441b5fb317e7.js';
+        Roblox.config.paths['Widgets.HierarchicalDropdown'] =
+            'https://js.roblox.com/4a0af9989732810851e9e12809aeb8ad.js';
+        Roblox.config.paths['Widgets.ItemImage'] = 'https://js.roblox.com/61a0490ba23afa17f9ecca2a079a6a57.js';
+        Roblox.config.paths['Widgets.PlaceImage'] = 'https://js.roblox.com/a6df74a754523e097cab747621643c98.js';
+    </script>
+
+    <script type='text/javascript' src='https://js.roblox.com/f0a2acc861db87466c6ecf755ce236d0.js'></script>
+
+    <script type='text/javascript' src='https://js.roblox.com/c6b47ce9ee4cd0423d35c985917d2b4e.js'></script>
+
+    <script type="text/javascript">
+        Roblox.FixedUI.gutterAdsEnabled = false;
+    </script>
+
+    <script type="text/javascript">
+        var Roblox = Roblox || {};
+        Roblox.jsConsoleEnabled = false;
+    </script>
+
+    <script>
+        $(function () {
+            Roblox.DeveloperConsoleWarning.showWarning();
+        });
+    </script>
+   
+    <script type="text/javascript">
+        if (typeof (Roblox) === "undefined") {
+            Roblox = {};
+        }
+        Roblox.Endpoints = Roblox.Endpoints || {};
+        Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+    </script>
+
+
+
+
+    <% if (theme == "dark") { %>
+        <link rel='stylesheet' class="dark-theme" href='/css/dark.css' />
+    <% } %>
+</head>
+
+<body id="rbx-body" class="" data-performance-relative-value="0.000" data-internal-page-name=""
+    data-send-event-percentage="0.00">
+
+    @{
+    var regexPattern = "(https?\\:\\/\\/)?(?:www\\.)?([a-z0-9\\-]{2,}\\.)?(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\\.idk16\\.cf|robloxlabs\\.com)|(www\\.shoproblox\\.com))((\\/[A-Za-z0-9-+&;@#\\/%?=~_|!:,.;]*)|(\\b|\\s))";
+}
+    <div id="roblox-linkify" data-enabled="true"
+        data-regex="@Html.Raw(regexPattern)"
+        data-regex-flags="gm"
+        data-as-http-regex="((blog|wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.roblox\.com|robloxlabs\.com)">
+    </div>
+    <div id="image-retry-data" data-image-retry-max-times="10" data-image-retry-timer="1500">
+    </div>
+    <div id="http-retry-data" data-http-retry-max-timeout="0" data-http-retry-base-timeout="0">
+    </div>
+
+
+    <div ng-modules="pageTemplateApp">
+        <!-- Template bundle: page -->
+
+    </div>
+
+
+    <div id="fb-root"></div>
+
+
+                <div id="BodyWrapper" class="">
+                    <div id="RepositionBody">
+                        <div id="Body" class="body-width">
+
+                            <h1>Configure Game</h1>
+                            <span class="back-button"><a href="/develop">Back</a></span>
+                            <div>
+                                <div id="navbar" class="nav-bar">
+                                    <div class="verticaltab selected" data-maindiv="basicSettings">
+                                        <a href="#">Basic Settings</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="avatarConfig">
+                                        <a href="#">Avatar Settings</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="places">
+                                        <a href="#">Places</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="createdPlaces">
+                                        <a href="#">Created Places</a>
+                                    </div>
+                                    <div class="verticaltab" data-maindiv="developerProducts">
+                                        <a href="#">Developer Products</a>
+                                    </div>
+                                </div>
+                                <div id="universe-configure" class="universe-content divider-left"
+                                    data-universeid="@gameid" 
+                                    data-addplaceurl="/universes/addplace"
+                                    data-removeplaceurl="/universes/removeplace"
+                                    data-configureplaceurl="/universes/configure-universe-places"
+                                    data-loadmoreplacesurl="/universes/get-universe-places"
+                                    data-place-loader-url="/universes/get-places-by-context?creationContext=NonGameCreation&universeId=@gameid"
+                                    data-universe-name="@gamename"
+                                    data-universe-description="@gamedesc">
+
+
+                                    <form id="configureUniverseForm" method="post"
+                                        action="/universes/doconfigure">
+                                        <input id="Id" name="Id" type="hidden" value="@gameid" />
+                                        <input name="__RequestVerificationToken" type="hidden"
+                                            value="@xcsrftoken" />
+                                        <div id="basicSettings" class="configure-tab">
+                                            <div class="headline">
+                                                <h2>Basic Settings</h2>
+                                            </div>
+
+
+                                            <div class="universe-form-label ">
+                                                <label class="form-label" for="Name">Name</label>:
+                                            </div>
+                                            <div class="name-field-container">
+                                                <input autofocus="" class="text-box text-box-medium universe-input"
+                                                    id="Name" maxlength="50" name="Name" type="text"
+                                                    value="@Html.Raw(gamename)" />
+                                                <div class="tool-tip warning-text name-error" style="display: none">
+                                                    Name cannot be empty
+                                                    <img src="/images/77c4414271016f8257c136305b7888b4.png"
+                                                        class="right">
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <div class="universe-form-label scale-label">
+                                                <span class="form-label">
+                                                    Privacy:<br />
+                                                    <span class="radio-selection">
+                                                        <input id="PublicLevel" name="PublicLevel"
+                                                            type="radio" value="0" @(ViewBag.privacyLevel == 1 ? "checked" : "") /> <span class="checkboxListItem">
+                                                            Public
+                                                            <img class="TipsyImg tooltip-right"
+                                                                src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                data-toggle="tooltip"
+                                                                alt="Everyone can see your public Games."
+                                                                title="Everyone can see your public Games." />
+                                                        </span>
+                                                    </span>
+                                                    <br />
+                                                    <span class="radio-selection-last">
+                                                        <input id="PublicLevel2" name="PublicLevel"
+                                                            type="radio" value="1" @(ViewBag.privacyLevel == 3 ? "checked" : "") /> <span class="checkboxListItem">
+                                                            Private
+                                                            <img class="TipsyImg tooltip-right"
+                                                                src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                data-toggle="tooltip"
+                                                                alt="Only you can see your private Games."
+                                                                title="Only you can see your private Games." />
+                                                        </span>
+                                                    </span>
+                                                    <br />
+                                                    <span style="color:red">Attention! Making a game private will
+                                                        shut down any running instances.</span>
+                                                </span>
+                                            </div>
+                                            <br>
+                                            <div class="universe-form-label studio-access-label">
+                                                <span class="form-label">
+                                                    Enable Studio Access to API Services:
+                                                    <input id="AllowStudioAccessToApis"
+                                                        name="AllowStudioAccessToApis" type="checkbox" value="true" 
+                                                        @(ViewBag.studioAccessToApis == true ? "checked" : "") />
+                                                </span>
+                                            </div>
+
+
+
+
+
+                                            <div class="universe-buttons">
+                                                <a class="btn-medium btn-neutral configure-save-button"
+                                                    id="okButton">Save</a>
+                                                <a href="https://www.roblox.com/develop?Page=Universes"
+                                                    class="btn-medium btn-negative" id="cancelButton">Cancel</a>
+                                            </div>
+                                        </div>
+
+                                        <div id="avatarConfig" class="configure-tab" style="display:none">
+
+
+                                            <div id="configure-avatar" class="avatarConfigContainer">
+                                                <div class="headline">
+                                                    <h2>Avatar Settings</h2>
+                                                </div>
+                                                <div class="universe-form-label character-label">
+                                                    <span class="form-label">
+                                                        Avatar Type Options: <br />
+                                                        <span class="radio-selection">
+                                                            <input checked="checked" id="CharacterForce"
+                                                                name="CharacterForce" type="radio" value="0"  /> <span
+                                                                class="checkboxListItem">
+                                                                Standard
+                                                                <img class="TipsyImg tooltip-right"
+                                                                    src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                    data-toggle="tooltip"
+                                                                    alt="Everyone can see your public Games."
+                                                                    title="Everyone can see your public Games." />
+                                                            </span>
+                                                        </span>
+                                                        <br />
+                                                        <span class="radio-selection" disabled="">
+                                                            <input id="CharacterForce" name="CharacterForce"
+                                                                type="radio" value="1" disabled=""/> <span
+                                                                class="checkboxListItem">
+                                                                Player Choice (BETA)
+                                                                <img class="TipsyImg tooltip-right"
+                                                                    src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                    data-toggle="tooltip"
+                                                                    alt="Everyone can see your public Games."
+                                                                    title="Everyone can see your public Games." />
+                                                            </span>
+                                                        </span>
+                                                        <br />
+                                                        <span class="radio-selection-last" disabled="">
+                                                            <input id="CharacterForce" name="CharacterForce"
+                                                                type="radio" value="2" disabled=""/> <span
+                                                                class="checkboxListItem">
+                                                                Morph to R15 (BETA)
+                                                                <img class="TipsyImg tooltip-right"
+                                                                    src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                    data-toggle="tooltip" alt="" title="" />
+                                                            </span>
+                                                        </span>
+                                                        <br />
+                                                    </span>
+                                                </div>
+                                                <div class="universe-form-label scale-label">
+                                                    <span class="form-label">
+                                                        Avatar Scaling Options: (BETA)<br />
+                                                        <span class="radio-selection">
+                                                            <input checked="checked" id="CharacterForce"
+                                                                name="ScaleChoice" type="radio" disabled="" value="0" /> <span
+                                                                class="checkboxListItem">
+                                                                Standard
+                                                                <img class="TipsyImg tooltip-right"
+                                                                    src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                    data-toggle="tooltip"
+                                                                    alt="Everyone can see your public Games."
+                                                                    title="Everyone can see your public Games." />
+                                                            </span>
+                                                        </span>
+                                                        <br />
+                                                        <span class="radio-selection-last">
+                                                            <input id="CharacterForce" name="ScaleChoice" type="radio"
+                                                                value="1" disabled="" /> <span class="checkboxListItem">
+                                                                Player Choice (BETA)
+                                                                <img class="TipsyImg tooltip-right"
+                                                                    src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                                    data-toggle="tooltip"
+                                                                    alt="Everyone can see your public Games."
+                                                                    title="Everyone can see your public Games." />
+                                                            </span>
+                                                        </span>
+                                                        <br />
+                                                    </span>
+                                                </div>
+                                            </div>
+    
+                                        </div>
+                                    </form>
+
+                                    <div id="places" class="configure-tab" style="display: none">
+
+                                        <div id="configure-places" class="configure-places-container">
+                                            <div id="universe-error" style="display: none" class="error-message"></div>
+                                            <div id="set-startplace-container"
+                                                class="start-place-container divider-bottom">
+                                                <div class="configure-places-title">
+                                                    <h3>Start Place </h3><img class="TipsyImg tooltip-top" style="margin-left: 3px;"
+                                                        src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                        data-toggle="tooltip"
+                                                        alt="This place will be the starting point for your Game."
+                                                        title="This place will be the starting point for your Game." />
+                                                </div>
+                                                <div id="startplace-container" class="start-place">
+                                                    <!-- Start place content will be dynamically loaded -->
+                                                    <div class="loading-start-place">
+                                                        <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Loading..." />
+                                                    </div>
+                                                    <div class="no-start-place" style="display: none;">
+                                                        <a class="btn-small btn-neutral set-startplace-button">Set</a>
+                                                        <div class="missing-start-place blank-box">
+                                                            <span style="color: red; display: block; margin-left: 0;">You need to set a start place and set the place as Active in order to make your game playable.</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="start-place-content" style="display: none;">
+                                                        <div class="universe-place-container start-place">
+                                                            <div class="universe-place-thumb">
+                                                                <a href="#" class="universe-place">
+                                                                    <div data-retry-url="" style="width: 160px; height: 100px; overflow: hidden;">
+                                                                        <img class='universe-place-image' 
+                                                                             style="width: 160px; height: 100px; object-fit: cover; display: block;"
+                                                                             src="/images/ec5e01d220bf1b73403fa51519267742.gif" alt="Place thumbnail" />
+                                                                    </div>
+                                                                </a>
+                                                            </div>
+                                                            <div class="universe-detail">
+                                                                <a href="#" class="start-place-name"></a>
+                                                                <div class="start-place-actions">
+                                                                    <a class="btn-small btn-primary remove-startplace-button" data-placeid="">Remove</a>
+                                                                </div>
+                                                            </div>
+                                                            <div class="clear"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="configure-places-title">
+                                                <h3>Other Places </h3><img class="TipsyImg tooltip-top" style="margin-left: 3px;"
+                                                        src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                        data-toggle="tooltip"
+                                                        alt="Add more places to your Game."
+                                                        title="Add more places to your Game." />
+                                            </div>
+                                            <div id="add-universe-places" class="add-places-container">
+                                                <a class="btn-small btn-primary add-place-button"
+                                                    id="add-place-modal-button">Add Place</a>
+                                                <div class="universe-places-paged" data-isuniversecreation="false">
+
+
+                                                    <div id="current-places" data-startrow="0" data-universeid="51"
+                                                        data-totalcount="0">
+                                                    </div>
+                                                    <div class="universe-place-container" style=display:none>
+                                                        <div class="universe-place-thumb">
+                                                            <a href="https://www.roblox.com/games/@gameid"
+                                                                class="universe-place"><img class='universe-place-image'
+                                                                    src='' /></a>
+                                                        </div>
+                                                        <div class="universe-detail">
+                                                            <a
+                                                                href="https://www.roblox.com/games/@gameid" class="place-name">@gamename</a>
+                                                            <div class="place-actions">
+                                                                <a class="btn-small btn-primary remove-place-button" data-placeid="@gameid">Remove</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="clear"></div>
+                                                    </div>
+                                                    <div class="missing-start-place blank-box">
+                                                        <span>You can add more places to your Game.</span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+
+
+                                        <div class="PlaceSelectorModal modalPopup unifiedModal" style="display:none;">
+                                            <div class="Title">Select Place</div>
+                                            <div class="GenericModalBody text">
+                                                <div class="place-selector-content"
+                                                    data-place-loader-url="/universes/get-places-by-context?creationContext=NonGameCreation&universeId=@gameid">
+                                                    <div class="place-selector-container">
+                                                        <div id="PlaceSelectorItemContainer"
+                                                            class="place-selector-item-container"></div>
+                                                        <div id="PlaceSelectorPagerContainer"
+                                                            class="place-selector-pager-container"></div>
+                                                    </div>
+                                                    <div class="place-selector selectable template" title="Place"
+                                                        style="display: none">
+                                                        <div class="place-image"
+                                                            data-retry-url-template="/game-thumbnails/json?assetId=PLACE_ID">
+                                                            <img alt="^_^" class="item-image"
+                                                                src="/images/ec5c01d220bf1b73403fa51519267742.gif" />
+                                                        </div>
+                                                        <div class="InfoContainer">
+                                                            <div class="place-name"></div>
+                                                            <div class="game-name"><span class="form-label">Game:
+                                                                </span><span class="game-name-text"></span></div>
+                                                            <div class="root-place" style="display: none"><span>Cannot
+                                                                    choose start places</span></div>
+                                                        </div>
+                                                        <div style="clear:both;"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </div>
+                                    <div id="createdPlaces" class="configure-tab" style="display: none">
+
+
+                                        <div id="configure-places" class="configure-places-container">
+                                            <div id="universe-error" style="display: none" class="error-message"></div>
+                                            <div class="configure-places-title">
+                                                <h3>Created Places </h3><img class="TipsyImg tooltip-top" style="margin-left: 3px;"
+                                                        src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                        data-toggle="tooltip"
+                                                        alt="These places were created using your Game."
+                                                        title="These places were created using your Game." />
+                                            </div>
+                                            <div class="universe-places-paged" data-isuniversecreation="true">
+
+
+                                                <div id="current-places" data-startrow="0" data-universeid="2311586579"
+                                                    data-totalcount="0">
+                                                </div>
+                                                <div class="missing-start-place blank-box">
+                                                    <span>You can use the <a
+                                                            href="https://developer.roblox.com/en-us/api-reference/function/AssetService/CreatePlaceAsync"
+                                                            target="blank">Create and Save Place API</a> for creating
+                                                        Places. Check the
+                                                        <a href="https://developer.roblox.com/en-us/articles/games-and-places"
+                                                            target="blank">Roblox DevHub</a> for more
+                                                        information.</span>
+                                                </div>
+
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+
+                                        <div id="gameUpdate" class="configure-tab" style="display: none">
+
+
+                                        </div>
+
+                                        <div id="ProcessingView" style="display: none">
+
+                                            <div class="ProcessingModalBody">
+                                                <p class="processing-indicator"><img
+                                                        src='/images/ec4e85b0c4396cf753a06fade0a8d8af.gif'
+                                                        alt="Saving the Game..." />
+                                                </p>
+                                                <p class="processing-text">Saving the Game...</p>
+                                            </div>
+                                        </div>
+
+                                        <script type="text/javascript">
+                                            if (typeof Roblox === "undefined") {
+                                                Roblox = {};
+                                            }
+                                            if (typeof Roblox.UniverseConfigurePage === "undefined") {
+                                                Roblox.UniverseConfigurePage = {};
+                                            }
+                                        </script>
+                                        <div style="clear: both"></div>
+                                    </div>
+
+                                <div id="developerProducts" class="configure-tab" style="display:none">
+                                    <div id="DevProducts" src="/universes/@gameid/developer-products">
+                                        <div id="DeveloperProductsInnerContainer">
+                                            <div class="developerProductsContainer" style="padding-right: -10px;">
+                                                @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+                                                {
+                                                    <div class="success-message" style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border: 1px solid #c3e6cb; border-radius: 4px;">
+                                                        @ViewBag.SuccessMessage
+                                                    </div>
+                                                }
+                                                <div id="DeveloperProductsLoading" class="loading-start-place">
+                                                    <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Loading..." />
+                                                </div>
+                                                <div id="DeveloperProductsError" style="display: none;">
+                                                    <p>Unable to load developer products. Please try again later.</p>
+                                                </div>
+                                                <div id="DeveloperProductsContent" style="padding-right: -10px;">
+                                                    <!-- Content will be loaded dynamically from API -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="gameUpdate" class="configure-tab" style="display: none">
+
+
+                                </div>
+
+                                <div id="ProcessingView" style="display: none">
+
+                                    <div class="ProcessingModalBody">
+                                        <p class="processing-indicator"><img
+                                                src='/images/ec4e85b0c4396cf753a06fade0a8d8af.gif'
+                                                alt="Saving the Game..." />
+                            </div>
+
+                            <script type="text/javascript">
+                                if (typeof Roblox === "undefined") {
+                                    Roblox = {};
+                                }
+                                if (typeof Roblox.UniverseConfigurePage === "undefined") {
+                                    Roblox.UniverseConfigurePage = {};
+                                }
+                            </script>
+                            
+                            <script type="text/javascript">
+
+                                
+                                function initializeDeveloperProducts() {
+                                    var devProductsElement = $('#DevProducts');
+                                    if (devProductsElement.length > 0) {
+                                        if (typeof Roblox.DeveloperProductsListing !== 'undefined' && typeof Roblox.DeveloperProductsListing.init === 'function') {
+                                            Roblox.DeveloperProductsListing.init();
+                                        } else {
+                                            console.error('Developer Products: Roblox.DeveloperProductsListing.init not found');
+                                        }
+
+                                        devProductsElement.trigger('onRefreshed');    
+                                        if (typeof Roblox.DeveloperProductsForm !== 'undefined' && typeof Roblox.DeveloperProductsForm.init === 'function') {
+                                            Roblox.DeveloperProductsForm.init();
+                                        }
+                                    } else {
+                                        console.error('Developer Products: #DevProducts container not found');
+                                    }
+                                }
+
+                                $(document).ready(function() {
+                                    var devProductsTab = $('#developerProducts');
+                                    if (devProductsTab.css('display') !== 'none') {
+                                        initializeDeveloperProducts();
+                                    }
+
+                                    var observer = new MutationObserver(function(mutations) {
+                                        mutations.forEach(function(mutation) {
+                                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                                var target = $(mutation.target);
+                                                if (target.attr('id') === 'developerProducts' && target.css('display') !== 'none') {
+                                                    initializeDeveloperProducts();
+                                                }
+                                            }
+                                        });
+                                    });
+                                    
+                                    var devProductsElement = document.getElementById('developerProducts');
+                                    if (devProductsElement) {
+                                        observer.observe(devProductsElement, {
+                                            attributes: true,
+                                            attributeFilter: ['style']
+                                        });
+                                    }
+                                });
+
+                            </script>
+                            <div style="clear: both"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    <script type="text/javascript">
+        function urchinTracker() {}
+    </script>
+
+    <div id="PlaceLauncherStatusPanel" style="display:none;width:300px" data-new-plugin-events-enabled="True"
+        data-event-stream-for-plugin-enabled="True" data-event-stream-for-protocol-enabled="True"
+        data-is-game-launch-interface-enabled="True" data-is-protocol-handler-launch-enabled="True"
+        data-is-user-logged-in="True" data-os-name="Windows" data-protocol-name-for-client="idk16-player"
+        data-protocol-name-for-studio="idk16-studio" data-protocol-url-includes-launchtime="true"
+        data-protocol-detection-enabled="true">
+        <div class="modalPopup blueAndWhite PlaceLauncherModal" style="min-height: 160px">
+            <div id="Spinner" class="Spinner" style="padding:20px 0;">
+                <img data-delaysrc="/images/e998fb4c03e8c2e30792f2f3436e9416.gif" height="32"
+                    width="32" alt="Progress" />
+            </div>
+            <div id="status" style="min-height:40px;text-align:center;margin:5px 20px">
+                <div id="Starting" class="PlaceLauncherStatus MadStatusStarting" style="display:block">
+                    Starting Roblox...
+                </div>
+                <div id="Waiting" class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
+                <div id="StatusBackBuffer"
+                    class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
+            </div>
+            <div style="text-align:center;margin-top:1em">
+                <input type="button" class="Button CancelPlaceLauncherButton translate" value="Cancel" />
+            </div>
+        </div>
+    </div>
+    <div id="ProtocolHandlerStartingDialog" style="display:none;">
+        <div class="modalPopup ph-modal-popup">
+            <div class="ph-modal-header">
+
+            </div>
+            <div class="ph-logo-row">
+                <img data-delaysrc="/images/e060b59b57fdcc7874c820d13fdcee71.svg" width="90"
+                    height="90" alt="R" />
+            </div>
+            <div class="ph-areyouinstalleddialog-content">
+                <p class="larger-font-size">
+                    ROBLOX is now loading. Get ready to play!
+                </p>
+                <div class="ph-startingdialog-spinner-row">
+                    <img data-delaysrc="/images/4bed93c91f909002b1f17f05c0ce13d1.gif" width="82"
+                        height="24" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ProtocolHandlerAreYouInstalled" style="display:none;">
+        <div class="modalPopup ph-modal-popup">
+            <div class="ph-modal-header">
+                <span class="icon-close simplemodal-close"></span>
+            </div>
+            <div class="ph-logo-row">
+                <img data-delaysrc="/images/e060b59b57fdcc7874c820d13fdcee71.svg" width="90"
+                    height="90" alt="R" />
+            </div>
+            <div class="ph-areyouinstalleddialog-content">
+                <p class="larger-font-size">
+                    You're moments away from getting into the game!
+                </p>
+                <div>
+                    <button type="button" class="btn btn-primary-md" id="ProtocolHandlerInstallButton">
+                        Download and Install ROBLOX
+                    </button>
+                </div>
+                <div class="small">
+                    <a href="https://help.roblox.com/hc/en-us/articles/204473560" class="text-name"
+                        target="_blank">Click
+                        here for help</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ProtocolHandlerClickAlwaysAllowed" class="ph-clickalwaysallowed" style="display:none;">
+        <p class="larger-font-size">
+            <span class="icon-moreinfo"></span>
+
+            Check <b>Remember my choice</b> and click
+            <img data-delaysrc="/images/7c8d7a39b4335931221857cca2b5430b.png"
+                alt="Launch Application" />
+
+            in the dialog box above to join games faster in the future!
+        </p>
+    </div>
+
+
+    <div id="videoPrerollPanel" style="display:none">
+        <div id="videoPrerollTitleDiv">
+            Gameplay sponsored by:
+        </div>
+        <div id="content">
+            <video id="contentElement" style="width:0; height:0;" />
+        </div>
+        <div id="videoPrerollMainDiv"></div>
+        <div id="videoPrerollCompanionAd">
+        </div>
+        <div id="videoPrerollLoadingDiv">
+            Loading <span id="videoPrerollLoadingPercent">0%</span> - <span id="videoPrerollMadStatus"
+                class="MadStatusField">Starting game...</span><span id="videoPrerollMadStatusBackBuffer"
+                class="MadStatusBackBuffer"></span>
+            <div id="videoPrerollLoadingBar">
+                <div id="videoPrerollLoadingBarCompleted">
+                </div>
+            </div>
+        </div>
+        <div id="videoPrerollJoinBC">
+            <span>Get more with Builders Club!</span>
+            <a href="https://www.roblox.com/premium/membership?ctx=preroll" target="_blank"
+                class="btn-medium btn-primary" id="videoPrerollJoinBCButton">Join Builders Club</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            var videoPreRollDFP = Roblox.VideoPreRollDFP;
+            if (videoPreRollDFP) {
+                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
+                videoPreRollDFP.showVideoPreRoll = false;
+                videoPreRollDFP.loadingBarMaxTime = 33000;
+                videoPreRollDFP.videoLoadingTimeout = 11000;
+                videoPreRollDFP.videoPlayingTimeout = 41000;
+                videoPreRollDFP.videoLogNote = "Guest";
+                videoPreRollDFP.logsEnabled = true;
+                videoPreRollDFP.excludedPlaceIds = "32373412";
+                videoPreRollDFP.adUnit = "/1015347/VideoPrerollUnder13";
+                videoPreRollDFP.adTime = 15;
+                videoPreRollDFP.isSwfPreloaderEnabled = false;
+                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
+                videoPreRollDFP.isAgeTargetingEnabled = true;
+                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
+                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
+                customTargeting.userAge = "Unknown";
+                customTargeting.userAgeOrSegment = "Unknown";
+                customTargeting.userGender = "Unknown";
+                customTargeting.gameGenres = "";
+                customTargeting.environment = "Production";
+                customTargeting.adTime = "15";
+                customTargeting.PLVU = false;
+                $(videoPreRollDFP.checkEligibility);
+            }
+        });
+    </script>
+
+
+    <div id="GuestModePrompt_BoyGirl" class="Revised GuestModePromptModal" style="display:none;">
+        <div class="simplemodal-close">
+            <a class="ImageButton closeBtnCircle_20h"
+                style="cursor: pointer; margin-left:455px;top:7px; position:absolute;"></a>
+        </div>
+        <div class="Title">
+            Choose Your Avatar
+        </div>
+        <div style="min-height: 275px; background-color: white;">
+            <div style="clear:both; height:25px;"></div>
+
+            <div style="text-align: center;">
+                <div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style="float:left; margin-left:45px;"></div>
+                <div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style="float:right; margin-right:45px;">
+                </div>
+            </div>
+            <div style="clear:both; height:25px;"></div>
+            <div class="RevisedFooter">
+                <div style="width:200px;margin:10px auto 0 auto;">
+                    <a href="https://www.roblox.com">
+                        <div class="RevisedCharacterSelectSignup"></div>
+                    </a>
+                    <a class="HaveAccount" href="https://www.roblox.com/newlogin">I have an account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function checkRobloxInstall() {
+            window.location = 'https://www.roblox.com/install/unsupported.aspx?osx=10.5';
+            return false;
+        }
+    </script>
+
+    <div id="InstallationInstructions" class="" style="display:none;">
+        <div class="ph-installinstructions">
+            <div class="ph-modal-header">
+                <span class="icon-close simplemodal-close"></span>
+                <h3 class="title">Thanks for playing ROBLOX</h3>
+            </div>
+            <div class="modal-content-container">
+                <div class="ph-installinstructions-body ">
+
+
+                    <div class="ph-install-step ph-installinstructions-step1-of4">
+                        <h1>1</h1>
+                        <p class="larger-font-size">Click <strong>RobloxPlayer.exe</strong> to run the ROBLOX installer,
+                            which just downloaded via your web browser.</p>
+                        <img width="230" height="180"
+                            data-delaysrc="/images/8b0052e4ff81d8e14f19faff2a22fcf7.png" />
+                    </div>
+                    <div class="ph-install-step ph-installinstructions-step2-of4">
+                        <h1>2</h1>
+                        <p class="larger-font-size">Click <strong>Run</strong> when prompted by your computer to begin
+                            the installation process.</p>
+                        <img width="230" height="180"
+                            data-delaysrc="/images/4a3f96d30df0f7879abde4ed837446c6.png" />
+                    </div>
+                    <div class="ph-install-step ph-installinstructions-step3-of4">
+                        <h1>3</h1>
+                        <p class="larger-font-size">Click <strong>Ok</strong> once you've successfully installed ROBLOX.
+                        </p>
+                        <img width="230" height="180"
+                            data-delaysrc="/images/6e23e4971ee146e719fb1abcb1d67d59.png" />
+                    </div>
+                    <div class="ph-install-step ph-installinstructions-step4-of4">
+                        <h1>4</h1>
+                        <p class="larger-font-size">After installation, click <strong>Play</strong> below to join the
+                            action!</p>
+                        <div class="VisitButton VisitButtonContinueGLI">
+                            <a class="btn btn-primary-lg disabled">Play</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="xsmall">
+                The ROBLOX installer should download shortly. If it doesn’t, start the <a href="#" class="text-link"
+                    onclick="Roblox.ProtocolHandlerClientInterface.startDownload(); return false;">download now.</a>
+            </div>
+        </div>
+    </div>
+    <div class="InstallInstructionsImage" data-modalwidth="970" style="display:none;"></div>
+
+
+    <div id="pluginObjDiv" style="height:1px;width:1px;visibility:hidden;position: absolute;top: 0;"></div>
+    <iframe id="downloadInstallerIFrame" name="downloadInstallerIFrame"
+        style="visibility:hidden;height:0;width:1px;position:absolute"></iframe>
+
+    <script type='text/javascript' src='https://js.roblox.com/fbdb5b64583278a8513645a997a89a3c.js'></script>
+
+    <script type="text/javascript">
+        Roblox.Client._skip = '/install/unsupported.aspx';
+        Roblox.Client._CLSID = '';
+        Roblox.Client._installHost = '';
+        Roblox.Client.ImplementsProxy = false;
+        Roblox.Client._silentModeEnabled = false;
+        Roblox.Client._bringAppToFrontEnabled = false;
+        Roblox.Client._currentPluginVersion = '';
+        Roblox.Client._eventStreamLoggingEnabled = false;
+
+
+        Roblox.Client._installSuccess = function () {
+            if (GoogleAnalyticsEvents) {
+                GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
+                GoogleAnalyticsEvents.FireEvent(['Plugin', 'Install Success']);
+                if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
+                    Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
+                }
+            }
+        }
+
+
+        if ((window.chrome || window.safari) && window.location.hash == '#chromeInstall') {
+            window.location.hash = '';
+            var continuation = '(' + $.cookie('chromeInstall') + ')';
+            play_placeId = $.cookie('chromeInstallPlaceId');
+            Roblox.GamePlayEvents.lastContext = $.cookie('chromeInstallLaunchMode');
+            $.cookie('chromeInstallPlaceId', null);
+            $.cookie('chromeInstallLaunchMode', null);
+            $.cookie('chromeInstall', null);
+            RobloxLaunch._GoogleAnalyticsCallback = function () {
+                var isInsideRobloxIDE = 'website';
+                if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) {
+                    isInsideRobloxIDE = 'Studio';
+                };
+                GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);
+                GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);
+                EventTracker.fireEvent('GameLaunchAttempt_Unknown', 'GameLaunchAttempt_Unknown_Plugin');
+                if (typeof Roblox.GamePlayEvents != 'undefined') {
+                    Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId);
+                }
+            };
+            Roblox.Client.ResumeTimer(eval(continuation));
+        }
+    </script>
+
+
+
+    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation"
+        style="display:none;">
+        <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+        <div class="Title"></div>
+        <div class="GenericModalBody">
+            <div class="TopBody">
+                <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays data-no-click>
+                    <img class="GenericModalImage" alt="generic image" />
+                </div>
+                <div class="Message"></div>
+            </div>
+            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+                <a href id="roblox-confirm-btn"><span></span></a>
+                <a href id="roblox-decline-btn"><span></span></a>
+            </div>
+            <div class="ConfirmationModalFooter">
+
+            </div>
+        </div>
+        <script type="text/javascript">
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+
+            Roblox.Resources.GenericConfirmation = {
+                yes: "Yes",
+                No: "No",
+                Confirm: "Confirm",
+                Cancel: "Cancel"
+            };
+        </script>
+    </div>
+
+    <script>
+        $(function() {
+            var universeId = $("#universe-configure").data("universeid");
+            var configurePlaceUrl = $("#universe-configure").data("configureplaceurl");   
+            if (universeId && configurePlaceUrl) {
+                $.ajax({
+                    url: configurePlaceUrl,
+                    data: { universeId: universeId },
+                    success: function(response) {
+                        $("#places").html(response);
+                        $("[data-retry-url]").loadRobloxThumbnails();
+                    },
+                    cache: false
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

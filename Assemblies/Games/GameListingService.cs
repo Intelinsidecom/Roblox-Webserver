@@ -39,12 +39,12 @@ public static class GameListingService
 
         const string sql = @"select u.universe_id,
        u.name as universe_name,
-       u.place_ids[1] as root_place_id,
+       u.root_place_id,
        a.name as place_name,
        COALESCE(a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
-       a.privacy_level
+       COALESCE(u.privacy_level, 3) as privacy_level
 from universes u
-left join assets a on a.asset_id = u.place_ids[1]
+left join assets a on a.asset_id = u.root_place_id
 where u.creator_user_id = @uid
 order by u.created_at desc, u.universe_id desc;";
 
@@ -58,7 +58,7 @@ order by u.created_at desc, u.universe_id desc;";
             var universeId = reader.GetInt64(0);
             var universeName = reader.IsDBNull(1) ? "Unnamed Game" : reader.GetString(1);
             var rootPlaceId = reader.IsDBNull(2) ? 0L : reader.GetInt64(2);
-            var placeName = reader.IsDBNull(3) ? universeName : reader.GetString(3);
+            var placeName = rootPlaceId > 0 && !reader.IsDBNull(3) ? reader.GetString(3) : "";
             var thumbUrl = reader.IsDBNull(4) ? null : reader.GetString(4);
             var privacyLevel = reader.IsDBNull(5) ? (short)1 : reader.GetInt16(5);
 

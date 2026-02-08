@@ -56,7 +56,7 @@
 
 .StandardTabGrayActive,
 .StandardTabGray:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/tab_white_31h_t1.png) no-repeat left top;
+	background: url(/images/cssspecific/rbx2/tab_white_31h_t1.png) no-repeat left top;
 	background-position: left 0;
 	height: 31px;
 	padding: 0;
@@ -70,7 +70,7 @@
 }
 
 .StandardTabGrayActive span {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/tab_white_31h_t2.png) no-repeat right top;
+	background: url(/images/cssspecific/rbx2/tab_white_31h_t2.png) no-repeat right top;
 	background-position: right 0;
 	height: 25px;
 	padding: 6px 16px 0 8px;
@@ -88,7 +88,7 @@
 .StandardBox {
 	padding: 5px;
 	margin-bottom: 8px;
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/standardBox_01_bkg.png) top repeat-x #fff;
+	background: url(/images/cssspecific/rbx2/standardBox_01_bkg.png) top repeat-x #fff;
 	border: 1px solid #aaa;
 	z-index: 0;
 }
@@ -98,7 +98,7 @@
 	padding: 0 7px 0 5px;
 	text-align: left;
 	z-index: 2;
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/tab_black_33h_t1.png) no-repeat left top;
+	background: url(/images/cssspecific/rbx2/tab_black_33h_t1.png) no-repeat left top;
 	font-size: 20px;
 	font-weight: bold;
 	color: #fff;
@@ -110,7 +110,7 @@
 	width: 100%;
 	height: 29px;
 	padding: 5px 5px 0 2px;
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/cssspecific/rbx2/tab_black_33h_t2.png) no-repeat right top;
+	background: url(/images/cssspecific/rbx2/tab_black_33h_t2.png) no-repeat right top;
 	overflow: hidden;
 }
 

@@ -92,8 +92,9 @@ namespace Assets
         public bool PaidAccessEnabled { get; set; } = false; // Paid access enabled setting
         public int PaidAccessPrice { get; set; } = 0; // Paid access price setting
         public bool IsCopyingAllowed { get; set; } = false; // Allow copying setting
-        public bool IsAllGenresAllowed { get; set; } = false; // Allow all genres setting
-        public string? AllowedGearTypes { get; set; } = "[]"; // Allowed gear types JSON array
+        public bool IsPlace { get; set; } = false; // Whether this asset is a place
+        public bool InUniverse { get; set; } = false; // Whether this place is in a universe
+        public bool AllowPlaceToBeUpdatedInGame { get; set; } = false; // Allow place to be updated in game
     }
 
     public sealed class AssetsRepository
@@ -139,7 +140,9 @@ namespace Assets
     place_custom_icon_hash,
     generated_icon,
     place_generated_icon_url,
-    place_generated_icon_hash
+    place_generated_icon_hash,
+    is_place,
+    in_universe
 ) values (
     @name,
     @asset_type_id,
@@ -157,7 +160,9 @@ namespace Assets
     @place_custom_icon_hash,
     @generated_icon,
     @place_generated_icon_url,
-    @place_generated_icon_hash
+    @place_generated_icon_hash,
+    @is_place,
+    @in_universe
 ) returning asset_id;";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -178,6 +183,8 @@ namespace Assets
             cmd.Parameters.AddWithValue("generated_icon", p.GeneratedIcon);
             cmd.Parameters.AddWithValue("place_generated_icon_url", (object?)p.PlaceGeneratedIconUrl ?? DBNull.Value);
             cmd.Parameters.AddWithValue("place_generated_icon_hash", (object?)p.PlaceGeneratedIconHash ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("is_place", p.IsPlace);
+            cmd.Parameters.AddWithValue("in_universe", p.InUniverse);
 
             var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             if (result == null || result == DBNull.Value)

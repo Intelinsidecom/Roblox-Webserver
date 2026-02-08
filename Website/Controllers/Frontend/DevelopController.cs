@@ -87,11 +87,21 @@ namespace RobloxWebserver.Controllers
                     // place-active (public) vs place-inactive (friends/private).
                     var privacyClass = universe.PrivacyLevel == 1 ? "place-active" : "place-inactive";
 
-                    var placeSlug = CatalogController.ToSlug(universe.PlaceName);
                     var configureUrl = "/universes/configure?id=" + universe.UniverseId;
-                    var startPlaceUrl = universe.RootPlaceId > 0
-                        ? "/games/" + universe.RootPlaceId + "/" + placeSlug
-                        : "#";
+                    
+                    // Only show start place info if there's actually a root place set
+                    string startPlaceUrl, startPlaceDisplay;
+                    if (universe.RootPlaceId > 0 && !string.IsNullOrEmpty(universe.PlaceName))
+                    {
+                        var placeSlug = CatalogController.ToSlug(universe.PlaceName);
+                        startPlaceUrl = "/games/" + universe.RootPlaceId + "/" + placeSlug;
+                        startPlaceDisplay = System.Net.WebUtility.HtmlEncode(universe.PlaceName);
+                    }
+                    else
+                    {
+                        startPlaceUrl = "#";
+                        startPlaceDisplay = "";
+                    }
 
                     sb.Append("    <table class='item-table' data-item-id='");
                     sb.Append(universe.UniverseId);
@@ -123,7 +133,7 @@ namespace RobloxWebserver.Controllers
                     sb.Append("                            <a class='title notranslate start-place-url' href='");
                     sb.Append(startPlaceUrl);
                     sb.Append("'>");
-                    sb.Append(System.Net.WebUtility.HtmlEncode(universe.PlaceName));
+                    sb.Append(startPlaceDisplay);
                     sb.Append("</a>");
                     sb.Append("                        </td>");
                     sb.Append("                    </tr>");

@@ -63,12 +63,18 @@ public static class GamesRepository
 
         const string sql = @"SELECT universe_id 
                                FROM universes 
-                               WHERE @placeId = ANY(place_ids)";
+                               WHERE @placeId = ANY(place_ids) 
+                               OR root_place_id = @placeId";
+
+        Console.WriteLine($"DEBUG: GetUniverseIdFromPlaceIdAsync - Looking for place {placeId}");
+        Console.WriteLine($"DEBUG: SQL: {sql}");
 
         using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("placeId", placeId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        
+        Console.WriteLine($"DEBUG: Query result: {result}");
         
         if (result == null || result == DBNull.Value)
             return null;
@@ -224,5 +230,44 @@ public static class GamesRepository
             return null;
             
         return Convert.ToInt64(result);
+    }
+
+    public static async Task<UniverseInfo?> GetUniverseAsync(string connectionString, long universeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT universe_id, name, creator_user_id, place_ids, privacy_level, Studio_Access_To_APIs, root_place_id 
+                               FROM universes 
+                               WHERE universe_id = @universeId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        
+        if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var placeIds = reader.GetFieldValue<long[]>(3);
+            var rootPlaceId = !reader.IsDBNull(6) ? reader.GetInt64(6) : (placeIds.Length > 0 ? placeIds[0] : 0);
+            
+            return new UniverseInfo
+            {
+                UniverseId = reader.GetInt64(0),
+                Name = reader.GetString(1),
+                CreatorUserId = reader.GetInt64(2),
+                RootPlaceId = rootPlaceId,
+                PrivacyLevel = reader.IsDBNull(4) ? 1 : reader.GetInt16(4), // Default to Public if null
+                Studio_Access_To_APIs = reader.IsDBNull(5) ? false : reader.GetBoolean(5), // Default to false if null
+                Description = null // Description not in database schema yet
+            };
+        }
+        
+        return null;
     }
 }

@@ -2,14 +2,14 @@
 .MakeTradeButton,
 .MakeTradeButton:hover,
 .MakeTradeButton.disabled {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/buttons/btn-make_trade.png) top;
+	background: url(/images/buttons/btn-make_trade.png) top;
 	height: 50px;
 	width: 179px;
 	margin: 0 auto;
 }
 
 .MakeTradeButton:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/buttons/btn-make_trade.png) bottom;
+	background: url(/images/buttons/btn-make_trade.png) bottom;
 	cursor: pointer;
 }
 
@@ -25,23 +25,23 @@
 
 #ButtonYes,
 #ButtonYes:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/yes-gray2.png) top;
+	background: url(/images/Buttons/yes-gray2.png) top;
 	margin-right: 10px;
 	width: 100px;
 }
 
 #ButtonYes:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/yes-gray2.png) bottom;
+	background: url(/images/Buttons/yes-gray2.png) bottom;
 }
 
 #ButtonCancel,
 #ButtonCancel:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/cancel-blue2.png) top;
+	background: url(/images/Buttons/cancel-blue2.png) top;
 	width: 101px;
 }
 
 #ButtonCancel:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/cancel-blue2.png) bottom;
+	background: url(/images/Buttons/cancel-blue2.png) bottom;
 }
 
 .InventoryItemContainerInner {
@@ -260,7 +260,7 @@ div.TradeItemSilverButtonContainer,
 a.TradeItemSilverButton,
 a.TradeItemSilverButton:hover,
 a.TradeItemSilverButtonDisabled {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/btn-small_silver_tile.png) repeat-x top;
+	background: url(/images/Buttons/btn-small_silver_tile.png) repeat-x top;
 	border: 1px solid #a7a7a7;
 	color: #000;
 	display: block;
@@ -285,7 +285,7 @@ a.TradeItemSilverButtonDisabled {
 
 .SendTrade,
 .SendTrade:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/sendTrade2.png) top;
+	background: url(/images/Buttons/sendTrade2.png) top;
 	cursor: pointer;
 	height: 50px;
 	width: 176px;
@@ -293,7 +293,7 @@ a.TradeItemSilverButtonDisabled {
 }
 
 .SendTrade:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/sendTrade2.png) bottom;
+	background: url(/images/Buttons/sendTrade2.png) bottom;
 }
 
 .TradeDivider {
@@ -355,12 +355,12 @@ a.TradeItemSilverButtonDisabled {
 .MissingItem {
 	height: 80px;
 	width: 60px;
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/missing_user_asset.png) no-repeat;
+	background: url(/images/missing_user_asset.png) no-repeat;
 	margin: 5px auto;
 }
 
 .MissingItem.Deleted {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/deleted_user_asset.png) no-repeat;
+	background: url(/images/deleted_user_asset.png) no-repeat;
 }
 
 .RBXImg {
@@ -391,7 +391,7 @@ a.TradeItemSilverButtonDisabled {
 
 .OpenTradeButton,
 .OpenTradeButton:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/tradeItems.png) top;
+	background: url(/images/Buttons/tradeItems.png) top;
 	cursor: pointer;
 	float: right;
 	height: 23px;
@@ -400,7 +400,7 @@ a.TradeItemSilverButtonDisabled {
 }
 
 .OpenTradeButton:hover {
-	background: url(/web/20160429201715im_/https://static.rbxcdn.com/images/Buttons/tradeItems.png) bottom;
+	background: url(/images/Buttons/tradeItems.png) bottom;
 }
 
 #ButtonAcceptTrade,
@@ -659,7 +659,7 @@ a.ViewTradeLink,
 .paging_next {
 	height: 24px;
 	width: 24px;
-	background: url('/web/20160429201715im_/https://static.rbxcdn.com/images/Sets/blue_arrow_btns_sprite.png');
+	background: url('/images/Sets/blue_arrow_btns_sprite.png');
 	background-position: left top;
 	display: inline-block;
 }

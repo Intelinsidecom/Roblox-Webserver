@@ -1,4 +1,25 @@
 /* ~/CSS/Pages/Build/Develop.css */
+
+@media (max-width: 991px) {
+    .body-width h1 {
+        margin-top: 50px !important;
+    }
+    
+    #DevelopTabs {
+        margin-top: 50px !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+    }
+    
+    .BuildPageContent,
+    #build-page {
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+    }
+}
+
+
+
 .icon-default-games,
 .icon-inventory,
 .icon-games,

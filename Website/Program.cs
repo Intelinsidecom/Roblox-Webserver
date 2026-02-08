@@ -187,10 +187,12 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Pages routing: placed AFTER default so specific controllers (e.g., /login/v1) win first
+// Exclude static file extensions from catch-all route
 app.MapControllerRoute(
     name: "pages",
     pattern: "{*path}",
-    defaults: new { controller = "Pages", action = "Route" }
+    defaults: new { controller = "Pages", action = "Route" },
+    constraints: new { path = @"^(?!.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|gz|download)$).*" }
 );
 
 app.Run();

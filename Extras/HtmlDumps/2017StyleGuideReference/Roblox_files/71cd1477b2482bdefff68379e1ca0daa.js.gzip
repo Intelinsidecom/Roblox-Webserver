@@ -1,0 +1,32 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+/* Bundle: page_splitApps___058b2e0ad5b05bc8544c0e004aa36388_m */"use strict"; angular.module("pageTemplateApp", []).run(['$templateCache', function($templateCache) { $templateCache.put("file-upload-widget", "<input type=file name=file class=\"hidden file-upload-elem\"> <button type=button class=\"btn-control-md btn-action file-btn\">Choose File</button> <span class=file-name-container ng-if=\"fileUpload.name.length&lt;1\">No File Chosen</span> <span class=\"file-name-container text-overflow\" ng-if=\"fileUpload.name.length>0\" ng-bind=fileUpload.name></span><div class=text-error ng-show=fileUpload.isFileInvalid>Invalid file type. Must be a<span ng-repeat=\"fileType in fileUpload.allowedFileTypes\">{{$last?'or':''}}&nbsp;{{fileType}}{{$last?' ':', '}}</span>file.</div>"); }]);
+}
+
+/*
+     FILE ARCHIVED ON 00:12:46 Sep 21, 2017 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 20:02:53 Jan 30, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 1.968
+  exclusion.robots: 0.05
+  exclusion.robots.policy: 0.02
+  esindex: 0.021
+  cdx.remote: 70.838
+  LoadShardBlock: 102.614 (3)
+  PetaboxLoader3.datanode: 176.469 (4)
+  load_resource: 195.461
+  PetaboxLoader3.resolve: 114.734
+*/

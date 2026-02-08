@@ -182,8 +182,8 @@ public static class GameCreationService
         const int placeAssetTypeId = 9;
 
         const string insertPlaceSql = @"insert into assets
-(name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, is_place, privacy_level, custom_icon, place_custom_icon_url, place_custom_icon_hash, generated_icon, place_generated_icon_url, place_generated_icon_hash)
-values (@name, @assetTypeId, @ownerUserId, @contentHash, @fileExtension, @contentType, null, @isPlace, @privacyLevel, @customIcon, @placeCustomIconUrl, @placeCustomIconHash, @generatedIcon, @placeGeneratedIconUrl, @placeGeneratedIconHash)
+(name, asset_type_id, owner_user_id, content_hash, file_extension, content_type, thumbnail_url, is_place, privacy_level, custom_icon, place_custom_icon_url, place_custom_icon_hash, generated_icon, place_generated_icon_url, place_generated_icon_hash, in_universe)
+values (@name, @assetTypeId, @ownerUserId, @contentHash, @fileExtension, @contentType, null, @isPlace, @privacyLevel, @customIcon, @placeCustomIconUrl, @placeCustomIconHash, @generatedIcon, @placeGeneratedIconUrl, @placeGeneratedIconHash, @inUniverse)
 returning asset_id;";
 
         using (var cmd = new NpgsqlCommand(insertPlaceSql, conn, (NpgsqlTransaction)tx))
@@ -204,6 +204,8 @@ returning asset_id;";
             cmd.Parameters.AddWithValue("generatedIcon", true);
             cmd.Parameters.AddWithValue("placeGeneratedIconUrl", (object?)null ?? DBNull.Value);
             cmd.Parameters.AddWithValue("placeGeneratedIconHash", (object?)null ?? DBNull.Value);
+            // Set in_universe to true since this place is being created as part of a universe
+            cmd.Parameters.AddWithValue("inUniverse", true);
 
             var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             rootPlaceId = (long)(obj ?? 0L);
@@ -214,8 +216,8 @@ returning asset_id;";
 
         long universeId;
         const string insertUniverseSql = @"insert into universes
-(name, creator_user_id, place_ids)
-values (@name, @creatorUserId, array[ @rootPlaceId ]::bigint[])
+(name, creator_user_id, place_ids, root_place_id)
+values (@name, @creatorUserId, array[ @rootPlaceId ]::bigint[], @rootPlaceId)
 returning universe_id;";
 
         using (var cmd = new NpgsqlCommand(insertUniverseSql, conn, (NpgsqlTransaction)tx))

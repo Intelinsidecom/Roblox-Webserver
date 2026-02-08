@@ -42,9 +42,9 @@
             });
         });
         
-        function loadDeveloperProductData(productId) {
+        function loadDeveloperProductData(productId) { 
             $.ajax({
-                url: '/places/@gameid/developer-products/' + productId + '/data',
+                url: '/universes/@gameid/developer-products/' + productId + '/data',
                 type: 'GET',
                 success: function(product) {
                     if (product) {
@@ -70,7 +70,7 @@
         function loadExistingImage(imageAssetId) {
             // Use the new API to get the product image URL
             $.ajax({
-                url: '/places/@gameid/developer-products/image/' + imageAssetId,
+                url: '/universes/@gameid/developer-products/image/' + imageAssetId,
                 type: 'GET',
                 success: function(response) {
                     if (response.success && response.imageUrl) {
@@ -132,28 +132,28 @@
                 <div class="form-row" style="margin-top: 15px;">
                     <label for="DeveloperProductName" class="form-label">Name:</label>
                     <br />
-                    <input autofocus="" class="text-box text-box-medium universe-input" id="DeveloperProductName" maxlength="50" name="DeveloperProductName" type="text" value="" validation-url="/places/@gameid/developer-products/validate-name" invalid="false" />
+                    <input autofocus="" class="text-box text-box-medium universe-input" id="DeveloperProductName" maxlength="50" name="DeveloperProductName" type="text" value="@ViewBag.ProductName" validation-url="/universes/@gameid/developer-products/validate-name" invalid="false" />
                     <div id="NameValidation" class="validationMessage" style="display: none;"></div>
                 </div>
                 
                 <div class="form-row">
                     <label for="DeveloperProductDescription" class="form-label">Description:</label>
                     <br />
-                    <textarea class="text-box text-area-medium universe-input" cols="80" id="DeveloperProductDescription" maxlength="1000" name="DeveloperProductDescription" rows="6"></textarea>
+                    <textarea class="text-box text-area-medium universe-input" cols="80" id="DeveloperProductDescription" maxlength="1000" name="DeveloperProductDescription" rows="6">@ViewBag.ProductDescription</textarea>
                     <div id="DescriptionValidation" class="validationMessage" style="display: none;"></div>
                 </div>
                 
                 <div class="form-row">
                     <label for="DeveloperProductPriceInRobux" class="form-label" style="margin-top: 3px;">Price In Robux:</label>
                     <br />
-                    <input class="text-box text-area-medium" type="number" id="DeveloperProductPriceInRobux" name="DeveloperProductPriceInRobux" min="0" max="1000000000" value="" style="width: 85px;" />
+                    <input class="text-box text-area-medium" type="number" id="DeveloperProductPriceInRobux" name="DeveloperProductPriceInRobux" min="0" max="1000000000" value="@ViewBag.PriceInRobux" style="width: 85px;" />
                     <div id="RobuxValidation" class="validationMessage" style="display: none;"></div>
                 </div>
                 
                 <div class="form-row">
                     <label for="DeveloperProductPriceInTix" class="form-label" style="margin-top: 10px;">Price In Tickets:</label>
                     <br />
-                    <input class="text-box text-area-medium" type="number" id="DeveloperProductPriceInTix" name="DeveloperProductPriceInTix" min="0" max="1000000000" value="" style="width: 85px;" />
+                    <input class="text-box text-area-medium" type="number" id="DeveloperProductPriceInTix" name="DeveloperProductPriceInTix" min="0" max="1000000000" value="@ViewBag.PriceInTix" style="width: 85px;" />
                     <div id="TixValidation" class="validationMessage" style="display: none;"></div>
                 </div>
                 
@@ -168,18 +168,18 @@
                     <iframe id="ImageDisplayIframe" name="ImageDisplayIframe" style="width: 100px; height: 100px; border: 1px solid black;"></iframe>
                 </div>
                 
-                <form id="ImageUploadForm" action="/places/@gameid/developer-products/upload-image" method="post" enctype="multipart/form-data" target="ImageUploaderIframe" style="display: none;">
+                <form id="ImageUploadForm" action="/universes/@gameid/developer-products/upload-image" method="post" enctype="multipart/form-data" target="ImageUploaderIframe" style="display: none;">
                     <input type="file" name="image" />
                 </form>
                 <iframe id="ImageUploaderIframe" name="ImageUploaderIframe" style="display: none;"></iframe>
                 
                 <input type="hidden" id="DeveloperProductUniverseID" name="DeveloperProductUniverseID" value="@ViewBag.PlaceUniverseId" />
-                <input type="hidden" id="DeveloperProductID" name="DeveloperProductID" value="" />
-                <input type="hidden" id="DeveloperProductIconId" name="DeveloperProductIconId" value="" uploaded="false" />
+                <input type="hidden" id="DeveloperProductID" name="DeveloperProductID" value="@ViewBag.DeveloperProductId" />
+                <input type="hidden" id="DeveloperProductIconId" name="DeveloperProductIconId" value="@ViewBag.ImageAssetId" uploaded="false" />
                 
                 <div class="universe-buttons">
-                    <a href="#" class="btn-small btn-neutral developer-product-button" data-form-post-url="/places/@gameid/developer-products/create" data-url="/places/@gameid/developer-products/@ViewBag.DeveloperProductId/configure">Save</a>
-                    <a href="/places/@gameid/developer-products" class="btn-small btn-negative cancel-button" data-url="/places/@gameid/developer-products">Cancel</a>
+                    <a href="#" class="btn-small btn-neutral developer-product-button" data-form-post-url="/universes/@gameid/developer-products/create" data-url="/universes/@gameid/developer-products/@ViewBag.DeveloperProductId/configure">Save</a>
+                    <a href="/universes/@gameid/developer-products" class="btn-small btn-negative cancel-button" data-url="/universes/@gameid/developer-products">Cancel</a>
                 </div>
             </div>
         </div>
