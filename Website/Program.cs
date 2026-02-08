@@ -13,7 +13,6 @@ using RobloxWebserver.Assemblies.Catalog;
 using Assets;
 using Website.Services;
 using Website.Middleware;
-using RobloxWebserver.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -163,6 +162,8 @@ app.Use(async (context, next) =>
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<PageErrorRedirectMiddleware>();
 
 app.MapControllers();
 
