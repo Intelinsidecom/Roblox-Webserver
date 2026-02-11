@@ -1,0 +1,33 @@
+/* ~/CSS/Pages/Widgets/ContactUpsell.css */
+.contact-upsell-modal-body .password-form-group {
+    margin-bottom: 0;
+}
+
+.contact-upsell-modal-body .form-control-label {
+    height: 18px;
+    margin-top: 0;
+    color: #E27676;
+}
+
+.robot-img {
+    background-repeat: no-repeat;
+    background-size: 140px 140px;
+    background-position-x: 50%;
+    height: 140px;
+}
+
+.robot-email-img {
+    background-image: url("/images/Login/robot-email.png");
+}
+
+.robot-phone-img {
+    background-image: url("/images/Login/robot-phone.png");
+}
+
+.upsell-footer {
+    margin-top: 12px;
+}
+
+.upsell-footer .text-link {
+    cursor: pointer;
+}

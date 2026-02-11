@@ -466,14 +466,14 @@ namespace Games
                 if (rootPlaceAsset != null)
                 {
                     var placeName = string.IsNullOrEmpty(rootPlaceAsset.Name) ? "Unnamed Place" : rootPlaceAsset.Name;
-                    var thumbnailUrl = $"/game-thumbnails/json?assetId={rootPlaceId.Value}&width=160&height=100&format=jpeg";
+                    var thumbnailUrl = $"/game-thumbnails/image?assetId={rootPlaceId.Value}&width=160&height=100&format=jpeg";
 
                     htmlBuilder.Append(@$"
                     <div class=""start-place-content"" style=""display: block;"">
                         <div class=""universe-place-container"">
                             <div class=""universe-place-thumb"">
                                 <a href=""/places/{rootPlaceId.Value}/update"" class=""universe-place"">
-                                    <div data-retry-url='{thumbnailUrl}' style='width: 160px; height: 100px; overflow: hidden;'>
+                                    <div data-retry-url='/game-thumbnails/json?assetId={rootPlaceId.Value}&width=160&height=100&format=jpeg' style='width: 160px; height: 100px; overflow: hidden;'>
                                         <img class='universe-place-image' 
                                              style='width: 160px; height: 100px; object-fit: cover; display: block;'
                                              src='/images/ec5c01d220bf1b73403fa51519267742.gif' alt=""Place thumbnail"" />

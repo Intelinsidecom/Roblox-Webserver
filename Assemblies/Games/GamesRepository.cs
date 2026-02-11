@@ -66,15 +66,10 @@ public static class GamesRepository
                                WHERE @placeId = ANY(place_ids) 
                                OR root_place_id = @placeId";
 
-        Console.WriteLine($"DEBUG: GetUniverseIdFromPlaceIdAsync - Looking for place {placeId}");
-        Console.WriteLine($"DEBUG: SQL: {sql}");
 
         using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("placeId", placeId);
-
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
-        
-        Console.WriteLine($"DEBUG: Query result: {result}");
         
         if (result == null || result == DBNull.Value)
             return null;

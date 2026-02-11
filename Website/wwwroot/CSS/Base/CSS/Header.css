@@ -1,4 +1,5 @@
 /* ~/CSS/Base/CSS/Header.css */
+
 div#testingSitePanelWrapper,
 #BodyWrapper {
 	margin: 0 auto;
@@ -6,9 +7,13 @@ div#testingSitePanelWrapper,
 	background: white;
 }
 
+
+
 .rbx-navbar-login-container {
 	position: relative;
 }
+
+
 
 #iFrameLogin {
 	position: fixed;

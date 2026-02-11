@@ -1,0 +1,795 @@
+/* ~/CSS/PartialViews/CardItem.css */
+.form-inline {
+    position: static;
+}
+
+.icon-default-thumbs-16x16,
+.icon-thumbs-up,
+.icon-thumbs-down {
+    background-image: url(/images/Icons/thumbs.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-thumbs-up {
+    background-position: 0 0;
+}
+
+.icon-thumbs-up:hover {
+    background-position: -16px 0;
+}
+
+button:hover .icon-thumbs-up,
+a:hover .icon-thumbs-up {
+    background-position: -16px 0;
+}
+
+.icon-thumbs-down {
+    background-position: 0 -16px;
+}
+
+.icon-thumbs-down:hover {
+    background-position: -16px -16px;
+}
+
+button:hover .icon-thumbs-down,
+a:hover .icon-thumbs-down {
+    background-position: -16px -16px;
+}
+
+.icon-default-games,
+.icon-inventory,
+.icon-games,
+.icon-catalog,
+.icon-like,
+.icon-like.selected,
+.icon-dislike,
+.icon-dislike.selected,
+.icon-playaudio,
+.icon-copylocked,
+.icon-nocopylocked,
+.icon-publicserver,
+.icon-privateserver,
+.icon-allgears,
+.icon-partialgears,
+.icon-nogear,
+.icon-Melee,
+.icon-Ranged,
+.icon-PowerUp,
+.icon-Explosive,
+.icon-Musical,
+.icon-Navigation,
+.icon-Building,
+.icon-Social,
+.icon-Transport,
+.icon-experimental-white,
+.icon-experimental-gray2,
+.icon-experimental-gray1,
+.icon-experimental-black,
+.icon-share-game-to-chat {
+    background-image: url(/images/Shared/games_11272017.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-default-games-16x16,
+.icon-like-gray-16x16,
+.icon-like-gray-16x16.selected,
+.icon-dislike-gray-16x16,
+.icon-dislike-gray-16x16.selected {
+    background-image: url(/images/Shared/games_11272017.svg);
+    background-repeat: no-repeat;
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-inventory {
+    background-position: 0 0;
+}
+
+.icon-games {
+    background-position: 0 -28px;
+}
+
+.icon-catalog {
+    background-position: 0 -56px;
+}
+
+.icon-like {
+    background-position: 0 -84px;
+}
+
+.icon-like:hover {
+    background-position: -28px -84px;
+}
+
+button:hover .icon-like,
+a:hover .icon-like {
+    background-position: -28px -84px;
+}
+
+.icon-like.selected {
+    background-position: -28px -84px;
+}
+
+.icon-dislike {
+    background-position: 0 -112px;
+}
+
+.icon-dislike:hover {
+    background-position: -28px -112px;
+}
+
+button:hover .icon-dislike,
+a:hover .icon-dislike {
+    background-position: -28px -112px;
+}
+
+.icon-dislike.selected {
+    background-position: -28px -112px;
+}
+
+.icon-playaudio {
+    background-position: 0 -140px;
+}
+
+.icon-copylocked {
+    background-position: 0 -168px;
+}
+
+.icon-nocopylocked {
+    background-position: 0 -196px;
+}
+
+.icon-publicserver {
+    background-position: 0 -224px;
+}
+
+.icon-privateserver {
+    background-position: 0 -252px;
+}
+
+.icon-allgears {
+    background-position: 0 -280px;
+}
+
+.icon-partialgears {
+    background-position: 0 -308px;
+}
+
+.icon-nogear {
+    background-position: 0 -336px;
+}
+
+.icon-Melee {
+    background-position: 0 -364px;
+}
+
+.icon-Ranged {
+    background-position: 0 -392px;
+}
+
+.icon-PowerUp {
+    background-position: 0 -420px;
+}
+
+.icon-Explosive {
+    background-position: 0 -448px;
+}
+
+.icon-Musical {
+    background-position: 0 -476px;
+}
+
+.icon-Navigation {
+    background-position: 0 -504px;
+}
+
+.icon-Building {
+    background-position: 0 -532px;
+}
+
+.icon-Social {
+    background-position: 0 -560px;
+}
+
+.icon-Transport {
+    background-position: 0 -588px;
+}
+
+.icon-like-gray-16x16 {
+    background-position: 0 -352px;
+}
+
+.icon-like-gray-16x16:hover {
+    background-position: -16px -352px;
+}
+
+button:hover .icon-like-gray-16x16,
+a:hover .icon-like-gray-16x16 {
+    background-position: -16px -352px;
+}
+
+.icon-like-gray-16x16.selected {
+    background-position: -16px -352px;
+}
+
+.icon-dislike-gray-16x16 {
+    background-position: 0 -368px;
+}
+
+.icon-dislike-gray-16x16:hover {
+    background-position: -16px -368px;
+}
+
+button:hover .icon-dislike-gray-16x16,
+a:hover .icon-dislike-gray-16x16 {
+    background-position: -16px -368px;
+}
+
+.icon-dislike-gray-16x16.selected {
+    background-position: -16px -368px;
+}
+
+.icon-experimental-white {
+    background-position: 0 -672px;
+}
+
+.icon-experimental-gray2 {
+    background-position: -28px -672px;
+}
+
+.icon-experimental-gray1 {
+    background-position: 0 -700px;
+}
+
+.icon-experimental-black {
+    background-position: -28px -700px;
+}
+
+.icon-share-game-to-chat {
+    background-position: 0 -784px;
+}
+
+.game-cards {
+    white-space: nowrap;
+}
+
+.game-cards .game-card {
+    float: none;
+    width: 161px;
+    height: 223px;
+    padding: 0 11px 0 0;
+    display: inline-block;
+    margin-bottom: 12px;
+    vertical-align: top;
+    white-space: normal;
+}
+
+@media(max-width:543px) {
+    .game-cards .game-card {
+        width: 102px;
+        height: 143px;
+        padding: 0;
+    }
+}
+
+.game-card-container {
+    background-color: #fff;
+    position: relative;
+    box-shadow: 0 1px 4px 0 rgba(25, 25, 25, 0.3);
+    border-radius: 3px;
+    float: left;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+}
+
+.game-card-container:hover {
+    -webkit-transition: box-shadow 200ms ease;
+    -o-transition: box-shadow 200ms ease;
+    transition: box-shadow 200ms ease;
+    box-shadow: 0 1px 6px 0 rgba(25, 25, 25, 0.75);
+}
+
+.game-card-container.card-plain {
+    border: 1px solid #B8B8B8;
+    box-shadow: none;
+}
+
+.game-card-container.card-plain:hover {
+    box-shadow: none;
+}
+
+@media(max-width:543px) {
+    .game-card-container {
+        width: 90px;
+        width: calc(100% - 12px);
+    }
+}
+
+.game-card-container:hover {
+    height: auto;
+    z-index: 1000;
+}
+
+.game-card-container:hover .game-card-experimental.game-is-experimental {
+    display: none;
+}
+
+.game-card-container:hover .game-card-footer>.game-card-experimental.game-is-experimental {
+    display: block;
+}
+
+.game-card-container:hover .game-card-vote.game-is-experimental {
+    display: block;
+}
+
+@media(max-width:543px) {
+    .game-card-container:hover .icon-like-gray-16x16 {
+        background-position: -12px -264px;
+        background-size: 24px auto;
+        width: 12px;
+        height: 12px;
+    }
+
+    .game-card-container:hover .icon-dislike-gray-16x16 {
+        background-position: -12px -276px;
+        background-size: 24px auto;
+        width: 12px;
+        height: 12px;
+    }
+}
+
+.game-card-container:hover .vote-thumbs-down {
+    visibility: visible;
+}
+
+.game-card-container:hover .vote-container .vote-background {
+    background-color: #E27676;
+    opacity: .6;
+}
+
+.game-card-container:hover .vote-container .vote-background.no-votes {
+    background-color: #757575;
+}
+
+.game-card-container:hover .vote-container .vote-percentage {
+    background-color: #02b757;
+}
+
+.game-card-container:hover .vote-counts,
+.game-card-container:hover .game-card-footer {
+    display: block;
+    float: left;
+}
+
+.game-card-thumb-container {
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    position: relative;
+    height: 150px;
+    width: 150px;
+    display: inline-block;
+}
+
+@media(max-width:543px) {
+    .game-card-thumb-container {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.game-card-thumb-container .game-card-thumb {
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    height: 150px;
+    width: 150px;
+    overflow: hidden;
+    display: inline-block;
+    margin: auto;
+}
+
+@media(max-width:543px) {
+    .game-card-thumb-container .game-card-thumb {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.game-card-name,
+.game-card-name-secondary,
+.game-card-vote,
+.game-card-experimental {
+    width: 100%;
+    padding: 0 6px;
+    margin: 3px 0;
+}
+
+.game-card-name {
+    margin-top: 6px;
+}
+
+@media(max-width:543px) {
+    .game-card-name {
+        font-size: 12px;
+        font-weight: 400;
+        margin-top: 3px;
+        line-height: 1.1em;
+    }
+}
+
+.game-card-experimental,
+.game-card-name-secondary {
+    font-size: 12px;
+    font-weight: 400;
+    color: #757575;
+}
+
+@media(max-width:543px) {
+
+    .game-card-experimental,
+    .game-card-name-secondary {
+        line-height: 1.1em;
+    }
+}
+
+.game-card-experimental {
+    display: none;
+}
+
+.game-card-experimental.game-is-experimental {
+    display: block;
+}
+
+@media(max-width:543px) {
+    .game-card-experimental.game-is-experimental .experimental-label-long {
+        display: none;
+    }
+}
+
+.game-card-experimental.game-is-experimental .experimental-label-short {
+    font-size: 10px;
+}
+
+@media(min-width:543px) {
+    .game-card-experimental.game-is-experimental .experimental-label-short {
+        display: none;
+    }
+}
+
+@media(max-width:543px) {
+    .game-card-vote {
+        line-height: 1em;
+    }
+}
+
+.game-card-vote .vote-bar {
+    position: relative;
+    height: 20px;
+}
+
+.game-card-vote .vote-bar:before,
+.game-card-vote .vote-bar:after {
+    content: " ";
+    display: table;
+}
+
+.game-card-vote .vote-bar:after {
+    clear: both;
+}
+
+@media(max-width:543px) {
+    .game-card-vote .vote-bar {
+        height: 16px;
+    }
+}
+
+.game-card-vote .vote-thumbs-up,
+.game-card-vote .vote-thumbs-down,
+.game-card-vote .vote-container {
+    float: left;
+}
+
+.game-card-vote.game-is-experimental {
+    display: none;
+}
+
+.game-card-experimental .icon-experimental-gray2 {
+    background-position: -16px -384px;
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+}
+
+@media(max-width:543px) {
+    .game-card-experimental .icon-experimental-gray2 {
+        background-position: -12px -288px;
+        background-size: 24px auto;
+        width: 12px;
+        height: 12px;
+    }
+}
+
+@media(max-width:543px) {
+    .vote-thumbs-up {
+        line-height: 1em;
+    }
+
+    .vote-thumbs-up .icon-like-gray-16x16 {
+        background-position: 0 -264px;
+        background-size: 24px auto;
+        width: 12px;
+        height: 12px;
+    }
+}
+
+.vote-thumbs-down {
+    visibility: hidden;
+    opacity: .6;
+}
+
+@media(max-width:543px) {
+    .vote-thumbs-down .icon-dislike-gray-16x16 {
+        background-position: 0 -276px;
+        background-size: 24px auto;
+        width: 12px;
+        height: 12px;
+    }
+}
+
+.vote-container {
+    width: 70%;
+    width: calc(99% - 32px);
+    height: 6px;
+    margin: 9px auto 0 1%;
+    position: relative;
+}
+
+@media(max-width:543px) {
+    .vote-container {
+        width: 72%;
+        width: calc(99% - 24px);
+        height: 4px;
+    }
+}
+
+.vote-background,
+.vote-percentage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.vote-background {
+    background-color: #B8B8B8;
+    width: 100%;
+}
+
+.vote-percentage {
+    background-color: #757575;
+}
+
+.vote-mask .segment {
+    background-color: #fff;
+    height: 6px;
+    width: 2px;
+    position: absolute;
+    top: 0;
+}
+
+.vote-mask .seg-1 {
+    left: 18%;
+}
+
+.vote-mask .seg-2 {
+    left: 38%;
+}
+
+.vote-mask .seg-3 {
+    left: 58%;
+}
+
+.vote-mask .seg-4 {
+    left: 78%;
+}
+
+.vote-counts {
+    position: relative;
+    padding: 0 2px 5px;
+    width: 100%;
+    display: none;
+}
+
+.vote-counts .vote-up-count,
+.vote-counts .vote-down-count {
+    font-size: 12px;
+}
+
+.vote-counts .vote-up-count {
+    color: #02b757;
+}
+
+.vote-counts .vote-down-count {
+    float: right;
+    color: #E27676;
+    opacity: .6;
+}
+
+.game-card-footer {
+    width: 100%;
+    display: none;
+    border-top: 1px solid #E3E3E3;
+}
+
+.game-card-footer .creator {
+    padding: 5px 5px 0;
+}
+
+.game-card-footer .creator:before,
+.game-card-footer .creator:after {
+    content: " ";
+    display: table;
+}
+
+.game-card-footer .creator:after {
+    clear: both;
+}
+
+.game-card-footer .creator .text-label {
+    display: block;
+    width: 100%;
+}
+
+.game-card-footer .creator .text-link {
+    display: inline;
+    margin-left: 3px;
+}
+
+.game-card-footer .game-card-experimental {
+    margin: 6px 0;
+}
+
+@media(max-width:970px) {
+
+    .container-list .game-cards,
+    .game-grid .game-cards {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+.game-cards-sm .game-card {
+    width: 137px;
+    height: 196px;
+}
+
+@media(max-width:543px) {
+    .game-cards-sm .game-card {
+        width: 102px;
+        height: 150px;
+        padding: 0;
+    }
+}
+
+.game-cards-sm .game-card-thumb-container {
+    border-bottom: 1px solid #E3E3E3;
+    height: 126px;
+    width: 126px;
+}
+
+@media(max-width:543px) {
+    .game-cards-sm .game-card-thumb-container {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.game-cards-sm .game-card-thumb-container .game-card-thumb {
+    height: 126px;
+    width: 126px;
+}
+
+@media(max-width:543px) {
+    .game-cards-sm .game-card-thumb-container .game-card-thumb {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media(max-width:1199px) {
+    .touch .game-card-container:hover {
+        display: inline-block;
+        z-index: auto;
+        height: 100%;
+    }
+
+    .touch .game-card-container:hover .vote-thumbs-down {
+        visibility: hidden;
+    }
+
+    .touch .game-card-container:hover .vote-container .vote-background {
+        background-color: #B8B8B8;
+    }
+
+    .touch .game-card-container:hover .vote-container .vote-percentage {
+        background-color: #757575;
+    }
+
+    .touch .game-card-container:hover .vote-counts {
+        display: none;
+        float: none;
+    }
+
+    .touch .game-card-container:hover .game-card-footer {
+        display: none;
+        float: none;
+    }
+}
+
+.game-cards .sponsored-game {
+    display: none;
+}
+
+.sponsored-game .game-card-container:hover {
+    height: 100%;
+}
+
+.sponsored-game .game-card-native-ad {
+    background-color: #B8B8B8;
+    bottom: 0;
+    height: 28px;
+    padding: 8px;
+    position: absolute;
+    width: 100%;
+}
+
+@media(max-width:543px) {
+    .sponsored-game .game-card-native-ad {
+        position: relative;
+        margin-top: 10px;
+        padding: 8px 0;
+    }
+}
+
+.sponsored-game .game-card-native-ad .native-ad-label {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.game-card-list {
+    height: 235px;
+}
+
+@media(max-width:543px) {
+    .game-card-list {
+        height: 155px;
+    }
+}
+
+.game-card-list-spinner {
+    top: 110px;
+}
+
+@media(max-width:543px) {
+    .game-card-list-spinner {
+        top: 70px;
+    }
+}
