@@ -339,6 +339,11 @@ a:hover .icon-dislike-gray-16x16 {
     .games-page-left {
         padding: 0 15px;
     }
+    
+    
+    .games-list-container:nth-child(n+6) {
+        display: none !important;
+    }
 }
 
 .games-page-left.gutters-hidden {
@@ -923,7 +928,6 @@ a:hover .icon-dislike-gray-16x16 {
 .container-main.touch .games-list .show-in-multiview-mode-only {
     overflow-x: scroll;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 250px;
 }
 
 .container-main.touch .horizontally-scrollable {
@@ -1090,8 +1094,3 @@ a:hover .icon-dislike-gray-16x16 {
     }
 }
 
-@media(max-width:543px) {
-    .refactor .games-list-container .games-list .horizontally-scrollable {
-        min-height: 270px;
-    }
-}
