@@ -1,2 +1,2 @@
 "use strict";
-var notificationStream=angular.module("notificationStream", []);
+var notificationStream=angular.module("notificationStream", ["robloxApp"]);

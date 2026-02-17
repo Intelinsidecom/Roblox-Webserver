@@ -9,7 +9,7 @@
         Roblox.I18nData.isI18nEnabledForChat = false;
     </script>
     <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
-    <link rel=canonical href=https://www.roblox.com/games>
+    <link rel=canonical href=/games>
     <link rel="stylesheet" href="~/CSS/2017/Games/LeanBaseStyle.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/SiteStyle.css">
@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="~/CSS/2017/Games/Legacy/Modal.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Fonts/SourceSansPro.css">
 
+    <link rel="stylesheet" href="~/CSS/Pages/VotingPanel.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Games/GamesPage.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/PartialViews/CardItem.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Widgets/ContactUpsell.css">
@@ -89,7 +90,7 @@ body, html {
 
 </style>
 
-@if (User.Identity.IsAuthenticated)
+@if (User?.Identity?.IsAuthenticated == true)
 {
     <style>
         @@media(min-width:1315px) {
@@ -108,9 +109,8 @@ body, html {
     <script>
         window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")
     </script>
-    <!-- History.js for GamesPage -->
+
     <script src="~/js/history.js/jquery.history.js"></script>
-    <!-- Core Bundle -->
     <script src="~/js/leancore/libs/json3.min.js"></script>
     <script src="~/js/roblox.js"></script>
     <script src="~/js/common/constants.js"></script>
@@ -134,13 +134,9 @@ body, html {
     <script src="~/js/utilities/CrossTabCommunication/Kingmaker.js"></script>
     <script src="~/js/utilities/CrossTabCommunication/PubSub.js"></script>
     <script src="~/js/Notifications/AuthenticationNotificationsHandler.js"></script>
-
-    <!-- Form Events Module -->
     <script src="~/js/viewapp/common/formEvents/formEvents.js"></script>
     <script src="~/js/viewapp/common/formEvents/directives/formInteraction.js"></script>
     <script src="~/js/viewapp/common/formEvents/directives/formContext.js"></script>
-
-    <!-- Email and Phone Upsell Module -->
     <script src="~/js/viewapp/widgets/emailAndPhoneUpsell/emailAndPhoneUpsell.js"></script>
     <script src="~/js/viewapp/widgets/emailAndPhoneUpsell/constants/emailAndPhoneUpsellConstants.js"></script>
     <script src="~/js/viewapp/widgets/emailAndPhoneUpsell/services/emailAndPhoneUpsellService.js"></script>
@@ -169,64 +165,8 @@ body, html {
         }
     </script>
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-1005424223"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'AW-1005424223');
-    </script>
-    <script>
-        var googletag = googletag || {};
-        googletag.cmd = googletag.cmd || [];
-    </script>
-    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
-    <script>
-        googletag.cmd.push(function() {
-            Roblox = Roblox || {};
-            Roblox.AdsHelper = Roblox.AdsHelper || {};
-            Roblox.AdsHelper.slots = [];
-            Roblox.AdsHelper.slots = Roblox.AdsHelper.slots || [];
-            Roblox.AdsHelper.slots.push({
-                slot: googletag.defineSlot("/1015347/Roblox_Games_Middle_300x250", [300, 250], "3636383534373435").addService(googletag.pubads()),
-                id: "3636383534373435",
-                path: "/1015347/Roblox_Games_Middle_300x250"
-            });
-            Roblox.AdsHelper.slots = Roblox.AdsHelper.slots || [];
-            Roblox.AdsHelper.slots.push({
-                slot: googletag.defineSlot("/1015347/Roblox_Games_Middle_300x250_1", [300, 250], "3536303432303230").addService(googletag.pubads()),
-                id: "3536303432303230",
-                path: "/1015347/Roblox_Games_Middle_300x250_1"
-            });
-            for (var key in Roblox.AdsHelper.slots) {
-                var slot = Roblox.AdsHelper.slots[key].slot;
-                var id = Roblox.AdsHelper.slots[key].id;
-                var path = Roblox.AdsHelper.slots[key].path;
-                if (slot.renderEnded != "undefined") {
-                    (function(slot, id) {
-                        slot.renderEndedOld = slot.renderEnded;
-                        slot.renderEnded = function() {
-                            slot.renderEndedOld();
-                            if ($('#' + id + '.gutter').css('display') == "none") {
-                                $(document).trigger("GuttersHidden");
-                            }
-                            if ($('#' + id + '.filmstrip').css('display') == "none") {
-                                $(document).trigger("FilmStripHidden");
-                            }
-                        };
-                    }(slot, id));
-                }
-            }
-            googletag.pubads().setTargeting("Age", ["50", "18AndOver"]);
-            googletag.pubads().setTargeting("A", ["50", "18AndOver"]);
-            googletag.pubads().setTargeting("Env", "Production");
-            googletag.pubads().setTargeting("Gender", "Male");
-            googletag.pubads().setTargeting("PLVU", "True");
-            googletag.pubads().enableSingleRequest();
-            googletag.pubads().collapseEmptyDivs();
-            googletag.enableServices();
-        });
-    </script>
+
+
     <script>
         var Roblox = Roblox || {};
         Roblox.AdsHelper = Roblox.AdsHelper || {};
@@ -260,30 +200,6 @@ body, html {
         });
     </script><!--[if lt IE 9]><script src=//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script><script src=//oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
     <script>
-        var _gaq = _gaq || [];
-        window.GoogleAnalyticsDisableRoblox2 = true;
-        _gaq.push(['b._setAccount', 'UA-486632-1']);
-        _gaq.push(['b._setCampSourceKey', 'rbx_source']);
-        _gaq.push(['b._setCampMediumKey', 'rbx_medium']);
-        _gaq.push(['b._setCampContentKey', 'rbx_campaign']);
-        _gaq.push(['b._setDomainName', 'roblox.com']);
-        _gaq.push(['b._setCustomVar', 1, 'Visitor', 'Member', 2]);
-        _gaq.push(['b._setPageGroup', 1, 'Games']);
-        _gaq.push(['b._trackPageview']);
-        _gaq.push(['c._setAccount', 'UA-26810151-2']);
-        _gaq.push(['c._setSampleRate', '1']);
-        _gaq.push(['c._setDomainName', 'roblox.com']);
-        _gaq.push(['c._setPageGroup', 1, 'Games']);
-        (function() {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
-    <script>
         if (Roblox && Roblox.EventStream) {
             Roblox.EventStream.Init("//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/www/e.png", "//ecsv2.roblox.com/pe?t=studio", "//ecsv2.roblox.com/pe?t=diagnostic");
         }
@@ -300,15 +216,6 @@ body, html {
         Roblox.Endpoints = Roblox.Endpoints || {};
         Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
     </script>
-    <script>
-        Roblox = Roblox || {};
-        Roblox.AbuseReportPVMeta = {
-            desktopEnabled: true,
-            phoneEnabled: false,
-            inAppEnabled: false,
-            inApp: false
-        };
-    </script>
 
 
 <div class=container-main>
@@ -324,7 +231,7 @@ body, html {
         </noscript></div>
     <div class=content>
                 <div id=ResponsiveWrapper class="games-responsive-wrapper hover-on-touch refactor" data-gamessearchonpage=true data-adsingamesearchresultsenabled=true data-loadgptadsafterpageload=false>
-                    <div id=games-page-settings class=hidden data-gamessearchonpage=true data-adsingamesearchresultsenabled=true data-adshidden=false data-inapp=false data-defaultweeklyratings=true data-filtervaluetogameslistsidsuffixmapping=1,8,11,3,16 data-gamespagedefaulttoppaidweekly=true data-isuserloggedin=true data-adrefreshratemilliseconds=3000 data-minimumnumberofgamesforpersonalizedbylikedtoappear=1 data-devicetypeid=1 data-refreshadsingamespageenabled=true data-searchdefaultkeyword=Search data-incomingsearchquery="" data-zeroresults="No Search Results Found" data-pagetitle="Games - Roblox" data-usefakeresults=False data-suggestedcorrection="" data-suggestionkeyword="" data-suggestionreplacedkeyword="" data-isgamesthumbnailasyncenabled=false></div>
+                    <div id=games-page-settings class=hidden data-gamessearchonpage=true data-adsingamesearchresultsenabled=true data-adshidden=false data-inapp=false data-defaultweeklyratings=true data-filtervaluetogameslistsidsuffixmapping=1,8,11,3,16 data-gamespagedefaulttoppaidweekly=true data-isuserloggedin=@(User.Identity.IsAuthenticated.ToString().ToLower()) data-adrefreshratemilliseconds=3000 data-minimumnumberofgamesforpersonalizedbylikedtoappear=1 data-devicetypeid=1 data-refreshadsingamespageenabled=true data-searchdefaultkeyword=Search data-incomingsearchquery="" data-zeroresults="No Search Results Found" data-pagetitle="Games - Roblox" data-usefakeresults=False data-suggestedcorrection="" data-suggestionkeyword="" data-suggestionreplacedkeyword="" data-isgamesthumbnailasyncenabled=false></div>
                     <div id=GamesPageRightColumn class=games-page-right>
                         <div id=GamesPageRightColumnSidebar class="sidebar-no-ad games-page-right-sidebar">
                             <div id=GamePageAdDiv1 class=ads-container>
@@ -369,37 +276,49 @@ body, html {
                         <div class="games-page-filters loading" id=FiltersAndSort data-defaulttoppaidtoweekly=true data-defaultweeklyratings=true>
                             <div class="input-group-btn games-page-filter" id=SortFilter><button type=button class=input-dropdown-btn data-toggle=dropdown> <span class=rbx-selection-label data-bind=label data-value=default data-default=default>Filter By</span> <span class=icon-down-16x16></span> </button>
                                 <ul data-toggle=dropdown-menu class=dropdown-menu role=menu>
-                                    <li data-hidetimefilter data-value=default><a href=#>Default</a>
-                                    <li data-hidetimefilter data-value=1><a href=#>Popular</a>
-                                    <li data-hidetimefilter data-value=8><a href=#>Top Earning</a>
-                                    <li data-value=11><a href=#>Top Rated</a>
-                                    <li data-hidetimefilter data-value=16><a href=#>Recommended</a>
-                                    <li data-hidetimefilter data-hidegenrefilter data-value=3><a href=#>Featured</a>
-                                    <li data-hidetimefilter data-value=6><a href=#>My Recent</a>
-                                    <li data-hidetimefilter data-value=5><a href=#>My Favorite</a>
-                                    <li data-hidetimefilter data-value=10><a href=#>Purchased</a>
-                                    <li data-hidetimefilter data-value=17><a href=#>Friend Activity</a>
-                                    <li data-value=9><a href=#>Top Paid</a>
-                                    <li data-hidetimefilter data-value=19><a href=#>Popular in VR</a>
+                                    <li data-hidetimefilter data-value=default><a href=#>Default</a></li>
+                                    <li data-hidetimefilter data-value=1><a href=#>Popular</a></li>
+                                    <li data-hidetimefilter data-value=8><a href=#>Top Earning</a></li>
+                                    <li data-value=11><a href=#>Top Rated</a></li>
+                                    <li data-hidetimefilter data-value=16><a href=#>Recommended</a></li>
+                                    <li data-hidetimefilter data-hidegenrefilter data-value=3><a href=#>Featured</a></li>
+                                    @if (User?.Identity?.IsAuthenticated == true)
+                                    {
+                                    <li data-hidetimefilter data-value=6><a href=#>My Recent</a></li>
+                                    }
+                                    @if (User?.Identity?.IsAuthenticated == true)
+                                    {
+                                    <li data-hidetimefilter data-value=5><a href=#>My Favorite</a></li>
+                                    }
+                                    @if (User?.Identity?.IsAuthenticated == true)
+                                    {
+                                    <li data-hidetimefilter data-value=10><a href=#>Purchased</a></li>
+                                    }
+                                    @if (User?.Identity?.IsAuthenticated == true)
+                                    {
+                                    <li data-hidetimefilter data-value=17><a href=#>Friend Activity</a></li>
+                                    }
+                                    <li data-value=9><a href=#>Top Paid</a></li>
+                                    <li data-hidetimefilter data-value=19><a href=#>Popular in VR</a></li>
                                 </ul>
                             </div>
                             <div class="input-group-btn games-page-filter" id=GenreFilter><button type=button class=input-dropdown-btn data-toggle=dropdown> <span class=rbx-selection-label data-bind=label data-value=1 data-default=1>All</span> <span class=icon-down-16x16></span> </button>
                                 <ul data-toggle=dropdown-menu class=dropdown-menu role=menu>
-                                    <li class=dropdown-option data-value=1><a href=#>All</a>
-                                    <li class=dropdown-option data-value=13><a href=#>Adventure</a>
-                                    <li class=dropdown-option data-value=19><a href=#>Building</a>
-                                    <li class=dropdown-option data-value=15><a href=#>Comedy</a>
-                                    <li class=dropdown-option data-value=10><a href=#>Fighting</a>
-                                    <li class=dropdown-option data-value=20><a href=#>FPS</a>
-                                    <li class=dropdown-option data-value=11><a href=#>Horror</a>
-                                    <li class=dropdown-option data-value=8><a href=#>Medieval</a>
-                                    <li class=dropdown-option data-value=17><a href=#>Military</a>
-                                    <li class=dropdown-option data-value=12><a href=#>Naval</a>
-                                    <li class=dropdown-option data-value=21><a href=#>RPG</a>
-                                    <li class=dropdown-option data-value=9><a href=#>Sci-Fi</a>
-                                    <li class=dropdown-option data-value=14><a href=#>Sports</a>
-                                    <li class=dropdown-option data-value=7><a href=#>Town and City</a>
-                                    <li class=dropdown-option data-value=16><a href=#>Western</a>
+                                    <li class=dropdown-option data-value=1><a href=#>All</a></li>
+                                    <li class=dropdown-option data-value=8><a href=#>Adventure</a></li>
+                                    <li class=dropdown-option data-value=18><a href=#>Building</a></li>
+                                    <li class=dropdown-option data-value=10><a href=#>Comedy</a></li>
+                                    <li class=dropdown-option data-value=17><a href=#>Fighting</a></li>
+                                    <li class=dropdown-option data-value=16><a href=#>FPS</a></li>
+                                    <li class=dropdown-option data-value=6><a href=#>Horror</a></li>
+                                    <li class=dropdown-option data-value=21><a href=#>Medieval</a></li>
+                                    <li class=dropdown-option data-value=19><a href=#>Military</a></li>
+                                    <li class=dropdown-option data-value=20><a href=#>Naval</a></li>
+                                    <li class=dropdown-option data-value=15><a href=#>RPG</a></li>
+                                    <li class=dropdown-option data-value=4><a href=#>Sci-Fi</a></li>
+                                    <li class=dropdown-option data-value=9><a href=#>Sports</a></li>
+                                    <li class=dropdown-option data-value=2><a href=#>Town and City</a></li>
+                                    <li class=dropdown-option data-value=11><a href=#>Western</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -517,94 +436,106 @@ body, html {
                                     </ul>
                                 </div>
                             </div>
-                            <div class="games-list-container hidden container-7" id=GamesListContainer6 data-sortfilter=6 data-gamefilter=0 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
-                                <div class="container-header games-filter-changer">
-                                    <h3>My Recent</h3>
-                                    <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
-                                </div>
-                                <div class=games-list>
-                                    <div class=show-in-multiview-mode-only>
-                                        <div class=horizontally-scrollable>
-                                            <ul class="hlist games game-cards"></ul>
-                                        </div>
-                                        <div class="scroller prev disabled">
-                                            <div class=arrow><span class=icon-games-carousel-left></span></div>
-                                        </div>
-                                        <div class="scroller next">
-                                            <div class=arrow><span class=icon-games-carousel-right></span></div>
-                                        </div>
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <div class="games-list-container hidden container-7" id=GamesListContainer6 data-sortfilter=6 data-gamefilter=0 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
+                                    <div class="container-header games-filter-changer">
+                                        <h3>My Recent</h3>
+                                        <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
                                     </div>
-                                    <ul class="hlist games game-cards game-cards-grid">
-                                        <div class=abp-spacer></div>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="games-list-container hidden container-8" id=GamesListContainer5 data-sortfilter=5 data-gamefilter=0 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
-                                <div class="container-header games-filter-changer">
-                                    <h3>My Favorite</h3>
-                                    <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
-                                </div>
-                                <div class=games-list>
-                                    <div class=show-in-multiview-mode-only>
-                                        <div class=horizontally-scrollable>
-                                            <ul class="hlist games game-cards"></ul>
+                                    <div class=games-list>
+                                        <div class=show-in-multiview-mode-only>
+                                            <div class=horizontally-scrollable>
+                                                <ul class="hlist games game-cards"></ul>
+                                            </div>
+                                            <div class="scroller prev disabled">
+                                                <div class=arrow><span class=icon-games-carousel-left></span></div>
+                                            </div>
+                                            <div class="scroller next">
+                                                <div class=arrow><span class=icon-games-carousel-right></span></div>
+                                            </div>
                                         </div>
-                                        <div class="scroller prev disabled">
-                                            <div class=arrow><span class=icon-games-carousel-left></span></div>
-                                        </div>
-                                        <div class="scroller next">
-                                            <div class=arrow><span class=icon-games-carousel-right></span></div>
-                                        </div>
+                                        <ul class="hlist games game-cards game-cards-grid">
+                                            <div class=abp-spacer></div>
+                                        </ul>
                                     </div>
-                                    <ul class="hlist games game-cards game-cards-grid">
-                                        <div class=abp-spacer></div>
-                                    </ul>
                                 </div>
-                            </div>
-                            <div class="games-list-container hidden container-9" id=GamesListContainer10 data-sortfilter=10 data-gamefilter=1 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
-                                <div class="container-header games-filter-changer">
-                                    <h3>Purchased</h3>
-                                    <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
-                                </div>
-                                <div class=games-list>
-                                    <div class=show-in-multiview-mode-only>
-                                        <div class=horizontally-scrollable>
-                                            <ul class="hlist games game-cards"></ul>
-                                        </div>
-                                        <div class="scroller prev disabled">
-                                            <div class=arrow><span class=icon-games-carousel-left></span></div>
-                                        </div>
-                                        <div class="scroller next">
-                                            <div class=arrow><span class=icon-games-carousel-right></span></div>
-                                        </div>
+                            }
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <div class="games-list-container hidden container-8" id=GamesListContainer5 data-sortfilter=5 data-gamefilter=0 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
+                                    <div class="container-header games-filter-changer">
+                                        <h3>My Favorite</h3>
+                                        <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
                                     </div>
-                                    <ul class="hlist games game-cards game-cards-grid">
-                                        <div class=abp-spacer></div>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="games-list-container hidden container-10" id=GamesListContainer17 data-sortfilter=17 data-gamefilter=1 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
-                                <div class="container-header games-filter-changer">
-                                    <h3>Friend Activity</h3>
-                                    <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
-                                </div>
-                                <div class=games-list>
-                                    <div class=show-in-multiview-mode-only>
-                                        <div class=horizontally-scrollable>
-                                            <ul class="hlist games game-cards"></ul>
+                                    <div class=games-list>
+                                        <div class=show-in-multiview-mode-only>
+                                            <div class=horizontally-scrollable>
+                                                <ul class="hlist games game-cards"></ul>
+                                            </div>
+                                            <div class="scroller prev disabled">
+                                                <div class=arrow><span class=icon-games-carousel-left></span></div>
+                                            </div>
+                                            <div class="scroller next">
+                                                <div class=arrow><span class=icon-games-carousel-right></span></div>
+                                            </div>
                                         </div>
-                                        <div class="scroller prev disabled">
-                                            <div class=arrow><span class=icon-games-carousel-left></span></div>
-                                        </div>
-                                        <div class="scroller next">
-                                            <div class=arrow><span class=icon-games-carousel-right></span></div>
-                                        </div>
+                                        <ul class="hlist games game-cards game-cards-grid">
+                                            <div class=abp-spacer></div>
+                                        </ul>
                                     </div>
-                                    <ul class="hlist games game-cards game-cards-grid">
-                                        <div class=abp-spacer></div>
-                                    </ul>
                                 </div>
-                            </div>
+                            }
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <div class="games-list-container hidden container-9" id=GamesListContainer10 data-sortfilter=10 data-gamefilter=1 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
+                                    <div class="container-header games-filter-changer">
+                                        <h3>Purchased</h3>
+                                        <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
+                                    </div>
+                                    <div class=games-list>
+                                        <div class=show-in-multiview-mode-only>
+                                            <div class=horizontally-scrollable>
+                                                <ul class="hlist games game-cards"></ul>
+                                            </div>
+                                            <div class="scroller prev disabled">
+                                                <div class=arrow><span class=icon-games-carousel-left></span></div>
+                                            </div>
+                                            <div class="scroller next">
+                                                <div class=arrow><span class=icon-games-carousel-right></span></div>
+                                            </div>
+                                        </div>
+                                        <ul class="hlist games game-cards game-cards-grid">
+                                            <div class=abp-spacer></div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <div class="games-list-container hidden container-10" id=GamesListContainer17 data-sortfilter=17 data-gamefilter=1 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
+                                    <div class="container-header games-filter-changer">
+                                        <h3>Friend Activity</h3>
+                                        <div class="show-in-multiview-mode-only see-all-button games-filter-changer btn-fixed-width btn-secondary-xs btn-more">See All</div>
+                                    </div>
+                                    <div class=games-list>
+                                        <div class=show-in-multiview-mode-only>
+                                            <div class=horizontally-scrollable>
+                                                <ul class="hlist games game-cards"></ul>
+                                            </div>
+                                            <div class="scroller prev disabled">
+                                                <div class=arrow><span class=icon-games-carousel-left></span></div>
+                                            </div>
+                                            <div class="scroller next">
+                                                <div class=arrow><span class=icon-games-carousel-right></span></div>
+                                            </div>
+                                        </div>
+                                        <ul class="hlist games game-cards game-cards-grid">
+                                            <div class=abp-spacer></div>
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
                             <div class="games-list-container hidden container-11" id=GamesListContainer9 data-sortfilter=9 data-gamefilter=1 data-regionfilter=183 data-minbclevel=0 data-numberofrows=1 data-personalized-universe-id=0>
                                 <div class="container-header games-filter-changer">
                                     <h3>Top Paid</h3>
@@ -677,7 +608,7 @@ body, html {
                         Roblox.GamesPageContainerBehavior.FilterValueToGamesListsIdSuffixMapping = {
                             "default": defaultGamesListsCsv.split(',')
                         };
-                        Roblox.GamesPageContainerBehavior.IsUserLoggedIn = true;
+                        Roblox.GamesPageContainerBehavior.IsUserLoggedIn = @(User?.Identity?.IsAuthenticated.ToString().ToLower() ?? "false");
                         Roblox.GamesPageContainerBehavior.adRefreshRateMilliSeconds = 3000;
                         Roblox.GamesPageContainerBehavior.MinimumNumberOfGamesForPersonalizedByLikedToAppear = 1;
                         Roblox.GamesPageContainerBehavior.DeviceTypeId = 1;
@@ -703,146 +634,12 @@ body, html {
     <script>
         function urchinTracker() {}
     </script>
-    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=roblox-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
-        <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
-            <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
-            <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
-                <div id=Starting class="PlaceLauncherStatus MadStatusStarting" style=display:block>Starting Roblox...</div>
-                <div id=Waiting class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
-                <div id=StatusBackBuffer class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
-            </div>
-            <div style=text-align:center;margin-top:1em><input type=button class="Button CancelPlaceLauncherButton translate" value=Cancel></div>
-        </div>
+
     </div>
-    <div id=ProtocolHandlerStartingDialog style=display:none class=protocol-handler-container>
-        <div class="modalPopup ph-modal-popup">
-            <div class=ph-modal-header></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
-            <div class=ph-areyouinstalleddialog-content>
-                <p class=larger-font-size>Roblox is now loading. Get ready to play!
-                <div class=ph-startingdialog-spinner-row><img src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif width=82 height=24></div>
-            </div>
-        </div>
-    </div>
-    <div id=ProtocolHandlerAreYouInstalled style=display:none class=protocol-handler-container>
-        <div class="modalPopup ph-modal-popup">
-            <div class=ph-modal-header><span class="icon-close simplemodal-close"></span></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
-            <div class=ph-areyouinstalleddialog-content>
-                <p class=larger-font-size>You're moments away from getting into the game!
-                <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button></div>
-                <div class=small><a href=https://en.help.roblox.com/hc/en-us/articles/204473560 class=text-name target=_blank>Click here for help</a></div>
-            </div>
-        </div>
-    </div>
-    <div id=ProtocolHandlerClickAlwaysAllowed class=ph-clickalwaysallowed style=display:none>
-        <p class=larger-font-size><span class=icon-moreinfo></span> Check <b>Remember my choice</b> and click <strong>OK</strong> in the dialog box above to join games faster in the future!
-    </div>
-    <div id=videoPrerollPanel style=display:none>
-        <div id=videoPrerollTitleDiv>Gameplay sponsored by:</div>
-        <div id=content><video id=contentElement style=width:0;height:0></div>
-        <div id=videoPrerollMainDiv></div>
-        <div id=videoPrerollCompanionAd></div>
-        <div id=videoPrerollLoadingDiv>Loading <span id=videoPrerollLoadingPercent>0%</span> - <span id=videoPrerollMadStatus class=MadStatusField>Starting game...</span><span id=videoPrerollMadStatusBackBuffer class=MadStatusBackBuffer></span>
-            <div id=videoPrerollLoadingBar>
-                <div id=videoPrerollLoadingBarCompleted></div>
-            </div>
-        </div>
-        <div id=videoPrerollJoinBC><span>Get more with Builders Club!</span> <a href="https://www.roblox.com/premium/membership?ctx=preroll" target=_blank class="btn-medium btn-primary" id=videoPrerollJoinBCButton>Join Builders Club</a></div>
-    </div>
-    <script src=//imasdk.googleapis.com/js/sdkloader/ima3.js></script>
-    <script>
-        $(function() {
-            var videoPreRollDFP = Roblox.VideoPreRollDFP;
-            if (videoPreRollDFP) {
-                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
-                videoPreRollDFP.showVideoPreRoll = true;
-                videoPreRollDFP.loadingBarMaxTime = 48000;
-                videoPreRollDFP.videoLoadingTimeout = 11000;
-                videoPreRollDFP.videoPlayingTimeout = 41015;
-                videoPreRollDFP.videoLogNote = "";
-                videoPreRollDFP.logsEnabled = true;
-                videoPreRollDFP.excludedPlaceIds = "32373412";
-                videoPreRollDFP.adUnit = "/1015347/VideoPreroll";
-                videoPreRollDFP.adTime = 30;
-                videoPreRollDFP.isSwfPreloaderEnabled = false;
-                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
-                videoPreRollDFP.isAgeTargetingEnabled = true;
-                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
-                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
-                customTargeting.userAge = "50";
-                customTargeting.userAgeOrSegment = "50";
-                customTargeting.userGender = "Male";
-                customTargeting.gameGenres = "";
-                customTargeting.environment = "Production";
-                customTargeting.adTime = "30";
-                customTargeting.PLVU = true;
-                $(videoPreRollDFP.checkEligibility);
-            }
-        });
-    </script>
-    <div id=GuestModePrompt_BoyGirl class="Revised GuestModePromptModal" style=display:none>
-        <div class=simplemodal-close><a class="ImageButton closeBtnCircle_20h" style=cursor:pointer;margin-left:455px;top:7px;position:absolute></a></div>
-        <div class=Title>Choose Your Avatar</div>
-        <div style=min-height:275px;background-color:white>
-            <div style=clear:both;height:25px></div>
-            <div style=text-align:center>
-                <div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style=float:left;margin-left:45px></div>
-                <div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style=float:right;margin-right:45px></div>
-            </div>
-            <div style=clear:both;height:25px></div>
-            <div class=RevisedFooter>
-                <div style="width:200px;margin:10px auto 0 auto"><a href="https://www.roblox.com/?returnUrl=https%3A%2F%2Fwww.roblox.com%2Fgames"><div class=RevisedCharacterSelectSignup></div></a> <a class=HaveAccount href="https://www.roblox.com/newlogin?returnUrl=https%3A%2F%2Fwww.roblox.com%2Fgames">I have an account</a></div>
-            </div>
-        </div>
-    </div>
-    <script>
-        function checkRobloxInstall() {
-            return RobloxLaunch.CheckRobloxInstall('https://www.roblox.com/install/download.aspx');
-        }
-    </script>
-    <div id=InstallationInstructions class=style2016 style=display:none>
-        <div class=ph-installinstructions>
-            <div class=ph-modal-header><span class="icon-close-16x16 simplemodal-close"></span>
-                <h5 class=title>Thanks for playing ROBLOX</h5>
-            </div>
-            <div class=modal-content-container>
-                <div class=ph-installinstructions-body>
-                    <ul class=modal-col-5>
-                        <li class=step1-of-5>
-                            <h2>1</h2>
-                            <p class=larger-font-size>Click <strong>Save File</strong> when the download window pops up</p><img data-delaysrc=https://images.rbxcdn.com/635085abe343ceec97e5da00103cbd8d.png>
-                        <li class=2-of-5>
-                            <h2>2</h2>
-                            <p class=larger-font-size>Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p><img data-delaysrc=https://images.rbxcdn.com/4791f147e474426b284e7885b8f91635.png>
-                        <li class=step3-of-5>
-                            <h2>3</h2>
-                            <p class=larger-font-size>Click <strong>Run</strong></p><img data-delaysrc=https://images.rbxcdn.com/27e0e77ae7b5d726ca231c5d338fa473.png>
-                        <li class=step4-of-5>
-                            <h2>4</h2>
-                            <p class=larger-font-size>Once installed, click <strong>Play</strong> to join the action!
-                            <div class="VisitButton VisitButtonContinueGLI"><a class="btn btn-primary-lg disabled btn-full-width">Play</a></div>
-                        <li class=step5-of-5>
-                            <h2>5</h2>
-                            <p class=larger-font-size>Click <strong>Ok</strong> when the alert pops up</p><img data-delaysrc=https://images.rbxcdn.com/f024c63845c2f79d30ccebe2b2f5818d.png>
-                    </ul>
-                </div>
-            </div>
-            <div class=xsmall>The ROBLOX installer should download shortly. If it doesn’t, start the <a href=# class=text-link onclick="Roblox.ProtocolHandlerClientInterface.manualDownload();return false">download now.</a></div>
-        </div>
-    </div>
-    <div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>
-    <div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div><iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
-    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle=confirmation style=display:none><a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
-        <div class=Title></div>
-        <div class=GenericModalBody>
-            <div class=TopBody>
-                <div class="ImageContainer roblox-item-image" data-image-size=small data-no-overlays data-no-click><img class=GenericModalImage alt="generic image"></div>
-                <div class=Message></div>
-            </div>
-            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer"><a href="" id=roblox-confirm-btn><span></span></a> <a href="" id=roblox-decline-btn><span></span></a></div>
-            <div class=ConfirmationModalFooter></div>
-        </div>
+    
+    
+
+
         <script>
             Roblox = Roblox || {};
             Roblox.Resources = Roblox.Resources || {};
@@ -854,24 +651,7 @@ body, html {
             };
         </script>
     </div>
-    <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation>
-        <div id=modal-dialog class=modal-dialog>
-            <div class=modal-content>
-                <div class=modal-header><button type=button class=close data-dismiss=modal> <span aria-hidden=true><span class=icon-close></span></span><span class=sr-only>Close</span> </button>
-                    <h5 class=modal-title></h5>
-                </div>
-                <div class=modal-body>
-                    <div class=modal-top-body>
-                        <div class=modal-message></div>
-                        <div class="modal-image-container roblox-item-image" data-image-size=medium data-no-overlays data-no-click><img class=modal-thumb alt="generic image"></div>
-                        <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
-                    </div>
-                    <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
-                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
-                </div>
-                <div class="modal-footer text-footer"></div>
-            </div>
-        </div>
+   
         <script>
             Roblox = Roblox || {};
             Roblox.Resources = Roblox.Resources || {};
@@ -925,7 +705,6 @@ body, html {
             });
         });
     </script>
-    <!-- Angular Bundle - Removed to prevent duplicate loading (already loaded in _Layout.cshtml) -->
     <script src="~/js/viewapp/app.js"></script>
     <script src="~/js/viewapp/common/services/robloxService.js"></script>
     <script src="~/js/viewapp/common/services/cacheService.js"></script>
@@ -983,7 +762,6 @@ body, html {
     <script src="~/js/viewapp/widgets/modal/controllers/modalController.js"></script>
     <script src="~/js/viewapp/common/providers/languageResourceProvider.js"></script>
     <script src="~/js/viewapp/common/filters/translate.js"></script>
-    <!-- Bootstrap Bundle -->
     <script src="~/js/leancore/libs/bootstrap.min.js"></script>
     <script src="~/js/leancore/BootstrapNamespacing.js"></script>
     <script src="~/js/leancore/libs/underscore-min.js"></script>
@@ -1084,6 +862,7 @@ body, html {
     <script src="~/js/Games/Refactor/settings.js"></script>
     <script src="~/js/Games/Refactor/state.js"></script>
     <script src="~/js/Games/Refactor/ads.js"></script>
+    <script src="~/js/VotingPanel.js"></script>
 
     <script>
         var requiredScripts = [
@@ -1159,7 +938,11 @@ body, html {
                     });
                 }, 2000);
                 
-            $('#GamesListContainer1').removeClass('hidden');
+                if (typeof Roblox !== 'undefined' && Roblox.GamesPage && Roblox.GamesPage.state && Roblox.GamesPage.state.gamesListArray && Roblox.GamesPage.state.gamesListArray[0]) {
+                    Roblox.GamesPage.state.gamesListArray[0].show();
+                } else {
+                    $('#GamesListContainer1').removeClass('hidden');
+                }
                 var dropdowns = $('.dropdown, .rbx-dropdown');
                 
                 if (typeof $.fn.dropdown !== 'undefined') {
@@ -1237,7 +1020,7 @@ body, html {
                             Now just click <strong>Always Receive Notifications</strong> in your browser, and we'll start sending you push notifications!
                         </div>
                         <div class="push-notifications-permissions-prompt-instructional-image">
-                                <img width="380" height="250" src="https://static.rbxcdn.com/images/Notifications/push-permission-prompt-firefox-windows-20160701.png" />
+                                <img width="380" height="250" src="images/Notifications/push-permission-prompt-firefox-windows-20160701.png" />
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -1263,17 +1046,17 @@ body, html {
                     <div class="reenable-step reenable-step1-of3">
                         <h1>1</h1>
                             <p class="larger-font-size push-notifications-modal-step-instruction">Click the green lock next to the URL bar to open up your site permissions.</p>
-                                <img width="270" height="139" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step1-firefox-windows-20160701.png" />
+                                <img width="270" height="139" src="/images/Notifications/push-permission-unblock-step1-firefox-windows-20160701.png" />
                     </div>
                     <div class="reenable-step reenable-step2-of3">
                         <h1>2</h1>
                             <p class="larger-font-size push-notifications-modal-step-instruction">Click the drop-down arrow next to Notifications in the <strong>Permissions</strong> tab.</p>
-                                <img width="270" height="142" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step2-firefox-windows-20160701.png" />
+                                <img width="270" height="142" src="/images/Notifications/push-permission-unblock-step2-firefox-windows-20160701.png" />
                     </div>
                     <div class="reenable-step reenable-step3-of3">
                         <h1>3</h1>
                             <p class="larger-font-size push-notifications-modal-step-instruction">Select <strong>Allow</strong> to turn notifications back on.</p>
-                                <img width="270" height="182" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step3-firefox-windows-20160701.png" />
+                                <img width="270" height="182" src="/images/Notifications/push-permission-unblock-step3-firefox-windows-20160701.png" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1300,23 +1083,7 @@ body, html {
         </div>
     </div>
 </script>
-    <script>
-        var _comscore = _comscore || [];
-        _comscore.push({
-            c1: "2",
-            c2: "6035605",
-            c3: "",
-            c4: "",
-            c15: "Over13"
-        });
-        (function() {
-            var s = document.createElement("script"),
-                el = document.getElementsByTagName("script")[0];
-            s.async = true;
-            s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
-            el.parentNode.insertBefore(s, el);
-        })();
-    </script>
+   
 
 <style>
 @@media (min-width: 1200px) {

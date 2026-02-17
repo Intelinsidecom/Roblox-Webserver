@@ -1,0 +1,272 @@
+# Games Page JavaScript Analysis - Data Loading Expectations
+
+## Overview
+The games page uses a sophisticated JavaScript architecture to load and display game entries dynamically. The system is built around several key components that work together to fetch, render, and manage game data.
+
+## Core JavaScript Components
+
+### 1. Main Entry Points
+- **GamesPageContainerBehavior.js** - Main container behavior, handles filter changes and URL management
+- **GamesListBehavior.js** - Handles individual game card interactions, carousels, and voting
+- **gamesPage.js** - Core page logic, manages state, infinite scroll, and overall page behavior
+- **gamesList.js** - Individual game list management, handles API calls and rendering
+
+### 2. Supporting Components
+- **search.js** - Search functionality and results handling
+- **filters.js** - Filter management (sort, time, genre)
+- **constants.js** - Configuration constants and enums
+- **state.js** - Page state management
+- **settings.js** - Page settings and configuration
+- **VotingPanel.js** - Voting functionality for games
+
+## Expected Data Structure
+
+### HTML Structure Requirements
+The page expects specific HTML structure with these key elements:
+
+```html
+<!-- Main settings container with configuration data -->
+<div id="games-page-settings" class="hidden" 
+     data-gamessearchonpage="true"
+     data-adsingamesearchresultsenabled="true"
+     data-adshidden="false"
+     data-inapp="false"
+     data-defaultweeklyratings="true"
+     data-filtervaluetogameslistsidsuffixmapping="1,8,11,3,16"
+     data-gamespagedefaulttoppaidweekly="true"
+     data-isuserloggedin="true"
+     data-adrefreshratemilliseconds="3000"
+     data-minimumnumberofgamesforpersonalizedbylikedtoappear="1"
+     data-devicetypeid="1"
+     data-refreshadsingamespageenabled="true"
+     data-searchdefaultkeyword="Search"
+     data-incomingsearchquery=""
+     data-zeroresults="No Search Results Found"
+     data-pagetitle="Games - Roblox"
+     data-usefakeresults="False"
+     data-suggestedcorrection=""
+     data-suggestionkeyword=""
+     data-suggestionreplacedkeyword=""
+     data-isgamesthumbnailasyncenabled="false">
+</div>
+
+<!-- Games lists container -->
+<div id="GamesListsContainer" class="games-page-lists-container">
+    <!-- Individual game list containers -->
+    <div class="games-list-container hidden container-0" 
+         id="GamesListContainer1" 
+         data-sortfilter="1" 
+         data-gamefilter="1" 
+         data-regionfilter="183" 
+         data-minbclevel="0" 
+         data-numberofrows="1" 
+         data-personalized-universe-id="0">
+        <!-- Header with filter changer -->
+        <div class="container-header games-filter-changer">
+            <h3>Popular</h3>
+            <div class="show-in-multiview-mode-only see-all-button games-filter-changer">See All</div>
+        </div>
+        <!-- Filter dropdowns -->
+        <div class="games-list">
+            <div class="game-cards-grid">
+                <!-- Game cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+    <!-- More game list containers for different categories... -->
+</div>
+```
+
+### Game Card Structure
+Each game card should have this structure:
+
+```html
+<div class="game-card-container list-item game-card" data-place-id="12345">
+    <div class="game-card-thumb">
+        <img src="thumbnail-url" alt="Game Name">
+    </div>
+    <div class="game-card-info">
+        <div class="game-card-name">Game Name</div>
+        <div class="game-card-stats">
+            <span class="game-card-stat">Playing: 1234</span>
+        </div>
+    </div>
+    <!-- Voting container -->
+    <div class="vote-container" 
+         data-upvotes="100" 
+         data-downvotes="20"
+         data-voting-processed="false">
+        <div class="vote-percentage"></div>
+        <div class="vote-background"></div>
+    </div>
+</div>
+```
+
+## API Request Parameters
+
+### Game Loading Request (buildFetchRequest)
+The JavaScript sends these parameters to load games:
+
+```javascript
+{
+    SortFilter: number,           // Sort type (1=Popular, 8=Top Earning, etc.)
+    TimeFilter: number,           // Time filter (0=Current, 1=Daily, 2=Weekly, 4=AllTime)
+    RegionFilter: number,         // Region filter (183=Default)
+    GenreID: number,              // Genre filter (1=All)
+    GameFilter: number,           // Game filter (1=All, 0=User-specific)
+    MinBCLevel: number,           // Minimum BC level (0=All)
+    StartRows: number,            // Starting row for pagination
+    MaxRows: number,              // Number of rows to fetch
+    IsUserLoggedIn: boolean,      // User authentication status
+    NumberOfRowsToOccupy: number, // Number of rows to occupy
+    NumberOfColumns: number,      // Calculated number of columns
+    IsInHorizontalScrollMode: boolean, // Horizontal scroll mode
+    DeviceTypeId: number,         // Device type (1=Desktop)
+    AdSpan: number,               // Ad span configuration
+    AdAlignment: number,          // Ad alignment
+    v: 2,                         // API version
+    PersonalizedUniverseId: number, // Personalized universe ID
+    useFakeResults: boolean,      // Use fake results for testing
+    IsGamesThumbnailAsyncEnabled: boolean // Async thumbnail loading
+}
+```
+
+### Search Request Parameters
+For search functionality:
+
+```javascript
+{
+    StartRows: number,           // Starting row
+    MaxRows: number,              // Number of results
+    IsUserLoggedIn: boolean,      // User authentication status
+    NumberOfColumns: number,      // Calculated columns
+    IsInHorizontalScrollMode: boolean, // Horizontal scroll mode
+    DeviceTypeId: number,         // Device type
+    Keyword: string,              // Search query
+    AdSpan: number,               // Ad span
+    AdAlignment: number,          // Ad alignment
+    v: 2,                         // API version
+    IsSecure: boolean,            // Secure mode
+    UseFakeResults: boolean,      // Use fake results
+    SuggestedCorrection: string,  // Suggested correction
+    SuggestionKeyword: string,    // Suggestion keyword
+    SuggestionReplacedKeyword: string // Replaced keyword
+}
+```
+
+## Expected API Response Format
+
+### Game List Response
+The API should return HTML containing game card elements:
+
+```html
+<!-- Game cards wrapped in containers -->
+<div class="game-card-container list-item game-card" data-place-id="12345">
+    <!-- Game card content -->
+</div>
+<div class="game-card-container list-item game-card" data-place-id="67890">
+    <!-- Game card content -->
+</div>
+<!-- More game cards... -->
+```
+
+### Search Response
+Search responses should include:
+- Game card elements (same format as game list)
+- Optional keyword correction element: `<div id="keyword">corrected-term</div>`
+
+## Sort Filter Types (from constants.js)
+```javascript
+sortFilterTypeIds: {
+    popular: 1,
+    topFavorite: 2,
+    featured: 3,
+    myFavorite: 5,
+    myRecent: 6,
+    experimental: 7,
+    topEarning: 8,
+    topPaid: 9,
+    purchased: 10,
+    topRated: 11,
+    buildersClub: 14,
+    topRetaining: 16,
+    friendActivity: 17,
+    personalizedByLiked: 18,
+    popularInVR: 19,
+    popularInCountry: 20
+}
+```
+
+## Time Filters
+```javascript
+timeFilters: {
+    current: 0,
+    daily: 1,
+    weekly: 2,
+    allTime: 4
+}
+```
+
+## Key Features Expected
+
+### 1. Infinite Scroll
+- Automatically loads more games when user scrolls near bottom
+- Uses `shouldLoadMoreGames()` to determine when to fetch
+
+### 2. Multi-View Mode
+- Can display multiple game lists simultaneously
+- Switches between single and multi-view based on filter selection
+
+### 3. Voting System
+- Each game card can have upvote/downvote functionality
+- Vote percentages calculated and displayed dynamically
+- Requires user authentication for voting
+
+### 4. Responsive Design
+- Adapts layout based on screen size
+- Calculates optimal number of columns dynamically
+- Handles mobile vs desktop layouts
+
+### 5. Search Integration
+- Real-time search with suggestions
+- Handles search corrections and suggestions
+- Maintains search state in URL
+
+### 6. Filter System
+- Sort filters (Popular, Top Rated, etc.)
+- Time filters (Current, Daily, Weekly, All Time)
+- Genre filters
+- Region filters
+
+## Configuration Settings
+
+### Key Settings from settings.js:
+- `numGamesToFetchInVScrollMode: 60` - Games to fetch in vertical scroll
+- `numGamesToFetchInHScrollMode: 14` - Games to fetch in horizontal scroll
+- `maxNumGamesToFetchPerRequest: 200` - Maximum games per request
+- `columnWidthIncludingPadding: 161` - Column width calculation
+- `gameTileHeight: 235` - Game tile height
+- `rowHeightIncludingPadding: 220` - Row height calculation
+
+## API Endpoints
+- `/games/moreresultscached` - For cached results (default sort filters)
+- `/games/moreresultsuncached` - For uncached results (user-specific filters)
+- `/voting/vote?assetId={id}&vote={true/false}` - Voting endpoint
+- `/games/votingservice/{placeId}` - Voting service endpoint
+
+## Error Handling
+The system expects graceful handling of:
+- Network failures during game loading
+- Invalid API responses
+- Missing voting data
+- Authentication failures for voting
+- Empty search results
+
+## Performance Considerations
+- Lazy loading of thumbnails
+- Debounced resize and scroll handlers
+- Efficient DOM manipulation
+- Minimal reflows and repaints
+- Proper event delegation
+
+This analysis provides the complete data structure and API expectations for the games page JavaScript system.

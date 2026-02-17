@@ -41,7 +41,7 @@ public static class GameListingService
        u.name as universe_name,
        u.root_place_id,
        a.name as place_name,
-       COALESCE(a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+       COALESCE(a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
        COALESCE(u.privacy_level, 3) as privacy_level
 from universes u
 left join assets a on a.asset_id = u.root_place_id

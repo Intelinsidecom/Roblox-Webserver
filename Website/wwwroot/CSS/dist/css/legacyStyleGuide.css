@@ -20996,7 +20996,21 @@ button.close {
 }
 
 .rbx-popover-content {
-    display: none
+    display: none;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px 0 rgba(25, 25, 25, 0.3);
+    position: absolute;
+    z-index: 1060;
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+    transition: all 0.2s ease-in-out;
+}
+
+.rbx-popover-content.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1) translateY(0);
 }
 
 .rbx-menu-item {

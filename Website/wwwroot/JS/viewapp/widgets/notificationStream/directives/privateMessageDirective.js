@@ -2,7 +2,7 @@
 
 notificationStream.directive("privateMessage", ["notificationStreamService", "notificationStreamUtility", "$log", function(n, t) {
         return {
-            restrict:"A", replace: !0, scope: {
+            restrict:"A", scope: {
                 notification:"=", library:"="
             }
 

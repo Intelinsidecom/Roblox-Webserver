@@ -227,8 +227,10 @@ Roblox.BootstrapWidgets = function() {
     Roblox.BootstrapWidgets.SetupTabs(),
     Roblox.BootstrapWidgets.SetupDropdown(),
     Roblox.BootstrapWidgets.SetupAccordion(),
-    Roblox.BootstrapWidgets.SetupTooltip(),
-    (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.CloseTooltip == "function" && Roblox.BootstrapWidgets.CloseTooltip()),
+    // Disabled SetupTooltip to prevent conflicts with Bootstrap tooltips
+    // Roblox.BootstrapWidgets.SetupTooltip(),
+    // Disabled CloseTooltip to prevent jQuery UI tooltip conflicts
+    // (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.CloseTooltip == "function" && Roblox.BootstrapWidgets.CloseTooltip()),
     Roblox.BootstrapWidgets.SetupPopover(),
     (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.ClosePopover == "function" && Roblox.BootstrapWidgets.ClosePopover()),
     Roblox.BootstrapWidgets.SetupScrollbar(),

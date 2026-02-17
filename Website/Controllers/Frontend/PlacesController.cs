@@ -430,7 +430,7 @@ namespace RobloxWebserver.Controllers
                 ViewBag.allowedGearTypes = placeAsset.AllowedGearTypes;
                 ViewBag.allowPlaceToBeCopiedInGame = placeAsset.AllowPlaceToBeCopiedInGame;
                 ViewBag.allowPlaceToBeUpdatedInGame = placeAsset.AllowPlaceToBeUpdatedInGame;
-                var thumbnailData = await PlaceThumbnail.GetPlaceThumbnailsAsync(connectionString, id);
+                var thumbnailData = await PlaceThumbnail.GetAllPlaceThumbnailsAsync(connectionString, id);
                 
                 ViewBag.placeThumbnails = thumbnailData;
                 ViewBag.thumbnailCount = thumbnailData.Count;
@@ -852,6 +852,55 @@ namespace RobloxWebserver.Controllers
                     error = "An error occurred while retrieving thumbnails" 
                 });
             }
+        }
+
+        /// <summary>
+        /// GET /places/{id}/votes - Get vote counts for a place
+        /// </summary>
+        [HttpGet("places/{id}/votes")]
+        public async Task<IActionResult> GetPlaceVotes(long id)
+        {
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var votingService = new VotingService(connectionString);
+                
+                var (upvotes, downvotes) = await votingService.GetAssetVotesAsync(id);
+                
+                return Ok(new 
+                { 
+                    success = true,
+                    data = new 
+                    { 
+                        assetId = id,
+                        upVotes = upvotes,
+                        downVotes = downvotes,
+                        totalVotes = upvotes + downvotes,
+                        voteRatio = (upvotes + downvotes) > 0 ? Math.Round((double)upvotes / (upvotes + downvotes) * 100, 2) : 0
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new 
+                { 
+                    success = false, 
+                    error = "An error occurred while retrieving vote information" 
+                });
+            }
+        }
+
+        
+        private async Task<bool> CanUserVoteAsync(long userId, long assetId)
+        {
+            // Implement voting validation logic here:
+            // - Check if user has played the game
+            // - Check if user account is old enough
+            // - Check rate limiting
+            // - Check if user is verified
+            
+            // For now, returning true as placeholder
+            return await Task.FromResult(true);
         }
 
         /// <summary>
@@ -1406,38 +1455,58 @@ namespace RobloxWebserver.Controllers
         {
             try
             {
+                Console.WriteLine($"[DEBUG] AddThumbnailImage called");
+                
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
                 if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
                 {
+                    Console.WriteLine($"[DEBUG] User not authenticated");
                     return Json(new { success = false, message = "User not authenticated" });
                 }
 
+                Console.WriteLine($"[DEBUG] User ID: {currentUserId}");
+
                 if (thumbnailImageFile == null || thumbnailImageFile.Length == 0)
                 {
+                    Console.WriteLine($"[DEBUG] No file uploaded - thumbnailImageFile is null or empty");
                     return Json(new { success = false, message = "No file uploaded" });
                 }
 
+                Console.WriteLine($"[DEBUG] File uploaded: {thumbnailImageFile.FileName}, Size: {thumbnailImageFile.Length}, ContentType: {thumbnailImageFile.ContentType}");
+
                 if (!thumbnailImageFile.ContentType.StartsWith("image/"))
                 {
+                    Console.WriteLine($"[DEBUG] Invalid file type: {thumbnailImageFile.ContentType}");
                     return Json(new { success = false, message = "Invalid file type. Please upload an image file." });
                 }
 
                 var placeIdStr = Request.Form["id"].FirstOrDefault();
+                Console.WriteLine($"[DEBUG] Place ID from form: '{placeIdStr}'");
+                
                 if (string.IsNullOrWhiteSpace(placeIdStr) || !long.TryParse(placeIdStr, out var placeId))
                 {
+                    Console.WriteLine($"[DEBUG] Invalid place ID: '{placeIdStr}'");
                     return Json(new { success = false, message = "Invalid place ID" });
                 }
+
+                Console.WriteLine($"[DEBUG] Parsed Place ID: {placeId}");
 
                 var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
                 
+                Console.WriteLine($"[DEBUG] Retrieved place asset: {(placeAsset != null ? "Found" : "Not found")}");
+                
                 if (placeAsset == null)
                 {
+                    Console.WriteLine($"[DEBUG] Place not found for ID: {placeId}");
                     return Json(new { success = false, message = "Place not found" });
                 }
 
+                Console.WriteLine($"[DEBUG] Place Owner ID: {placeAsset.OwnerUserId}, Current User ID: {currentUserId}");
+
                 if (placeAsset.OwnerUserId != currentUserId)
                 {
+                    Console.WriteLine($"[DEBUG] Access denied - owner mismatch");
                     return Json(new { success = false, message = "Access denied" });
                 }
 
@@ -1445,27 +1514,40 @@ namespace RobloxWebserver.Controllers
                 var imageThumbnailCount = existingThumbnails.Count(t => 
                     t.GetType().GetProperty("type")?.GetValue(t)?.ToString() == "image");
                 
+                Console.WriteLine($"[DEBUG] Existing image thumbnails count: {imageThumbnailCount}");
+                
                 if (imageThumbnailCount >= 10)
                 {
+                    Console.WriteLine($"[DEBUG] Maximum thumbnail limit reached");
                     return Json(new { success = false, message = "Maximum limit of 10 thumbnails per place has been reached." });
                 }
 
                 var baseUrl = _configuration["Thumbnails:ThumbnailUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+                Console.WriteLine($"[DEBUG] Base URL: {baseUrl}");
                 
+                Console.WriteLine($"[DEBUG] Starting ProcessThumbnailImageAsync...");
                 var (thumbnailUrl, fileHash) = await PlaceThumbnail.ProcessThumbnailImageAsync(
                     placeId, thumbnailImageFile.OpenReadStream(), thumbnailImageFile.FileName, thumbnailImageFile.ContentType, baseUrl);
+                
+                Console.WriteLine($"[DEBUG] Processed thumbnail - URL: {thumbnailUrl}, Hash: {fileHash}");
 
+                Console.WriteLine($"[DEBUG] Starting AddThumbnailImageAsync...");
                 var thumbnailResult = await PlaceThumbnail.AddThumbnailImageAsync(
                     connectionString, placeId, placeAsset.Name, thumbnailUrl, fileHash);
 
+                Console.WriteLine($"[DEBUG] AddThumbnailImageAsync result: {(thumbnailResult != null ? "Success" : "Null")}");
+
                 if (thumbnailResult == null)
                 {
+                    Console.WriteLine($"[DEBUG] Thumbnail already exists (duplicate)");
                     return Json(new { success = false, message = "This image has already been added to your thumbnails." });
                 }
 
+                Console.WriteLine($"[DEBUG] Updating place thumbnail flags...");
                 await PlaceThumbnail.UpdatePlaceThumbnailFlagsAsync(connectionString, placeId, hasCustom: true, hasVideo: false, hasAutogenerated: false);
                 
                 var updatedThumbnails = await PlaceThumbnail.GetPlaceThumbnailsAsync(connectionString, placeId);
+                Console.WriteLine($"[DEBUG] Updated thumbnails count: {updatedThumbnails.Count}");
                 
                 return Json(new { 
                     success = true, 
@@ -1474,6 +1556,8 @@ namespace RobloxWebserver.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[DEBUG] Exception in AddThumbnailImage: {ex.Message}");
+                Console.WriteLine($"[DEBUG] Stack trace: {ex.StackTrace}");
                 return Json(new { success = false, message = "An error occurred while uploading the thumbnail. Please try again." });
             }
         }

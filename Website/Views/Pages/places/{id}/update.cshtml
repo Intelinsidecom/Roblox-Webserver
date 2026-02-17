@@ -20,6 +20,7 @@
     <script type='text/javascript' src='/js/jquery-migrate-1.2.1.min.js'></script>
     <script type='text/javascript' src='/js/jquery-migrate-1.2.1.js'></script>
 
+    <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
     <link rel="stylesheet" href="~/CSS/Pages/Places/Configure.css">
     <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
     <link rel="stylesheet" href="~/CSS/Pages/Places/DeveloperProducts.css">
@@ -306,7 +307,7 @@
                                                 <option value="RPG"@(gamegenre == "RPG" ? " selected=\"selected\"" : "")>RPG</option>
                                                 <option value="Sci-Fi"@(gamegenre == "Sci-Fi" ? " selected=\"selected\"" : "")>Sci-Fi</option>
                                                 <option value="Sports"@(gamegenre == "Sports" ? " selected=\"selected\"" : "")>Sports</option>
-                                                <option value="Town and City"@(gamegenre == "Town and City" ? " selected=\"selected\"" : "")>Town and City</option>
+                                                <option value="Town & City"@(gamegenre == "Town & City" ? " selected=\"selected\"" : "")>Town and City</option>
                                                 <option value="Western"@(gamegenre == "Western" ? " selected=\"selected\"" : "")>Western</option>
                                             </select>
 
@@ -876,7 +877,7 @@
                                     }
                                     <label class="radio-selection">
                                         <input @isGameGenreChecked data-val="true" data-val-required="The Allowed Genre: field is required." id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="False" />
-                                        <span class="checkboxListItem">Game genre (<span id="advancedsettings_genre">All</span>)</span>
+                                        <span class="checkboxListItem">Game genre (<span id="advancedsettings_genre">@gamegenre</span>)</span>
                                     </label>
                                     <label class="radio-selection-last">
                                         <input @isAllGenresChecked id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="True" /><span class="checkboxListItem" style="margin-left: 10px;">All genres</span>
@@ -1124,7 +1125,7 @@
                                 </div>
 
                                 <div id="developerProducts" class="configure-tab" style="display: none">
-                                    <div id="DevProducts" src="/universes/@ViewBag.PlaceUniverseId/developer-products">
+                                    <div id="DevProducts" data-load-url="/universes/@ViewBag.PlaceUniverseId/developer-products" data-universe-id="@ViewBag.PlaceUniverseId">
                                         <div id="DeveloperProductsInnerContainer">
                                             <div class="developerProductsContainer" style="padding-right: -10px;">
                                                 @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))

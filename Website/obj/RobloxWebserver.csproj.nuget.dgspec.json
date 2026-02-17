@@ -480,6 +480,9 @@
           "netstandard2.0": {
             "targetAlias": "netstandard2.0",
             "projectReferences": {
+              "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Assets\\Assets.csproj": {
+                "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Assets\\Assets.csproj"
+              },
               "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Common\\Common.csproj": {
                 "projectPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Assemblies\\Common\\Common.csproj"
               },

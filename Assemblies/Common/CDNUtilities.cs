@@ -98,7 +98,7 @@ public static class CDNUtilities
     }
 
     /// <summary>
-    /// Safely copies a file by reading bytes first to avoid file access issues
+    /// Safely copies a file by using streams with proper sharing to avoid file access issues
     /// </summary>
     public static bool SafeFileCopy(string sourcePath, string destinationPath)
     {
@@ -112,13 +112,19 @@ public static class CDNUtilities
 
         try
         {
-            var fileBytes = File.ReadAllBytes(sourcePath);
-
             var destinationDir = Path.GetDirectoryName(destinationPath);
             if (!string.IsNullOrWhiteSpace(destinationDir))
                 Directory.CreateDirectory(destinationDir);
-                
-            File.WriteAllBytes(destinationPath, fileBytes);
+            
+            using var sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var destinationStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            var buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                destinationStream.Write(buffer, 0, bytesRead);
+            }
+            
             return true;
         }
         catch (Exception ex)
@@ -129,7 +135,7 @@ public static class CDNUtilities
     }
 
     /// <summary>
-    /// Saves bytes to a file in the CDN directory
+    /// Saves bytes to a file in the CDN directory using streams to avoid locking
     /// </summary>
     public static void SaveToCDN(string subDirectory, string fileName, byte[] fileBytes)
     {
@@ -142,11 +148,12 @@ public static class CDNUtilities
 
         var cdnPath = GetCDNAssetsPath(subDirectory);
         var fullPath = Path.Combine(cdnPath, fileName);
-        File.WriteAllBytes(fullPath, fileBytes);
+        using var fileStream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        fileStream.Write(fileBytes, 0, fileBytes.Length);
     }
 
     /// <summary>
-    /// Gets place thumbnail bytes from the CDN directory
+    /// Gets place thumbnail bytes from the CDN directory using streams to avoid locking
     /// </summary>
     public static byte[]? GetPlaceThumbnailFromCDN(string hash)
     {
@@ -161,7 +168,16 @@ public static class CDNUtilities
             if (!File.Exists(imagePath))
                 return null;
 
-            return File.ReadAllBytes(imagePath);
+            using var fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var memoryStream = new MemoryStream();
+            var buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                memoryStream.Write(buffer, 0, bytesRead);
+            }
+            
+            return memoryStream.ToArray();
         }
         catch (Exception ex)
         {

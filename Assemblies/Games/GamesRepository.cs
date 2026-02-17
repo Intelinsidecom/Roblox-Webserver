@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets;
 
 namespace Games;
 
@@ -257,12 +258,33 @@ public static class GamesRepository
                 Name = reader.GetString(1),
                 CreatorUserId = reader.GetInt64(2),
                 RootPlaceId = rootPlaceId,
-                PrivacyLevel = reader.IsDBNull(4) ? 1 : reader.GetInt16(4), // Default to Public if null
-                Studio_Access_To_APIs = reader.IsDBNull(5) ? false : reader.GetBoolean(5), // Default to false if null
-                Description = null // Description not in database schema yet
+                PrivacyLevel = reader.IsDBNull(4) ? 1 : reader.GetInt16(4),
+                Studio_Access_To_APIs = reader.IsDBNull(5) ? false : reader.GetBoolean(5),
+                Description = null
             };
         }
         
         return null;
+    }
+
+    public static async Task<string?> GetPlaceDescriptionAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT description 
+                               FROM assets 
+                               WHERE asset_id = @placeId AND is_place = true";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result as string;
     }
 }

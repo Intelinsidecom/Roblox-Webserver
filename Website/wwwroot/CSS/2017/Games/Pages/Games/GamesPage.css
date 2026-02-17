@@ -603,7 +603,7 @@ a:hover .icon-dislike-gray-16x16 {
 }
 
 .scroller.prev .arrow span {
-    left: -15px;
+    left: 0px;
 }
 
 .scroller.next {
@@ -694,7 +694,7 @@ a:hover .icon-dislike-gray-16x16 {
     }
 
     .scroller.prev .arrow span {
-        left: -15px;
+        left: 0px;
     }
 
     .scroller.next {

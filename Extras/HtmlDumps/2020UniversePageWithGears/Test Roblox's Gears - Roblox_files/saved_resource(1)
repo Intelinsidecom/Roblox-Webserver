@@ -1,0 +1,33 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+/* PLEASE DO NOT COPY AND PASTE THIS CODE. */
+!function(){var t=document.createElement("script");t.setAttribute("ec-api-script", "true");t.type="text/javascript",t.async=!0,t.src="https://web.archive.org/web/20201028221942/https://cdn.arkoselabs.com/fc/js/060177a8ca5bd2d0ef9d5231e562b5ac/standard/funcaptcha_api.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();
+}
+
+/*
+     FILE ARCHIVED ON 22:19:42 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:30 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.739
+  exclusion.robots: 0.022
+  exclusion.robots.policy: 0.01
+  esindex: 0.01
+  cdx.remote: 7.054
+  LoadShardBlock: 168.217 (6)
+  PetaboxLoader3.datanode: 190.457 (7)
+  load_resource: 93.877
+  PetaboxLoader3.resolve: 45.229
+*/

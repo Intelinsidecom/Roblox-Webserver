@@ -1,6 +1,6 @@
 "use strict";
 
-notificationStream.factory("notificationStreamUtility", ["signalR", "layoutLibrary", "$log", function(n, t) {
+notificationStream.factory("notificationStreamUtility", ["signalR", "layoutLibraryService", "$log", function(n, t) {
         var r=t.notificationSourceType, u=t.links, f=t.stringTemplates; return {
             templates:t.directiveTemplatesName, links:u, textTemplate:t.textTemplate, stringTemplates:f, layout: {
                 pageDataInitialized: !1, firstTimeNotificationStream: !1, getRecentDataInitialized: !1, isNotificationContentOpen: !1, isLazyLoadingRequested: !1, isGetRecentDataLoadedRequested: !0, notificationsScrollbarSelector:"#notification-stream-scrollbar", settingLink:Roblox&&Roblox.Endpoints?Roblox.Endpoints.getAbsoluteUrl(u.settingLink):u.settingLink, friendRequestLink:Roblox&&Roblox.Endpoints?Roblox.Endpoints.getAbsoluteUrl(u.friendRequestLink):u.friendRequestLink, bannerEnabled: !1, emptyNotificationEnabled: !1, notificationsLazyLoadingEnabled: !1, isNotificationsLoading: !1, isStreamBodyInteracted: !1, bannerText:"", errorText:"", dataBindSelector:"#notification-stream", dataContainerSelector:"#notification-stream-container"

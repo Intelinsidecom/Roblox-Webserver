@@ -1,67 +1,79 @@
 // VotingPanel.js
 var Roblox = Roblox || {};
 Roblox.Voting = function() {
-    var f = function(n, t) {
-            var i = "/games/votingservice/" + t;
+    var LoadVotingService = function(container, placeId) {
+            var url = "/games/votingservice/" + placeId;
             $.ajax({
-                url: i,
-                success: function(t) {
-                    n.replaceWith(t)
+                url: url,
+                success: function(data) {
+                    container.replaceWith(data);
                 }
-            })
-        },
-        e = function() {
-            $(".users-vote .upvote").unbind().click(function() {
-                i($(this), !0)
-            }), $(".users-vote .downvote").unbind().click(function() {
-                i($(this), !1)
             });
-            var t = parseInt($(".voting-panel").data("total-up-votes")),
-                r = parseInt($(".voting-panel").data("total-down-votes"));
-            n(t, r)
         },
-        i = function(n, i) {
-            var e = $(".voting-panel").data("user-authenticated");
-            if (!e) {
-                u("GuestUser");
+        Initialize = function() {
+            $(".users-vote .upvote").unbind().click(function() {
+                Vote($(this), true)
+            }), $(".users-vote .downvote").unbind().click(function() {
+                Vote($(this), false)
+            });
+            var upVotes = parseInt($(".voting-panel").data("total-up-votes")),
+                downVotes = parseInt($(".voting-panel").data("total-down-votes"));
+            UpdateVoteBar(upVotes, downVotes)
+        },
+        Vote = function(element, voteType) {
+            var isAuthenticated = $(".voting-panel").data("user-authenticated");
+            if (!isAuthenticated) {
+                ShowModal("GuestUser");
                 return
             }
-            var o = $(".voting-panel").data("target-id"),
-                r = "/voting/vote?assetId=" + o + "&vote=",
-                f = $(".voting-panel").data("vote-url");
-            f && (r = f), n.hasClass("selected") || n.find("i").hasClass("selected") || n.find(".icon-like, .icon-dislike").hasClass("selected") ? t(r, null) : t(r, i)
+            var targetId = $(".voting-panel").data("target-id"),
+                url = "/voting/vote?assetId=" + targetId + "&vote=",
+                voteUrl = $(".voting-panel").data("vote-url");
+            voteUrl && (url = voteUrl), element.hasClass("selected") || element.find("i").hasClass("selected") || element.find(".icon-like, .icon-dislike").hasClass("selected") ? SubmitVote(url, null) : SubmitVote(url, voteType)
         },
-        t = function(n, t) {
+        SubmitVote = function(url, voteType) {
             $(".voting-panel .loading").show(), $.ajax({
                 type: "POST",
-                url: n + t,
-                success: o,
-                error: s
+                url: url + voteType,
+                success: OnVoteSuccess,
+                error: OnVoteError
             })
         },
-        o = function(t) {
-            var o = $(".icon-like").length;
-            if ($(".voting-panel .loading").hide(), t.Success) {
-                r(t.Model.UpVotes, t.Model.DownVotes);
-                var i = $(".voting-panel .upvote"),
-                    f = $(".voting-panel .downvote"),
-                    e = $(".users-vote");
-                o && (i = $(".voting-panel .upvote .icon-like"), f = $(".voting-panel .downvote .icon-dislike")), t.Model.UserVote !== null ? e.hasClass("has-voted") || e.addClass("has-voted") : e.removeClass("has-voted"), i.hasClass("selected") && i.removeClass("selected"), f.hasClass("selected") && f.removeClass("selected"), t.Model.UserVote !== null && (t.Model.UserVote ? i.addClass("selected") : f.addClass("selected")), n(t.Model.UpVotes, t.Model.DownVotes)
-            } else u(t.ModalType)
+        OnVoteSuccess = function(data) {
+            $(".voting-panel .loading").hide();
+            
+            if (data.Success || data.success) {
+                var targetId = $(".voting-panel").data("target-id");
+                var url = "/games/votingservice/" + targetId;
+                
+                $.ajax({
+                    url: url,
+                    success: function(htmlData) {
+                        $("#voting-section").replaceWith(htmlData);
+                        Roblox.Voting.Initialize();
+                    },
+                    error: function() {
+                        console.log("Failed to refresh voting panel");
+                    }
+                });
+            } else {
+                console.log("Vote failed:", data);
+                ShowModal(data.ModalType || data.modalType);
+            }
         },
-        s = function() {
+        OnVoteError = function() {
             $(".voting-panel .loading").hide()
         },
-        n = function(n, t, i) {
-            var e = i || $("#voting-section"),
-                r, u, f;
-            isNaN(n) || isNaN(t) || (r = n === 0 ? 0 : t === 0 ? 100 : Math.floor(n / (n + t) * 100), r > 100 && (r = 100), u = e.find(".vote-container"), f = u.find(".vote-background"), u.find(".vote-percentage").css("width", r + "%"), t > 0 ? f.addClass("has-votes") : f.removeClass("has-votes"))
+        UpdateVoteBar = function(upVotes, downVotes, votingSection) {
+            var element = votingSection || $("#voting-section"),
+                percentage, voteContainer, voteBackground;
+            isNaN(upVotes) || isNaN(downVotes) || (percentage = upVotes === 0 ? 0 : downVotes === 0 ? 100 : Math.floor(upVotes / (upVotes + downVotes) * 100), percentage > 100 && (percentage = 100), voteContainer = element.find(".vote-container"), voteBackground = voteContainer.find(".vote-background"), voteContainer.find(".vote-percentage").css("width", percentage + "%"), downVotes > 0 ? voteBackground.addClass("has-votes") : voteBackground.removeClass("has-votes"))
         },
-        r = function(t, i) {
-            t = Roblox.NumberFormatting.abbreviatedFormat(t), i = Roblox.NumberFormatting.abbreviatedFormat(i), $(".voting-panel .total-upvotes-text").text(t), $(".voting-panel .total-downvotes-text").text(i), $(".voting-panel #vote-up-text").text(t), $(".voting-panel #vote-down-text").text(i), n(t, i)
+        SetVotes = function(upVotes, downVotes) {
+            upVotes = Roblox.NumberFormatting.abbreviatedFormat(upVotes), downVotes = Roblox.NumberFormatting.abbreviatedFormat(downVotes), $(".voting-panel .total-upvotes-text").text(upVotes), $(".voting-panel .total-downvotes-text").text(downVotes), $(".voting-panel #vote-up-text").text(upVotes), $(".voting-panel #vote-down-text").text(downVotes), UpdateVoteBar(upVotes, downVotes)
         },
-        h = function(n) {
-            var t = {
+        GetModalContent = function(modalType) {
+            var modalTypes = {
                 EmailIsVerified: {
                     titleText: Roblox.Voting.Resources.emailVerifiedTitle,
                     bodyContent: Roblox.Voting.Resources.emailVerifiedMessage,
@@ -71,36 +83,36 @@ Roblox.Voting = function() {
                     acceptColor: Roblox.Dialog.green,
                     acceptText: Roblox.Voting.Resources.accept,
                     declineText: Roblox.Voting.Resources.decline,
-                    allowHtmlContentInBody: !0
+                    allowHtmlContentInBody: true
                 },
                 PlayGame: {
                     titleText: Roblox.Voting.Resources.playGameTitle,
                     bodyContent: Roblox.Voting.Resources.playGameMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 },
                 UseModel: {
                     titleText: Roblox.Voting.Resources.useModelTitle,
                     bodyContent: Roblox.Voting.Resources.useModelMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 },
                 InstallPlugin: {
                     titleText: Roblox.Voting.Resources.installPluginTitle,
                     bodyContent: Roblox.Voting.Resources.installPluginMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 },
                 BuyGamePass: {
                     titleText: Roblox.Voting.Resources.buyGamePassTitle,
                     bodyContent: Roblox.Voting.Resources.buyGamePassMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 },
                 FloodCheckThresholdMet: {
                     titleText: Roblox.Voting.Resources.floodCheckThresholdMetTitle,
                     bodyContent: Roblox.Voting.Resources.floodCheckThresholdMetMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 },
                 GuestUser: {
@@ -112,31 +124,31 @@ Roblox.Voting = function() {
                     acceptColor: Roblox.Dialog.green,
                     acceptText: Roblox.Voting.Resources.login,
                     declineText: Roblox.Voting.Resources.decline,
-                    allowHtmlContentInBody: !0
+                    allowHtmlContentInBody: true
                 },
                 Error: {
                     titleText: Roblox.Voting.Resources.unknownProblemTitle,
                     bodyContent: Roblox.Voting.Resources.unknownProblemMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 },
                 AssetNotVoteable: {
                     titleText: Roblox.Voting.Resources.assetNotVoteableTitle,
                     bodyContent: Roblox.Voting.Resources.assetNotVoteableMessage,
-                    showAccept: !1,
+                    showAccept: false,
                     declineText: Roblox.Voting.Resources.ok
                 }
             };
-            return t[n] || t.Error
+            return modalTypes[modalType] || modalTypes.Error
         },
-        u = function(n) {
-            n && Roblox.Dialog.open(h(n))
+        ShowModal = function(modalType) {
+            modalType && Roblox.Dialog.open(GetModalContent(modalType))
         };
     return {
-        Vote: t,
-        Initialize: e,
-        SetVotes: r,
-        UpdateVoteBar: n,
-        LoadVotingService: f
+        LoadVotingService: LoadVotingService,
+        Initialize: Initialize,
+        Vote: SubmitVote,
+        SetVotes: SetVotes,
+        UpdateVoteBar: UpdateVoteBar
     }
 }();

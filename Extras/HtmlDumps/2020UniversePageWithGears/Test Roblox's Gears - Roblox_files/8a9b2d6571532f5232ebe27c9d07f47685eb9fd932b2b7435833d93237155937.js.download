@@ -1,0 +1,35 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {};
+Roblox.LangDynamicDefault = Roblox.LangDynamicDefault || {};
+Roblox.LangDynamicDefault["Feature.GameDetails"] = {"Label.By":"By","Label.ByCreator":"{byText} {creatorLink}","Label.ExperimentalMode":"Experimental Mode","Label.About":"About","Label.Store":"Store","Label.Leaderboards":"Leaderboards","Label.Servers":"Servers","Heading.Description":"Description","Label.GameRequiresBuildersClub":"This Game requires Builders Club","Label.Playing":"Playing","Label.Visits":"Visits","Label.Created":"Created","Label.Updated":"Updated","Label.MaxPlayers":"Max Players","Label.Genre":"Genre","Label.AllowedGear":"Allowed Gear","Label.GameCopyLocked":"This game is copylocked","Label.ReportAbuse":"Report Abuse","Heading.RecommendedGames":"Recommended Games","Label.GameDoesNotSell":"No virtual items or power-ups available.","Label.NoRunningGames":"There are currently no running games.","Action.ShareGameToChat":"Share to chat","Label.PublicSource":"Public Source","Label.PrivateSource":"Private Source","Label.PublicSourceDescription":"This game's source is public","Label.PrivateSourceDescription":"This game's source is private","Label.PublicPrivateSourceCheckBox":"By leaving this checkbox checked, you are agreeing to allow every other user of Roblox the right to use (in various ways) the content you are now making available, as set out in the Terms. If you do not want to grant this right, please uncheck this box.","Label.CopyingTitle":"Copying","Label.AllowCopyingCheckbox":"Allow Copying","Label.PlaceCopyingAllowed":"This game's source can be copied.","Description.AllowCopyingDisclaimer":"By checking this box, {boldTagStart}you are granting every other user of Roblox the right to use{boldTagEnd} (in various ways) the content you are now sharing. {boldTagStart2}If you do not want to grant this right, please do not check this box{boldTagEnd2}. For more information about sharing content, please review the Roblox {linkStart}Terms of Use{linkEnd}.","Label.Favorites":"Favorites","Label.ExperimentalWarning":"{aTagStartWithHref}{ExperimentalGamesInfoLink}{hrefEnd}This game may not function as intended.{aTagEnd} The developer needs to update the game."};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Feature.GameDetails");
+
+}
+
+/*
+     FILE ARCHIVED ON 22:28:24 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:23 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 1.358
+  exclusion.robots: 0.025
+  exclusion.robots.policy: 0.011
+  esindex: 0.012
+  cdx.remote: 22.764
+  LoadShardBlock: 103.88 (3)
+  PetaboxLoader3.datanode: 227.112 (5)
+  load_resource: 166.172 (2)
+*/

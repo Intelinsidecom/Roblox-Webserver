@@ -1384,6 +1384,7 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
+          "Assets": "1.0.0",
           "Common": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
           "Npgsql": "8.0.4",

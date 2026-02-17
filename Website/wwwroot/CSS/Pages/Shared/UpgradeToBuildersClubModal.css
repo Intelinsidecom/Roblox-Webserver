@@ -1,0 +1,28 @@
+/* ~/CSS/Pages/Shared/UpgradeToBuildersClubModal.css */
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+.upgrade-icon-bc,
+.upgrade-icon-tbc,
+.upgrade-icon-obc {
+    background-size: 400px;
+    width: 100px;
+    height: 100px;
+}
+
+.upgrade-icon-bc {
+    background-position: 0 0;
+}
+
+.upgrade-icon-tbc {
+    background-position: 0 -110px;
+}
+
+.upgrade-icon-obc {
+    background-position: 0 -220px;
+}

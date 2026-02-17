@@ -51,7 +51,7 @@ if (typeof robloxApp !== 'undefined') {
 }
 
 if (typeof notificationStream !== 'undefined') {
-    notificationStream.provider("notificationLayoutLibraryProvider", function() {
+    notificationStream.provider("layoutLibraryProvider", function() {
         this.$get = function() {
             return {
                 links: {
@@ -117,3 +117,4 @@ if (typeof notificationStream !== 'undefined') {
         };
     });
 }
+

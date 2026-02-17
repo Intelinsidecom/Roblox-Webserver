@@ -1,0 +1,21 @@
+game-badges-list .badge-row .badge-data-container,game-badges-list .badge-row .badge-image{display:inline-block;float:left}game-badges-list .badge-row .badge-image{width:150px;text-align:center}game-badges-list .badge-row .badge-image thumbnail-2d{width:150px;height:150px;float:none;margin:0 auto}game-badges-list .badge-row .badge-content{float:left;width:70%;width:calc(100% - 150px)}game-badges-list .badge-row .badge-data-container{width:100%;padding:0 12px}@media (max-width:767px){game-badges-list .badge-row .badge-data-container{padding:0}}game-badges-list .badge-row .badge-data-container p{height:48px;margin:6px 0;word-wrap:break-word}game-badges-list .badge-row .badge-data-container p:after{content:none}game-badges-list .badge-row .badge-stats-container{float:right;width:100%;margin:6px 0 0;padding:0 12px}game-badges-list .badge-row .badge-stats-container:after,game-badges-list .badge-row .badge-stats-container:before{content:" ";display:table}game-badges-list .badge-row .badge-stats-container:after{clear:both}@media (max-width:767px){game-badges-list .badge-row .badge-stats-container{padding:0}}game-badges-list .badge-row .badge-stats-container li{margin:0 0 6px;width:33.3%;float:left}game-badges-list .badge-row .badge-stats-container li .text-label{text-align:center}game-badges-list .badge-row .badge-stats-container li .badge-stats-info{margin:6px 0 0;text-align:center}@media (max-width:767px){game-badges-list .badge-row .badge-stats-container li{width:100%}game-badges-list .badge-row .badge-stats-container li:after,game-badges-list .badge-row .badge-stats-container li:before{content:" ";display:table}game-badges-list .badge-row .badge-stats-container li:after{clear:both}game-badges-list .badge-row .badge-stats-container li .text-label{width:30%;float:left;text-align:left}game-badges-list .badge-row .badge-stats-container li .badge-stats-info{width:70%;float:left;text-align:left;margin:0}}@media (max-width:543px){game-badges-list .badge-row .badge-stats-container li .badge-stats-info,game-badges-list .badge-row .badge-stats-container li .text-label{width:50%}}@media (max-width:767px){game-badges-list .badge-row .badge-content,game-badges-list .badge-row .badge-image{float:none;width:100%}}@media (max-width:767px){game-badges-list .badge-row{height:auto}}
+/*
+     FILE ARCHIVED ON 22:28:24 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:14 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.55
+  exclusion.robots: 0.017
+  exclusion.robots.policy: 0.008
+  esindex: 0.01
+  cdx.remote: 6.728
+  LoadShardBlock: 207.417 (6)
+  PetaboxLoader3.datanode: 204.668 (7)
+  load_resource: 81.78
+  PetaboxLoader3.resolve: 54.384
+*/

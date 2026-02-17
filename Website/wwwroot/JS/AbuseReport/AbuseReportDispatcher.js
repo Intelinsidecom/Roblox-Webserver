@@ -55,7 +55,7 @@ Roblox.AbuseReportDispatcher=function() {
     ,
     f=function() {
         if( !r) {
-            $(".abuse-report-modal").click(t);
+            $(".abuse-report-modal").on("click", t);
             $(".messages-container").on("click", ".abuse-report-modal", t);
             $("#AjaxCommentsContainer").on("click", ".abuse-report-modal", t);
             $("#item-context-menu").on("click", ".abuse-report-modal", t);

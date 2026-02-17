@@ -1,0 +1,54 @@
+/* ~/CSS/Pages/PrivateServers/PrivateServers.css */
+.private-server-purchase>.game-name {
+    font-weight: 400;
+}
+
+div.GenericModalBody .TopBody.private-server-purchase-modal {
+    height: auto;
+    min-height: 100px;
+}
+
+div.GenericModalBody .TopBody.private-server-purchase-modal .Message {
+    top: 0;
+}
+
+div.GenericModalBody .TopBody.private-server-purchase-modal .private-server-name-input {
+    margin-top: 10px;
+}
+
+div.GenericModalBody .TopBody.private-server-purchase-modal .private-server-name-input input {
+    width: 226px;
+}
+
+div.GenericModalBody .TopBody.private-server-purchase-modal .note {
+    margin-top: 15px;
+}
+
+.private-server-name-error-message {
+    display: none;
+    color: #b00;
+}
+
+.private-server-purchase .private-server-game-name {
+    margin-top: 8px;
+}
+
+.fake-input-lg {
+    height: 46px;
+    font-size: 18px;
+    line-height: 1.33;
+    border-radius: 6px;
+}
+
+.fake-input-lg label {
+    padding: 5px 8px;
+    font-weight: 300;
+}
+
+#GameDisplayModal .voting-panel span {
+    float: none;
+}
+
+#GameDisplayModal .close-button {
+    display: none;
+}

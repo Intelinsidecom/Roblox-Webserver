@@ -1,0 +1,93 @@
+    <li id="voting-section"
+        class="voting-panel body"
+        data-target-id="606849621"
+        data-total-up-votes="1083411"
+        data-total-down-votes="112112"
+        data-vote-modal=""
+        data-user-authenticated="true"
+        data-vote-url="">
+        <div class="loading"></div>
+            <div class="vote-summary">
+                <div class="voting-details">
+                    <div class="users-vote ">
+
+                        <div class="upvote">
+                            <span class="icon-like "></span>
+                        </div>
+
+                        <div class="vote-details">
+                            <div class="vote-container">
+                                <div class="vote-background"></div>
+                                <div class="vote-percentage"></div>
+                                <div class="vote-mask">
+                                    <div class="segment seg-1"></div>
+                                    <div class="segment seg-2"></div>
+                                    <div class="segment seg-3"></div>
+                                    <div class="segment seg-4"></div>
+                                </div>
+                            </div>
+
+                            <div class="vote-numbers">
+                                <div class="count-left">
+                                    <span id="vote-up-text" title="1083411" class="vote-text">1M+</span>
+                                </div>
+                                <div class="count-right">
+                                    <span id="vote-down-text" title="112112" class="vote-text">112K+</span>                                    
+                                </div>
+                                    
+                            </div>
+                        </div>
+
+                        <div class="downvote">
+                            <span class="icon-dislike "></span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+    </li>
+
+<script>
+    $(function () {
+        Roblox.Voting.Resources = {
+            emailVerifiedTitle: "Verify Your Email",
+            emailVerifiedMessage: "You must verify your email before you can vote. You can verify your email on the <a href='/my/account?confirmemail=1'>Account</a> page.",
+
+            playGameTitle: "Play Game",
+            playGameMessage: "You must play the game before you can vote on it.",
+
+            useModelTitle: "Use Model",
+            useModelMessage: "You must use this model before you can vote on it.",
+
+            installPluginTitle: "Install Plugin",
+            installPluginMessage: "You must install this plugin before you can vote on it.",
+
+            buyGamePassTitle: "Buy Game Pass",
+            buyGamePassMessage: "You must own this game pass before you can vote on it.",
+
+            floodCheckThresholdMetTitle: "Slow Down",
+            floodCheckThresholdMetMessage: "You&#39;re voting too quickly. Come back later and try again.",
+
+            unknownProblemTitle: "Something Broke",
+            unknownProblemMessage: "There was an unknown problem voting. Please try again.",
+
+            guestUserTitle: "Login to Vote",
+            guestUserMessage: "<div>You must login to vote.</div> <div>Please <a href='/newlogin?returnUrl=%2Fgames%2Fvotingservice%2F606849621'>login or register</a> to continue.</div>",
+            returnUrl: '/newlogin?returnUrl=%2Fgames%2Fvotingservice%2F606849621',
+
+            accountUnderOneDayTitle: "Voter Feedback",
+            accountUnderOneDayMessage: "You will be able to vote on Games and Studio Models later, after you&#39;ve had a chance to experience Roblox a bit more. Come back to this page in a couple days.",
+
+            assetNotVoteableTitle: "Unable to Vote",
+            assetNotVoteableMessage: "This asset may not be voted on at this time.",
+
+            accept: "Verify",
+            decline: "Cancel",
+            login: "Login",
+            ok: "OK"
+        };
+
+        Roblox.Voting.Initialize();
+    });
+</script>

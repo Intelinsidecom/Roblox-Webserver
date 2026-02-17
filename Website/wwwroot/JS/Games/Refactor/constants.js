@@ -47,7 +47,7 @@ Roblox.GamesPageConstants = {
         allTime: 4
     },
     genreFilter: {
-        all: 1
+        all: 0
     },
     urls: {
         moreResultsCached: "/games/moreresultscached",

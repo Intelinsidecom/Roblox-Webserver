@@ -38,6 +38,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Thumbnails service
 builder.Services.AddSingleton<IThumbnailService>(sp => new ThumbnailService(sp.GetRequiredService<IConfiguration>()));
 builder.Services.AddSingleton<AvatarThumbnailRefreshService>();
+builder.Services.AddSingleton<GamesCacheService>();
+builder.Services.AddHostedService<GamesCacheService>(sp => sp.GetRequiredService<GamesCacheService>());
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();

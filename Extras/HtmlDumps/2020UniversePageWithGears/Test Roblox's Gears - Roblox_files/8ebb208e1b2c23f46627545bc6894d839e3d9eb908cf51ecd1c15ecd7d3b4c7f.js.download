@@ -1,0 +1,36 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {};
+Roblox.LangDynamic = Roblox.LangDynamic || {};
+Roblox.LangDynamic["Feature.ShopDialog"] = {"Heading.LeavingRoblox":"You are leaving Roblox","Action.ContinueToShop":"Continue to Shop","Action.Cancel":"Cancel","Description.AgeWarning":"Please note that you need to be over 18 to purchase products online. The Amazon store is not part of Roblox.com and is governed by a separate privacy policy.","Description.AmazonRedirect":"Your are about to visit our amazon store. You will be redirected to Roblox merchandise store on {shopLink}.","Description.RetailWebsiteRedirect":"Heads up, Robloxian – by clicking “continue,” you will be redirected to a retail website that is not owned or operated by Roblox. They may have different terms and privacy policies.","Description.PurchaseAgeWarning":"Please note that you need to be over 18 to purchase products online. We hope to see you again soon!","Action.Continue":"Continue"};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Feature.ShopDialog");
+
+}
+
+/*
+     FILE ARCHIVED ON 22:19:43 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:22 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.726
+  exclusion.robots: 0.024
+  exclusion.robots.policy: 0.011
+  esindex: 0.011
+  cdx.remote: 39.278
+  LoadShardBlock: 193.225 (6)
+  PetaboxLoader3.datanode: 234.021 (8)
+  load_resource: 296.074 (2)
+  PetaboxLoader3.resolve: 207.737 (2)
+*/

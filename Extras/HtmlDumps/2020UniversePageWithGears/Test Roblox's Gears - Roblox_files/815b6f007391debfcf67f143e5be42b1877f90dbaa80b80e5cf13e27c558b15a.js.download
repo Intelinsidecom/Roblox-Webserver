@@ -1,0 +1,36 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {};
+Roblox.LangDynamicDefault = Roblox.LangDynamicDefault || {};
+Roblox.LangDynamicDefault["Feature.PromotedChannels"] = {"HeadingSocialMedia":"Social Media","HeadingSocialLinks":"Social Links","Action.Save":"Save","Action.Remove":"Remove","Label.Url":"Url","Label.Title":"Title","Label.Limits":"You can add up to {socialLinkLimit} social links.","Action.AddLink":"Add Link","Message.SocialLinkTypeLimitError":"Cannot have more than one {socialMediaType} social media links.","Message.UrlEmptyError":"The url cannot be empty.","Message.TitleEmptyError":"The title cannot be empty.","Message.UrlSocialMediaTypeMismatchError":"The url must match the social media type.","Message.SocialLinkRemoved":"The social media link has been deleted.","Message.SocialLinkSaved":"{title} has been saved.","Message.SocialLinkInvalidError":"The social link no longer exists.","Message.UnauthorizedError":"You do not have permission to update social links.","Message.UnknownError":"Something went wrong, please try again.","Message.SocialLinksEditDisabledError":"Social links may not be edited at this time.","Message.TitleModeratedError":"The title has been moderated, please try something else.","Message.NoGroupPermission":"You do not have permission to configure this group."};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Feature.PromotedChannels");
+
+}
+
+/*
+     FILE ARCHIVED ON 22:28:24 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:27 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 1.325
+  exclusion.robots: 0.045
+  exclusion.robots.policy: 0.019
+  esindex: 0.02
+  cdx.remote: 7.23
+  LoadShardBlock: 303.582 (6)
+  PetaboxLoader3.datanode: 358.861 (8)
+  load_resource: 143.144 (2)
+  PetaboxLoader3.resolve: 61.935 (2)
+*/

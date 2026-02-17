@@ -1,0 +1,36 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {};
+Roblox.LangDynamic = Roblox.LangDynamic || {};
+Roblox.LangDynamic["Common.AlertsAndOptions"] = {"Label.sRobux":"Robux","Label.sBuyRobux":"Buy Robux","Label.sSettings":"Settings","Label.sHelp":"Help","Label.sLogout":"Logout","Label.sRobuxMessage":"{robuxValue} Robux"};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Common.AlertsAndOptions");
+
+}
+
+/*
+     FILE ARCHIVED ON 22:19:43 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:22 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 1.137
+  exclusion.robots: 0.032
+  exclusion.robots.policy: 0.014
+  esindex: 0.017
+  cdx.remote: 6.183
+  LoadShardBlock: 133.272 (6)
+  PetaboxLoader3.datanode: 199.797 (8)
+  load_resource: 117.087 (2)
+  PetaboxLoader3.resolve: 36.54
+*/

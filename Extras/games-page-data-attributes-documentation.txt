@@ -1,0 +1,279 @@
+# Games Page Data Attributes Documentation
+
+## Overview
+This document explains the various data attributes used in the games page and their effects on client-side behavior.
+
+## Data Attributes Location
+All data attributes are set in the `games-page-settings` div in `games.cshtml`:
+```html
+<div id=games-page-settings class=hidden data-gamessearchonpage=true data-adsingamesearchresultsenabled=true data-adshidden=false data-inapp=false data-defaultweeklyratings=true data-filtervaluetogameslistsidsuffixmapping=1,8,11,3,16 data-gamespagedefaulttoppaidweekly=true data-isuserloggedin=@(User.Identity.IsAuthenticated.ToString().ToLower()) data-adrefreshratemilliseconds=3000 data-minimumnumberofgamesforpersonalizedbylikedtoappear=1 data-devicetypeid=1 data-refreshadsingamespageenabled=true data-searchdefaultkeyword=Search data-incomingsearchquery="" data-zeroresults="No Search Results Found" data-pagetitle="Games - Roblox" data-usefakeresults=False data-suggestedcorrection="" data-suggestionkeyword="" data-suggestionreplacedkeyword="" data-isgamesthumbnailasyncenabled=false></div>
+```
+
+## Data Attribute Mappings
+
+### Server-Side to Client-Side Mapping
+Data attributes are mapped in `settings.js` via `Roblox.GamesPage.DataAttributes`:
+
+```javascript
+Roblox.GamesPage.DataAttributes = {
+    adRefreshRateMilliSeconds: "adrefreshratemilliseconds",
+    adsHidden: "adshidden",
+    adsInGameSearchResultsEnabled: "adsingamesearchresultsenabled",
+    defaultWeeklyRatings: "defaultweeklyratings",
+    deviceTypeId: "devicetypeid",
+    gamesPageDefaultTopPaidToWeekly: "gamespagedefaulttoppaidweekly",
+    gamesSearchOnPage: "gamessearchonpage",
+    inApp: "inapp",
+    incomingSearchQuery: "incomingsearchquery",
+    isCreateNewAd: "iscreatenewad",
+    isUserEligibleForMultirowFirstSort: "isusereligibleformultirowfirstsort",
+    isUserLoggedIn: "isuserloggedin",
+    // ... more mappings
+};
+```
+
+## Key Data Attributes and Their Effects
+
+### 1. data-isuserloggedin
+**Purpose**: Determines API endpoint selection and user-specific features
+
+**Values**:
+- `true`: User is authenticated
+- `false`: User is guest/not authenticated
+
+**Effects**:
+- **API Endpoint Selection**: 
+  - `true` → `/games/moreresultsuncached` (user-specific data)
+  - `false` → `/games/moreresultscached` (public data)
+- **Filter Availability**: Controls visibility of user-specific filters in dropdown
+- **Database Queries**: Determines whether to query by user ID or general public data
+- **Caching Strategy**: User data (volatile) vs Public data (stable)
+
+**User-Specific Filters (require login)**:
+- My Favorite (5)
+- My Recent (6) 
+- Purchased (10)
+- Friend Activity (17)
+- Personalized By Liked (18)
+
+**Public Filters (no login required)**:
+- Popular (1)
+- Featured (3)
+- Top Earning (8)
+- Top Rated (11)
+- Top Paid (9)
+
+### 2. data-inapp
+**Purpose**: Determines if page is running in Roblox mobile app vs web browser
+
+**Values**:
+- `true`: Running in Roblox mobile app
+- `false`: Running in web browser
+
+**Effects**:
+- **Notification Stream Behavior**:
+  - `true` → Auto-opens notification stream on load
+  - `false` → Requires manual click to open
+- **Layout System**: 
+  - `true` → Mobile app-specific layout
+  - `false` → Desktop layout
+- **Device Classification**:
+  - `true` → Device type returned as 'app'
+  - `false` → Device type returned as 'desktop'
+- **Navigation Behavior**:
+  - `true` → Uses app's internal navigation
+  - `false` → Standard web navigation (new tabs/windows)
+
+**Technical Implementation**:
+```javascript
+// Secondary detection via user agent
+this.inApp = userAgent.indexOf('robloxapp') > -1 || 
+           userAgent.indexOf('robloxmobile') > -1;
+```
+
+### 3. data-devicetypeid
+**Purpose**: Device type identification for responsive behavior
+
+**Values**:
+- `1`: Computer/Desktop
+- Other values for mobile/tablet devices
+
+**Effects**:
+- **Layout Rendering**: Different responsive breakpoints
+- **Game Loading**: Different batch sizes for mobile vs desktop
+- **UI Elements**: Device-specific interface elements
+
+### 4. data-adsingamesearchresultsenabled
+**Purpose**: Controls whether ads are shown in game search results
+
+**Values**:
+- `true`: Ads enabled in search results
+- `false`: Ads disabled
+
+**Effects**:
+- **Ad Display**: Shows/hides advertisement containers
+- **Layout Spacing**: Adjusts layout when ads are present/absent
+
+### 5. data-adrefreshratemilliseconds
+**Purpose**: Controls ad refresh timing
+
+**Values**: Number in milliseconds (e.g., `3000` = 3 seconds)
+
+**Effects**:
+- **Ad Rotation**: How frequently ads refresh
+- **Performance**: Impacts page load and user experience
+
+## Client-Side Usage Flow
+
+### 1. Initialization
+```javascript
+// settings.js
+this.init = function() {
+    var n = this.getSettingsElement(),
+        r = Roblox.GamesPage.DataAttributes,
+        t, i;
+    for (t in r) 
+        i = r[t], 
+        this.hasOwnProperty(t) && typeof n.data(i) != "undefined" && (this[t] = n.data(i));
+}
+```
+
+### 2. API Request Building
+```javascript
+// gamesList.js - for regular game lists
+return {
+    SortFilter: this.sortFilter,
+    IsUserLoggedIn: i.isUserLoggedIn,
+    // ... other parameters
+};
+
+// search.js - for search results  
+return {
+    StartRows: n,
+    MaxRows: t,
+    IsUserLoggedIn: i.isUserLoggedIn,
+    Keyword: u.currentSearchQuery,
+    // ... other parameters
+};
+```
+
+### 3. Endpoint Selection Logic
+```javascript
+// gamesPage.js
+getURLBasedOnSortFilter: function(n) {
+    return $.inArray(n, r.userSpecificSortFilters) !== -1 ? 
+        r.urls.moreResultsUncached : r.urls.moreResultsCached
+}
+```
+
+## Server-Side Processing
+
+### GamesController.cs Logic
+```csharp
+[HttpGet("moreresultscached")]
+[AllowAnonymous]
+public async Task<IActionResult> MoreResultsCached(
+    // ... parameters
+    bool IsUserLoggedIn = false,
+    // ... more parameters
+)
+{
+    if (GameFilter == 0 && IsUserLoggedIn)
+    {
+        // User-specific games (My Favorite, My Recent, etc.)
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        games = await GamesQueries.GetUserPublicGamesAsync(userId, ...);
+    }
+    else
+    {
+        // Public games
+        games = await GamesQueries.GetPublicGamesAsync(...);
+    }
+}
+```
+
+## Manual Override Possibilities
+
+All data attributes can be manually modified in browser dev tools:
+
+```javascript
+// Change authentication state
+document.querySelector('#games-page-settings').dataset.isuserloggedin = 'true';
+
+// Change app mode
+document.querySelector('#games-page-settings').dataset.inapp = 'true';
+
+// Change device type
+document.querySelector('#games-page-settings').dataset.devicetypeid = '2';
+```
+
+This immediately changes behavior without server restart.
+
+## Security Considerations
+
+### Client-Side Only
+- These are **configuration flags**, not security controls
+- Changing them manually only affects local UI behavior
+- Server-side authentication and authorization remain unchanged
+- API calls still validate user permissions server-side
+
+### Server Validation
+- `IsUserLoggedIn` parameter is informational only
+- Actual authentication is verified via `User.FindFirst(ClaimTypes.NameIdentifier)`
+- User-specific endpoints require valid authentication tokens
+- Guest users cannot access user-specific data regardless of client-side flag changes
+
+## Performance Implications
+
+### Caching Strategy
+- **Public Data**: Cached aggressively (stable, changes infrequently)
+- **User Data**: Not cached (volatile, user-specific)
+- **Search Results**: Different caching based on user context
+
+### Load Optimization
+- **Device Type**: Different batch sizes for mobile vs desktop
+- **Ad Settings**: Refresh rates balanced for performance vs revenue
+- **Layout**: Responsive design prevents unnecessary rendering
+
+## Debugging Tips
+
+### Check Current Settings
+```javascript
+// View all current settings
+console.log(Roblox.GamesPage.Settings);
+
+// Check specific values
+console.log('Is User Logged In:', Roblox.GamesPage.Settings.isUserLoggedIn);
+console.log('Is In App:', Roblox.GamesPage.Settings.inApp);
+console.log('Device Type ID:', Roblox.GamesPage.Settings.deviceTypeId);
+```
+
+### Monitor API Calls
+```javascript
+// Check which endpoint is being called
+console.log('Current URL:', Roblox.GamesPage.getURLBasedOnSortFilter(sortFilter));
+```
+
+## Related Files
+
+### Client-Side
+- `Website/Views/Pages/games.cshtml` - Sets data attributes
+- `Website/wwwroot/JS/Games/Refactor/settings.js` - Maps and reads attributes
+- `Website/wwwroot/JS/Games/Refactor/gamesPage.js` - Uses settings for logic
+- `Website/wwwroot/JS/Games/Refactor/gamesList.js` - Builds API requests
+- `Website/wwwroot/JS/Games/Refactor/search.js` - Handles search requests
+- `Website/wwwroot/JS/Games/Refactor/constants.js` - Defines endpoints and filter types
+
+### Server-Side
+- `Website/Controllers/Frontend/GamesController.cs` - Processes API requests
+- `Games/` assembly - Contains game data queries
+
+## Summary
+
+The games page uses a sophisticated data attribute system to control client-side behavior:
+
+1. **`data-isuserloggedin`** - Most important: controls API endpoints, user-specific features, and caching strategy
+2. **`data-inapp`** - Controls mobile app vs web browser behavior
+3. **Other attributes** - Fine-tune performance, ads, and responsive behavior
+
+This system allows the same server-side code to serve different client experiences based on user context, device type, and authentication state, while maintaining security through server-side validation.

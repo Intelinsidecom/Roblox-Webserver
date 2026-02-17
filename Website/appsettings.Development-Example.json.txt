@@ -2,7 +2,8 @@
   "Logging": {
     "LogLevel": {
       "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.AspNetCore.HttpsRedirection": "Warning"
     }
   },
   "AllowedHosts": "*",
@@ -15,6 +16,7 @@
   "Thumbnails": {
     "OutputDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails",
     "ThumbnailUrl" : "https://cdn.freblx.xyz/",
+    "ArbiterUrl": "http://localhost:5000",
     "TshirtTemplatePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png",
     "TshirtTemplateHighResPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png",
     "PendingAvatarPlaceholderUrl": "/images/blocked.png"
@@ -28,9 +30,25 @@
   },
   "Games": {
     "StarterPlacePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Places\\StartingPlace.rbxl",
-    "EnableCreationCooldown": false
+    "EnableCreationCooldown": false,
+    "Cache": {
+      "Enabled": false,
+      "RefreshIntervalMinutes": 15,
+      "MaxCachedGames": 200,
+      "CacheTimeoutMinutes": 30
+    }
+  },
+  "PlaceTemplates": {
+    "95206881": "Baseplate.rbxl",
+    "95206192": "FlatTerrain.rbxl", 
+    "520390648": "Village.rbxl",
+    "203810088": "Castle.rbxl"
   },
   "Apis": {
     "DefaultApiRateLimitTimeInSeconds": 1
+  },
+  "RobloxAssetDelivery": {
+    "Enabled": false,
+    "BaseUrl": "https://assetdelivery.roblox.com"
   }
 }

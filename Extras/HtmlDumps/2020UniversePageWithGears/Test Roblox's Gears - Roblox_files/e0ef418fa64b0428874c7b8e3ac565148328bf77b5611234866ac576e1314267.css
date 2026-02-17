@@ -1,0 +1,21 @@
+.game-tile{display:inline-block;width:164px;height:240px;padding:0 14px 0 0;margin-bottom:12px;vertical-align:top;white-space:normal}@media (max-width:543px){.game-tile{width:104px;height:152px}}.game-tile .game-name-title{max-height:45px}@media (max-width:543px){.game-tile .game-name-title{max-height:28px}}.game-tile .game-name-title.game-name-oneline{max-height:25px}@media (max-width:543px){.game-tile .game-name-title.game-name-oneline{max-height:18px}}.game-tile .game-card-info,.game-tile .game-card-name{line-height:1.4em}@media (max-width:543px){.game-tile .game-card-info,.game-tile .game-card-name{font-size:10px;line-height:1.4em}}@media (max-width:543px){.game-tile .game-card-container .game-card-info{padding:2px 0 0}}.game-tile .game-card-container .game-card-info .no-vote,.game-tile .game-card-container .game-card-info .playing-counts-label,.game-tile .game-card-container .game-card-info .vote-percentage-label{padding:0 12px 0 3px}@media (max-width:543px){.game-tile .game-card-container .game-card-info .no-vote,.game-tile .game-card-container .game-card-info .playing-counts-label,.game-tile .game-card-container .game-card-info .vote-percentage-label{margin:0}}@media (max-width:543px){.game-tile .game-card-container .game-card-info .no-vote,.game-tile .game-card-container .game-card-info .vote-percentage-label{padding:0 4px 0 0}}@media (max-width:543px){.game-tile .game-card-container .game-card-info .playing-counts-label{padding:0}}@media (max-width:543px){.game-tile .sponsored-game{height:152px}}.game-card-native-ad{text-align:center}@media (max-width:543px){.game-card-thumb-container,.game-card-thumb-container .game-card-thumb{width:90px;height:90px}}
+/*
+     FILE ARCHIVED ON 22:28:24 Oct 28, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:59:14 Feb 15, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.804
+  exclusion.robots: 0.023
+  exclusion.robots.policy: 0.01
+  esindex: 0.013
+  cdx.remote: 11.457
+  LoadShardBlock: 196.386 (6)
+  PetaboxLoader3.datanode: 277.386 (8)
+  load_resource: 465.955 (2)
+  PetaboxLoader3.resolve: 324.982 (2)
+*/

@@ -320,7 +320,7 @@ where asset_id = @asset_id;";
                 throw new ArgumentException("connectionString is required", nameof(connectionString));
             if (assetId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(assetId));
-            if (genre < 1 || genre > 15)
+            if (genre < 0 || genre > 20)
                 throw new ArgumentOutOfRangeException(nameof(genre));
 
             using var conn = new NpgsqlConnection(connectionString);
@@ -482,6 +482,41 @@ where asset_id = @asset_id;";
                 return (int)Math.Min(l, int.MaxValue);
 
             return 0;
+        }
+
+        public static async Task<(DateTime CreatedAt, DateTime UpdatedAt, int MaxPlayers, int Genre, bool IsAllGenresAllowed, string AllowedGearTypes, bool PrivateServersAllowed, bool PrivateServersFree, int PrivateServersPrice)?> GetPlaceAdditionalDataAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select created_at, last_updated, max_visitor_count, genre, is_all_genres_allowed, allowed_gear_types,
+private_servers_allowed, private_servers_free, private_servers_price
+from assets
+where asset_id = @id and is_place = true";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("id", assetId);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                return (
+                    reader.GetDateTime(0),
+                    reader.GetDateTime(1),
+                    reader.IsDBNull(2) ? 8 : reader.GetInt32(2),
+                    reader.IsDBNull(3) ? 1 : reader.GetInt32(3),
+                    reader.IsDBNull(4) ? (bool)reader.GetBoolean(4) : false,
+                    reader.IsDBNull(5) ? "[]" : reader.GetString(5),
+                    reader.IsDBNull(6) ? false : reader.GetBoolean(6),
+                    reader.IsDBNull(7) ? false : reader.GetBoolean(7),
+                    reader.IsDBNull(8) ? 0 : reader.GetInt32(8)
+                );
+            }
+
+            return null;
         }
 
         }

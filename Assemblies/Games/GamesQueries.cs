@@ -1,5 +1,6 @@
 using Npgsql;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -88,5 +89,391 @@ public static class GamesQueries
         }
 
         return Convert.ToInt64(result);
+    }
+
+    /// <summary>
+    /// Represents a game entry for the games page, containing universe and place information
+    /// </summary>
+    public class GameEntry
+    {
+        public long UniverseId { get; set; }
+        public long PlaceId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string CreatorName { get; set; } = string.Empty;
+        public long CreatorUserId { get; set; }
+        public string IconUrl { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = string.Empty;
+        public int Playing { get; set; }
+        public int UpVotes { get; set; }
+        public int DownVotes { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int TotalVotes => UpVotes + DownVotes;
+        public double VotePercentage => TotalVotes > 0 ? (double)UpVotes / TotalVotes * 100 : 0;
+    }
+
+    /// <summary>
+    /// Gets public universes with their game information for the games page
+    /// Filters for public universes only and includes game icon, name, and creator info
+    /// </summary>
+    public static async Task<List<GameEntry>> GetPublicGamesAsync(
+        int sortFilter = 1,
+        int timeFilter = 0,
+        int genreFilter = 1,
+        int regionFilter = 183,
+        int startRow = 0,
+        int maxRows = 14,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT 
+                u.universe_id,
+                u.root_place_id,
+                u.name,
+                u.creator_user_id,
+                creator.user_name as creator_name,
+                COALESCE(a.thumbnail_url, '/images/blocked.png') as icon_url,
+                COALESCE(a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+                u.created_at,
+                COALESCE(a.upvotes, 0) as up_votes,
+                COALESCE(a.downvotes, 0) as down_votes,
+                0 as playing_count
+            FROM universes u
+            INNER JOIN users creator ON u.creator_user_id = creator.user_id
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true 
+            AND a.access_type = 1 -- Public access only
+            AND u.root_place_id IS NOT NULL";
+
+        if (genreFilter > 1)
+        {
+            sql += " AND a.genre = @genreFilter";
+        }
+
+        var orderBy = sortFilter switch
+        {
+            1 => "ORDER BY u.created_at DESC", // Popular (by newest for now since no playing data)
+            2 => "ORDER BY u.created_at DESC", // Top Favorite (by newest for now since no vote data)
+            3 => "ORDER BY u.created_at DESC", // Featured (by newest)
+            8 => "ORDER BY u.created_at DESC", // Top Earning (by newest for now)
+            9 => "ORDER BY u.created_at DESC", // Top Paid (by newest for now)
+            11 => "ORDER BY u.created_at DESC", // Top Rated (by newest for now since no vote data)
+            16 => "ORDER BY u.created_at DESC", // Top Retaining (by newest for now)
+            _ => "ORDER BY u.created_at DESC" // Default to newest
+        };
+
+        if (timeFilter > 0)
+        {
+            var timeCondition = timeFilter switch
+            {
+                1 => "AND u.created_at >= NOW() - INTERVAL '24 hours'", // Daily
+                2 => "AND u.created_at >= NOW() - INTERVAL '7 days'", // Weekly
+                4 => "", // All time (no additional filter)
+                _ => "" // Default to no time filter
+            };
+            sql += $" {timeCondition}";
+        }
+
+        sql += $" {orderBy} LIMIT @maxRows OFFSET @startRow";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("maxRows", maxRows);
+        cmd.Parameters.AddWithValue("startRow", startRow);
+        
+        if (genreFilter > 1)
+        {
+            cmd.Parameters.AddWithValue("genreFilter", genreFilter);
+        }
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var games = new List<GameEntry>();
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var game = new GameEntry
+            {
+                UniverseId = reader.GetInt64(reader.GetOrdinal("universe_id")),
+                PlaceId = reader.GetInt64(reader.GetOrdinal("root_place_id")),
+                Name = reader.GetString(reader.GetOrdinal("name")),
+                CreatorName = reader.GetString(reader.GetOrdinal("creator_name")),
+                CreatorUserId = reader.GetInt64(reader.GetOrdinal("creator_user_id")),
+                IconUrl = reader.GetString(reader.GetOrdinal("icon_url")),
+                ThumbnailUrl = reader.GetString(reader.GetOrdinal("thumbnail_url")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
+                DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
+                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+            };
+            games.Add(game);
+        }
+
+        return games;
+    }
+
+    /// <summary>
+    /// Gets public universes for a specific user (their created games)
+    /// </summary>
+    public static async Task<List<GameEntry>> GetUserPublicGamesAsync(
+        long userId,
+        int sortFilter = 1,
+        int startRow = 0,
+        int maxRows = 14,
+        int genreFilter = 1,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (userId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(userId));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT 
+                u.universe_id,
+                u.root_place_id,
+                u.name,
+                u.creator_user_id,
+                creator.user_name as creator_name,
+                COALESCE(a.place_custom_icon_url, a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as icon_url,
+                COALESCE(a.place_custom_icon_url, a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+                u.created_at,
+                COALESCE(a.upvotes, 0) as up_votes,
+                COALESCE(a.downvotes, 0) as down_votes,
+                0 as playing_count
+            FROM universes u
+            INNER JOIN users creator ON u.creator_user_id = creator.user_id
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE u.creator_user_id = @userId
+            AND a.is_place = true 
+            AND a.access_type = 1 -- Public access only
+            AND u.root_place_id IS NOT NULL";
+
+        if (genreFilter > 1)
+        {
+            sql += " AND a.genre = @genreFilter";
+        }
+
+        sql += " ORDER BY u.created_at DESC LIMIT @maxRows OFFSET @startRow";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("userId", userId);
+        cmd.Parameters.AddWithValue("maxRows", maxRows);
+        cmd.Parameters.AddWithValue("startRow", startRow);
+        
+
+        if (genreFilter > 1)
+        {
+            cmd.Parameters.AddWithValue("genreFilter", genreFilter);
+        }
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var games = new List<GameEntry>();
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var game = new GameEntry
+            {
+                UniverseId = reader.GetInt64(reader.GetOrdinal("universe_id")),
+                PlaceId = reader.GetInt64(reader.GetOrdinal("root_place_id")),
+                Name = reader.GetString(reader.GetOrdinal("name")),
+                CreatorName = reader.GetString(reader.GetOrdinal("creator_name")),
+                CreatorUserId = reader.GetInt64(reader.GetOrdinal("creator_user_id")),
+                IconUrl = reader.GetString(reader.GetOrdinal("icon_url")),
+                ThumbnailUrl = reader.GetString(reader.GetOrdinal("thumbnail_url")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
+                DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
+                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+            };
+            games.Add(game);
+        }
+
+        return games;
+    }
+
+    /// <summary>
+    /// Searches public universes by name with filtering options
+    /// </summary>
+    public static async Task<List<GameEntry>> SearchPublicGamesAsync(
+        string keyword,
+        int startRow = 0,
+        int maxRows = 40,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (string.IsNullOrWhiteSpace(keyword))
+            return new List<GameEntry>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT 
+                u.universe_id,
+                u.root_place_id,
+                u.name,
+                u.creator_user_id,
+                creator.user_name as creator_name,
+                COALESCE(a.place_custom_icon_url, a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as icon_url,
+                COALESCE(a.place_custom_icon_url, a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+                u.created_at,
+                COALESCE(a.upvotes, 0) as up_votes,
+                COALESCE(a.downvotes, 0) as down_votes,
+                0 as playing_count
+            FROM universes u
+            INNER JOIN users creator ON u.creator_user_id = creator.user_id
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true 
+            AND a.access_type = 1 -- Public access only
+            AND u.root_place_id IS NOT NULL
+            AND (
+                to_tsvector('english', u.name) @@ plainto_tsquery('english', @keyword) OR
+                to_tsvector('english', creator.username) @@ plainto_tsquery('english', @keyword)
+            )
+            ORDER BY u.created_at DESC
+            LIMIT @maxRows OFFSET @startRow";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("keyword", keyword);
+        cmd.Parameters.AddWithValue("maxRows", maxRows);
+        cmd.Parameters.AddWithValue("startRow", startRow);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var games = new List<GameEntry>();
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var game = new GameEntry
+            {
+                UniverseId = reader.GetInt64(reader.GetOrdinal("universe_id")),
+                PlaceId = reader.GetInt64(reader.GetOrdinal("root_place_id")),
+                Name = reader.GetString(reader.GetOrdinal("name")),
+                CreatorName = reader.GetString(reader.GetOrdinal("creator_name")),
+                CreatorUserId = reader.GetInt64(reader.GetOrdinal("creator_user_id")),
+                IconUrl = reader.GetString(reader.GetOrdinal("icon_url")),
+                ThumbnailUrl = reader.GetString(reader.GetOrdinal("thumbnail_url")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
+                DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
+                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+            };
+            games.Add(game);
+        }
+
+        return games;
+    }
+
+    /// <summary>
+    /// Gets the total count of public universes for pagination
+    /// </summary>
+    public static async Task<int> GetPublicGamesCountAsync(
+        int sortFilter = 1,
+        int timeFilter = 0,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT COUNT(*)
+            FROM universes u
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true 
+            AND a.access_type = 1 -- Public access only
+            AND u.root_place_id IS NOT NULL";
+
+        if (timeFilter > 0)
+        {
+            var timeCondition = timeFilter switch
+            {
+                1 => "AND u.created_at >= NOW() - INTERVAL '24 hours'", // Daily
+                2 => "AND u.created_at >= NOW() - INTERVAL '7 days'", // Weekly
+                4 => "", // All time (no additional filter)
+                _ => "" // Default to no time filter
+            };
+            sql += $" {timeCondition}";
+        }
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        
+        return Convert.ToInt32(result ?? 0);
+    }
+
+    /// <summary>
+    /// Gets recommended games (popular public games) for universe page
+    /// </summary>
+    public static async Task<List<GameEntry>> GetRecommendedGamesAsync(
+        int limit = 7,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT 
+                u.universe_id,
+                u.root_place_id,
+                u.name,
+                u.creator_user_id,
+                creator.user_name as creator_name,
+                COALESCE(a.thumbnail_url, '/images/blocked.png') as icon_url,
+                COALESCE(a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+                u.created_at,
+                COALESCE(a.upvotes, 0) as up_votes,
+                COALESCE(a.downvotes, 0) as down_votes,
+                0 as playing_count
+            FROM universes u
+            INNER JOIN users creator ON u.creator_user_id = creator.user_id
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true 
+            AND a.access_type = 1 -- Public access only
+            AND u.root_place_id IS NOT NULL
+            ORDER BY u.created_at DESC
+            LIMIT @limit";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@limit", limit);
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        
+        var games = new List<GameEntry>();
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var game = new GameEntry
+            {
+                PlaceId = reader.GetInt64(1), // root_place_id
+                Name = reader.GetString(2),
+                CreatorUserId = reader.GetInt64(3),
+                CreatorName = reader.GetString(4),
+                IconUrl = reader.GetString(5),
+                ThumbnailUrl = reader.GetString(6),
+                CreatedAt = reader.GetDateTime(7),
+                UpVotes = reader.GetInt32(8),
+                DownVotes = reader.GetInt32(9),
+                Playing = reader.GetInt32(10)
+            };
+            games.Add(game);
+        }
+
+        return games;
     }
 }

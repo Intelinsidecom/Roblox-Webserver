@@ -7,11 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- i did this since games page needs extra care, that means full frontend rework in css will be needed, yikes -->
 
+        @if (ViewContext.HttpContext.Request.Path.Value.Contains("/404"))
+        {
+            <!-- should be loaded for pages that need text styling but break other pages when styleguide is included -->
+            <link rel="stylesheet" href="/CSS/LeanBaseStyle.css">
+            <link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
+            <link rel="stylesheet" href="/CSS/SiteStyle.css">
+        }
         <link rel="stylesheet" href="~/CSS/Base/CSS/Roblox.css">
         <link rel="stylesheet" href="~/CSS/RBXCommon.css">
         <link rel="stylesheet" href="~/CSS/Base/CSS/Footer.css">
         <link rel="stylesheet" href="~/CSS/Base/CSS/Header.css">
-        <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
+        <!-- It seems that /games/id/name loads something and gets style guide loaded again too -->
+        @if (ViewContext.HttpContext.Request.Path.Value.Contains("/catalog"))
+        {
+            <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
+        }
         <link rel="stylesheet" href="~/CSS/Base/CSS/tipsy.css">
         <link rel="stylesheet" href="~/CSS/Fonts/SourceSansPro-Google.css">
         <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
@@ -26,7 +37,10 @@
     <!-- dependencies other scripts may use or not, angular, ajax and so on -->
     <script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="~/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    @if (!ViewContext.HttpContext.Request.Path.Value.Contains("/games/"))
+    {
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    }
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
     <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
@@ -97,9 +111,11 @@
         Roblox.EventStream.Init("/images/signup/e.png", "/images/signup/e.png", "/pe?t=studio", "/pe?t=diagnostic");
       }
     </script>
+    <!-- Temporarily disabled notification stream for debugging
     <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Notifications_NotificationStreamResources_en_us_standard.js"></script>
     <script type="text/javascript" src="~/JS/dist/js/notificationStream.bundle.min.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
+    -->
 
 
 
