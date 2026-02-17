@@ -1,7 +1,12 @@
 @{
     Layout = "_Layout";
+    var keyword = Context.Request.Query["keyword"].ToString();
+    if (!string.IsNullOrEmpty(keyword))
+    {
+        Context.Response.Redirect($"/games/Search?keyword={keyword}");
+        return;
+    }
 }
-
 
     <script>
         var Roblox = Roblox || {};
@@ -592,7 +597,6 @@ body, html {
                 </div>
             </div>
     </div>
-</div>
 
 <script>
                     $(function() {
@@ -622,9 +626,6 @@ body, html {
                         }
                     });
                 </script>
-            </div>
-        </div>
-    </div>
     <div ng-modules="robloxApp, notificationStream, emailAndPhoneUpsell" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
                 'isPhone': library.isPhone, 
                 'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
@@ -635,12 +636,7 @@ body, html {
         function urchinTracker() {}
     </script>
 
-    </div>
-    
-    
-
-
-        <script>
+    <script>
             Roblox = Roblox || {};
             Roblox.Resources = Roblox.Resources || {};
             Roblox.Resources.GenericConfirmation = {
@@ -650,8 +646,7 @@ body, html {
                 Cancel: "Cancel"
             };
         </script>
-    </div>
-   
+
         <script>
             Roblox = Roblox || {};
             Roblox.Resources = Roblox.Resources || {};
@@ -664,7 +659,6 @@ body, html {
                 Agree: "Agree"
             };
         </script>
-    </div>
     <script>
         Roblox = Roblox || {};
         Roblox.ContactUpsellMeta = {
@@ -1092,4 +1086,5 @@ body, html {
     }
 }
 </style>
+}
 }

@@ -1,0 +1,8158 @@
+{
+
+
+
+
+<!DOCTYPE html>
+
+
+<![if IE 8]><html class="ie8" ngapp="robloxApp"><![endif]>
+
+
+<![if gt IE 8]><!>
+
+
+<html>
+
+
+<!<![endif]>
+
+
+<head>
+
+
+    <! MachineID: WEB145 >
+
+
+    <title>ROBLOX.com</title>
+
+
+    <meta httpequiv="XUACompatible" content="IE=edge,requiresActiveX=true" />
+
+
+    <meta charset="UTF8">
+
+
+    <meta name="viewport" content="width=devicewidth, initialscale=1">
+
+
+    <meta name="author" content="ROBLOX Corporation" />
+
+
+    <meta name="description" content="Usergenerated MMO gaming site for kids, teens, and adults. Players architect their own worlds. Builders create free online games that simulate the real world. Create and play amazing 3D games. An online gaming cloud and distributed physics engine." />
+
+
+    <meta name="keywords" content="free games, online games, building games, virtual worlds, free mmo, gaming cloud, physics engine" />
+
+
+    <meta name="appleitunesapp" content="appid=431946152" />
+
+
+
+
+
+
+    
+    
+
+
+    <link rel="icon" type="image/vnd.microsoft.icon" href="/favicon.ico" />
+
+
+
+
+
+
+    
+    
+
+
+    <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600,700" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+<link rel='stylesheet' href='/CSS/Base/CSS/FetchCSS?path=leanbase___f9e2a82b042c4b4f945b16e30fb19e87_m.css' />
+
+
+
+
+
+
+    
+    
+
+
+<link rel='stylesheet' href='/CSS/Base/CSS/FetchCSS?path=page___0513ca5a00c9bdedff82380744b7def6_m.css' />
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    
+    
+
+
+    <script type='text/javascript' src='//ajax.aspnetcdn.com/ajax/jQuery/jquery1.11.1.min.js'></script>
+
+
+<nowiki><script type='text/javascript'>window.jQuery  document.write("<script type='text/javascript' src='/js/jquery/jquery1.11.1.js'><\/script>")</script></nowiki>
+
+
+<script type='text/javascript' src='//ajax.aspnetcdn.com/ajax/jquery.migrate/jquerymigrate1.2.1.min.js'></script>
+
+
+<nowiki><script type='text/javascript'>window.jQuery  document.write("<script type='text/javascript' src='/js/jquery/jquerymigrate1.2.1.js'><\/script>")</script></nowiki>
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    <script type='text/javascript' src='http://js.rbxcdn.com/fbb8598e3acc13fe8b4d8c1c5b676f2e.js.gzip'></script>
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+        <meta name="viewport" content="width=devicewidth, initialscale=1, maximumscale=1, userscalable=0" />
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+<nowiki>    var Roblox = Roblox  {};</nowiki>
+
+
+<nowiki>    Roblox.AdsHelper = Roblox.AdsHelper  {};</nowiki>
+
+
+
+
+
+
+    Roblox.AdsHelper.toggleAdsSlot = function (slotId, GPTRandomSlotIdentifier) {
+
+
+        var gutterAdsEnabled = false;
+
+
+        if (gutterAdsEnabled) {
+
+
+            googletag.display(GPTRandomSlotIdentifier);
+
+
+            return;
+
+
+        }
+
+
+        
+        
+
+
+        if (typeof slotId !== 'undefined' && slotId && slotId.length > 0) {
+
+
+            var slotElm = $("#"+slotId);
+
+
+            if (slotElm.is(":visible")) {
+
+
+                googletag.display(GPTRandomSlotIdentifier);
+
+
+            }else {
+
+
+                switch(slotId) {
+
+
+                    case "SkyscraperAdpLeft":
+
+
+                        Roblox.AdsHelper.adLeftTemplate = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "SkyscraperAdpRight":
+
+
+                        Roblox.AdsHelper.adRightTemplate = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "LeaderboardAbp":
+
+
+                        Roblox.AdsHelper.adLeaderboardTemplate = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "GamePageAdDiv1":
+
+
+                        Roblox.AdsHelper.adGamePageAdDiv1Template = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "GamePageAdDiv2":
+
+
+                        Roblox.AdsHelper.adGamePageAdDiv2Template = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "GamePageAdDiv3":
+
+
+                        Roblox.AdsHelper.adGamePageAdDiv3Template = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "ProfilePageAdDiv1":
+
+
+                        Roblox.AdsHelper.adProfilePageAdDiv1Template = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    case "ProfilePageAdDiv2":
+
+
+                        Roblox.AdsHelper.adProfilePageAdDiv2Template = slotElm.html();
+
+
+                        slotElm.empty();
+
+
+                        break;
+
+
+                    default:
+
+
+                        return;
+
+
+                }
+
+
+            }
+
+
+        }
+
+
+    }
+
+
+</script><script type="text/javascript">
+
+
+    $(function () {
+
+
+        Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+
+
+    });
+
+
+</script>
+
+
+        <script type="text/javascript" src="https://cdns.gigya.com/js/gigya.js?apiKey=3_OsvmtBbTg6S_EUbwTPtbbmoihFY5ON6v6hbVrTbuqpBs7SyF_LQaJwtwKJ60sY1p"></script>
+
+
+    
+    
+
+
+        <script>
+
+
+        (function(a,b,c,d,e){function f(){var a=b.createElement("script");a.async=!0;
+
+
+        a.src="//radar.cedexis.com/1/18551/radar.js";b.body.appendChild(a)}/\bMSIE 6/i
+
+
+<nowiki>        .test(a.navigator.userAgent)(a[c]?a[c](e,f,!1):a[d]&&a[d]("on"+e,f))})</nowiki>
+
+
+        (window,document,"addEventListener","attachEvent","load");
+
+
+        </script>         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    <![if lt IE 9]>
+
+
+<script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+
+
+<script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
+
+<![endif]>
+
+
+    
+    
+
+
+        <script type="text/javascript">
+
+
+
+
+
+
+<nowiki>        var _gaq = _gaq  [];</nowiki>
+
+
+
+
+
+
+            _gaq.push(['_setAccount', 'UA114197931']);
+
+
+            _gaq.push(['_setCampSourceKey', 'rbx_source']);
+
+
+            _gaq.push(['_setCampMediumKey', 'rbx_medium']);
+
+
+            _gaq.push(['_setCampContentKey', 'rbx_campaign']);
+
+
+                _gaq.push(['_setDomainName', 'roblox.com']);
+
+
+        _gaq.push(['b._setAccount', 'UA4866321']);
+
+
+        _gaq.push(['b._setCampSourceKey', 'rbx_source']);
+
+
+        _gaq.push(['b._setCampMediumKey', 'rbx_medium']);
+
+
+        _gaq.push(['b._setCampContentKey', 'rbx_campaign']);
+
+
+
+
+
+
+        _gaq.push(['b._setDomainName', 'roblox.com']);
+
+
+        
+        
+
+
+            _gaq.push(['b._setCustomVar', 1, 'Visitor', 'Member', 2]);
+
+
+            _gaq.push(['b._trackPageview']);    
+
+
+        
+        
+
+
+        
+        
+
+
+        
+        
+
+
+
+
+
+
+        _gaq.push(['c._setAccount', 'UA268101512']);
+
+
+        _gaq.push(['c._setDomainName', 'roblox.com']);
+
+
+
+
+
+
+        (function() {
+
+
+            var ga = document.createElement('script');
+
+
+            ga.type = 'text/javascript';
+
+
+            ga.async = true;
+
+
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.googleanalytics.com/ga.js';
+
+
+            var s = document.getElementsByTagName('script')[0];
+
+
+            s.parentNode.insertBefore(ga, s);
+
+
+        })();
+
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+<nowiki>    <div id="robloxlinkify" dataenabled="true" dataregex="(https?\:\/\/)?(?:www\.)?([az09\]{2,}\.)*((mdewwwwebapiblogwikihelpcorppollsbloxcondeveloper)\.roblox\.comrobloxlabs\.com)((\/[AZaz09+&amp;amp;@#\/%?=~_!:,.;]*)(\b\s))" dataregexflags="gm"></div></nowiki>
+
+
+<script type='text/javascript' src='http://js.rbxcdn.com/2bd19c8fa2a972c94ed086573ec302cd.js.gzip'></script>
+
+
+            <script type="text/javascript">
+
+
+            $(function() {
+
+
+                if (Roblox.EventStream) {
+
+
+                    Roblox.EventStream.InitializeEventStream("http://ecsv2.roblox.com/www/e.png");
+
+
+                }
+
+
+            });
+
+
+        </script>
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+</head>
+
+
+<body>
+
+
+    
+    
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+<nowiki><div id="fbroot"></div></nowiki>
+
+
+
+
+
+
+<div class="wrap nogutterads loggedin"
+
+
+     datagutteradsenabled="false">
+
+
+
+
+
+
+
+
+
+
+<nowiki><div id="header" class="navbarfixedtop rbxheader" role="navigation"></nowiki>
+
+
+    <nowiki><div class="containerfluid"></nowiki>
+
+
+        <nowiki><div class="rbxnavbarheader"></nowiki>
+
+
+            <nowiki><div databehavior="navnotification" class="rbxnavcollapse" onselectstart="return false;"></nowiki>
+
+
+                    <nowiki><span class="rbxiconnavmenu"></span></nowiki>
+
+
+                
+                
+
+
+                <div class="rbxnavnotification hide rbxfontxs"
+
+
+                       title="0">
+
+
+                    
+                    
+
+
+                <nowiki></div></nowiki>
+
+
+                
+                
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="navbarheader"></nowiki>
+
+
+                <nowiki><a class="navbarbrand" href="/"><span class="logo"></span></a></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><ul class="nav rbxnavbar hiddenxs hiddensm colmd4 collg3"></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a href="/games">Games</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a href="/catalog">Catalog</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a href="/develop">Develop</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a class="buyrobux" href="/upgrades/robux?ctx=nav">ROBUX</a>
+
+
+            <nowiki></li></nowiki>
+
+
+        <nowiki></ul><!rbxnavbar></nowiki>
+
+
+        <nowiki><div id="navbaruniversalsearch" class="navbarleft rbxnavbarsearch colxs5 colsm6 colmd3" databehavior="univeralsearch" role="search"></nowiki>
+
+
+            <nowiki><div class="inputgroup rbxinputgroup"></nowiki>
+
+
+
+
+
+
+                <input id="navbarsearchinput" class="formcontrol rbxinputfield" type="text" placeholder="Search" maxlength="120" />
+
+
+                <nowiki><div class="inputgroupbtn rbxinputgroupbtn"></nowiki>
+
+
+                    <button id="navbarsearchbtn" class="rbxinputaddonbtn" type="submit">
+
+
+                        <nowiki><span class="rbxiconnavsearch"></span></nowiki>
+
+
+                    </button>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><ul datatoggle="dropdownmenu" class="rbxdropdownmenu" role="menu"></nowiki>
+
+
+                <nowiki><li class="rbxnavbarsearchoption selected" datasearchurl="/search/users?keyword="></nowiki>
+
+
+                    <nowiki><span class="rbxnavbarsearchtext">Search <span class="rbxnavbarsearchstring"></span> in People</span></nowiki>
+
+
+                <nowiki></li></nowiki>
+
+
+                        <nowiki><li class="rbxnavbarsearchoption" datasearchurl="/games/?Keyword="></nowiki>
+
+
+                            <nowiki><span class="rbxnavbarsearchtext">Search <span class="rbxnavbarsearchstring"></span> in Games</span></nowiki>
+
+
+                        <nowiki></li></nowiki>
+
+
+                        <nowiki><li class="rbxnavbarsearchoption" datasearchurl="/catalog/browse.aspx?CatalogContext=1&amp;amp;Keyword="></nowiki>
+
+
+                            <nowiki><span class="rbxnavbarsearchtext">Search <span class="rbxnavbarsearchstring"></span> in Catalog</span></nowiki>
+
+
+                        <nowiki></li></nowiki>
+
+
+                        <nowiki><li class="rbxnavbarsearchoption" datasearchurl="/groups/search.aspx?val="></nowiki>
+
+
+                            <nowiki><span class="rbxnavbarsearchtext">Search <span class="rbxnavbarsearchstring"></span> in Groups</span></nowiki>
+
+
+                        <nowiki></li></nowiki>
+
+
+                        <nowiki><li class="rbxnavbarsearchoption" datasearchurl="/develop/library?CatalogContext=2&amp;amp;Category=6&amp;amp;Keyword="></nowiki>
+
+
+                            <nowiki><span class="rbxnavbarsearchtext">Search <span class="rbxnavbarsearchstring"></span> in Library</span></nowiki>
+
+
+                        <nowiki></li></nowiki>
+
+
+            <nowiki></ul></nowiki>
+
+
+        <nowiki></div><!rbxnavbarsearch></nowiki>
+
+
+        <nowiki><div class="navbarright rbxnavbarright colxs4 colsm3"></nowiki>
+
+
+
+
+
+
+<nowiki><ul class="nav navbarright rbxnavbaricongroup"></nowiki>
+
+
+    <nowiki><li></nowiki>
+
+
+        <a class="rbxmenuitem" datatoggle="popover" databind="popoversetting" dataviewport="#header">
+
+
+            <nowiki><span class="rbxiconnavsettings" id="navsettings"></span></nowiki>
+
+
+            <nowiki><span class="rbxfontxs navsettinghighlight hidden">0</span></nowiki>
+
+
+        </a>
+
+
+        <nowiki><div class="rbxpopovercontent" datatoggle="popoversetting"></nowiki>
+
+
+            <nowiki><ul class="rbxdropdownmenu" role="menu"></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a class="rbxmenuitem" href="/my/account">
+
+
+                        Settings
+
+
+                        <nowiki><span class="rbxfontxs navsettinghighlight hidden">0</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li><a href="/Help/Builderman.aspx" target="_blank">Help</a></li></nowiki>
+
+
+                <nowiki><li><a databehavior="logout" databind="/authentication/logout">Logout</a></li></nowiki>
+
+
+            <nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></li></nowiki>
+
+
+    <nowiki><li></nowiki>
+
+
+        <a class="rbxmenuitem" datatoggle="popover" databind="popovertix" dataviewport="#header">
+
+
+            <nowiki><span class="rbxiconnavtix" id="navtix"></span></nowiki>
+
+
+            <nowiki><span class="rbxtextnavbarright" id="navtixamount">0</span></nowiki>
+
+
+        </a>
+
+
+        <nowiki><div class="rbxpopovercontent" datatoggle="popovertix"></nowiki>
+
+
+            <nowiki><ul class="rbxdropdownmenu" role="menu"></nowiki>
+
+
+                <nowiki><li><a href="/My/Money.aspx#/#Summary_tab" id="navtixbalance">0 Tickets</a></li></nowiki>
+
+
+                <nowiki><li><a href="/my/money.aspx?tab=TradeCurrency">Trade Currency</a></li></nowiki>
+
+
+            <nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></li></nowiki>
+
+
+    <nowiki><li></nowiki>
+
+
+        <a id="navrobuxicon" class="rbxmenuitem" datatoggle="popover" databind="popoverrobux">
+
+
+            <nowiki><span class="rbxiconnavrobux" id="navrobux"></span></nowiki>
+
+
+            <nowiki><span class="rbxtextnavbarright" id="navrobuxamount">89</span></nowiki>
+
+
+        </a>
+
+
+        <nowiki><div class="rbxpopovercontent" datatoggle="popoverrobux"></nowiki>
+
+
+            <nowiki><ul class="rbxdropdownmenu" role="menu"></nowiki>
+
+
+                <nowiki><li><a href="/My/Money.aspx#/#Summary_tab" id="navrobuxbalance">89 ROBUX</a></li></nowiki>
+
+
+                <nowiki><li><a href="/upgrades/robux?ctx=navpopover">Buy ROBUX</a></li></nowiki>
+
+
+            <nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></li></nowiki>
+
+
+    <nowiki><li class="rbxnavbarrightsearch" datatoggle="togglesearch"></nowiki>
+
+
+        <a class="rbxmenuicon">
+
+
+            <nowiki><span class="rbxiconnavsearchwhite"></span></nowiki>
+
+
+        </a>
+
+
+    <nowiki></li></nowiki>
+
+
+<nowiki></ul>        </div><! navbar right></nowiki>
+
+
+        <nowiki><ul class="nav rbxnavbar hiddenmd hiddenlg colxs12"></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a href="/games">Games</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a href="/catalog">Catalog</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a href="/develop">Develop</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li></nowiki>
+
+
+                <a class="buyrobux" href="/upgrades/robux?ctx=nav">ROBUX</a>
+
+
+            <nowiki></li></nowiki>
+
+
+        <nowiki></ul><!rbxnavbar></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+<! LEFT NAV MENU >
+
+
+    <nowiki><div id="navigation" class="rbxleftcol" databehavior="leftcol"></nowiki>
+
+
+        <nowiki><ul></nowiki>
+
+
+            <nowiki><li class="rbxlead"></nowiki>
+
+
+                <a href="/user.aspx">CPProGamer</a>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li class="rbxdivider"></li></nowiki>
+
+
+        <nowiki></ul></nowiki>
+
+
+        <nowiki><div class="rbxscrollbar" datatoggle="scrollbar" onselectstart="return false;"></nowiki>
+
+
+            <nowiki><ul></nowiki>
+
+
+                <nowiki><li><a href="/home" id="navhome"><span class="rbxiconnavhome"></span><span>Home</span></a></li></nowiki>
+
+
+                <nowiki><li><a href="/User.aspx" id="navprofile"><span class="rbxiconnavprofile"></span><span>Profile</span></a></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/my/messages/#!/inbox" id="navmessage" datacount="0">
+
+
+                        <nowiki><span class="rbxiconnavmessage"></span><span>Messages</span></nowiki>
+
+
+                        <nowiki><span class="rbxhighlight" title="0"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/friends.aspx" id="navfriends" datacount="0">
+
+
+                        <nowiki><span class="rbxiconnavfriends"></span><span>Friends</span></nowiki>
+
+
+                        <nowiki><span class="rbxhighlight" title="0"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/My/Character.aspx" id="navcharacter">
+
+
+                        <nowiki><span class="rbxiconnavcharactercustomizer"></span><span>Character</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/My/Stuff.aspx" id="navinventory">
+
+
+                        <nowiki><span class="rbxiconnavinventory"></span><span>Inventory</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/My/Money.aspx#/#TradeItems_tab" id="navtrade">
+
+
+                        <nowiki><span class="rbxiconnavtrade"></span><span>Trade</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/My/Groups.aspx" id="navgroup">
+
+
+                        <nowiki><span class="rbxiconnavgroup"></span><span>Groups</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="/Forum/default.aspx" id="navforum">
+
+
+                        <nowiki><span class="rbxiconnavforum"></span><span>Forum</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li></nowiki>
+
+
+                    <a href="http://blog.roblox.com" id="navblog">
+
+
+                        <nowiki><span class="rbxiconnavblog"></span><span>Blog</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="rbxupgradenow"></nowiki>
+
+
+                    <a href="/Upgrades/BuildersClubMemberships.aspx?ctx=leftnav" class="rbxbtnsecondaryxs" id="upgradenowbutton">Upgrade Now</a>
+
+
+                <nowiki></li></nowiki>
+
+
+            <nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div class="containermain    "></nowiki>
+
+
+            <script type="text/javascript">
+
+
+                if (top.location != self.location) {
+
+
+                    top.location = self.location.href;
+
+
+                }
+
+
+            </script>
+
+
+        <nowiki><noscript><div class="SystemAlert"><div class="rbxalertinfo" role="alert">Please enable Javascript to use all the features on this site.</div></div></noscript></nowiki>
+
+
+        <nowiki><div class="content  "></nowiki>
+
+
+
+
+
+
+                            <nowiki><div id="SkyscraperAdpLeft" class="abp abpcontainer leftabp"></nowiki>
+
+
+                    
+                    
+
+
+
+
+
+
+    <iframe allowtransparency="true"
+
+
+            frameborder="0"
+
+
+            height="612"
+
+
+            scrolling="no"
+
+
+            src="/userads/2"
+
+
+            width="160"
+
+
+            datajsadtype="iframead"></iframe>
+
+
+
+
+
+
+                <nowiki></div></nowiki>
+
+
+                        
+                        
+
+
+
+
+
+
+
+
+
+
+<div id="HomeContainer" class="row homecontainer"
+
+
+     datafacebookshare="/facebook/sharecharacter"
+
+
+     dataupdatestatusurl="/home/updatestatus"
+
+
+     datashouldshowenabletwostepverificationcalltoaction=False>
+
+
+
+
+
+
+    <nowiki><div class="colxs12 homeheader">  </nowiki>
+
+
+        <a href="/User.aspx" class="homethumbnailbust" >
+
+
+            <img alt="avatar" src="http://t7.rbxcdn.com/d3ae80498db17496083834cd1b84ce2e" />
+
+
+        </a>
+
+
+        <nowiki><div class="homeheadercontent "></nowiki>
+
+
+            <h1><a href="/User.aspx">Hello, CPProGamer!</a>
+
+
+            </h1>
+
+
+                <nowiki><span class="rbxicontbc"></span></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+        <nowiki><div class="colxs12 section homefriends"></nowiki>
+
+
+            <nowiki><div class="containerheader"></nowiki>
+
+
+                <h3>Friends (122)</h3>
+
+
+                <a  href="/friends.aspx#FriendsTab" class="rbxbtnsecondaryxs btnmore">See All</a>
+
+
+            <nowiki></div></nowiki>
+
+
+            
+            
+
+
+
+
+
+
+<nowiki><ul class="hlist friendlist"></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=72230447" class="friendlink" title="Alsinagirl22">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=72230447"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='Alsinagirl22' class='' src='http://t7.rbxcdn.com/da3c3de64bfee66f0903586002041238' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">Alsinagirl22</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxicononline" title="Website"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=26047499" class="friendlink" title="AUGUSTO210">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=26047499"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='AUGUSTO210' class='' src='http://t4.rbxcdn.com/ad51fa64b31ddde0bbb72a64dfd9ed84' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">AUGUSTO210</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="Catalog Heaven"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=62189829" class="friendlink" title="enderkiler101">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=62189829"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='enderkiler101' class='' src='http://t6.rbxcdn.com/6e8d1718a288239ce667b57d7a122330' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">enderkiler101</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxicononline" title="Website"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=28619945" class="friendlink" title="fabulousSWAT911">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=28619945"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='fabulousSWAT911' class='' src='http://t5.rbxcdn.com/e91d18aba5030ee1bd2e1df877017f7b' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">fabulousSWAT911</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="The Clone Factory!"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=67489313" class="friendlink" title="franniesmith">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=67489313"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='franniesmith' class='' src='http://t2.rbxcdn.com/15a394100f2ab12ea75ab8599d2abeab' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">franniesmith</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="My Little Pony Friendship is Magic Roleplay V.01"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=53156021" class="friendlink" title="haungboss1234">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=53156021"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='haungboss1234' class='' src='http://t3.rbxcdn.com/026e2a978f0212d29928011edba0da5a' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">haungboss1234</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="[Starbux Cafe] Hiring HR&amp;#39;S [Summer Update]"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=34856206" class="friendlink" title="imsonic3245">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=34856206"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='imsonic3245' class='' src='http://t0.rbxcdn.com/8ee2ad358ea9afcc351860a76b5dbf39' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">imsonic3245</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="My Little Pony FiM: TPP 2D RP"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=48259390" class="friendlink" title="JonasFlash">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=48259390"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='JonasFlash' class='' src='http://t2.rbxcdn.com/e40468d500d45fcb7fe8ee9863ef68a9' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">JonasFlash</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="Mini Golf! (NEW! Oasis Course)"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=53768126" class="friendlink" title="kingofworld342">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=53768126"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='kingofworld342' class='' src='http://t2.rbxcdn.com/da20d9f3a825166841de6714828f68be' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">kingofworld342</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="[Dragon Ball Online]"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=21613676" class="friendlink" title="madipoo1">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=21613676"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='madipoo1' class='' src='http://t1.rbxcdn.com/0dc61dd660dd17500ea919fdf6dcc7e4' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">madipoo1</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="Cube Eat Cube"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=85913334" class="friendlink" title="MerelyMod">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=85913334"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='MerelyMod' class='' src='http://t4.rbxcdn.com/61ebbf2606194e4a56e8486c2ead4550' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">MerelyMod</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="Catalog Heaven"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=91642777" class="friendlink" title="princesschristina132">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=91642777"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='princesschristina132' class='' src='http://t1.rbxcdn.com/c3efe20a5336bc3ec57855c5c19eb206' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">princesschristina132</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="Work at a Pizza Place"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=86527904" class="friendlink" title="sharkboy10077">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=86527904"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='sharkboy10077' class='' src='http://t2.rbxcdn.com/096e71a00fb83d6b7c0eeedb616badb4' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">sharkboy10077</span></nowiki>
+
+
+<nowiki>                                <span class="friendstatus rbxiconingame" title="Ultimate YouTube Tycoon  Grand Opening!"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=66215388" class="friendlink" title="Vien40">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=66215388"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='Vien40' class='' src='http://t6.rbxcdn.com/4492a7bb72b7491196a6211e0b5b878d' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">Vien40</span></nowiki>
+
+
+                                <nowiki><span class="friendstatus rbxiconingame" title="Catalog Heaven"></span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=73666702" class="friendlink" title="360BeastMode">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=73666702"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='360BeastMode' class='' src='http://t3.rbxcdn.com/27013cd21d572bac50b4b0290daad57c' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">360BeastMode</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=84555706" class="friendlink" title="Abel13245">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=84555706"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='Abel13245' class='' src='http://t3.rbxcdn.com/6dc9eaa2136e301bb93923ddb7e64fc5' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">Abel13245</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=56754151" class="friendlink" title="adamdeath07">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=56754151"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='adamdeath07' class='' src='http://t7.rbxcdn.com/f4a876713b5298f5aabd2ca6d74afa09' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">adamdeath07</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=88430056" class="friendlink" title="adampodmandavidpodm1">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=88430056"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='adampodmandavidpodm1' class='' src='http://t5.rbxcdn.com/a15e7aa55b9f57d13bec3fd7e66a6639' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">adampodmandavidpodm1</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=78265702" class="friendlink" title="aiaoonnaphat">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=78265702"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='aiaoonnaphat' class='' src='http://t2.rbxcdn.com/266d1fab5eb558e190b3c48816b8dca5' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">aiaoonnaphat</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+                <nowiki><li class="listitem friend"></nowiki>
+
+
+                    <a href="/User.aspx?ID=79388622" class="friendlink" title="alexgummybear1715">
+
+
+<nowiki>                        <span class="friendavatar" data3durl="/avatarthumbnail3d/json?userId=79388622"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='alexgummybear1715' class='' src='http://t4.rbxcdn.com/6f03393da45166fc17fa85627c4a9652' /></span></nowiki>
+
+
+                        <nowiki><span class="friendname rbxtextoverflow">alexgummybear1715</span></nowiki>
+
+
+                    </a>
+
+
+                <nowiki></li></nowiki>
+
+
+
+
+
+
+<nowiki></ul></nowiki>
+
+
+
+
+
+
+        <nowiki></div></nowiki>
+
+
+
+
+
+
+        <nowiki><div id="recentlyvisitedplaces" class="colxs12 containerlist homegames"></nowiki>
+
+
+            <nowiki><div class="containerheader"></nowiki>
+
+
+                <h3>Recently Played</h3>
+
+
+<nowiki><a  href="/games?sortFilter=6" class="rbxbtnsecondaryxs btnmore">See All</a>            </div></nowiki>
+
+
+            
+            
+
+
+
+
+
+
+<nowiki><ul class="hlist gamelist"></nowiki>
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=6&amp;amp;PlaceId=253486633&amp;amp;Position=1&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t6.rbxcdn.com/aec609e68d5248ff9b4612b9ca73f8e9" alt=" :[TTE]  XENON Training Facility"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t6.rbxcdn.com/aec609e68d5248ff9b4612b9ca73f8e9","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title=" :[TTE]  XENON Training Facility" ngnonbindable></nowiki>
+
+
+             :[TTE]  XENON Training Facility
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            0 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="17"
+
+
+                     datadownvotes="4"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">4</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">17</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=812735">The Tiberium Empire</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=6&amp;amp;PlaceId=206640076&amp;amp;Position=2&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t7.rbxcdn.com/4a94334038e54dada6c1eaa54cf92b16" alt="ROBLOX Deathrun"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t7.rbxcdn.com/4a94334038e54dada6c1eaa54cf92b16","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="ROBLOX Deathrun" ngnonbindable></nowiki>
+
+
+            ROBLOX Deathrun
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1,761 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="14509"
+
+
+                     datadownvotes="1732"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">1,732</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">14,509</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=1251857">Team Deathrun</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=6&amp;amp;PlaceId=292432235&amp;amp;Position=3&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t3.rbxcdn.com/0801e99cf69ddb119f99cdc5f364da48" alt="Deathrun Submission"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t3.rbxcdn.com/0801e99cf69ddb119f99cdc5f364da48","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="Deathrun Submission" ngnonbindable></nowiki>
+
+
+            Deathrun Submission
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            0 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="3"
+
+
+                     datadownvotes="0"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">0</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">3</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=1251857">Team Deathrun</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=6&amp;amp;PlaceId=18540115&amp;amp;Position=4&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t4.rbxcdn.com/585c1ae7ca82889eb8cf272bb8fcb39c" alt="Survive The Disasters"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t4.rbxcdn.com/585c1ae7ca82889eb8cf272bb8fcb39c","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="Survive The Disasters" ngnonbindable></nowiki>
+
+
+            Survive The Disasters
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1,083 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="52089"
+
+
+                     datadownvotes="3482"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">3,482</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">52,089</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=4307571">VyrissTheVixen</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=6&amp;amp;PlaceId=31155198&amp;amp;Position=5&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t5.rbxcdn.com/9f2c98c2ae970167e2ddff84f0491016" alt="[NEW] Boys Vs Girls Island Wars "
+
+
+                     thumbnail='{"Final":true,"Url":"http://t5.rbxcdn.com/9f2c98c2ae970167e2ddff84f0491016","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="[NEW] Boys Vs Girls Island Wars " ngnonbindable></nowiki>
+
+
+            [NEW] Boys Vs Girls Island Wars
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1,378 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="24136"
+
+
+                     datadownvotes="7336"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">7,336</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">24,136</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=3173565">tadcool</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=6&amp;amp;PlaceId=162344480&amp;amp;Position=6&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t6.rbxcdn.com/1d35f4b7485a5a1a36fe015b5e496d79" alt="Roblox&amp;#39;s Top Model  [Hotel Transylvania 2]"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t6.rbxcdn.com/1d35f4b7485a5a1a36fe015b5e496d79","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="Roblox&amp;#39;s Top Model  [Hotel Transylvania 2]" ngnonbindable></nowiki>
+
+
+            Roblox&amp;#39;s Top Model  [Hotel Transylvania
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1,194 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="49859"
+
+
+                     datadownvotes="5035"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">5,035</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">49,859</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=9221858">DizzyPurple</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+<nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+
+
+
+
+        <nowiki><div id="myfavortiesgames" class="colxs12 containerlist homegames"></nowiki>
+
+
+            <nowiki><div class="containerheader"></nowiki>
+
+
+                <h3>My Favorites</h3>
+
+
+<nowiki><a  href="/games?sortFilter=5" class="rbxbtnsecondaryxs btnmore">See All</a>            </div></nowiki>
+
+
+            
+            
+
+
+
+
+
+
+<nowiki><ul class="hlist gamelist"></nowiki>
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=5&amp;amp;PlaceId=206640076&amp;amp;Position=1&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t7.rbxcdn.com/4a94334038e54dada6c1eaa54cf92b16" alt="ROBLOX Deathrun"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t7.rbxcdn.com/4a94334038e54dada6c1eaa54cf92b16","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="ROBLOX Deathrun" ngnonbindable></nowiki>
+
+
+            ROBLOX Deathrun
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1,761 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="14509"
+
+
+                     datadownvotes="1732"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">1,732</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">14,509</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=1251857">Team Deathrun</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=5&amp;amp;PlaceId=152691313&amp;amp;Position=2&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t0.rbxcdn.com/fbad7718ccaaa743edbcef19c98c6662" alt="R.I.P Windows XP "
+
+
+                     thumbnail='{"Final":true,"Url":"http://t0.rbxcdn.com/fbad7718ccaaa743edbcef19c98c6662","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="R.I.P Windows XP " ngnonbindable></nowiki>
+
+
+            R.I.P Windows XP
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1 player online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="426"
+
+
+                     datadownvotes="31"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">31</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">426</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=7259154">Resyncable</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=5&amp;amp;PlaceId=280591759&amp;amp;Position=3&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t3.rbxcdn.com/9a70d391b52a05ff7aa9d385d2abd923" alt="Monday Foodline Restaurant V1"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t3.rbxcdn.com/9a70d391b52a05ff7aa9d385d2abd923","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="Monday Foodline Restaurant V1" ngnonbindable></nowiki>
+
+
+            Monday Foodline Restaurant V1
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            0 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="1"
+
+
+                     datadownvotes="1"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">1</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">1</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=2635007">Monday Foodline&#174;</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=5&amp;amp;PlaceId=9689581&amp;amp;Position=4&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t6.rbxcdn.com/3b2ffb3b7e1beaeb06718615d8226175" alt="ROBLOX High School"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t6.rbxcdn.com/3b2ffb3b7e1beaeb06718615d8226175","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="ROBLOX High School" ngnonbindable></nowiki>
+
+
+            ROBLOX High School
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            1,899 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="55957"
+
+
+                     datadownvotes="6039"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">6,039</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">55,957</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=2364169">Cindering</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=5&amp;amp;PlaceId=192742001&amp;amp;Position=5&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t1.rbxcdn.com/dcc7c5e67666254fd4c08535ab14becf" alt="NEW MAP! SnowTASTROPHE"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t1.rbxcdn.com/dcc7c5e67666254fd4c08535ab14becf","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="NEW MAP! SnowTASTROPHE" ngnonbindable></nowiki>
+
+
+            NEW MAP! SnowTASTROPHE
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            7 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="2464"
+
+
+                     datadownvotes="682"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">682</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">2,464</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=68728334">Perhapz</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=5&amp;amp;PlaceId=253194221&amp;amp;Position=6&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t7.rbxcdn.com/f3a155210c05288be740b2bcc8d66e3f" alt="TNT Rush"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t7.rbxcdn.com/f3a155210c05288be740b2bcc8d66e3f","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="TNT Rush" ngnonbindable></nowiki>
+
+
+            TNT Rush
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            388 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="11824"
+
+
+                     datadownvotes="1866"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">1,866</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">11,824</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=2524737">Red Penguin Productions</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+<nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    
+    
+
+
+        <nowiki><div id="friendactivity" class="colxs12 containerlist homegames"></nowiki>
+
+
+            <nowiki><div class="containerheader"></nowiki>
+
+
+                <h3>Friend Activity</h3>
+
+
+<nowiki><a  href="/games?sortFilter=17" class="rbxbtnsecondaryxs btnmore">See All</a>            </div></nowiki>
+
+
+            
+            
+
+
+
+
+
+
+<nowiki><ul class="hlist gamelist"></nowiki>
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=17&amp;amp;PlaceId=292762927&amp;amp;Position=1&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+<nowiki>                <img class="gamethumb" src="http://t1.rbxcdn.com/4e8d85014abf60843aea928296583e3d" alt="Ultimate YouTube Tycoon  Grand Opening!"</nowiki>
+
+
+                     thumbnail='{"Final":true,"Url":"http://t1.rbxcdn.com/4e8d85014abf60843aea928296583e3d","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+<nowiki>        <span class="rbxgametitle rbxtextoverflow" title="Ultimate YouTube Tycoon  Grand Opening!" ngnonbindable></nowiki>
+
+
+<nowiki>            Ultimate YouTube Tycoon  Grand Opening!</nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            120 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="74"
+
+
+                     datadownvotes="66"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">66</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">74</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=19305571">PureTrading</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=17&amp;amp;PlaceId=253293579&amp;amp;Position=2&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t4.rbxcdn.com/0670fac00a3194bbdb47ebfc182557fe" alt="My Little Pony FiM: TPP 2D RP"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t4.rbxcdn.com/0670fac00a3194bbdb47ebfc182557fe","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="My Little Pony FiM: TPP 2D RP" ngnonbindable></nowiki>
+
+
+            My Little Pony FiM: TPP 2D RP
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            205 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="1114"
+
+
+                     datadownvotes="220"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">220</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">1,114</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/Groups/group.aspx?gid=851605">The Pony Project</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=17&amp;amp;PlaceId=266723523&amp;amp;Position=3&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t5.rbxcdn.com/4471e1b15d1ae86446f315ad19160286" alt="The Clone Factory!"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t5.rbxcdn.com/4471e1b15d1ae86446f315ad19160286","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="The Clone Factory!" ngnonbindable></nowiki>
+
+
+            The Clone Factory!
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            2,345 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="3711"
+
+
+                     datadownvotes="650"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">650</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">3,711</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=51204359">IAmTheRolo</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=17&amp;amp;PlaceId=196289686&amp;amp;Position=4&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t3.rbxcdn.com/69e0942e6860c8d80bc0fc4fef0188a6" alt="I HAVE NO IDEA WHAT I AM DOING"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t3.rbxcdn.com/69e0942e6860c8d80bc0fc4fef0188a6","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="I HAVE NO IDEA WHAT I AM DOING" ngnonbindable></nowiki>
+
+
+            I HAVE NO IDEA WHAT I AM DOING
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            0 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="72"
+
+
+                     datadownvotes="46"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">46</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">72</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=1572288">Webspace</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=17&amp;amp;PlaceId=58329856&amp;amp;Position=5&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t4.rbxcdn.com/a14233c456cbd3fc057c1cba3846463b" alt="My Little Pony Friendship is Magic Roleplay V.01"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t4.rbxcdn.com/a14233c456cbd3fc057c1cba3846463b","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="My Little Pony Friendship is Magic Roleplay V.01" ngnonbindable></nowiki>
+
+
+            My Little Pony Friendship is Magic Rolep
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            24 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="305"
+
+
+                     datadownvotes="72"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">72</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">305</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=5948165">Porkate</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><li class="listitem game"></nowiki>
+
+
+    <a href="/games/refer?SortFilter=17&amp;amp;PlaceId=202195974&amp;amp;Position=6&amp;amp;PageType=Home" class="gameitem">
+
+
+        <nowiki><span class="gamethumbcontent"></nowiki>
+
+
+            <span class="gamethumbwrapper"
+
+
+                >
+
+
+                <img class="gamethumb" src="http://t7.rbxcdn.com/3117b1779d3e2276bb1a79e1de8ccd6d" alt="Mini Golf! (NEW! Oasis Course)"
+
+
+                     thumbnail='{"Final":true,"Url":"http://t7.rbxcdn.com/3117b1779d3e2276bb1a79e1de8ccd6d","RetryUrl":null}' imageretry />
+
+
+            <nowiki></span></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametitle rbxtextoverflow" title="Mini Golf! (NEW! Oasis Course)" ngnonbindable></nowiki>
+
+
+            Mini Golf! (NEW! Oasis Course)
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxgametextnotes rbxfontxs"></nowiki>
+
+
+            72 Players Online
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxvotes"></nowiki>
+
+
+            <nowiki><div class="votebar"></nowiki>
+
+
+                <nowiki><div class="thumbsup"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsup"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <div class="votingcontainer"
+
+
+                     dataupvotes="4815"
+
+
+                     datadownvotes="907"
+
+
+                     datavotingprocessed="false">
+
+
+                    <nowiki><div class="background "></div></nowiki>
+
+
+                    <nowiki><div class="votes"></div></nowiki>
+
+
+                    <nowiki><div class="mask"></nowiki>
+
+
+                        <nowiki><div class="segment segone"></div></nowiki>
+
+
+                        <nowiki><div class="segment segtwo"></div></nowiki>
+
+
+                        <nowiki><div class="segment segthree"></div></nowiki>
+
+
+                        <nowiki><div class="segment segfour"></div></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="thumbsdown"></nowiki>
+
+
+                    <nowiki><span class="rbxiconthumbsdown"></span></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="votecounts"></nowiki>
+
+
+                <nowiki><div class="downvotescount rbxfontxs">907</div></nowiki>
+
+
+                <nowiki><div class="upvotescount rbxfontxs">4,815</div></nowiki>
+
+
+
+
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+        <nowiki><span class="rbxdeveloper rbxfontxs"></nowiki>
+
+
+            by <nowiki><cite class="rbxlinksm" datahref="/User.aspx?ID=25525981">Widgeon</cite></nowiki>
+
+
+        <nowiki></span></nowiki>
+
+
+    </a>
+
+
+<nowiki></li></nowiki>
+
+
+
+
+
+
+<nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+    <nowiki><div class="colxs12 colsm6 homerightcol"></nowiki>
+
+
+
+
+
+
+        <nowiki><div class="section"></nowiki>
+
+
+            <nowiki><div class="sectionheader"></nowiki>
+
+
+                <h3>Blog News</h3>
+
+
+                <a  href="http://blog.roblox.com" class="rbxbtncontrolxs btnmore">See More</a>
+
+
+            <nowiki></div></nowiki>
+
+
+            
+            
+
+
+<nowiki><ul class="blognews"></nowiki>
+
+
+            <nowiki><li class="news"></nowiki>
+
+
+                <nowiki><span class="rbxiconpage"></span></nowiki>
+
+
+                <nowiki><span class="newslink"><a href="http://blog.roblox.com/2015/09/getfreehatswinprizesintheendlesssummercampout/" ref="newsarticle" class="robloxinterstitial rbxlink rbxarticletitle">Get Free Hats &</nowiki>amp; Win Prizes in the Endless Summer Camp Out!<nowiki></a></span></nowiki>
+
+
+            <nowiki></li></nowiki>
+
+
+            <nowiki><li class="news"></nowiki>
+
+
+                <nowiki><span class="rbxiconpage"></span></nowiki>
+
+
+                <nowiki><span class="newslink"><a href="http://blog.roblox.com/2015/09/newprofilepagesaddnewfeaturesforinteractingwithfriends/" ref="newsarticle" class="robloxinterstitial rbxlink rbxarticletitle">New Profile Pages Add New Features for Interacting With Friends</a></span></nowiki>
+
+
+            <nowiki></li></nowiki>
+
+
+
+
+
+
+<nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+                            <nowiki><div id="FacebookConnectCard" class="section"></nowiki>
+
+
+                
+                
+
+
+
+
+
+
+<h3>
+
+
+    CONNECT WITH FACEBOOK   
+
+
+</h3>
+
+
+<nowiki><p>Link your ROBLOX account with your Facebook account to let your Facebook friends see what you're doing on ROBLOX!</p></nowiki>
+
+
+<nowiki><div id="connectfacebook"></nowiki>
+
+
+    
+    
+
+
+
+
+
+
+<div id="SocialIdentitiesInformation"
+
+
+    datarbxlogin="/social/notifylogin"
+
+
+    datarbxupdate="/social/updateinfo"
+
+
+    datarbxdisconnect="/social/disconnect"
+
+
+    datarbxloginredirecturl="/social/postlogin"
+
+
+    datauserisauthenticated><nowiki></div></nowiki>
+
+
+    <nowiki><div class="connectbutton" datarbxprovider="facebook" style="backgroundimage:url('https://cdns3.gigya.com/gs/GetSprite.ashx?path=%2FHTMLLogin%2FFullLogo%2F%5Bfacebook%5D_30.png%7C78%2C30');width:78px;height:30px;backgroundrepeat:norepeat"></div></nowiki>
+
+
+    <nowiki><div class="disconnectlink" datarbxprovider="facebook"></div></nowiki>
+
+
+    <nowiki><div class="nickname"></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+    <nowiki></div><! .homerightcol ></nowiki>
+
+
+
+
+
+
+    <nowiki><div class="colxs12 colsm6 homeleftcol"></nowiki>
+
+
+        <nowiki><div class="section"></nowiki>
+
+
+            <nowiki><div class="sectionheader"></nowiki>
+
+
+                <h3>My Feed</h3>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="rbxformhorizontal" id="statusForm" role="form"></nowiki>
+
+
+                <nowiki><div class="rbxformgroup"></nowiki>
+
+
+                    <input class="formcontrol rbxinputfield" id="txtStatusMessage" maxlength="254" placeholder="What are you up to?" value="SUP AND PEACE MATE!" />
+
+
+                    <nowiki><p class="rbxcontrollabel">Status update failed.</p></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <a  type="button" class="rbxbtnprimarysm" id="shareButton">Share</a>
+
+
+                <img id="loadingImage" class="sharelogin" style="display: none" alt="Sharing..." src="http://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif" height="17" width="48" />
+
+
+            <nowiki></div></nowiki>
+
+
+            
+            
+
+
+
+
+
+
+<nowiki><ul class="vlist feeds"></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=950346" class="listheader" ><img  class='headerthumb' src='http://t2.rbxcdn.com/4fe13f8a00431903c982c76896b846f0' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=950346'>Frapp&#233;&#174;</a><div class='feedtext linkify'>"[INTERVIEWS] Now! Head down to the Interview Center for your chance to work here! ARPC only, please. http://www.roblox.com/games/180870972/FrappeInterviewCenter"</div> (posted by <a href='/User.aspx?ID=16044806' class='rbxtitle'>shipIeydonuts</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 2:30 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106680976&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=812735" class="listheader" ><img  class='headerthumb' src='http://t5.rbxcdn.com/6cf6a89cf0671f421438be9f4a74a131' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=812735'>The Tiberium Empire</a><div class='feedtext linkify'>"[A] I'll host it next week. 3 PM EST SUNDAY so clear up your plans."</div> (posted by <a href='/User.aspx?ID=17995986' class='rbxtitle'>lnelson2</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 1:32 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106677852&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1016598" class="listheader" ><img  class='headerthumb' src='http://t0.rbxcdn.com/add78199593570864bf9e2b7ead61c15' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1016598'>T.G.I. Friday&amp;#39;s&amp;#174;</a><div class='feedtext linkify'>"Trainings Hosted by Emptygeast123, over. Thanks for coming!"</div> (posted by <a href='/User.aspx?ID=16669226' class='rbxtitle'>emptygeast123</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 1:28 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106677615&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+                <a href="/User.aspx?id=57081559" class="listheader">
+
+
+                    <nowiki><span class="" data3durl="/avatarthumbnail3d/json?userId=57081559"  datajsfiles='http://js.rbxcdn.com/47e6e85800c4ed3c4eef848c077575a9.js.gzip' ><img alt='nutcraks' class='headerthumb' src='http://t6.rbxcdn.com/aabc8d0aac24541b68a548f354131b99' /></span></nowiki>
+
+
+                </a>
+
+
+
+
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/User.aspx?ID=57081559' class='rbxtitle'>nutcraks</a><div class='feedtext linkify'>"I'm getting ready 4 season 2 of roblox activision cup series  division 2!"</div></p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 12:56 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106677049&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1036618" class="listheader" ><img  class='headerthumb' src='http://t7.rbxcdn.com/9814535e93a2de6c7a9f7609eff0cff8' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1036618'> easyJet™ </a><div class='feedtext linkify'>"MESSAGE We got admin abused, we have fixed it, please post your previous ranks in the group wall. I will slowly repromote everyone."</div> (posted by <a href='/User.aspx?ID=76058844' class='rbxtitle'>GamerboyLV</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 12:22 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106674102&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=2601543" class="listheader" ><img  class='headerthumb' src='http://t6.rbxcdn.com/de5f7519dd9fa6ec31b700f0ccdaaa1b' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=2601543'>Korean Airlines™</a><div class='feedtext linkify'>"[Flight] Today will be the last flight with our A330 and it will also be our COO, iiDextrousSafe's last flight. Be sure to wish him good luck in the future! The flight will be at 3:30 PM EST at Newcastle."</div> (posted by <a href='/User.aspx?ID=52049448' class='rbxtitle'>canadianspirit1</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 12:02 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106673101&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1127093" class="listheader" ><img  class='headerthumb' src='http://t7.rbxcdn.com/ea15a38762b80c1d2a18ed178d7a4097' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=1127093'>Roblox High School Fan Club</a><div class='feedtext linkify'>"Another friendly reminder during this eventful weekend  don't visit any links that claim to have free Robux, BC, or "leaked sale items"  they are all fake scams! Report users who post these, and keep your account safe :)"</div> (posted by <a href='/User.aspx?ID=2364169' class='rbxtitle'>Cindering</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/6/2015 at 3:13 AM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106657441&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=950346" class="listheader" ><img  class='headerthumb' src='http://t2.rbxcdn.com/4fe13f8a00431903c982c76896b846f0' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=950346'>Frapp&#233;&#174;</a><div class='feedtext linkify'>"[INTERVIEWS] Serverlocked! Sorry if you couldn't make it or didn't make i,there's always a next time.Why not go to the cafe to cheer you up?"</div> (posted by <a href='/User.aspx?ID=58558990' class='rbxtitle'>denskie19</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 5:45 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106638604&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1016598" class="listheader" ><img  class='headerthumb' src='http://t0.rbxcdn.com/add78199593570864bf9e2b7ead61c15' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1016598'>T.G.I. Friday&amp;#39;s&amp;#174;</a><div class='feedtext linkify'>"Training  Over"</div> (posted by <a href='/User.aspx?ID=80441176' class='rbxtitle'>Wyrschip2</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 5:29 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106637778&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1036618" class="listheader" ><img  class='headerthumb' src='http://t7.rbxcdn.com/9814535e93a2de6c7a9f7609eff0cff8' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1036618'> easyJet™ </a><div class='feedtext linkify'>"Flight The flight was going well until somethings....(We'll host a another flight later on) [Interviews] Interviews are being held right now!"</div> (posted by <a href='/User.aspx?ID=18112155' class='rbxtitle'>BtwItsKim</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 5:18 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106637225&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=812735" class="listheader" ><img  class='headerthumb' src='http://t5.rbxcdn.com/6cf6a89cf0671f421438be9f4a74a131' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=812735'>The Tiberium Empire</a><div class='feedtext linkify'>"[T] Report for Training at Xenon http://www.roblox.com/games/253486633/TTEXENONTrainingFacility"</div> (posted by <a href='/User.aspx?ID=52264421' class='rbxtitle'>SVN22</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:56 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106632704&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=950346" class="listheader" ><img  class='headerthumb' src='http://t2.rbxcdn.com/4fe13f8a00431903c982c76896b846f0' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=950346'>Frapp&#233;&#174;</a><div class='feedtext linkify'>"[Interviews] SLocked. If you couldn't make it maybe next time. Why not go down to the cafe to get a latte?"</div> (posted by <a href='/User.aspx?ID=25664593' class='rbxtitle'>SpiffyAlden</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:45 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106632124&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1016598" class="listheader" ><img  class='headerthumb' src='http://t0.rbxcdn.com/add78199593570864bf9e2b7ead61c15' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1016598'>T.G.I. Friday&amp;#39;s&amp;#174;</a><div class='feedtext linkify'>"Interviews  Over"</div> (posted by <a href='/User.aspx?ID=80441176' class='rbxtitle'>Wyrschip2</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:31 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106631246&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1036618" class="listheader" ><img  class='headerthumb' src='http://t7.rbxcdn.com/9814535e93a2de6c7a9f7609eff0cff8' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1036618'> easyJet™ </a><div class='feedtext linkify'>"Flight We're hosting a flight towards Spain (Barcelona) at Princess Julianna airport right now! http://www.roblox.com/games/289791310/easyJetPrincessJulianaInternationalAirport"</div> (posted by <a href='/User.aspx?ID=42147651' class='rbxtitle'>Mrblingbling088</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:30 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106631224&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=2601543" class="listheader" ><img  class='headerthumb' src='http://t6.rbxcdn.com/de5f7519dd9fa6ec31b700f0ccdaaa1b' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=2601543'>Korean Airlines™</a><div class='feedtext linkify'>"[FLIGHT] Tomorrow at Newcastle at 3:00 PM EST. It will be our last flight with the old A330 before we introduce the new one! [QOTD] Whats your favorite soda?"</div> (posted by <a href='/User.aspx?ID=52049448' class='rbxtitle'>canadianspirit1</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:21 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106630681&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1016598" class="listheader" ><img  class='headerthumb' src='http://t0.rbxcdn.com/add78199593570864bf9e2b7ead61c15' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1016598'>T.G.I. Friday&amp;#39;s&amp;#174;</a><div class='feedtext linkify'>"Training  Over. Interviews  Hosted by Wyrschip2, Unslocking in 10 minutes!"</div> (posted by <a href='/User.aspx?ID=80441176' class='rbxtitle'>Wyrschip2</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:16 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106630391&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=1036618" class="listheader" ><img  class='headerthumb' src='http://t7.rbxcdn.com/9814535e93a2de6c7a9f7609eff0cff8' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+<nowiki>                <p class="listcontent"><a href='/My/Groups.aspx?gid=1036618'> easyJet™ </a><div class='feedtext linkify'>"Flight We're hosting a flight towards Spain (Barcelona) at Princess Julianna airport right now!"</div> (posted by <a href='/User.aspx?ID=42147651' class='rbxtitle'>Mrblingbling088</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 3:15 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106630387&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=950346" class="listheader" ><img  class='headerthumb' src='http://t2.rbxcdn.com/4fe13f8a00431903c982c76896b846f0' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=950346'>Frapp&#233;&#174;</a><div class='feedtext linkify'>"[INTERVIEWS] Over! Congratulations to those who passed, sorry to those who didn't. Why not go to the cafe for a Cotton Candy Frappe?"</div> (posted by <a href='/User.aspx?ID=52981960' class='rbxtitle'>ashleyscarf</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 2:16 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106627047&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+        <nowiki><li class="listitem"></nowiki>
+
+
+            
+            
+
+
+<a href="/My/Groups.aspx?gid=2601543" class="listheader" ><img  class='headerthumb' src='http://t6.rbxcdn.com/de5f7519dd9fa6ec31b700f0ccdaaa1b' /></a>
+
+
+            <nowiki><div class="listbody"></nowiki>
+
+
+                <nowiki><p class="listcontent"><a href='/My/Groups.aspx?gid=2601543'>Korean Airlines™</a><div class='feedtext linkify'>"[FLIGHT] Cancelled, I had something coming up, sorry. [QOTD] What is you're favorite Soda?"</div> (posted by <a href='/User.aspx?ID=43770327' class='rbxtitle'>JohnAtGaming</a>)</p></nowiki>
+
+
+                <nowiki><span class="rbxtextnotes rbxfontsm">9/5/2015 at 2:10 PM</span></nowiki>
+
+
+                    <a href="/abusereport/Feed?id=106626719&amp;amp;redirectUrl=%2Fhome">
+
+
+                        <nowiki><span class="rbxiconreport"></span></nowiki>
+
+
+                    </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></li></nowiki>
+
+
+
+
+
+
+
+
+
+
+<nowiki></ul></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+                <nowiki><div id="SkyscraperAdpRight" class="abp abpcontainer rightabp"></nowiki>
+
+
+                    
+                    
+
+
+
+
+
+
+    <iframe allowtransparency="true"
+
+
+            frameborder="0"
+
+
+            height="612"
+
+
+            scrolling="no"
+
+
+            src="/userads/2"
+
+
+            width="160"
+
+
+            datajsadtype="iframead"></iframe>
+
+
+
+
+
+
+                <nowiki></div></nowiki>
+
+
+            
+            
+
+
+        <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+<nowiki><div id="fbroot"></div></nowiki>
+
+
+<script>
+
+
+(function(d, s, id) {
+
+
+    var js, fjs = d.getElementsByTagName(s)[0];
+
+
+    if (d.getElementById(id)) return;
+
+
+    js = d.createElement(s); js.id = id;
+
+
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0&appId=e58f2110adf82c2c00e6ae41c665510c";
+
+
+    fjs.parentNode.insertBefore(js, fjs);
+
+
+}(document, 'script', 'facebookjssdk'));</script>
+
+
+<footer class="containerfooter">
+
+
+    <nowiki><div class="footer"></nowiki>
+
+
+        <nowiki><ul class="row footerlinks"></nowiki>
+
+
+            <nowiki><li class="colxs4 colsm2 footerlink"><a href="//corp.roblox.com" class="robloxinterstitial" target="_blank"><h2>About Us</h2></a></li></nowiki>
+
+
+            <nowiki><li class="colxs4 colsm2 footerlink"><a href="//corp.roblox.com/jobs" class="robloxinterstitial" target="_blank"><h2>Jobs</h2></a></li></nowiki>
+
+
+            <nowiki><li class="colxs4 colsm2 footerlink"><a href="//blog.roblox.com" class="robloxinterstitial" target="_blank"><h2>Blog</h2></a></li></nowiki>
+
+
+            <nowiki><li class="colxs4 colsm2 footerlink"><a href="/Info/Privacy.aspx" target="_blank"><h2>Privacy</h2></a></li></nowiki>
+
+
+            <nowiki><li class="colxs4 colsm2 footerlink"><a href="//corp.roblox.com/parents" class="robloxinterstitial" target="_blank"><h2>Parents</h2></a></li></nowiki>
+
+
+            <nowiki><li class="colxs4 colsm2 footerlink"><a href="//en.help.roblox.com/" class="robloxinterstitial" target="_blank"><h2>Help</h2></a></li></nowiki>
+
+
+        <nowiki></ul></nowiki>
+
+
+        <nowiki><p class="footernote"></nowiki>
+
+
+            ROBLOX, "Online Building Toy", characters, logos, names, and all related indicia are trademarks of <a target="_blank" href="//corp.roblox.com" class="rbxlink robloxinterstitial">ROBLOX Corporation</a>, ©2015. Patents pending. ROBLOX is not sponsored, authorized or endorsed by any producer of plastic building bricks, including The LEGO Group, MEGA Brands, and K'Nex, and no resemblance to the products of these companies is intended. Use of this site signifies your acceptance of the <a href="/info/termsofservice" target="_blank" class="rbxlink">Terms and Conditions</a>.
+
+
+        <nowiki></p></nowiki>
+
+
+        
+        
+
+
+    <nowiki></div></nowiki>
+
+
+</footer>
+
+
+
+
+
+
+
+
+
+
+<nowiki><script src="https://apis.google.com/js/platform.js"></script></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+    <nowiki><div id="ChatContainer" class="chatcontainer"></nowiki>
+
+
+        
+        
+
+
+        <nowiki><div id="friend_dock_chattemplate" style="display: none;"></nowiki>
+
+
+            <nowiki><div id="CHATUSERID_friend_dock_chatbox" userid="CHATUSERID" class="friend_dock_chatbox"></nowiki>
+
+
+                <nowiki><div class="friend_dock_chatbox_titlebar chatheaderblinkoff" userid="CHATUSERID"></nowiki>
+
+
+                    <nowiki><div class="friend_dock_chatbox_username"></nowiki>
+
+
+                        <a style="color: #fff" class="friend_dock_chatbox_username_display" href="/user.aspx?id=CHATUSERID">CHATUSERNAME</a>
+
+
+                        <a class="friend_dock_chatbox_username_abuse" style="color: #fff; fontsize: 9px; lineheight: 14px; cursor: pointer" alt="Report Abuse" href="#" onclick=" ChatBar.ReportAbuse(CHATUSERID); return false; ">(Report)</a>
+
+
+                    <nowiki></div></nowiki>
+
+
+                    <nowiki><div class="friend_dock_chatbox_closebutton"></nowiki>
+
+
+                        <a href="#" style="color: #fff" onclick=" ChatBar.CloseChat($(this).parents('.friend_dock_chatbox').filter(':first'));return false; "></a>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="friend_dock_chatbox_currentlocation" style="margin: 10px; height: 18px"></div></nowiki>
+
+
+                <nowiki><div id="CHATUSERID_friend_dock_chatbox_chat" class="friend_dock_chatbox_chat"></div></nowiki>
+
+
+                <textarea class="friend_dock_chatbox_entry" maxlength="255"></textarea>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="friend_dock_friendtemplate" style="display: none;"></nowiki>
+
+
+            <nowiki><div id="UID_CURRTAB_friend" userid="UID" username="USERNAME" class="friend_dock_friend"></nowiki>
+
+
+                <nowiki><div id="UID_CURRTAB_onlinestatus" class="friend_dock_onlinestatus"></div></nowiki>
+
+
+                <nowiki><div id="UID_CURRTAB_offlinestatus" class="friend_dock_offlinestatus"></div></nowiki>
+
+
+                <nowiki><div id="UID_CURRTAB_dropdown" class="friendBarDropDown" userid="UID" username="USERNAME" style="display: none"></nowiki>
+
+
+                    <nowiki><div id="UID_CURRTAB_dropdownbutton" class="friendbardropdownbutton"></div></nowiki>
+
+
+                    <nowiki><div id="UID_CURRTAB_dropdownlist" class="friendBarDropDownList"></nowiki>
+
+
+                        <nowiki><ul></nowiki>
+
+
+                                <nowiki><li onclick=" Party.InviteUser('USERNAME'); " startpartydisplay></nowiki>
+
+
+                                    <nowiki><div>Invite To Party</div></li></nowiki>
+
+
+                                                            <nowiki><li class="StartChat" onclick=" ChatBar.ToggleChat('UID', 'USERNAME'); " startchattingdisplay userid="UID"></nowiki>
+
+
+                                    <nowiki><div>Start Chatting</div></li></nowiki>
+
+
+                            <nowiki><li onclick=" window.location.href = '/user.aspx?id=UID'; "></nowiki>
+
+
+                                <nowiki><div>View Profile</div></li></nowiki>
+
+
+                                <nowiki><li class="EndChat" style="display: none" onclick=" ChatBar.RemoveActiveChat(this); " userid="UID"></nowiki>
+
+
+                                    <nowiki><div>End Chat</div></li></nowiki>
+
+
+                        <nowiki></ul></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <img thumbnail_holder alt="" onclick=" ChatBar.ToggleChat('UID', 'USERNAME'); return false; " width="48" height="48" class="ActiveChatThumb"/>
+
+
+                <nowiki><div class="friend_dock_username"><span class="friend_dock_username_href">USERNAMETRUNCATED</span></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+        <nowiki><div style="position: relative;"></nowiki>
+
+
+                <nowiki><div id="friend_dock_chatholder" style="display:none;"></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                            <nowiki><div id="partycontainer" style="display: none; marginleft: 10px; float: right; position: absolute;"></nowiki>
+
+
+                    
+                    
+
+
+
+
+
+
+    <nowiki><div id="partyMemberTemplate" style="display:none;height:32px"></nowiki>
+
+
+        <nowiki><div id="party_pendinguserid_UID" style="clear:both;"></nowiki>
+
+
+            <nowiki><dt style="position:relative;"></nowiki>
+
+
+                <nowiki><span id="UID_status" class="friend_dock_offlinestatus"></span></nowiki>
+
+
+                [PARTY_MEMBER_THUMBNAIL]
+
+
+            <nowiki></dt></nowiki>
+
+
+            <nowiki><dd> </nowiki>
+
+
+                <nowiki><span>[PARTY_MEMBER_NAME]</span>&nbsp;&nbsp;&nbsp;<!<span class="partyreportcontainer"></span><span class="partykickcontainer"></span>>[PARTY_MEMBER_REPORT][PARTY_KICK_MEMBER]</nowiki>
+
+
+            <nowiki></dd></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+    <script type="text/javascript" language="javascript">
+
+
+        Party.CurrentUserID = 58633247;
+
+
+        Party.CurrentUserName = "CPProGamer";
+
+
+        Party.ActiveView = "";
+
+
+        Party.PollThreadAvailable = true;
+
+
+        Party.FirstLoad = true;
+
+
+        Party.PollIntervalTimer = null;
+
+
+        Party.MaxPartySize = 6;
+
+
+        Party.PlayEnabled = true;
+
+
+        
+        
+
+
+        /*<sl:translate_json>*/
+
+
+        Party.Resources = {
+
+
+            areYouSureReport: 'Are you sure you would like to report '
+
+
+            , report: "Report"
+
+
+            , kick: "Kick from party"
+
+
+            , pending: "Pending..."
+
+
+            , partyInvite: "Party Invite!"
+
+
+            , partyGameBlurb: "When the party leader joins a game, the rest of the party will be invited to follow"
+
+
+            , inviteInstructions: "Please type the name of the user you wish to invite"
+
+
+            , partyFull: "Your party is already full!"
+
+
+            , joinConfirm1: "The party leader has joined "
+
+
+            , joinConfirm2: ".  Would you like to join?"
+
+
+            , joinConfirm3: "You will be removed from any game you might be playing."
+
+
+            , enterUserName: 'Enter username'
+
+
+        };
+
+
+        /*</sl:translate_json>*/
+
+
+        
+        
+
+
+        Party.SetGoogleAnalyticsCallback = function (placeId) {
+
+
+            RobloxLaunch._GoogleAnalyticsCallback = function() { var isInsideRobloxIDE = 'website'; if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; };GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin'); if (typeof Roblox.GamePlayEvents != 'undefined') { Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId); }  };
+
+
+        }
+
+
+
+
+
+
+        
+        
+
+
+    </script>
+
+
+    <script type="text/javascript" language="javascript">
+
+
+        try
+
+
+        {
+
+
+            $(function() {
+
+
+                $(function()
+
+
+                {
+
+
+                    Party.ProcessPolledData(eval(({"Error" : "User not found in party"})));
+
+
+                    Party.OnPageLoad();
+
+
+                });
+
+
+            });
+
+
+        }
+
+
+        catch (ex) {}
+
+
+    </script>
+
+
+    <nowiki><div class="partywindow" id="party_none"> </nowiki>
+
+
+        <nowiki><div id="party_none_title" class="title" onclick="Party.ToggleTab(false)"></nowiki>
+
+
+            <nowiki><span>Party</span></nowiki>
+
+
+            <nowiki><div class="closeparty"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="main"> </nowiki>
+
+
+            <nowiki><div id="new_party"> </nowiki>
+
+
+                <nowiki><p>You are not in a party.  To create a party, just invite someone:</p></nowiki>
+
+
+                <nowiki><p><input type="text" id="new_party_invite_name" class="partyinvitebox" onkeydown="return Party.ProcessKey('new_party_invite_name',event)" /><input type="button" class="translate" onclick="Party.DoInvite('new_party_invite_name')" value="Invite" /></p></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="clear" id="new_party_clear"> </nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div class="partywindow" id="party_loading" style="display:none;"> </nowiki>
+
+
+        <nowiki><div id="party_loading_title" class="title" onclick="Party.ToggleTab(false)"></nowiki>
+
+
+            <nowiki><span>Party</span></nowiki>  
+
+
+            <nowiki><div class="closeparty"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="main"> </nowiki>
+
+
+            <nowiki><div> </nowiki>
+
+
+                <nowiki><p>Invitation sent.</p></nowiki>
+
+
+                <nowiki><p>Creating party...</p></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div class="partywindow" id="party_pending" style="display:none;"></nowiki>
+
+
+            <nowiki><div id="party_pending_title" class="title" onclick="Party.ToggleTab(false)"> </nowiki>
+
+
+                <nowiki><span>Party</span></nowiki>
+
+
+                <nowiki><div class="closeparty"></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="main"> </nowiki>
+
+
+                <nowiki><div id="inviteheader">RobloTim wants to party with you!</div></nowiki>
+
+
+                <nowiki><div class="members"> </nowiki>
+
+
+                    <nowiki><dl id="party_invite_list"></dl></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            
+            
+
+
+                <nowiki><div id="invite_status"></nowiki>
+
+
+                    <nowiki><p><span>Waiting for Leader to play a game</span></p></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            
+            
+
+
+                <nowiki><div class="partyinvitebuttons"></nowiki>
+
+
+                    <nowiki><div class="btnprimary btnsmall"> </nowiki>
+
+
+                        <a href="#" class="partybtnlink" onclick="Party.AcceptInvite();return false;">Join Party</a>
+
+
+                    <nowiki></div></nowiki>
+
+
+            
+            
+
+
+                    <nowiki><div class="btnnegative btnsmall"> </nowiki>
+
+
+                        <a href="#" class="partybtnlink" onclick="Party.DeclineInvite();return false;">Ignore</a>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="clear" id="invite_clear"> </nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div class="partywindow" id="party_my" style="display:none;"> </nowiki>
+
+
+        <nowiki><div id="party_my_title" class="title" onclick="Party.ToggleTab(false)"> </nowiki>
+
+
+            <nowiki><span>Party</span></nowiki>
+
+
+            <nowiki><div class="closeparty"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="main"> </nowiki>
+
+
+            <nowiki><div class="members"> </nowiki>
+
+
+                <nowiki><dl id="party_member_list"></dl></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        
+        
+
+
+            <nowiki><p id="party_invite_instructions"><span><input type="text" id="party_my_invite_name" class="partyinvitebox" onkeydown="return Party.ProcessKey('party_my_invite_name',event)" /><input type="button" class="translate" onclick="Party.DoInvite('party_my_invite_name')" value="Invite" /></span></p></nowiki>
+
+
+        
+        
+
+
+            <nowiki><div id="chat_messages"></div></nowiki>
+
+
+        
+        
+
+
+            <nowiki><div id="chat_input"></nowiki>
+
+
+                <textarea name="comments" rows="2" cols="27" id="comments" tabindex="4" title="comments"></textarea>
+
+
+            <nowiki></div></nowiki>
+
+
+        
+        
+
+
+            <nowiki><div id="partyautofollowsetting" style="padding: 5px; textalign: center"></nowiki>
+
+
+                <input id="autofollowpartyleader" type="checkbox" />
+
+
+                <label for="autofollowpartyleader">Automatically follow party leader</label>
+
+
+                <script type="text/javascript">
+
+
+                    $("#autofollowpartyleader").prop('checked', $.cookie('AutoFollowPartyLeader') != 'false');
+
+
+                    $("#autofollowpartyleader").on("click", function () {
+
+
+                        // every time I join a party in the future, this cookie will determine whether or not I automatically follow the party leader
+
+
+                        if (ChatBar && ChatBar.UseSubdomainlessCookies) {
+
+
+                            $.cookie('AutoFollowPartyLeader', null, { path: '/' });  // clear old cookie, if it exists
+
+
+                            $.cookie('AutoFollowPartyLeader', this.checked, { domain: ChatBar.CookieDomain, path: '/', expires: 365 });
+
+
+                        }
+
+
+                        else {
+
+
+                            if (ChatBar && ChatBar.NewCookieRollbackEnabled) {
+
+
+                                // delete the subdomainlesscookie, if we are rolling back
+
+
+                                $.cookie('AutoFollowPartyLeader', null, { domain: ChatBar.CookieDomain, path: '/', expires: 365 });
+
+
+                            }
+
+
+                            $.cookie('AutoFollowPartyLeader', this.checked, { path: '/', expires: 365 });
+
+
+                        }
+
+
+                        $.ajax({
+
+
+                            method: "GET",
+
+
+                            url: "/chat/party.ashx",
+
+
+                            data: {
+
+
+                                reqtype: "autoFollowPartyLeader"
+
+
+                            },
+
+
+                            crossDomain: true,
+
+
+                            xhrFields: {
+
+
+                                withCredentials: true
+
+
+                            }
+
+
+                        }).done();
+
+
+                    });
+
+
+                </script>
+
+
+            <nowiki></div></nowiki>
+
+
+
+
+
+
+                <nowiki><div id="party_current_game"></nowiki>
+
+
+                    <nowiki><table border="0" style="padding: 0px; margin: 0px; border: 0px;"></nowiki>
+
+
+                        <nowiki><tr style="padding: 0px; margin: 0px; border: 0px;"></nowiki>
+
+
+                            <nowiki><td style="padding: 0px; margin: 0px; border: 0px;"></nowiki>
+
+
+                                <nowiki><div id="party_game_thumb"></nowiki>
+
+
+                                <nowiki></div></nowiki>
+
+
+                            <nowiki></td></nowiki>
+
+
+                            <nowiki><td style="padding: 0px; margin: 0px; border: 0px;"></nowiki>
+
+
+                                <nowiki><div id="party_game_name" style="float: right;"></nowiki>
+
+
+                                <nowiki></div></nowiki>
+
+
+                                <nowiki><span id="party_game_follow_me" class="btnprimary btnsmall"></nowiki>
+
+
+                                    <a href="#" class="partybtnlink" onclick="Party.JoinGameWithParty();return false;">Follow</a>
+
+
+                                <nowiki></span></nowiki>
+
+
+                                <nowiki><span class="btnneutral btnsmall"></nowiki>
+
+
+                                    <a href="#" class="partybtnlink" onclick="Party.DeclineInvite();return false;">Leave Party</a>
+
+
+                                <nowiki></span></nowiki>
+
+
+                            <nowiki></td></nowiki>
+
+
+                        <nowiki></tr></nowiki>
+
+
+                    <nowiki></table></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+        
+        
+
+
+            <nowiki><div class="clear" id="leader_clear"> </nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        
+        
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+
+
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki><div class="clear"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+
+
+
+
+        <nowiki><div id='friend_dock_minimized_container' style=""></nowiki>
+
+
+            <nowiki><div id="socialdocktab" class="tab" style="float: right"></nowiki>
+
+
+                <a id="minChatsTab" href="#">
+
+
+                    <nowiki><span onclick=" ChatBar.ShowFriends();return false; "></nowiki>
+
+
+                        <img src="http://images.rbxcdn.com/164e80229d83c8b6e55b1eb671887e54.png" width="9" height="9" style="border: none" />
+
+
+                        Online
+
+
+                    <nowiki></span></nowiki>
+
+
+                </a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="friend_dock_container" style="display:none;"></nowiki>
+
+
+            <nowiki><div id="friend_dock_titlebar"></nowiki>
+
+
+                <nowiki><div class="tabcontainer" style="float: left;"></nowiki>
+
+
+
+
+
+
+                        <nowiki><div class="tab"><a id="friendstab" style="textdecoration: none" href="#" onclick=" ChatBar.TogglePanel('friendstab');return false; "><span>Online Friends</span></a></nowiki>
+
+
+                        <nowiki></div></nowiki>
+
+
+                    <nowiki><div class="tab"><a id="recentstab" style="textdecoration: none" href="#" onclick=" ChatBar.TogglePanel('recentstab');return false; "><span>Recent</span></a></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                        <nowiki><div class="tab"><a id="chatstab" style="textdecoration: none" href="#" onclick=" ChatBar.TogglePanel('chatstab');return false; "><span>Chats</span></a></nowiki>
+
+
+                        <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><span class="tabcontainer" style="float: right;"></nowiki>
+
+
+                        <nowiki><div class="tab" id="partytab" onclick=" Party.ToggleTab(null); return false; "></nowiki>
+
+
+                            <a href="#">Party</a>
+
+
+                        <nowiki></div></nowiki>
+
+
+                    <nowiki><span class="friend_dock_chatsettings" style="display: none"></nowiki>
+
+
+                        <nowiki><div style="padding: 10px"></nowiki>
+
+
+                                <nowiki><div class="chat_settings_group_header">Chat Notifications:</div></nowiki>
+
+
+                                <input type="radio" id="chat_settings_soundon" name="rdoNotifications"                                                                                                             checked="checked"
+
+
+ />
+
+
+                                <nowiki><b>All</b><br /></nowiki>
+
+
+                                <input type="radio" id="chat_settings_soundoff" name="rdoNotifications"  />
+
+
+                                <nowiki><b>None</b><br /></nowiki>
+
+
+                            <nowiki><div style="textalign: center; margintop: 5px;"></nowiki>
+
+
+                                <input type="button" onclick=" ChatBar.ApplySettings();$('.friend_dock_chatsettings').hide(); " value="Save">
+
+
+                            <nowiki></div></nowiki>
+
+
+                        <nowiki></div></nowiki>
+
+
+                    <nowiki></span></nowiki>
+
+
+                    <nowiki><div id="socialsettingstab" class="tab"></nowiki>
+
+
+                        <a onclick=" $('.friend_dock_chatsettings').toggle(); return false " href="#">Settings</a>&amp;nbsp;&amp;nbsp;&amp;nbsp;
+
+
+                        <img src="http://images.rbxcdn.com/8a762994af1e122de8ac427005ac3d9b.png" onclick=" ChatBar.HideFriends();return false; " width="12" height="13" style="border: none; cursor: pointer" alt="Close chat" />
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></span></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div id="friend_dock_thumb_container"></nowiki>
+
+
+                
+                
+
+
+                <nowiki><div id="friendstabdockthumbnails" style="display: none"></nowiki>
+
+
+                    <nowiki><div id="friendstabdockthumbnailsempty">No results found. Find some friends <a href="/Browse.aspx">here</a></nowiki>.
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+
+
+
+
+                
+                
+
+
+                <nowiki><div id="bestfriendstabdockthumbnails" style="float: left; display: none"></nowiki>
+
+
+                    <nowiki><div id="bestfriendstabdockthumbnailsempty">No results? Start off by <a href="/my/editfriends.aspx">adding some Best Friends.</a></nowiki>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+
+
+
+
+                
+                
+
+
+                <nowiki><div id="recentstabdockthumbnails" style="float: left; display: none"></nowiki>
+
+
+                    <nowiki><div id="recentstabdockthumbnailsempty">You have not had any recent interactions.</div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+
+
+
+
+                
+                
+
+
+            <nowiki><div id="chatstabdockthumbnails" style="float: left; display: none"></nowiki>
+
+
+                <nowiki><div id="chatstabdockthumbnailsempty">You are not currently chatting with anyone.</div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div id="jPlayerDiv"></div></nowiki>
+
+
+
+
+
+
+    <script type="text/javascript">
+
+
+        if (typeof Roblox === "undefined") {
+
+
+            Roblox = {};
+
+
+        }
+
+
+        if (typeof Roblox.Chat === "undefined") {
+
+
+            Roblox.Chat = {};
+
+
+        }
+
+
+        Roblox.Chat.Resources = {
+
+
+            //<sl:translate>
+
+
+            reportConfirm: 'Are you sure you would like to report this user?',
+
+
+            sendPersonalMessage1: 'This user may be offline.  They will receive your messages when they login, or you can send them a ',
+
+
+            sendPersonalMessage2: 'Personal Message',
+
+
+            loadingChat: 'Loading Chat',
+
+
+            offline: 'Offline',
+
+
+            online: 'Online',
+
+
+            newMessage: 'New Message!',
+
+
+            newMessages: 'New Messages!'
+
+
+            //</sl:translate>
+
+
+        };
+
+
+
+
+
+
+        ChatBar.FriendsEnabled = 'True';
+
+
+        ChatBar.PartyEnabled = 'True';
+
+
+        ChatBar.MyUserName = "CPProGamer";
+
+
+        ChatBar.MaxChatWindows = 4;
+
+
+        ChatBar.ChatPollInterval = 2000;
+
+
+        ChatBar.IdleChatPollInterval = 6000;
+
+
+        ChatBar.FriendsPollInterval = 40000;
+
+
+        ChatBar.RecentsPollInterval = 32000;
+
+
+        ChatBar.ChatReceivedSoundFile = "/chat/sound/chatsound.mp3";
+
+
+        ChatBar.ChatNotificationsSetting = 'All';
+
+
+        ChatBar.DiagnosticsEnabled = false;
+
+
+        ChatBar.jPlayerVersion = '2.9.2';
+
+
+
+
+
+
+            
+            
+
+
+            ChatBar.SetGoogleAnalyticsCallback = function () {
+
+
+                RobloxLaunch._GoogleAnalyticsCallback = function() { var isInsideRobloxIDE = 'website'; if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; };GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin'); if (typeof Roblox.GamePlayEvents != 'undefined') { Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId); }  };
+
+
+            }
+
+
+
+
+
+
+            
+            
+
+
+        $(function() {
+
+
+            try {
+
+
+                ChatBar.OnPageLoad();
+
+
+            } catch (x) {
+
+
+            }
+
+
+        });
+
+
+    </script>
+
+
+    <nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">function urchinTracker() {}</script>
+
+
+
+
+
+
+
+
+
+
+<div id="PlaceLauncherStatusPanel" style="display:none;width:300px"
+
+
+     datanewplugineventsenabled="True"
+
+
+     dataeventstreamforpluginenabled="True"
+
+
+     dataeventstreamforprotocolenabled="True"
+
+
+     dataisprotocolhandlerlaunchenabled="True"
+
+
+     dataisuserloggedin="True"
+
+
+     dataosname="Windows"
+
+
+     dataprotocolnameforclient="robloxplayer"
+
+
+     dataprotocolnameforstudio="robloxstudio"
+
+
+     dataprotocolurlincludeslaunchtime="true"
+
+
+     dataprotocoldetectionenabled="true">
+
+
+    <nowiki><div class="modalPopup blueAndWhite PlaceLauncherModal" style="minheight: 160px"></nowiki>
+
+
+        <nowiki><div id="Spinner" class="Spinner" style="padding:20px 0;"></nowiki>
+
+
+            <img src="http://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif" height="32" width="32" alt="Progress" />
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="status" style="minheight:40px;textalign:center;margin:5px 20px"></nowiki>
+
+
+            <nowiki><div id="Starting" class="PlaceLauncherStatus MadStatusStarting" style="display:block"></nowiki>
+
+
+                Starting Roblox...
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div id="Waiting" class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div></nowiki>
+
+
+            <nowiki><div id="StatusBackBuffer" class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div style="textalign:center;margintop:1em"></nowiki>
+
+
+            <input type="button" class="Button CancelPlaceLauncherButton translate" value="Cancel" />
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+<nowiki><div id="ProtocolHandlerStartingDialog" style="display:none;"></nowiki>
+
+
+    <nowiki><div class="modalPopup phmodalpopup"></nowiki>
+
+
+        <nowiki><div class="phmodalheader"></nowiki>
+
+
+
+
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="phlogorow"></nowiki>
+
+
+            <img src="/images/Logo/logo_meatball.svg" width="90" height="90" alt="R" />
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="phareyouinstalleddialogcontent"></nowiki>
+
+
+            <nowiki><p class="largerfontsize"></nowiki>
+
+
+                ROBLOX is now loading. Get ready to play!
+
+
+            <nowiki></p></nowiki>
+
+
+            <nowiki><div class="phstartingdialogspinnerrow"></nowiki>
+
+
+                <img src="http://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif" width="82" height="24" />
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+<nowiki><div id="ProtocolHandlerAreYouInstalled" style="display:none;"></nowiki>
+
+
+    <nowiki><div class="modalPopup phmodalpopup"></nowiki>
+
+
+        <nowiki><div class="phmodalheader"></nowiki>
+
+
+            <nowiki><span class="rbxiconclose simplemodalclose"></span></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="phlogorow"></nowiki>
+
+
+            <img src="/images/Logo/logo_meatball.svg" width="90" height="90" alt="R" />
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="phareyouinstalleddialogcontent"></nowiki>
+
+
+            <nowiki><p class="largerfontsize"></nowiki>
+
+
+                You're moments away from getting into the game!
+
+
+            <nowiki></p></nowiki>
+
+
+            <nowiki><div></nowiki>
+
+
+                <button type="button" class="btn rbxbtnprimarysm" id="ProtocolHandlerInstallButton">
+
+
+                    Download and Install ROBLOX
+
+
+                </button>
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="rbxsmall rbxtextnotes"></nowiki>
+
+
+                <a href="https://en.help.roblox.com/hc/enus/articles/204473560" class="rbxlink" target="_blank">Click here for help</a>
+
+
+            <nowiki></div></nowiki>
+
+
+
+
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+<nowiki><div id="ProtocolHandlerClickAlwaysAllowed" class="phclickalwaysallowed" style="display:none;"></nowiki>
+
+
+    <nowiki><p class="largerfontsize"></nowiki>
+
+
+        <nowiki><span class="rbxiconmoreinfo"></span></nowiki>
+
+
+        Check <nowiki><b>Remember my choice</b> and click <img src="http://images.rbxcdn.com/7c8d7a39b4335931221857cca2b5430b.png" alt="Launch Application" /></nowiki>  in the dialog box above to join games faster in the future!
+
+
+    <nowiki></p></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+    <nowiki><div id="videoPrerollPanel" style="display:none"></nowiki>
+
+
+        <nowiki><div id="videoPrerollTitleDiv"></nowiki>
+
+
+            Gameplay sponsored by:
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="content"></nowiki>
+
+
+            <video id="contentElement" style="width:0; height:0;" />
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="videoPrerollMainDiv"></div></nowiki>
+
+
+        <nowiki><div id="videoPrerollCompanionAd"></nowiki>
+
+
+            
+            
+
+
+                <script type="text/javascript">
+
+
+                    googletag.cmd.push(function () {
+
+
+                        googletag.defineSlot('/1015347/VideoPreroll', [300, 250], 'videoPrerollCompanionAd')
+
+
+                            .addService(googletag.companionAds());
+
+
+                        googletag.enableServices();
+
+
+                        googletag.display('videoPrerollCompanionAd');
+
+
+                    });
+
+
+                </script>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="videoPrerollLoadingDiv"></nowiki>
+
+
+            Loading <nowiki><span id="videoPrerollLoadingPercent">0%</span>  <span id="videoPrerollMadStatus" class="MadStatusField">Starting game...</span><span id="videoPrerollMadStatusBackBuffer" class="MadStatusBackBuffer"></span></nowiki>
+
+
+            <nowiki><div id="videoPrerollLoadingBar"></nowiki>
+
+
+                <nowiki><div id="videoPrerollLoadingBarCompleted"></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div id="videoPrerollJoinBC"></nowiki>
+
+
+            <nowiki><span>Get more with Builders Club!</span></nowiki>
+
+
+            <a href="/Upgrades/BuildersClubMemberships.aspx?ctx=preroll" target="_blank" class="btnmedium btnprimary" id="videoPrerollJoinBCButton">Join Builders Club</a>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>   
+
+
+    <script type="text/javascript">
+
+
+        $(function () {
+
+
+            var videoPreRollDFP = Roblox.VideoPreRollDFP;
+
+
+            if (videoPreRollDFP) {
+
+
+                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
+
+
+                videoPreRollDFP.showVideoPreRoll = false;
+
+
+                videoPreRollDFP.loadingBarMaxTime = 33000;
+
+
+                videoPreRollDFP.videoLoadingTimeout = 11000;
+
+
+                videoPreRollDFP.videoPlayingTimeout = 41000;
+
+
+                videoPreRollDFP.videoLogNote = "BuildersClub";
+
+
+                videoPreRollDFP.logsEnabled = true;
+
+
+                videoPreRollDFP.excludedPlaceIds = "32373412";
+
+
+                videoPreRollDFP.adUnit = "/1015347/VideoPreroll";
+
+
+                videoPreRollDFP.adTime = 15;
+
+
+                videoPreRollDFP.isSwfPreloaderEnabled = true;
+
+
+                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
+
+
+                customTargeting.userAge = "16";
+
+
+                customTargeting.userGender = "Male";
+
+
+                customTargeting.gameGenres = "";
+
+
+                customTargeting.environment = "Production";
+
+
+                customTargeting.adTime = "15";
+
+
+                customTargeting.PLVU = false;
+
+
+                $(videoPreRollDFP.checkEligibility);
+
+
+            }
+
+
+        });
+
+
+    </script>                                                     
+
+
+
+
+
+
+
+
+
+
+<nowiki><div id="GuestModePrompt_BoyGirl" class="Revised GuestModePromptModal" style="display:none;"></nowiki>
+
+
+    <nowiki><div class="simplemodalclose"></nowiki>
+
+
+        <a class="ImageButton closeBtnCircle_20h" style="cursor: pointer; marginleft:455px;top:7px; position:absolute;"></a>
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div class="Title"></nowiki>
+
+
+        Choose Your Character
+
+
+    <nowiki></div></nowiki>
+
+
+    <nowiki><div style="minheight: 275px; backgroundcolor: white;"></nowiki>
+
+
+        <nowiki><div style="clear:both; height:25px;"></div></nowiki>
+
+
+
+
+
+
+        <nowiki><div style="textalign: center;"></nowiki>
+
+
+            <nowiki><div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style="float:left; marginleft:45px;"></div></nowiki>
+
+
+            <nowiki><div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style="float:right; marginright:45px;"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div style="clear:both; height:25px;"></div></nowiki>
+
+
+        <nowiki><div class="RevisedFooter" ></nowiki>
+
+
+            <nowiki><div style="width:200px;margin:10px auto 0 auto;"></nowiki>
+
+
+                <nowiki><a href="/?returnUrl=%2Fhome"><div class="RevisedCharacterSelectSignup"></div></a></nowiki>
+
+
+                <a class="HaveAccount" href="/newlogin?returnUrl=%2Fhome">I have an account</a>
+
+
+            <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    function checkRobloxInstall() {
+
+
+             return RobloxLaunch.CheckRobloxInstall('/install/download.aspx');
+
+
+    }
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+<nowiki><div id="InstallationInstructions" style="display:none;"></nowiki>
+
+
+    <nowiki><div class="phinstallinstructions"></nowiki>
+
+
+        <nowiki><div class="phmodalheader"></nowiki>
+
+
+            <nowiki><span class="rbxiconclose simplemodalclose"></span></nowiki>
+
+
+            <h3>Thanks for playing ROBLOX</h3>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="phinstallinstructionsbody"></nowiki>
+
+
+                <nowiki><div class="phinstallstep phinstallinstructionsstep1of4"></nowiki>
+
+
+                    <h1>1</h1>
+
+
+                    <nowiki><p class="largerfontsize">Click RobloxPlayerLauncher.exe to run the ROBLOX installer, which just downloaded via your web browser.</p></nowiki>
+
+
+                    <img width="230" height="180" src="http://images.rbxcdn.com/22ff09393bb9dc4093b85439f420a531.png" />
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="phinstallstep phinstallinstructionsstep2of4"></nowiki>
+
+
+                    <h1>2</h1>
+
+
+                    <nowiki><p class="largerfontsize">Click <strong>Run</strong></nowiki> when prompted by your computer to begin the installation process.<nowiki></p></nowiki>
+
+
+                    <img width="230" height="180" src="http://images.rbxcdn.com/4a3f96d30df0f7879abde4ed837446c6.png" />
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="phinstallstep phinstallinstructionsstep3of4"></nowiki>
+
+
+                    <h1>3</h1>
+
+
+                    <nowiki><p class="largerfontsize">Click <strong>Ok</strong></nowiki> once you've successfully installed ROBLOX.<nowiki></p></nowiki>
+
+
+                    <img width="230" height="180" src="http://images.rbxcdn.com/1889460e8475fd0bc24c6b57992b31d4.png" />
+
+
+                <nowiki></div></nowiki>
+
+
+                <nowiki><div class="phinstallstep phinstallinstructionsstep4of4"></nowiki>
+
+
+                    <h1>4</h1>
+
+
+                    <nowiki><p class="largerfontsize">After installation, click <strong>Play</strong></nowiki> below to join the action!<nowiki></p></nowiki>
+
+
+                    <nowiki><div class="VisitButton VisitButtonContinuePH"></nowiki>
+
+
+                        <a class="btn rbxbtnprimarylg disabled">Play</a>
+
+
+                    <nowiki></div></nowiki>
+
+
+                <nowiki></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="rbxfontsm rbxtextnotes"></nowiki>
+
+
+            The ROBLOX installer should download shortly. If it doesn’t, <a href="#" onclick="Roblox.ProtocolHandlerClientInterface.startDownload(); return false;">start the download now.</a>
+
+
+        <nowiki></div></nowiki>
+
+
+    <nowiki></div></nowiki>
+
+
+<nowiki></div></nowiki>
+
+
+<nowiki><div class="InstallInstructionsImage" datamodalwidth="970" style="display:none;"></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<nowiki><div id="pluginObjDiv" style="height:1px;width:1px;visibility:hidden;position: absolute;top: 0;"></div></nowiki>
+
+
+<iframe id="downloadInstallerIFrame" style="visibility:hidden;height:0;width:1px;position:absolute"></iframe>
+
+
+
+
+
+
+<script type='text/javascript' src='http://js.rbxcdn.com/02fc1bdbf2c1cdbfcd7c063c99c89ac0.js.gzip'></script>
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    Roblox.Client._skip = null;
+
+
+    Roblox.Client._CLSID = '76D5090467804c8b89861A7EE0B1716D';
+
+
+    Roblox.Client._installHost = 'setup.roblox.com';
+
+
+    Roblox.Client.ImplementsProxy = true;
+
+
+    Roblox.Client._silentModeEnabled = true;
+
+
+    Roblox.Client._bringAppToFrontEnabled = false;
+
+
+<nowiki>    Roblox.Client._currentPluginVersion = '';</nowiki>
+
+
+    Roblox.Client._eventStreamLoggingEnabled = true;
+
+
+
+
+
+
+        
+        
+
+
+        Roblox.Client._installSuccess = function() {
+
+
+            if(GoogleAnalyticsEvents){
+
+
+                GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
+
+
+                GoogleAnalyticsEvents.FireEvent(['Plugin','Install Success']);
+
+
+                if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
+
+
+                    Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
+
+
+                }
+
+
+            }
+
+
+        }
+
+
+        
+        
+
+
+            
+            
+
+
+<nowiki>        if ((window.chrome  window.safari) && window.location.hash == '#chromeInstall') {</nowiki>
+
+
+<nowiki>            window.location.hash = '';</nowiki>
+
+
+            var continuation = '(' + $.cookie('chromeInstall') + ')';
+
+
+            play_placeId = $.cookie('chromeInstallPlaceId');
+
+
+            Roblox.GamePlayEvents.lastContext = $.cookie('chromeInstallLaunchMode');
+
+
+            $.cookie('chromeInstallPlaceId', null);
+
+
+            $.cookie('chromeInstallLaunchMode', null);
+
+
+            $.cookie('chromeInstall', null);
+
+
+            RobloxLaunch._GoogleAnalyticsCallback = function() { var isInsideRobloxIDE = 'website'; if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; };GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin'); if (typeof Roblox.GamePlayEvents != 'undefined') { Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId); }  };
+
+
+            Roblox.Client.ResumeTimer(eval(continuation));
+
+
+        }
+
+
+        
+        
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+<nowiki><div class="ConfirmationModal modalPopup unifiedModal smallModal" datamodalhandle="confirmation" style="display:none;"></nowiki>
+
+
+    <a class="genericmodalclose ImageButton closeBtnCircle_20h"></a>
+
+
+    <nowiki><div class="Title"></div></nowiki>
+
+
+    <nowiki><div class="GenericModalBody"></nowiki>
+
+
+        <nowiki><div class="TopBody"></nowiki>
+
+
+            <nowiki><div class="ImageContainer robloxitemimage" dataimagesize="small" datanooverlays datanoclick></nowiki>
+
+
+                <img class="GenericModalImage" alt="generic image" />
+
+
+            <nowiki></div></nowiki>
+
+
+            <nowiki><div class="Message"></div></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="ConfirmationModalButtonContainer GenericModalButtonContainer"></nowiki>
+
+
+            <nowiki><a href id="robloxconfirmbtn"><span></span></a></nowiki>
+
+
+            <nowiki><a href id="robloxdeclinebtn"><span></span></a></nowiki>
+
+
+        <nowiki></div></nowiki>
+
+
+        <nowiki><div class="ConfirmationModalFooter"></nowiki>
+
+
+        
+        
+
+
+        <nowiki></div></nowiki>  
+
+
+    <nowiki></div></nowiki>  
+
+
+    <script type="text/javascript">
+
+
+<nowiki>        Roblox = Roblox  {};</nowiki>
+
+
+<nowiki>        Roblox.Resources = Roblox.Resources  {};</nowiki>
+
+
+        
+        
+
+
+        //<sl:translate>
+
+
+        Roblox.Resources.GenericConfirmation = {
+
+
+            yes: "Yes",
+
+
+            No: "No",
+
+
+            Confirm: "Confirm",
+
+
+            Cancel: "Cancel"
+
+
+        };
+
+
+        //</sl:translate>
+
+
+    </script>
+
+
+<nowiki></div></nowiki>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+<nowiki>    var Roblox = Roblox  {};</nowiki>
+
+
+    Roblox.jsConsoleEnabled = false;
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    <script type='text/javascript' src='http://js.rbxcdn.com/a3d0a08746c2f2408b1a1130640d9d0c.js.gzip'></script>
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+            <script type='text/javascript' src='http://js.rbxcdn.com/045483c002abdefee9f2e9598ac48d08.js.gzip'></script>
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+    <script type='text/javascript'>Roblox.config.externalResources = [];Roblox.config.paths['Pages.Catalog'] = 'http://js.rbxcdn.com/7f80c038811073416cc0c480b4cd735b.js.gzip';Roblox.config.paths['Pages.CatalogShared'] = 'http://js.rbxcdn.com/94292889cb1b3e857d3b423f5c259701.js.gzip';Roblox.config.paths['Pages.Messages'] = 'http://js.rbxcdn.com/b123274ceba7c65d8415d28132bb2220.js.gzip';Roblox.config.paths['Resources.Messages'] = 'http://js.rbxcdn.com/6307f9bd9c09fa9d88c76291f3b68fda.js.gzip';Roblox.config.paths['Widgets.AvatarImage'] = 'http://js.rbxcdn.com/64f4ed4d4cf1c0480690bc39cbb05b73.js.gzip';Roblox.config.paths['Widgets.DropdownMenu'] = 'http://js.rbxcdn.com/5cf0eb71249768c86649bbf0c98591b0.js.gzip';Roblox.config.paths['Widgets.GroupImage'] = 'http://js.rbxcdn.com/556af22c86bce192fb12defcd4d2121c.js.gzip';Roblox.config.paths['Widgets.HierarchicalDropdown'] = 'http://js.rbxcdn.com/3ba7b7bc5faac4c7e7f1f42ae3af2434.js.gzip';Roblox.config.paths['Widgets.ItemImage'] = 'http://js.rbxcdn.com/d689e41830fba6bc49155b15a6acd020.js.gzip';Roblox.config.paths['Widgets.PlaceImage'] = 'http://js.rbxcdn.com/45d46dd8e2bd7f10c17b42f76795150d.js.gzip';Roblox.config.paths['Widgets.SurveyModal'] = 'http://js.rbxcdn.com/56ad7af86ee4f8bc82af94269ed50148.js.gzip';</script>
+
+
+
+
+
+
+    
+    
+
+
+    <script>
+
+
+        Roblox.XsrfToken.setToken('hDq3LeL9Pm76');
+
+
+    </script>
+
+
+    
+    
+
+
+        <script>
+
+
+            $(function () {
+
+
+                Roblox.DeveloperConsoleWarning.showWarning();
+
+
+            });
+
+
+        </script>
+
+
+    <script type="text/javascript">
+
+
+    $(function () {
+
+
+        Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+
+
+    });
+
+
+</script>
+
+
+    
+    
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+    $(function(){
+
+
+        function trackReturns() {
+
+
+            function dayDiff(d1, d2) {
+
+
+                return Math.floor((d1d2)/86400000);
+
+
+            }
+
+
+            if (!localStorage) {
+
+
+                return false;
+
+
+            }
+
+
+
+
+
+
+            var cookieName = 'RBXReturn';
+
+
+            var cookieOptions = {expires:9001};
+
+
+<nowiki>            var cookieStr = localStorage.getItem(cookieName)  "";</nowiki>
+
+
+            var cookie = {};
+
+
+
+
+
+
+            try {
+
+
+                cookie = JSON.parse(cookieStr);
+
+
+            } catch (ex) {
+
+
+                // busted cookie string from old previous version of the code
+
+
+            }
+
+
+
+
+
+
+            try {
+
+
+<nowiki>                if (typeof cookie.ts === "undefined"  isNaN(new Date(cookie.ts))) {</nowiki>
+
+
+                    localStorage.setItem(cookieName, JSON.stringify({ ts: new Date().toDateString() }));
+
+
+                    return false;
+
+
+                }
+
+
+            } catch (ex) {
+
+
+                return false;
+
+
+            }
+
+
+
+
+
+
+            var daysSinceFirstVisit = dayDiff(new Date(), new Date(cookie.ts));
+
+
+            if (daysSinceFirstVisit == 1 && typeof cookie.odr === "undefined") {
+
+
+                RobloxEventManager.triggerEvent('rbx_evt_odr', {});
+
+
+                cookie.odr = 1;
+
+
+            }
+
+
+            if (daysSinceFirstVisit >= 1 && daysSinceFirstVisit <= 7 && typeof cookie.sdr === "undefined") {
+
+
+                RobloxEventManager.triggerEvent('rbx_evt_sdr', {});
+
+
+                cookie.sdr = 1;
+
+
+            }
+
+
+            try {
+
+
+                localStorage.setItem(cookieName, JSON.stringify(cookie));
+
+
+            } catch (ex) {
+
+
+                return false;
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+        GoogleListener.init();
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+        RobloxEventManager.initialize(true);
+
+
+        RobloxEventManager.triggerEvent('rbx_evt_pageview');
+
+
+        trackReturns();
+
+
+        
+        
+
+
+
+
+
+
+    
+    
+
+
+        RobloxEventManager._idleInterval = 450000;
+
+
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_start');
+
+
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_ftp');
+
+
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_success');
+
+
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_fmp');
+
+
+        RobloxEventManager.startMonitor();
+
+
+        
+        
+
+
+
+
+
+
+    });
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+    
+    
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+<nowiki>    var Roblox = Roblox  {};</nowiki>
+
+
+<nowiki>    Roblox.UpsellAdModal = Roblox.UpsellAdModal  {};</nowiki>
+
+
+
+
+
+
+    Roblox.UpsellAdModal.Resources = {
+
+
+        //<sl:translate>
+
+
+        title: "Remove Ads Like This",
+
+
+        body: "Builders Club members do not see external ads like these.",
+
+
+        accept: "Upgrade Now",
+
+
+        decline: "No, thanks"
+
+
+        //</sl:translate>
+
+
+    };
+
+
+</script>
+
+
+
+
+
+
+    
+    
+
+
+    <script type='text/javascript' src='http://js.rbxcdn.com/89b019cd9fe489276f2230250c461975.js.gzip'></script>
+
+
+
+
+
+
+</body>
+
+
+</html>
+}

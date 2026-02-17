@@ -259,6 +259,41 @@ namespace RobloxWebserver.Controllers
         }
 
         /// <summary>
+    /// Advanced search endpoint for game search functionality with enhanced features
+    /// </summary>
+    [HttpGet("advancedsearch")]
+    [AllowAnonymous]
+    public async Task<IActionResult> AdvancedSearch(
+    string keyword = "",
+    int startRow = 0,
+    int maxRows = 40,
+    CancellationToken cancellationToken = default)
+{
+    try
+    {
+        var connStr = _configuration.GetConnectionString("Default");
+        List<GamesQueries.GameEntry> games;
+
+        if (string.IsNullOrWhiteSpace(keyword))
+        {
+            return Content("<div class=\"hidden-item hidden\" id=keyword></div>", "text/html");
+        }
+
+        games = await GamesQueries.SearchGamesAdvancedAsync(
+            keyword, startRow, maxRows, connStr, cancellationToken);
+
+        var html = BuildGamesHtml(games, startRow);
+
+        return Content(html, "text/html");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error in advanced search: {ex.Message}");
+        return Content("<div class=\"hidden-item hidden\" id=keyword></div>", "text/html");
+    }
+}
+
+        /// <summary>
         /// Search endpoint for game search functionality
         /// </summary>
         [HttpGet("moreresultsuncached")]

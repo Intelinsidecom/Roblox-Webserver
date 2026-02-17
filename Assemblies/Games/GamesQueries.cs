@@ -318,7 +318,21 @@ public static class GamesQueries
         await using var conn = new NpgsqlConnection(connectionString);
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-        var sql = @"
+        string searchCondition;
+        if (keyword.Length < 4)
+        {
+            searchCondition = @"
+                (LOWER(u.name) LIKE LOWER(@keyword) OR 
+                 LOWER(creator.user_name) LIKE LOWER(@keyword))";
+        }
+        else
+        {
+            searchCondition = @"
+                (to_tsvector('english', u.name) @@ plainto_tsquery('english', @keyword) OR
+                 to_tsvector('english', creator.user_name) @@ plainto_tsquery('english', @keyword))";
+        }
+
+        var sql = $@"
             SELECT 
                 u.universe_id,
                 u.root_place_id,
@@ -337,15 +351,12 @@ public static class GamesQueries
             WHERE a.is_place = true 
             AND a.access_type = 1 -- Public access only
             AND u.root_place_id IS NOT NULL
-            AND (
-                to_tsvector('english', u.name) @@ plainto_tsquery('english', @keyword) OR
-                to_tsvector('english', creator.username) @@ plainto_tsquery('english', @keyword)
-            )
+            AND ({searchCondition})
             ORDER BY u.created_at DESC
             LIMIT @maxRows OFFSET @startRow";
 
         using var cmd = new NpgsqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("keyword", keyword);
+        cmd.Parameters.AddWithValue("keyword", keyword.Length < 4 ? "%" + keyword + "%" : keyword);
         cmd.Parameters.AddWithValue("maxRows", maxRows);
         cmd.Parameters.AddWithValue("startRow", startRow);
 
@@ -470,6 +481,150 @@ public static class GamesQueries
                 UpVotes = reader.GetInt32(8),
                 DownVotes = reader.GetInt32(9),
                 Playing = reader.GetInt32(10)
+            };
+            games.Add(game);
+        }
+
+        return games;
+    }
+
+    /// <summary>
+    /// Advanced search for games with keyword matching in name and description
+    /// Supports exact phrase search (with quotes) and multi-word searches
+    /// Results are filtered by last updated date and limited by specified count
+    /// </summary>
+    public static async Task<List<GameEntry>> SearchGamesAdvancedAsync(
+        string keyword,
+        int startRow = 0,
+        int maxRows = 40,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (string.IsNullOrWhiteSpace(keyword))
+            return new List<GameEntry>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        var searchConditions = new List<string>();
+        var searchParams = new List<NpgsqlParameter>();
+        var paramIndex = 0;
+
+        if (keyword.StartsWith("\"") && keyword.EndsWith("\"") && keyword.Length > 2)
+        {
+            var exactPhrase = keyword.Substring(1, keyword.Length - 2);
+            searchConditions.Add(@"
+                (LOWER(u.name) LIKE LOWER(@search" + paramIndex + @") OR 
+                 COALESCE(LOWER(a.description), '') LIKE LOWER(@search" + paramIndex + @"))");
+            searchParams.Add(new NpgsqlParameter("@search" + paramIndex, "%" + exactPhrase + "%"));
+            paramIndex++;
+        }
+        else
+        {
+            var words = keyword.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            if (words.Length == 1)
+            {
+                var word = words[0];
+                if (word.Length < 4)
+                {
+                    // Use simple LIKE for very short keywords that full-text search might ignore
+                    searchConditions.Add(@"
+                        (LOWER(u.name) LIKE LOWER(@search" + paramIndex + @") OR 
+                         COALESCE(LOWER(a.description), '') LIKE LOWER(@search" + paramIndex + @"))");
+                    searchParams.Add(new NpgsqlParameter("@search" + paramIndex, "%" + word + "%"));
+                }
+                else
+                {
+                    // Use full-text search for longer keywords
+                    searchConditions.Add(@"
+                        (to_tsvector('english', u.name) @@ plainto_tsquery('english', @search" + paramIndex + @") OR 
+                         to_tsvector('english', COALESCE(a.description, '')) @@ plainto_tsquery('english', @search" + paramIndex + @"))");
+                    searchParams.Add(new NpgsqlParameter("@search" + paramIndex, word));
+                }
+                paramIndex++;
+            }
+            else
+            {
+                var nameConditions = new List<string>();
+                var descConditions = new List<string>();
+                
+                foreach (var word in words)
+                {
+                    if (word.Length < 4)
+                    {
+                        // Use simple LIKE for very short keywords
+                        nameConditions.Add("LOWER(u.name) LIKE LOWER(@search" + paramIndex + ")");
+                        descConditions.Add("COALESCE(LOWER(a.description), '') LIKE LOWER(@search" + paramIndex + ")");
+                        searchParams.Add(new NpgsqlParameter("@search" + paramIndex, "%" + word + "%"));
+                    }
+                    else
+                    {
+                        // Use full-text search for longer keywords
+                        nameConditions.Add("to_tsvector('english', u.name) @@ plainto_tsquery('english', @search" + paramIndex + ")");
+                        descConditions.Add("to_tsvector('english', COALESCE(a.description, '')) @@ plainto_tsquery('english', @search" + paramIndex + ")");
+                        searchParams.Add(new NpgsqlParameter("@search" + paramIndex, word));
+                    }
+                    paramIndex++;
+                }
+                
+                searchConditions.Add("(" + string.Join(" OR ", nameConditions) + " OR " + string.Join(" OR ", descConditions) + ")");
+            }
+        }
+
+        var sql = $@"
+            SELECT 
+                u.universe_id,
+                u.root_place_id,
+                u.name,
+                u.creator_user_id,
+                creator.user_name as creator_name,
+                COALESCE(a.place_custom_icon_url, a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as icon_url,
+                COALESCE(a.place_custom_icon_url, a.place_generated_icon_url, a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+                u.created_at,
+                a.last_updated,
+                COALESCE(a.upvotes, 0) as up_votes,
+                COALESCE(a.downvotes, 0) as down_votes,
+                0 as playing_count
+            FROM universes u
+            INNER JOIN users creator ON u.creator_user_id = creator.user_id
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true 
+            AND a.access_type = 1 -- Public access only
+            AND u.root_place_id IS NOT NULL
+            AND ({string.Join(" AND ", searchConditions)})
+            ORDER BY a.last_updated DESC -- Filter by last updated
+            LIMIT @maxRows OFFSET @startRow";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        
+        foreach (var param in searchParams)
+        {
+            cmd.Parameters.Add(param);
+        }
+        
+        cmd.Parameters.AddWithValue("@maxRows", maxRows);
+        cmd.Parameters.AddWithValue("@startRow", startRow);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var games = new List<GameEntry>();
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var game = new GameEntry
+            {
+                UniverseId = reader.GetInt64(reader.GetOrdinal("universe_id")),
+                PlaceId = reader.GetInt64(reader.GetOrdinal("root_place_id")),
+                Name = reader.GetString(reader.GetOrdinal("name")),
+                CreatorName = reader.GetString(reader.GetOrdinal("creator_name")),
+                CreatorUserId = reader.GetInt64(reader.GetOrdinal("creator_user_id")),
+                IconUrl = reader.GetString(reader.GetOrdinal("icon_url")),
+                ThumbnailUrl = reader.GetString(reader.GetOrdinal("thumbnail_url")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
+                DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
+                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
             };
             games.Add(game);
         }

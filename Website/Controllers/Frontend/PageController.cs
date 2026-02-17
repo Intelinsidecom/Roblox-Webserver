@@ -13,9 +13,8 @@ namespace RobloxWebserver.Controllers
         [HttpPost("upgrades/robux")]
         public IActionResult RobuxPost()
         {
-            if (User?.Identity?.IsAuthenticated == true)
-                return Redirect("/home");
             return View("~/Views/Pages/Robux.cshtml");
         }
-    }
+
+	    }
 }

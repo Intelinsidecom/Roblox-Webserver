@@ -1,0 +1,45 @@
+<div class="row page-content new-username-pwd-rule ng-scope" ng-modules="robloxApp, accounts, ui.bootstrap, modal" ng-controller="accountsController" id="user-account">
+    <div class="alert-system-feedback">
+        <div class="alert alert-success">
+        </div>
+    </div>
+
+
+<div id="state-properties" data-cancelrenewalurl="https://www.roblox.com/upgrades/cancel-subscription" data-upgrademembershipurl="https://www.roblox.com/premium/membership" data-buyrobuxurl="https://www.roblox.com/upgrades/robux" data-paymenthistoryurl="https://billing.roblox.com/v1/payments/user/history" data-is-payment-history-enabled="false" data-checkifinvalidusernameforsignup="https://www.roblox.com/usercheck/checkifinvalidusernameforsignup" data-hidemobiletablist="false" data-is-two-step-toggle-enabled="true" data-in-app="false" data-is-locale-switcher-enabled="false" account-state-properties="" account-data="accountData" class="hidden"></div><div id="notification-settings" data-can-toggle-mobile-push-notifications="True" data-notifications-domain="https://notifications.roblox.com">
+</div>
+
+    
+    <div class="section">
+        <div class="container-header">
+            <!-- ngIf: !isI18nEnabled --><h1 class="user-account-header ng-scope" ng-if="!isI18nEnabled">PlusLeak 0.1<button class="btn-control-md">Reload</button></h1><!-- end ngIf: !isI18nEnabled -->
+            <!-- ngIf: isI18nEnabled -->
+        </div>
+        <div class="container-header">
+            <div class="tab-dropdown" ng-hide="accountData.stateProperties.hideMobileTabList">
+                <div class="input-group-btn" dropdown="">
+                    <button type="button" dropdown-toggle="" class="input-dropdown-btn" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+                        <span class="rbx-selection-label ng-binding">Account Info</span>
+                        <span class="icon-down-16x16"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <!-- ngRepeat: tab in accountsTabs --><li ng-repeat="tab in accountsTabs" ui-sref="info" class="ng-scope" href="#!/info">
+                            <a class="ng-binding">Account Info</a>
+                        </li><!-- end ngRepeat: tab in accountsTabs --><li ng-repeat="tab in accountsTabs" ui-sref="security" class="ng-scope" href="#!/security">
+                            <a class="ng-binding">Security</a>
+                        </li><!-- end ngRepeat: tab in accountsTabs --><li ng-repeat="tab in accountsTabs" ui-sref="privacy" class="ng-scope" href="#!/privacy">
+                            <a class="ng-binding">Privacy</a>
+                        </li><!-- end ngRepeat: tab in accountsTabs --><li ng-repeat="tab in accountsTabs" ui-sref="billing" class="ng-scope" href="#!/billing">
+                            <a class="ng-binding">Billing</a>
+                        </li><!-- end ngRepeat: tab in accountsTabs --><li ng-repeat="tab in accountsTabs" ui-sref="notifications" class="ng-scope" href="#!/notifications">
+                            <a class="ng-binding">Notifications</a>
+                        </li><!-- end ngRepeat: tab in accountsTabs -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="settings-container"><div class="page-content rplus"><div class="section rplus"><h3>Main</h3><div class="section-content"><div class="col-sm-12"><div class="checkbox"><span class="tooltip-container" title="PlusLeak Premium unlocks all the buttons and themes."><span class="icon-moreinfo"></span></span><input type="checkbox" id="rplus-setting-1" disabled=""><label for="rplus-setting-1">PlusLeak Premium</label><br>PlusLeak premium is broken ;-;</div><div class="section-content"><h4>Roblox theme</h4><div class="text-date-hint">Sets a style for ROBLOX websites.</div><div class="radio"><input id="rplus-setting-2-0" name="rplus-setting-2" type="radio" value=""><label for="rplus-setting-2-0">Default</label></div><div class="radio"><input id="rplus-setting-2-1" name="rplus-setting-2" type="radio" value="obc"><label for="rplus-setting-2-1">OBC</label></div><div class="radio"><input id="rplus-setting-2-2" name="rplus-setting-2" type="radio" value="easter" enabled=""><label for="rplus-setting-2-2">Easter</label></div></div></div></div></div><div class="section rplus"><h3>Catalog</h3><div class="section-content"><div class="col-sm-12"><div class="checkbox"><span class="tooltip-container" title="Get notifications when an official Roblox item in the catalog gets updated or created."><span class="icon-moreinfo"></span></span><input type="checkbox" id="rplus-setting-6"><label for="rplus-setting-6">Catalog notifier</label></div><div class="checkbox"><span class="tooltip-container" title="When a new collectible item comes out in the catalog if you have this enabled you will have a purchase button directly on the notification."><span class="icon-moreinfo"></span></span><input type="checkbox" id="rplus-setting-8" disabled=""><label for="rplus-setting-8">Purchase button on new limited notifications</label></div><div class="checkbox"><span class="tooltip-container" title="Collectible items with have their remaining counters updated without refreshing the page."><span class="icon-moreinfo"></span></span><input type="checkbox" id="rplus-setting-9"><label for="rplus-setting-9">Live collectible remaining counter</label></div></div></div></div><div class="section rplus"><h3>Navigation buttons</h3><div class="section-content"><div class="col-sm-12"><div class="form-group"><label class="text-label">Navigation button one text</label><input id="rplus-setting-40" type="text" class="form-control input-field"></div><div class="form-group"><label class="text-label">Navigation button one link</label><input id="rplus-setting-41" type="text" class="form-control input-field"></div><div class="form-group"><label class="text-label">Navigation button two text</label><input id="rplus-setting-42" type="text" class="form-control input-field"></div><div class="form-group"><label class="text-label">Navigation button two link</label><input id="rplus-setting-43" type="text" class="form-control input-field"></div></div></div></div></div></div>
+
+    
+
+</div>
