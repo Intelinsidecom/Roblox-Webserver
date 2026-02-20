@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Npgsql;
+using ControlPanel.Functions;
 
 namespace Control_Panel
 {
@@ -21,9 +22,10 @@ namespace Control_Panel
             InitializeComponent();
             this.Icon = System.Windows.Application.Current.MainWindow?.Icon ?? 
                 new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/ControlPanel.ico"));
-            InitializeTheme();
+            ThemeManager.InitializeThemeForWindow(this);
             UpdateWindowTitle();
             LoadConnectionString();
+            this.Loaded += SqlConsoleWindow_Loaded;
         }
         
         private void UpdateWindowTitle()
@@ -31,20 +33,16 @@ namespace Control_Panel
             Title = $"SQL Console - {_consoleName}";
         }
         
-        private void InitializeTheme()
+        private void SqlConsoleWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Properties.Settings.Default.PropertyChanged += Settings_PropertyChanged;
+        }
+        
+        private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Theme" || e.PropertyName == "ColorScheme" || e.PropertyName == "BackgroundColor")
             {
-                var themeSettings = ControlPanel.Functions.ThemeManager.LoadThemeSettings();
-                ControlPanel.Functions.ThemeManager.ApplyThemeToWindow(
-                    this, 
-                    themeSettings.Theme, 
-                    themeSettings.ColorScheme, 
-                    themeSettings.BackgroundColor);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to load theme for SQL console: {ex.Message}");
+                ThemeManager.InitializeThemeForWindow(this);
             }
         }
         
