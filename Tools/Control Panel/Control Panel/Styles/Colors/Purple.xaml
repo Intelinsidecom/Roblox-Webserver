@@ -1,0 +1,31 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!-- Purple Color Scheme -->
+    <SolidColorBrush x:Key="AccentPrimary" Color="#A200FF"/>
+    <SolidColorBrush x:Key="AccentSecondary" Color="#B333FF"/>
+    <SolidColorBrush x:Key="AccentPressed" Color="#8C00CC"/>
+    
+    <!-- Specific Accent Colors for UI Elements -->
+    <SolidColorBrush x:Key="AccentBlue" Color="#00AFF0"/>
+    <SolidColorBrush x:Key="AccentPurple" Color="#9B59B6"/>
+    <SolidColorBrush x:Key="AccentGreen" Color="#2ECC71"/>
+    <SolidColorBrush x:Key="AccentOrange" Color="#E67E22"/>
+    
+    <SolidColorBrush x:Key="Success" Color="#2ECC71"/>
+    <SolidColorBrush x:Key="Error" Color="#E74C3C"/>
+    <SolidColorBrush x:Key="Info" Color="#3498DB"/>
+    
+    <!-- Additional Colors -->
+    <SolidColorBrush x:Key="Background" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Foreground" Color="#333333"/>
+    <SolidColorBrush x:Key="SubtleText" Color="#666666"/>
+    <SolidColorBrush x:Key="ForegroundLight" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="BorderColor" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="SidebarBackground" Color="#F8F8F8"/>
+    
+    <!-- Sidebar Hover Colors -->
+    <SolidColorBrush x:Key="SidebarHover" Color="#E6CCFF"/>
+    <SolidColorBrush x:Key="SidebarPressed" Color="#D9B3FF"/>
+    
+</ResourceDictionary>

@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Roblox.Thumbnails.Relay.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LogLevel" Type="Roblox.EventLog.LogLevel" Scope="Application">
+      <Value Profile="(Default)">Information</Value>
+    </Setting>
+    <Setting Name="LogName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">RTR1.Roblox.Thumbnails.Relay</Value>
+    </Setting>
+    <Setting Name="ArbiterEndpoint" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:64989</Value>
+    </Setting>
+    <Setting Name="RccJobLeaseDurationPerThumbnailTypeJsonString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">{}</Value>
+    </Setting>
+    <Setting Name="RccJobLeaseDuration" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:01:00</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

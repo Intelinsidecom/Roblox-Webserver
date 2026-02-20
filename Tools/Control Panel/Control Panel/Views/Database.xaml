@@ -1,0 +1,265 @@
+<UserControl x:Class="Control_Panel.Database"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Control_Panel"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="900"
+             Background="{DynamicResource Background}">
+
+    <UserControl.Resources>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          CanContentScroll="False">
+                <StackPanel Margin="0,0,0,30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Control Panel - Database" Style="{StaticResource DashboardTitle}" 
+                                       Foreground="{DynamicResource AccentPrimary}"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock Text="Roblox Webserver Management" 
+                                       Style="{StaticResource DashboardSubtitle}" 
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Auto"
+                          PanningMode="Both"
+                          CanContentScroll="False">
+                <StackPanel>
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" 
+                                           Text="Database Migration" 
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Name="MigrateButton"
+                                        Width="80"
+                                        Content="Migrate" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        Click="MigrationButton_Click"/>
+                                <TextBlock Grid.Column="2" 
+                                           Name="MigrationStatusText"
+                                           Text="Ready" 
+                                           Style="{StaticResource NormalText}"
+                                           Foreground="{DynamicResource SubtleText}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1" 
+                                       Text="Use this to update Database Schema." 
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" 
+                                           Text="Database Wipe" 
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Name="WipeButton"
+                                        Width="80"
+                                        Content="Wipe" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        Click="WipeButton_Click"/>
+                                <TextBlock Grid.Column="2" 
+                                           Name="WipeStatusText"
+                                           Text="Ready" 
+                                           Style="{StaticResource NormalText}"
+                                           Foreground="{DynamicResource SubtleText}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1" 
+                                       Text="Use this to completely wipe all database data. This action cannot be undone." 
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" 
+                                           Text="Database Export" 
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Name="ExportButton"
+                                        Width="80"
+                                        Content="Export" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        Click="ExportButton_Click"/>
+                                <TextBlock Grid.Column="2" 
+                                           Name="ExportStatusText"
+                                           Text="Ready" 
+                                           Style="{StaticResource NormalText}"
+                                           Foreground="{DynamicResource SubtleText}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1" 
+                                       Text="Use this to export all database data to a SQL file." 
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" 
+                                           Text="Database Import" 
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Name="ImportButton"
+                                        Width="80"
+                                        Content="Import" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        Click="ImportButton_Click"/>
+                                <TextBlock Grid.Column="2" 
+                                           Name="ImportStatusText"
+                                           Text="Ready" 
+                                           Style="{StaticResource NormalText}"
+                                           Foreground="{DynamicResource SubtleText}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1" 
+                                       Text="Use this to import database data from a SQL file." 
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" 
+                                           Text="SQL Console" 
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Name="SqlConsoleButton"
+                                        Width="80"
+                                        Content="Open" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        Click="SqlConsoleButton_Click"/>
+                                <TextBlock Grid.Column="2" 
+                                           Name="SqlConsoleStatusText"
+                                           Text="Ready" 
+                                           Style="{StaticResource NormalText}"
+                                           Foreground="{DynamicResource SubtleText}"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1" 
+                                       Text="Open a dedicated SQL console for executing custom queries against the database." 
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                    </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

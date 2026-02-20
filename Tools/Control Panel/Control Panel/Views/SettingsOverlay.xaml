@@ -1,0 +1,121 @@
+<UserControl x:Class="Control_Panel.SettingsOverlay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Control_Panel">
+    <Grid x:Name="GlobalSettingsOverlay" Visibility="Collapsed" Background="#01000000">
+        <Border Background="Transparent" MouseDown="GlobalSettingsOverlay_MouseDown"/>
+        <Border HorizontalAlignment="Right" Width="300" 
+                Background="{DynamicResource Background}" 
+                BorderBrush="{DynamicResource AccentPrimary}"
+                BorderThickness="2,0,0,0">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Margin="0,0,0,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Settings" FontSize="20" FontWeight="Bold" 
+                               Foreground="{DynamicResource AccentPrimary}" 
+                               VerticalAlignment="Center"/>
+                    <Button x:Name="CloseGlobalSettingsButton" Grid.Column="1" Content="✕" 
+                            Style="{DynamicResource SettingsButton}"
+                            Width="25" Height="25" 
+                            Click="CloseGlobalSettingsButton_Click"/>
+                </Grid>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" CanContentScroll="False">
+                    <StackPanel>
+                        <TextBlock Text="Theme Style" FontSize="16" FontWeight="Bold" 
+                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,15"/>
+                        <TextBlock Text="Select your preferred theme style:" 
+                                   FontSize="12" 
+                                   Foreground="{DynamicResource Foreground}" 
+                                   Margin="0,0,0,10" TextWrapping="Wrap"/>
+                        <StackPanel Margin="0,0,0,20">
+                            <RadioButton x:Name="DefaultThemeRadioButton" Content="Default Theme (Modern)" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         IsChecked="True" Checked="ThemeRadioButton_Checked"/>
+                            <RadioButton x:Name="WPThemeRadioButton" Content="WP Theme (Windows Phone)" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         Margin="0,8,0,0" Checked="ThemeRadioButton_Checked"/>
+                        </StackPanel>
+                        <TextBlock Text="Color Scheme" FontSize="16" FontWeight="Bold" 
+                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,15"/>
+                        <TextBlock Text="Select your preferred color scheme:" 
+                                   FontSize="12" 
+                                   Foreground="{DynamicResource Foreground}" 
+                                   Margin="0,0,0,10" TextWrapping="Wrap"/>
+                        <StackPanel Margin="0,0,0,15">
+                            <RadioButton x:Name="BlueColorRadioButton" Content="Blue" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         IsChecked="True" Checked="ColorRadioButton_Checked"/>
+                            <RadioButton x:Name="PurpleColorRadioButton" Content="Purple" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         Margin="0,8,0,0" Checked="ColorRadioButton_Checked"/>
+                            <RadioButton x:Name="GreenColorRadioButton" Content="Green" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         Margin="0,8,0,0" Checked="ColorRadioButton_Checked"/>
+                            <RadioButton x:Name="OrangeColorRadioButton" Content="Orange" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         Margin="0,8,0,0" Checked="ColorRadioButton_Checked"/>
+                        </StackPanel>
+                        <TextBlock Text="Background Color" FontSize="16" FontWeight="Bold" 
+                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,15"/>
+                        <TextBlock Text="Select your preferred background color:" 
+                                   FontSize="12" 
+                                   Foreground="{DynamicResource Foreground}" 
+                                   Margin="0,0,0,10" TextWrapping="Wrap"/>
+                        <StackPanel Margin="0,0,0,15">
+                            <RadioButton x:Name="WhiteBackgroundRadioButton" Content="White" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         IsChecked="True" Checked="BackgroundColorRadioButton_Checked"/>
+                            <RadioButton x:Name="DarkBackgroundRadioButton" Content="Dark" 
+                                         FontSize="12" FontFamily="Segoe UI"
+                                         Foreground="{DynamicResource Foreground}"
+                                         Margin="0,8,0,0" Checked="BackgroundColorRadioButton_Checked"/>
+                        </StackPanel>
+                        <Border Background="{DynamicResource Background}" 
+                                BorderBrush="{DynamicResource AccentPrimary}" 
+                                BorderThickness="1" 
+                                Padding="10" 
+                                Margin="0,15,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Preview" Style="{DynamicResource HeaderText}" 
+                                           Foreground="{DynamicResource Foreground}"/>
+                                <Button Content="Sample Button" Style="{DynamicResource ModernButton}"
+                                        Width="120" Height="35" Margin="0,8,0,0"/>
+                                <TextBlock Text="This is how it looks" 
+                                           Style="{DynamicResource NormalText}"
+                                           Foreground="{DynamicResource SubtleText}" 
+                                           Margin="0,8,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" 
+                            HorizontalAlignment="Right" Margin="0,15,0,0">
+                    <Button x:Name="ApplySettingsButton" Content="Save" 
+                            Style="{DynamicResource ModernButton}"
+                            Width="80" Height="30" Margin="0,0,10,0"
+                            Click="ApplySettingsButton_Click"/>
+                    <Button x:Name="CancelSettingsButton" Content="Cancel" 
+                            Background="{DynamicResource SubtleText}"
+                            Style="{DynamicResource ModernButton}"
+                            Width="80" Height="30"
+                            Click="CancelSettingsButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

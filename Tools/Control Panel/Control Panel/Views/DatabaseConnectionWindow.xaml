@@ -1,0 +1,106 @@
+<Window x:Class="Control_Panel.DatabaseConnectionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Control_Panel"
+        mc:Ignorable="d"
+        Title="Database Connection" Height="700" Width="600"
+        Background="{DynamicResource Background}"
+        WindowStartupLocation="CenterScreen">
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                  CanContentScroll="False">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,0,0,30">
+            <TextBlock Text="Database Connection" Style="{DynamicResource HeaderText}" 
+                       Foreground="{DynamicResource AccentPrimary}"/>
+            <TextBlock Text="Configure your PostgreSQL database connection" 
+                       Style="{DynamicResource NormalText}" 
+                       Foreground="{DynamicResource SubtleText}" 
+                       Margin="0,10,0,0"/>
+        </StackPanel>
+        <Border Grid.Row="1" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                BorderThickness="1" Padding="30">
+            <StackPanel>
+                <TextBlock Text="Connection Settings" Style="{DynamicResource TitleText}" 
+                           Margin="0,0,0,20"/>
+                <Grid Margin="0,0,0,15" Height="40">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Server:" Style="{DynamicResource LabelText}" 
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" x:Name="ServerTextBox" Style="{DynamicResource ModernTextBox}" 
+                             Text="localhost" Margin="10,0,0,0" Padding="8,4,8,6"/>
+                </Grid>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Database:" Style="{DynamicResource LabelText}" 
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" x:Name="DatabaseTextBox" Style="{DynamicResource ModernTextBox}" Margin="10,0,0,0" Height="40" Padding="8,4,8,0" Text="postgres"/>
+                </Grid>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Username:" Style="{DynamicResource LabelText}" 
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" x:Name="UsernameTextBox" Style="{DynamicResource ModernTextBox}" Margin="10,0,0,0" Height="40" Padding="8,4,8,0"/>
+                </Grid>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Password:" Style="{DynamicResource LabelText}" 
+                               VerticalAlignment="Center"/>
+                    <PasswordBox Grid.Column="1" x:Name="PasswordBox" Style="{DynamicResource ModernPasswordBox}" 
+                                Margin="10,0,0,0" Height="37" Padding="8,4,8,0"/>
+                </Grid>
+                <Grid Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Port:" Style="{DynamicResource LabelText}" 
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1" x:Name="PortTextBox" Style="{DynamicResource ModernTextBox}" 
+                             Text="5432" Margin="10,0,-30,0" Height="40" Padding="8,4,-10,0" Width="100" VerticalAlignment="Center" UndoLimit="6"/>
+                </Grid>
+                <Button x:Name="TestConnectionButton" Content="Test Connection" 
+                        Style="{DynamicResource ModernButton}" 
+                        HorizontalAlignment="Left" 
+                        Width="150" Height="40"
+                        Click="TestConnectionButton_Click"/>
+            </StackPanel>
+        </Border>
+        <StackPanel Grid.Row="2" Margin="0,20,0,0">
+            <TextBlock x:Name="StatusTextBlock" Text="Ready to connect to database" 
+                       Style="{DynamicResource NormalText}" 
+                       Foreground="{DynamicResource Success}" 
+                       Margin="0,0,0,15"/>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="SaveConnectionButton" Content="Save Connection" 
+                        Style="{DynamicResource ModernButton}" 
+                        Width="150" Height="40" Margin="0,0,15,0"
+                        Click="SaveConnectionButton_Click"/>
+                <Button x:Name="CancelButton" Content="Cancel" 
+                        Style="{DynamicResource ModernButton}" 
+                        Width="150" Height="40"
+                        Click="CancelButton_Click"/>
+            </StackPanel>
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7575EB0C-CE4E-4311-90B6-B36D45AF456F}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Roblox.Thumbnails.Relay</RootNamespace>
+    <AssemblyName>Roblox.Thumbnails.Relay</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ImageFormat.cs" />
+    <Compile Include="NetworkAdapterMonitor.cs" />
+    <Compile Include="PerfStatsMonitor.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="RccServiceArbiter.cs" />
+    <Compile Include="ThumbnailGenerationResponse.cs" />
+    <Compile Include="ServerStatistics.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="ThumbnailsRelay.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThumbnailsRelayInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ThumbnailType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Roblox.Configuration.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\AvatarHeadShotScript.lua" />
+    <None Include="Scripts\AvatarScript.lua" />
+    <None Include="Scripts\FaceScript.lua" />
+    <None Include="Scripts\GearScript.lua" />
+    <None Include="Scripts\HatScript.lua" />
+    <None Include="Scripts\HeadScript.lua" />
+    <None Include="Scripts\MeshPartScript.lua" />
+    <None Include="Scripts\MeshScript.lua" />
+    <None Include="Scripts\ModelScript.lua" />
+    <None Include="Scripts\PackageScript.lua" />
+    <None Include="Scripts\PantsScript.lua" />
+    <None Include="Scripts\PlaceScript.lua" />
+    <None Include="Scripts\ShirtScript.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Grid\Roblox.Grid.Common\Roblox.Grid.Common.csproj">
+      <Project>{019855b7-a00b-4cba-a087-c2ee0175d9cd}</Project>
+      <Name>Roblox.Grid.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Roblox.Common\Roblox.Common.csproj">
+      <Project>{e3dc46ae-73bc-4b93-b9c4-f8d5d21b4f2a}</Project>
+      <Name>Roblox.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Roblox.Configuration\Roblox.Configuration.csproj">
+      <Project>{8ea596fd-c59f-4a2c-b3be-fb856d64395e}</Project>
+      <Name>Roblox.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Roblox.EventLog.Windows\Roblox.EventLog.Windows.csproj">
+      <Project>{bfbeed72-2726-0577-4c69-8a176c6c8b18}</Project>
+      <Name>Roblox.EventLog.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Roblox.EventLog\Roblox.EventLog.csproj">
+      <Project>{d0afb657-3191-0ae2-5503-2694142915ae}</Project>
+      <Name>Roblox.EventLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Roblox.Wcf\Roblox.Wcf.csproj">
+      <Project>{24ec39cc-7af3-94eb-b1d8-ede70d9f5b98}</Project>
+      <Name>Roblox.Wcf</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web.Services" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.4</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
