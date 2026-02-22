@@ -20,7 +20,7 @@ namespace Avatar
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             const string sql = @"select asset_id from avatar_worn_assets where user_id = @uid order by asset_id";
-            await using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("uid", userId);
 
             var results = new List<long>();
@@ -55,10 +55,10 @@ namespace Avatar
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-            await using var tx = await conn.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+            using var tx = conn.BeginTransaction();
 
             const string deleteSql = @"delete from avatar_worn_assets where user_id = @uid";
-            await using (var deleteCmd = new NpgsqlCommand(deleteSql, conn, tx))
+            using (var deleteCmd = new NpgsqlCommand(deleteSql, conn, tx))
             {
                 deleteCmd.Parameters.AddWithValue("uid", userId);
                 await deleteCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
@@ -67,7 +67,7 @@ namespace Avatar
             if (normalizedIds.Length > 0)
             {
                 const string insertSql = @"insert into avatar_worn_assets(user_id, asset_id) values(@uid, @aid)";
-                await using var insertCmd = new NpgsqlCommand(insertSql, conn, tx);
+                using var insertCmd = new NpgsqlCommand(insertSql, conn, tx);
                 insertCmd.Parameters.AddWithValue("uid", userId);
                 var assetParam = insertCmd.Parameters.Add("aid", NpgsqlTypes.NpgsqlDbType.Bigint);
 
@@ -100,7 +100,7 @@ namespace Avatar
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             const string wornSql = @"select asset_id from avatar_worn_assets where user_id = @uid order by asset_id";
-            await using var wornCmd = new NpgsqlCommand(wornSql, conn);
+            using var wornCmd = new NpgsqlCommand(wornSql, conn);
             wornCmd.Parameters.AddWithValue("uid", userId);
 
             var current = new List<long>();
@@ -124,7 +124,7 @@ namespace Avatar
             var updated = current.ToList();
 
             const string typeSql = @"select asset_type_id from assets where asset_id = @aid";
-            await using (var typeCmd = new NpgsqlCommand(typeSql, conn))
+            using (var typeCmd = new NpgsqlCommand(typeSql, conn))
             {
                 typeCmd.Parameters.AddWithValue("aid", assetId);
 
@@ -142,7 +142,7 @@ namespace Avatar
                     if (singleSlotTypes.Contains(assetTypeId) && updated.Count > 0)
                     {
                         const string sameTypeSql = @"select asset_id from assets where asset_type_id = @typeId and asset_id = any(@ids) order by asset_id";
-                        await using (var sameTypeCmd = new NpgsqlCommand(sameTypeSql, conn))
+                        using (var sameTypeCmd = new NpgsqlCommand(sameTypeSql, conn))
                         {
                             sameTypeCmd.Parameters.AddWithValue("typeId", assetTypeId);
                             sameTypeCmd.Parameters.AddWithValue("ids", updated.ToArray());

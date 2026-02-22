@@ -18,7 +18,7 @@ namespace Avatar
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             const string sql = "select file_name from avatar_thumbnail_cache where config_hash = @h";
-            await using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("h", configHash);
             var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             if (obj == null || obj == DBNull.Value)
@@ -61,7 +61,7 @@ on conflict (config_hash) do update set
     height     = excluded.height,
     created_at = now();";
 
-            await using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("h", configHash);
             cmd.Parameters.AddWithValue("img", imageHash);
             cmd.Parameters.AddWithValue("file", fileName);

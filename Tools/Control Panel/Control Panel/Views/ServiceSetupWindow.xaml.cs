@@ -317,56 +317,14 @@ namespace Control_Panel
                 Settings.Default.Save();
                 StatusTextBlock.Text = "Service settings saved successfully!";
                 StatusTextBlock.Foreground = (Brush)FindResource("Success");
-                CloseAllWindowsAndOpenNext();
+                
+                // Just close this window
+                this.Close();
             }
             catch (Exception ex)
             {
                 StatusTextBlock.Text = $"Error saving settings: {ex.Message}";
                 StatusTextBlock.Foreground = (Brush)FindResource("Error");
-            }
-        }
-        
-        private void CloseAllWindowsAndOpenNext()
-        {
-            try
-            {
-                foreach (Window window in Application.Current.Windows)
-                {
-                    if (window != this)
-                    {
-                        window.Close();
-                    }
-                }
-                
-                string connectionString = LoadConnectionString();
-                
-                Window nextWindow;
-                
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    nextWindow = new DatabaseConnectionWindow();
-                }
-                else
-                {
-                    var dbQueries = new ControlPanel.Functions.DatabaseQueries(connectionString);
-                    if (dbQueries.TestConnection())
-                    {
-                        nextWindow = new Main();
-                    }
-                    else
-                    {
-                        nextWindow = new DatabaseConnectionWindow();
-                    }
-                }
-                
-                App.ShowWindowWithShutdownHandling(nextWindow);
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error transitioning to next window: {ex.Message}");
-                MessageBox.Show($"Error transitioning to next window: {ex.Message}", "Error", 
-                              MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         

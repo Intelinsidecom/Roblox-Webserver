@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using ControlPanel.Functions;
@@ -12,6 +13,34 @@ namespace Control_Panel
     public partial class DatabaseConnectionWindow : Window
     {
         private bool _isLoadingTheme = false;
+        
+        /// <summary>
+        /// Static method to check if database is accessible and open configuration window if not.
+        /// Returns true if database is accessible, false if configuration window was opened.
+        /// </summary>
+        /// <param name="owner">Owner window for the database configuration window</param>
+        /// <param name="retryAction">Optional action to retry after database configuration</param>
+        public static bool EnsureDatabaseAccessible(Window owner = null, Action retryAction = null)
+        {
+            if (DatabaseUtilities.IsDatabaseAccessible())
+            {
+                return true;
+            }
+            
+            var databaseWindow = new DatabaseConnectionWindow();
+            if (owner != null)
+            {
+                databaseWindow.Owner = owner;
+            }
+            
+            if (retryAction != null)
+            {
+                databaseWindow.Closed += (sender, e) => retryAction();
+            }
+            
+            databaseWindow.Show();
+            return false;
+        }
         
         public DatabaseConnectionWindow()
         {
@@ -141,11 +170,14 @@ namespace Control_Panel
         {
             try
             {
+                var currentWindow = this;
+                var otherWindows = new List<Window>();
+                
                 foreach (Window window in Application.Current.Windows)
                 {
-                    if (window != this)
+                    if (window != currentWindow)
                     {
-                        window.Close();
+                        otherWindows.Add(window);
                     }
                 }
                 
@@ -162,8 +194,52 @@ namespace Control_Panel
                     nextWindow = new Main();
                 }
                 
-                App.ShowWindowWithShutdownHandling(nextWindow);
-                this.Close();
+                try
+                {
+                    var themeSettings = ControlPanel.Functions.ThemeManager.LoadThemeSettings();
+                    ControlPanel.Functions.ThemeManager.ApplyThemeToWindow(nextWindow, themeSettings.Theme, themeSettings.ColorScheme, themeSettings.BackgroundColor);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to apply theme to {nextWindow.GetType().Name}: {ex.Message}");
+                }
+                
+                nextWindow.Show();
+                
+                if (!(nextWindow is Main))
+                {
+                    nextWindow.Closed += (sender, e) => {
+                        if (Application.Current.Windows.Count <= 1)
+                        {
+                            Application.Current.Shutdown();
+                        }
+                    };
+                }
+                
+                System.Threading.Tasks.Task.Delay(100).ContinueWith(_ => {
+                    Application.Current.Dispatcher.Invoke(() => {
+                        foreach (Window window in otherWindows)
+                        {
+                            try
+                            {
+                                window.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error closing window {window.GetType().Name}: {ex.Message}");
+                            }
+                        }
+                        
+                        try
+                        {
+                            currentWindow.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error closing current window: {ex.Message}");
+                        }
+                    });
+                });
             }
             catch (Exception ex)
             {

@@ -52,7 +52,10 @@ namespace Control_Panel
         private void ShowInitialWindow()
         {
             Window initialWindow = DetermineInitialWindow();
-            ShowWindowWithShutdownHandling(initialWindow);
+            if (initialWindow != null)
+            {
+                ShowWindowWithShutdownHandling(initialWindow);
+            }
         }
         
         private void LoadMinimalFallbackResources()
@@ -79,6 +82,10 @@ namespace Control_Panel
         
         private Window DetermineInitialWindow()
         {
+            if (Application.Current.Windows.Count > 1)
+            {
+                return null;
+            }
 
             string connectionString = LoadConnectionString();
             bool servicesConfigured = AreServicesConfigured();
@@ -133,19 +140,26 @@ namespace Control_Panel
                     System.Diagnostics.Debug.WriteLine($"Failed to apply theme to {window.GetType().Name}: {ex.Message}");
                 }
                 
-                if (!(window is Main))
+                try
                 {
-                    window.Show();
-                    window.Closed += (sender, e) => {
-                        if (Current.Windows.Count == 0)
-                        {
-                            Current.Shutdown();
-                        }
-                    };
+                    if (!(window is Main))
+                    {
+                        window.Show();
+                        window.Closed += (sender, e) => {
+                            if (Current.Windows.Count == 0)
+                            {
+                                Current.Shutdown();
+                            }
+                        };
+                    }
+                    else
+                    {
+                        window.Show();
+                    }
                 }
-                else
+                catch (InvalidOperationException ex)
                 {
-                    window.Show();
+                    System.Diagnostics.Debug.WriteLine($"Cannot show window {window.GetType().Name}: {ex.Message}");
                 }
             }
         }

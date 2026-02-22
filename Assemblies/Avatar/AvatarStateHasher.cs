@@ -30,7 +30,7 @@ namespace Avatar
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             const string sql = @"update users set avatar_state_hash = @h where user_id = @uid";
-            await using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("h", (object?)hash ?? DBNull.Value);
             cmd.Parameters.AddWithValue("uid", userId);
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);

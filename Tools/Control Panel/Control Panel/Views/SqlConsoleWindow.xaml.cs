@@ -30,7 +30,7 @@ namespace Control_Panel
         
         private void UpdateWindowTitle()
         {
-            Title = $"SQL Console - {_consoleName}";
+            Title = $"SQL Console {_consoleName}";
         }
         
         private void SqlConsoleWindow_Loaded(object sender, RoutedEventArgs e)

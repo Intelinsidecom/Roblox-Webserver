@@ -184,8 +184,8 @@ namespace Control_Panel
             try
             {
                 SqlConsoleStatusText.Text = "Opening SQL Console...";
-                var sqlConsole = ConsoleWindowManager.GetReservedSqlConsole("Database SQL Console");
-                ConsoleWindowManager.ShowReservedSqlConsole("Database SQL Console");
+                var sqlConsole = new SqlConsoleWindow("");
+                App.ShowWindowWithShutdownHandling(sqlConsole);
                 SqlConsoleStatusText.Text = "SQL Console Opened";
             }
             catch (Exception ex)

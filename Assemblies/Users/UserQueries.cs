@@ -40,5 +40,39 @@ namespace Users
         {
             return GetCreatorOfIdAsync(connectionString, userId, cancellationToken);
         }
+
+        public static async Task<bool> UpdateUserPasswordAsync(string connectionString, long userId, string newPassword, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                return false;
+            if (string.IsNullOrWhiteSpace(newPassword))
+                throw new ArgumentException("newPassword is required", nameof(newPassword));
+
+            try
+            {
+                await using var conn = new NpgsqlConnection(connectionString);
+                await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                
+                using var cmd = new NpgsqlCommand(@"
+                    UPDATE users 
+                    SET password = @password, password_last_changed_at = @changedAt
+                    WHERE user_id = @userId", conn);
+                
+                cmd.Parameters.AddWithValue("password", newPassword); // In production, this should be hashed
+                cmd.Parameters.AddWithValue("changedAt", DateTime.UtcNow);
+                cmd.Parameters.AddWithValue("userId", userId);
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if logging is available
+                System.Diagnostics.Debug.WriteLine($"Error updating password for user {userId}: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

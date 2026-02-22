@@ -45,6 +45,9 @@ namespace ControlPanel.Functions
                     case "Database":
                         view = new Database();
                         break;
+                    case "Users":
+                        view = new UsersView();
+                        break;
                     default:
                         _statusTextBlock.Text = $"Unknown view: {viewName}";
                         return;

@@ -1,0 +1,232 @@
+<Window x:Class="Control_Panel.Views.UserManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Control_Panel.Views"
+        mc:Ignorable="d"
+        Title="User Management" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource Background}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="User Management" 
+                       Style="{StaticResource DashboardTitle}"
+                       Foreground="{DynamicResource AccentPrimary}"/>
+            <Button Grid.Column="1" Content="Refresh" 
+                    Style="{StaticResource ModernButton}"
+                    Background="{DynamicResource AccentPrimary}"
+                    Foreground="White"
+                    Width="80"
+                    Height="35"
+                    HorizontalAlignment="Right"
+                    Click="RefreshButton_Click"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="User Information" 
+                               Style="{StaticResource DashboardSubtitle}" 
+                               Foreground="{DynamicResource AccentPrimary}"
+                               Margin="0,0,0,20"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="User ID:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Name="UserIdText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Username:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Name="UsernameText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Robux Balance:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" Name="RobuxBalanceText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Tix Balance:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" Name="TixBalanceText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Email:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" Name="EmailText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Status:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" Name="StatusText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Created:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="6" Grid.Column="1" Name="CreatedText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                    </Grid>
+                    <Border BorderBrush="{DynamicResource SubtleText}" 
+                            BorderThickness="1" 
+                            Background="{DynamicResource Background}"
+                            Margin="0,20,0,0"
+                            Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Currency Management" 
+                                       Style="{StaticResource DashboardSubtitle}" 
+                                       Foreground="{DynamicResource AccentPrimary}"
+                                       Margin="0,0,0,10"/>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Name="RobuxAmountTextBox" 
+                                         Text="0"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,5,0"
+                                         Height="30" Padding="4,1,8,0"/>
+                                <Button Grid.Column="1" Content="Add Robux" 
+                                        Style="{StaticResource ModernButton}"
+                                        Background="{DynamicResource AccentPrimary}"
+                                        Foreground="White"
+                                        Width="100"
+                                        Height="30"
+                                        Click="AddRobuxButton_Click"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Name="TixAmountTextBox" 
+                                         Text="0"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,5,0"
+                                         Height="30" Padding="4,1,8,0"/>
+                                <Button Grid.Column="1" Content="Add Tix" 
+                                        Style="{StaticResource ModernButton}"
+                                        Background="{DynamicResource AccentPrimary}"
+                                        Foreground="White"
+                                        Width="100"
+                                        Height="30"
+                                        Click="AddTixButton_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+            <StackPanel Grid.Column="1">
+                <Button Name="AvatarToggleButton" 
+                        Content="Headshot" 
+                        Style="{StaticResource ModernButton}"
+                        Background="{DynamicResource AccentPrimary}"
+                        Foreground="White"
+                        Width="100"
+                        Height="30"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,10"
+                        Click="AvatarToggleButton_Click"/>
+                <Border BorderBrush="{DynamicResource SubtleText}" 
+                        BorderThickness="1" 
+                        Background="{DynamicResource Background}"
+                        Width="250" Height="250"
+                        HorizontalAlignment="Center"
+                        Margin="0,0,0,20">
+                    <Image Name="AvatarImage" 
+                           Width="250" Height="250" 
+                           Margin="5"/>
+                </Border>
+                <StackPanel>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="Reset Avatar" 
+                                Style="{StaticResource ModernButton}"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Margin="0,0,5,0"
+                                Height="35"
+                                Click="ResetAvatarButton_Click"/>
+                        <Button Grid.Column="1" Content="Edit Password" 
+                                Style="{StaticResource ModernButton}"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Margin="5,0,0,0"
+                                Height="35"
+                                Click="ResetPasswordButton_Click"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="Ban User" 
+                                Style="{StaticResource ModernButton}"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Margin="0,0,5,0"
+                                Height="35"
+                                Click="BanUserButton_Click"/>
+                        <Button Grid.Column="1" Content="View Logs" 
+                                Style="{StaticResource ModernButton}"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Margin="5,0,0,0"
+                                Height="35"
+                                Click="ViewLogsButton_Click"/>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

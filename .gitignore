@@ -140,3 +140,5 @@ thumbnails/
 RCC/
 Assets/
 packages/
+obj/
+bin/

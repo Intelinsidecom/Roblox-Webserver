@@ -130,7 +130,7 @@ namespace ControlPanel.Functions
                         {
                             return new ArbiterStatus 
                             { 
-                                IsRunning = true, // Arbiter is running
+                                IsRunning = true,
                                 Status = "Healthy", // Arbiter API is responding
                                 LastChecked = DateTime.Now,
                                 Version = statusData.rcc.version,
@@ -161,7 +161,6 @@ namespace ControlPanel.Functions
                             System.Diagnostics.Debug.WriteLine($"JSON error: {jsonEx.Message}");
                         }
                         
-                        // Fallback to regex parsing if JSON fails
                         return ParseArbiterStatusWithRegex(json);
                     }
                 }
@@ -217,7 +216,6 @@ namespace ControlPanel.Functions
             }
             catch (Exception ex)
             {
-                // Log general error to console
                 try
                 {
                     var consoleWindow = Control_Panel.ConsoleWindow.Instance;

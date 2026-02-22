@@ -49,7 +49,15 @@ namespace Control_Panel
         
         private void SavePreferences()
         {
-            ThemeManager.SaveToSettings(currentTheme, currentColor, currentBackground);
+            try
+            {
+                ThemeManager.SaveToSettings(currentTheme, currentColor, currentBackground);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"SavePreferences failed: {ex.Message}");
+                MessageBox.Show($"Failed to save preferences: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         
         public void Hide()
@@ -122,8 +130,17 @@ namespace Control_Panel
         
         private void ApplySettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            SavePreferences();
-            Hide();
+            try
+            {
+                SavePreferences();
+                Hide();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ApplySettingsButton_Click failed: {ex.Message}");
+                
+                MessageBox.Show($"Failed to apply settings: {ex.Message}", "Apply Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         
         private void CancelSettingsButton_Click(object sender, RoutedEventArgs e)

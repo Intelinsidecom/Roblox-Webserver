@@ -51,7 +51,11 @@ namespace Control_Panel
         
         private void UsersButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowFeatureComingSoon("Users");
+            var mainWindow = Window.GetWindow(this) as Main;
+            if (mainWindow != null)
+            {
+                mainWindow.SwitchToView("Users");
+            }
         }
         
         private void GamesButton_Click(object sender, RoutedEventArgs e)

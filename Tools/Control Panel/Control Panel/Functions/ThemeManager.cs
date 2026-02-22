@@ -315,10 +315,20 @@ namespace ControlPanel.Functions
                 Settings.Default.BackgroundColor = background;
                 Settings.Default.Save();
                 Settings.Default.Reload();
+                var savedTheme = Settings.Default.Theme;
+                var savedColor = Settings.Default.ColorScheme;
+                var savedBackground = Settings.Default.BackgroundColor;
+                
+                if (savedTheme != theme || savedColor != color || savedBackground != background)
+                {
+                    throw new InvalidOperationException("Settings were not saved correctly to the configuration file.");
+                }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Failed to save theme to settings: {ex.Message}");
+                MessageBox.Show($"Failed to save theme settings: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
             }
         }
     }

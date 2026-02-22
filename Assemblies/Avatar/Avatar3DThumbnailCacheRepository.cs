@@ -27,7 +27,7 @@ namespace Avatar
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             const string sql = "select model_hash, obj_file_name, mtl_file_name, width, height from avatar_3d_cache where config_hash = @h";
-            await using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("h", configHash);
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
             if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -79,7 +79,7 @@ on conflict (config_hash) do update set
     height       = excluded.height,
     created_at   = now();";
 
-            await using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("h", configHash);
             cmd.Parameters.AddWithValue("model", modelHash);
             cmd.Parameters.AddWithValue("obj", objFileName);
