@@ -210,7 +210,7 @@
                                         <div class="icon-text-wrapper clearfix icon-robux-price-container">
                                             <span class=icon-robux></span>
                                             <span class=text-robux-lg>
-                                                @if (Model.PriceRobux.HasValue)
+                                                @if (Model.PriceRobux.HasValue && Model.PriceRobux.Value > 0)
                                                 {
                                                     @Model.PriceRobux.Value.ToString("N0")
                                                 }

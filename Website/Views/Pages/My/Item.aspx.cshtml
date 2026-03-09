@@ -113,6 +113,42 @@
         var assetsRepo = new AssetsRepository();
         try
         {
+            if (string.IsNullOrWhiteSpace(postedName))
+            {
+                Context.Response.Redirect($"/catalog/{itemId}/haaa?error=Name is required");
+                return;
+            }
+
+            if (postedName.Length > 50)
+            {
+                Context.Response.Redirect($"/catalog/{itemId}/haaa?error=Name cannot exceed 50 characters");
+                return;
+            }
+
+            // Security checks for name
+            if (postedName.Contains("<") || postedName.Contains(">") || postedName.Contains("javascript:") || 
+                postedName.Contains("vbscript:") || postedName.Contains("onload=") || postedName.Contains("onerror="))
+            {
+                Context.Response.Redirect($"/catalog/{itemId}/haaa?error=Name contains invalid content");
+                return;
+            }
+
+            // Validate description
+            if (!string.IsNullOrWhiteSpace(postedDescription) && postedDescription.Length > 1000)
+            {
+                Context.Response.Redirect($"/catalog/{itemId}/haaa?error=Description cannot exceed 1000 characters");
+                return;
+            }
+
+            // Security checks for description
+            if (!string.IsNullOrWhiteSpace(postedDescription) && (postedDescription.Contains("<script") || postedDescription.Contains("javascript:") || 
+                postedDescription.Contains("vbscript:") || postedDescription.Contains("onload=") || postedDescription.Contains("onerror=") || 
+                postedDescription.Contains("onclick=")))
+            {
+                Context.Response.Redirect($"/catalog/{itemId}/haaa?error=Description contains invalid content");
+                return;
+            }
+
             if (!string.IsNullOrWhiteSpace(postedName))
             {
                 assetsRepo.UpdateAssetMetadataAsync(connStr, resolvedId, postedName, postedDescription)

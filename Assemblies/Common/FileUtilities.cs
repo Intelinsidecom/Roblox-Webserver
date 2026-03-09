@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +42,6 @@ public static class FileUtilities
 
         try
         {
-            // Ensure directory exists
             var directory = Path.GetDirectoryName(filePath);
             if (!string.IsNullOrWhiteSpace(directory))
                 Directory.CreateDirectory(directory);
@@ -98,7 +98,6 @@ public static class FileUtilities
 
         try
         {
-            // Ensure directory exists
             var directory = Path.GetDirectoryName(filePath);
             if (!string.IsNullOrWhiteSpace(directory))
                 Directory.CreateDirectory(directory);
@@ -164,5 +163,85 @@ public static class FileUtilities
 
         var fileInfo = new FileInfo(filePath);
         return fileInfo.Length;
+    }
+
+    /// <summary>
+    /// Validates if a file is a valid image file by attempting to load it as an image
+    /// </summary>
+    /// <param name="filePath">Path to the file to validate</param>
+    /// <returns>True if the file is a valid image, false otherwise</returns>
+    public static bool IsValidImageFile(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            return false;
+
+        if (!File.Exists(filePath))
+            return false;
+
+        try
+        {
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            string[] validExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff", ".ico" };
+            
+            if (Array.IndexOf(validExtensions, extension) == -1)
+                return false;
+
+            using (var image = Image.FromFile(filePath))
+            {
+                return image != null;
+            }
+        }
+        catch (OutOfMemoryException)
+        {
+            return false;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+        catch (FileNotFoundException)
+        {
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Gets the image format from a valid image file
+    /// </summary>
+    /// <param name="filePath">Path to the image file</param>
+    /// <returns>The image format (PNG, JPEG, BMP, etc.) or "Unknown" if not a valid image</returns>
+    public static string GetImageFormat(string filePath)
+    {
+        if (!IsValidImageFile(filePath))
+            return "Unknown";
+
+        try
+        {
+            using (var image = Image.FromFile(filePath))
+            {
+                if (image.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Png))
+                    return "PNG";
+                else if (image.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Jpeg))
+                    return "JPEG";
+                else if (image.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Bmp))
+                    return "BMP";
+                else if (image.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Gif))
+                    return "GIF";
+                else if (image.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Tiff))
+                    return "TIFF";
+                else if (image.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Icon))
+                    return "ICO";
+                else
+                    return "Unknown";
+            }
+        }
+        catch
+        {
+            return "Unknown";
+        }
     }
 }

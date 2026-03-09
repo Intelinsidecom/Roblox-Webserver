@@ -39,6 +39,23 @@ namespace Control_Panel
             InitializePlaceholders();
         }
 
+        /// <summary>
+        /// Sets the username search field and triggers a search
+        /// </summary>
+        /// <param name="username">The username to search for</param>
+        public void SearchForUser(string username)
+        {
+            if (!string.IsNullOrEmpty(username))
+            {
+                // Clear placeholder and set the search term
+                ClearPlaceholder(UsernameSearchTextBox);
+                UsernameSearchTextBox.Text = username;
+                
+                // Trigger the search by calling the method directly
+                UsernameSearchTextBox_TextChanged(UsernameSearchTextBox, null);
+            }
+        }
+
         private string GetConnectionString()
         {
             var connectionString = Properties.Settings.Default.DatabaseConnectionString;

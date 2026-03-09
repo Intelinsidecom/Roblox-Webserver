@@ -403,7 +403,7 @@ function __doPostBack(eventTarget, eventArgument) {
                                             <div class="robux-price"><span class="robux notranslate">@item.PriceRobux</span></div>
                                         }
                                     }
-                                    else if (item.PriceTickets.HasValue)
+                                    else if (item.PriceTickets.HasValue && item.PriceTickets.Value > 0)
                                     {
                                         <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
                                     }
@@ -568,7 +568,7 @@ function __doPostBack(eventTarget, eventArgument) {
     $(function () {
         function shouldStayEnabled($link) {
             var text = $.trim($link.text());
-            return text === "All Featured Items" || text === "T-Shirts";
+            return text === "All Featured Items" || text === "T-Shirts" || text === "Shirts" || text === "Pants" || text === "Clothing";
         }
 
         // Disable all assetTypeFilter / gearFilter / breadCrumbFilter tabs except the allowed ones

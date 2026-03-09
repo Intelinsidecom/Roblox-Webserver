@@ -31,6 +31,16 @@ namespace ControlPanel.Functions
         /// <param name="viewName">Name of the view to load</param>
         public void LoadView(string viewName)
         {
+            LoadView(viewName, null);
+        }
+
+        /// <summary>
+        /// Load a view by name into the container with optional parameter
+        /// </summary>
+        /// <param name="viewName">Name of the view to load</param>
+        /// <param name="parameter">Optional parameter to pass to the view</param>
+        public void LoadView(string viewName, object parameter)
+        {
             try
             {
                 _statusTextBlock.Text = $"Loading {viewName}...";
@@ -47,6 +57,14 @@ namespace ControlPanel.Functions
                         break;
                     case "Users":
                         view = new UsersView();
+                        // If parameter is provided and it's a string, search for that user
+                        if (parameter is string username && !string.IsNullOrEmpty(username))
+                        {
+                            ((UsersView)view).SearchForUser(username);
+                        }
+                        break;
+                    case "Assets":
+                        view = new AssetsView();
                         break;
                     default:
                         _statusTextBlock.Text = $"Unknown view: {viewName}";

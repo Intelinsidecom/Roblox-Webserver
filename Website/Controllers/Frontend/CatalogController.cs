@@ -146,7 +146,7 @@ namespace RobloxWebserver.Controllers
                 ImageUrl = string.IsNullOrWhiteSpace(primaryThumb) ? "/images/RobloxLogo.png" : primaryThumb,
                 AssetTypeLabel = AssetTypeNames.GetTypeName(asset.AssetTypeId),
                 PriceRobux = asset.OnSale ? (int?)Math.Min(asset.Price, int.MaxValue) : null,
-                PriceTickets = null,
+                PriceTickets = asset.OnSale ? (int?)Math.Min(asset.PriceTickets, int.MaxValue) : null,
                 OriginalPriceRobux = null,
                 IsLimited = false,
                 IsLimitedUnique = false,
@@ -200,11 +200,11 @@ namespace RobloxWebserver.Controllers
             return string.IsNullOrEmpty(result) ? string.Empty : result;
         }
 
-        [HttpGet("")]
-        public IActionResult Index()
-        {
-            return RedirectToAction("Browse");
-        }
+       // [HttpGet("")]
+     //   public IActionResult Index()
+       // {
+      //      return RedirectToAction("Browse");
+      //  }
 
         [HttpGet("browse.aspx")]
         public async System.Threading.Tasks.Task<IActionResult> Browse(

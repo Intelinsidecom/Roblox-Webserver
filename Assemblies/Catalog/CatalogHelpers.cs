@@ -41,22 +41,20 @@ namespace RobloxWebserver.Assemblies.Catalog
                 sqlBuilder.Append("       a.last_updated,");
                 sqlBuilder.Append("       a.created_at,");
                 sqlBuilder.Append("       a.on_sale,");
-                sqlBuilder.Append("       a.price ");
+                sqlBuilder.Append("       a.price,");
+                sqlBuilder.Append("       a.price_in_tix ");
                 sqlBuilder.Append("from assets a ");
                 sqlBuilder.Append("join users u on u.user_id = a.owner_user_id ");
-                // Exclude generated image assets (asset_image = true) and only include items that are on sale
                 sqlBuilder.Append("where coalesce(a.asset_image, false) = false ");
                 sqlBuilder.Append("  and a.on_sale = true ");
                 sqlBuilder.Append("  and (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%') ");
                 sqlBuilder.Append("  and (a.name is null or a.name not ilike '%image%') ");
                 sqlBuilder.Append("  and a.name ilike @keyword ");
 
-                // Clothing category (3): restrict to T-Shirts (asset_type_id = 2)
                 if (category == 3)
                 {
                     sqlBuilder.Append("  and a.asset_type_id = 2 ");
                 }
-                // Body Parts category (4): explicitly exclude T-Shirts
                 else if (category == 4)
                 {
                     sqlBuilder.Append("  and a.asset_type_id <> 2 ");
@@ -97,8 +95,8 @@ namespace RobloxWebserver.Assemblies.Catalog
                             var createdAt = reader.IsDBNull(6)
                                 ? lastUpdated
                                 : reader.GetFieldValue<DateTimeOffset>(6);
-                            // Column 7 is a.on_sale (boolean); column 8 is a.price (bigint)
                             var price = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8);
+                            var priceTickets = reader.IsDBNull(9) ? (long?)null : reader.GetInt64(9);
 
                             items.Add(new CatalogItem
                             {
@@ -108,6 +106,7 @@ namespace RobloxWebserver.Assemblies.Catalog
                                 CreatorId = ownerUserId,
                                 ImageUrl = string.IsNullOrWhiteSpace(thumb) ? "/images/RobloxLogo.png" : thumb,
                                 PriceRobux = price.HasValue ? (int?)price.Value : null,
+                                PriceTickets = priceTickets.HasValue ? (int?)priceTickets.Value : null,
                                 Sales = 0,
                                 FavoritedCount = 0,
                                 IsNew = AssetHelpers.IsNew(createdAt),
@@ -118,8 +117,6 @@ namespace RobloxWebserver.Assemblies.Catalog
                 }
             }
 
-            // Populate real favorite counts for each asset so the catalog UI can
-            // display "Favorited: X times" based on live data instead of 0.
             var assetsRepo = new Assets.AssetsRepository();
             foreach (var item in items)
             {
@@ -130,8 +127,6 @@ namespace RobloxWebserver.Assemblies.Catalog
                 }
                 catch
                 {
-                    // On any error, leave FavoritedCount null; callers will fall back
-                    // to a safe default when rendering.
                     item.FavoritedCount = null;
                 }
             }

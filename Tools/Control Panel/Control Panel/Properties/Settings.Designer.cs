@@ -178,5 +178,89 @@ namespace Control_Panel.Properties {
                 this["CdnPort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets")]
+        public string AssetsDirectory {
+            get {
+                return ((string)(this["AssetsDirectory"]));
+            }
+            set {
+                this["AssetsDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails")]
+        public string ThumbnailsOutputDirectory {
+            get {
+                return ((string)(this["ThumbnailsOutputDirectory"]));
+            }
+            set {
+                this["ThumbnailsOutputDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://cdn.freblx.xyz/")]
+        public string ThumbnailUrl {
+            get {
+                return ((string)(this["ThumbnailUrl"]));
+            }
+            set {
+                this["ThumbnailUrl"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png")]
+        public string TshirtTemplatePath {
+            get {
+                return ((string)(this["TshirtTemplatePath"]));
+            }
+            set {
+                this["TshirtTemplatePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png")]
+        public string TshirtTemplateHighResPath {
+            get {
+                return ((string)(this["TshirtTemplateHighResPath"]));
+            }
+            set {
+                this["TshirtTemplateHighResPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.freblx.xyz")]
+        public string PublicBaseUrl {
+            get {
+                return ((string)(this["PublicBaseUrl"]));
+            }
+            set {
+                this["PublicBaseUrl"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public string DefaultOwnerUserId {
+            get {
+                return ((string)(this["DefaultOwnerUserId"]));
+            }
+            set {
+                this["DefaultOwnerUserId"] = value;
+            }
+        }
     }
 }

@@ -103,6 +103,10 @@
   font-weight: bold;
   color: green;
 }
+.CatalogItemInner .tickets-price {
+  font-weight: bold;
+  color: #00bfff;
+}
 div#catalog {
   font-size: 12px;
 }

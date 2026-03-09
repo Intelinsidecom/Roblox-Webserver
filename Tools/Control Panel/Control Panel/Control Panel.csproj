@@ -27,6 +27,7 @@
 
   <!-- Reference to other project assemblies -->
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Assemblies\Assets\Assets.csproj" />
     <ProjectReference Include="..\..\..\Assemblies\Avatar\Avatar.csproj" />
     <ProjectReference Include="..\..\..\Assemblies\Catalog\Catalog.csproj" />
     <ProjectReference Include="..\..\..\Assemblies\Common\Common.csproj" />
@@ -61,6 +62,8 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Npgsql" Version="8.0.4" />
+	<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 

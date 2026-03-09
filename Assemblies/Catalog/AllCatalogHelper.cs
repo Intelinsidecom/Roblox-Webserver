@@ -35,25 +35,17 @@ namespace RobloxWebserver.Assemblies.Catalog
        a.last_updated,
        a.created_at,
        a.on_sale,
-       a.price
+       a.price,
+       a.price_in_tix
 from assets a
 join users u on u.user_id = a.owner_user_id
 where coalesce(a.asset_image, false) = false
   and a.on_sale = true";
 
-                // Apply simple category-specific rules similar to CatalogSearchHelper
                 if (category.HasValue)
                 {
                     if (category.Value == 3)
                     {
-                        // Clothing. The legacy web UI uses a Subcategory "type" value that does
-                        // not directly match asset_type_id. Map the known clothing subcategories:
-                        //   3  = All Clothing
-                        //   12 = Shirts
-                        //   13 = T-Shirts
-                        //   14 = Pants
-                        // If no subcategory is provided, treat it as "All Clothing".
-
                         if (subcategory.HasValue)
                         {
                             switch (subcategory.Value)
@@ -69,20 +61,17 @@ where coalesce(a.asset_image, false) = false
                                     break;
                                 case 3: // All Clothing
                                 default:
-                                    // All clothing: T-Shirts, Shirts, Pants, and Packages
                                     sql += "\n  and a.asset_type_id in (2, 11, 12, 32)";
                                     break;
                             }
                         }
                         else
                         {
-                            // No explicit subcategory: show all clothing types
                             sql += "\n  and a.asset_type_id in (2, 11, 12, 32)";
                         }
                     }
                     else if (category.Value == 4)
                     {
-                        // Body Parts: explicitly exclude T-Shirts
                         sql += "\n  and a.asset_type_id <> 2";
                     }
                 }
@@ -119,6 +108,7 @@ where coalesce(a.asset_image, false) = false
                                 ? lastUpdated
                                 : reader.GetFieldValue<DateTimeOffset>(6);
                             var price = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8);
+                            var priceTickets = reader.IsDBNull(9) ? (long?)null : reader.GetInt64(9);
 
                             items.Add(new CatalogItem
                             {
@@ -128,6 +118,7 @@ where coalesce(a.asset_image, false) = false
                                 CreatorId = ownerUserId,
                                 ImageUrl = string.IsNullOrWhiteSpace(thumb) ? "/images/RobloxLogo.png" : thumb,
                                 PriceRobux = price.HasValue ? (int?)price.Value : null,
+                                PriceTickets = priceTickets.HasValue ? (int?)priceTickets.Value : null,
                                 Sales = 0,
                                 FavoritedCount = 0,
                                 IsNew = AssetHelpers.IsNew(createdAt),
@@ -138,8 +129,6 @@ where coalesce(a.asset_image, false) = false
                 }
             }
 
-            // Populate real favorite counts for each asset so the catalog UI can
-            // show "Favorited: X times" using live data instead of 0.
             var assetsRepo = new Assets.AssetsRepository();
             foreach (var item in items)
             {
@@ -150,8 +139,6 @@ where coalesce(a.asset_image, false) = false
                 }
                 catch
                 {
-                    // If anything goes wrong, leave FavoritedCount null and let callers
-                    // fall back to a safe default.
                     item.FavoritedCount = null;
                 }
             }
@@ -162,8 +149,6 @@ where coalesce(a.asset_image, false) = false
                 TotalItems = items.Count
             };
 
-            // We can safely construct a temporary CatalogService here because it only
-            // needs the HTML-building logic; the repository is unused for this path.
             var service = new CatalogService(new CatalogRepository());
             return service.BuildCatalogHtml(page);
         }

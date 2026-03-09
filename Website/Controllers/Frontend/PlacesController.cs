@@ -106,9 +106,37 @@ namespace RobloxWebserver.Controllers
                     return RedirectToAction("CreatePlace");
                 }
 
+                if (name.Length > 50)
+                {
+                    TempData["Error"] = "Place name cannot exceed 50 characters";
+                    return RedirectToAction("CreatePlace");
+                }
+
                 if (name.Contains("<") || name.Contains(">"))
                 {
                     TempData["Error"] = "Place name contains illegal characters";
+                    return RedirectToAction("CreatePlace");
+                }
+
+                // Additional security checks for name
+                if (name.Contains("javascript:") || name.Contains("vbscript:") || name.Contains("onload=") || name.Contains("onerror="))
+                {
+                    TempData["Error"] = "Place name contains invalid content";
+                    return RedirectToAction("CreatePlace");
+                }
+
+                // Description validation
+                if (description.Length > 1000)
+                {
+                    TempData["Error"] = "Description cannot exceed 1000 characters";
+                    return RedirectToAction("CreatePlace");
+                }
+
+                // Security checks for description
+                if (description.Contains("<script") || description.Contains("javascript:") || description.Contains("vbscript:") || 
+                    description.Contains("onload=") || description.Contains("onerror=") || description.Contains("onclick="))
+                {
+                    TempData["Error"] = "Description contains invalid content";
                     return RedirectToAction("CreatePlace");
                 }
 
@@ -943,6 +971,7 @@ namespace RobloxWebserver.Controllers
                 }
                 Name = Request.Form["Name"].FirstOrDefault() ?? "";
                 
+                // Name validation
                 if (string.IsNullOrWhiteSpace(Name))
                 {
                     if (isAjax)
@@ -950,6 +979,16 @@ namespace RobloxWebserver.Controllers
                         return Json(new { success = false, message = "Place name is required" });
                     }
                     TempData["Error"] = "Place name is required";
+                    return Redirect($"/places/{Id}/update");
+                }
+                
+                if (Name.Length > 50)
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Place name cannot exceed 50 characters" });
+                    }
+                    TempData["Error"] = "Place name cannot exceed 50 characters";
                     return Redirect($"/places/{Id}/update");
                 }
                 
@@ -963,7 +1002,41 @@ namespace RobloxWebserver.Controllers
                     return Redirect($"/places/{Id}/update");
                 }
                 
+                // Additional security checks for name
+                if (Name.Contains("javascript:") || Name.Contains("vbscript:") || Name.Contains("onload=") || Name.Contains("onerror="))
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Place name contains invalid content" });
+                    }
+                    TempData["Error"] = "Place name contains invalid content";
+                    return Redirect($"/places/{Id}/update");
+                }
+                
                 Description = Request.Form["Description"].FirstOrDefault() ?? "";
+                
+                // Description validation
+                if (Description.Length > 1000)
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Description cannot exceed 1000 characters" });
+                    }
+                    TempData["Error"] = "Description cannot exceed 1000 characters";
+                    return Redirect($"/places/{Id}/update");
+                }
+                
+                // Security checks for description
+                if (Description.Contains("<script") || Description.Contains("javascript:") || Description.Contains("vbscript:") || 
+                    Description.Contains("onload=") || Description.Contains("onerror=") || Description.Contains("onclick="))
+                {
+                    if (isAjax)
+                    {
+                        return Json(new { success = false, message = "Description contains invalid content" });
+                    }
+                    TempData["Error"] = "Description contains invalid content";
+                    return Redirect($"/places/{Id}/update");
+                }
                 Genre = Request.Form["Genre"].FirstOrDefault() ?? "All";
                 iconType = Request.Form["IconType"].FirstOrDefault() ?? "";
                 iconChanged = Request.Form["iconChanged"].FirstOrDefault() ?? "false";

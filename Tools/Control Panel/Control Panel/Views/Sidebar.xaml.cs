@@ -65,7 +65,11 @@ namespace Control_Panel
         
         private void AssetsButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowFeatureComingSoon("Assets");
+            var mainWindow = Window.GetWindow(this) as Main;
+            if (mainWindow != null)
+            {
+                mainWindow.SwitchToView("Assets");
+            }
         }
         
         private void LogsButton_Click(object sender, RoutedEventArgs e)

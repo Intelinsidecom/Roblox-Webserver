@@ -14,8 +14,7 @@ game:GetService("ScriptContext").ScriptsDisabled = true
 
 -- Create a local test player and load a default character
 local Player = game.Players:CreateLocalPlayer(0)
---[[Player:LoadCharacter(false)--]]
-Player:LoadCharacterBlocking()
+Player:LoadCharacter(false)
 
 local character = Player.Character or Player.CharacterAdded:wait()
 print("[RenderAvatarAsset] Player:", Player.Name)
