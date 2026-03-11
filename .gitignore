@@ -133,7 +133,7 @@ yarn-error.log*
 
 *.json
 asset/
-thumbnails/
+CDN/Assets/thumbnails/
 3DAvatar/
 *.cache
 *.props
