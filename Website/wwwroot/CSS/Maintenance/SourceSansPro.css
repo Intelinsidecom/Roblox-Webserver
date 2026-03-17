@@ -1,0 +1,39 @@
+/* source-sans-pro-300 - latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: local("Source Sans Pro Light"), local("SourceSansPro-Light"), url("/fonts/source-sans-pro-v9-latin-300.woff2") format("woff2"), url("/fonts/source-sans-pro-v9-latin-300.woff") format("woff"), url("/fonts/source-sans-pro-v9-latin-300.svg#SourceSansPro") format("svg");
+  /* Legacy iOS */ }
+
+/* source-sans-pro-regular - latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Source Sans Pro"), local("SourceSansPro-Regular"), url("url("/fonts/source-sans-pro-v9-latin-regular.woff") format("woff"), url("/fonts/source-sans-pro-v9-latin-regular.svg#SourceSansPro") format("svg");
+  /* Legacy iOS */ }
+
+/* source-sans-pro-600 - latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  src: local("Source Sans Pro Semibold"), local("SourceSansPro-Semibold"), url("/fonts/source-sans-pro-v9-latin-600.woff2") format("woff2"), url("/fonts/source-sans-pro-v9-latin-600.woff") format("woff"), url("/fonts/source-sans-pro-v9-latin-600.svg#SourceSansPro") format("svg");
+  /* Legacy iOS */ }
+
+/*
+     FILE ARCHIVED ON 15:57:37 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:44 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 1.341
+  load_resource: 91.652
+  PetaboxLoader3.resolve: 33.329
+  PetaboxLoader3.datanode: 8.857
+*/

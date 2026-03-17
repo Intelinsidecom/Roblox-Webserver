@@ -104,26 +104,14 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Website Status:" 
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Website Service Status:" 
                                                Style="{StaticResource LabelText}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     <TextBlock x:Name="WebsiteStatusText" Grid.Column="1" Grid.Row="0" Text="Checking..." 
                                                Style="{StaticResource LabelText}" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
                                     <TextBlock Grid.Column="0" Grid.Row="1" Text="Active Users:" 
                                                Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     <TextBlock x:Name="ActiveUsersText" Grid.Column="1" Grid.Row="1" Text="Checking..." 
-                                               Style="{StaticResource LabelText}" Foreground="Gray" Margin="5,2,0,0" HorizontalAlignment="Left"
-                                               TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Column="0" Grid.Row="2" Text="CDN Status:" 
-                                               Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="CdnStatusText" Grid.Column="1" Grid.Row="2" Text="Checking..." 
-                                               Style="{StaticResource LabelText}" Foreground="Gray" Margin="5,2,0,0" HorizontalAlignment="Left"
-                                               TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Column="0" Grid.Row="3" Text="API Response:" 
-                                               Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="APIResponseText" Grid.Column="1" Grid.Row="3" Text="Checking..." 
                                                Style="{StaticResource LabelText}" Foreground="Gray" Margin="5,2,0,0" HorizontalAlignment="Left"
                                                TextWrapping="Wrap"/>
                                 </Grid>

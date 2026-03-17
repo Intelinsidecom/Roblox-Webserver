@@ -1,0 +1,580 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {};
+
+Roblox.BootstrapWidgets = function () {
+    // trigger and customize bootstrap js components;
+    function SetupTabs() {
+        // tabs
+        $('#horizontal-tabs a').on("click", function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+        $('#horizontal-tabs a').on("touchstart", function (e) {
+            // Angular's ui-sref only works with click event so we need to trigger the click event
+            e.preventDefault();
+            $(this).trigger("click");
+        });
+        $('#vertical-tabs a').click(function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+        });
+    }
+
+    function SetupDropdown() {
+        // dropdown menu
+        $('[data-toggle="dropdown-menu"] li').click(function (e) {
+            var target = $(e.currentTarget);
+            target.closest('.input-group-btn')
+                    .find('[data-bind="label"]')
+                    .text(target.text())
+                    .end()
+                    .toggleClass("open");
+            if (!target.hasClass("rbx-clickable-li")) {
+                return false;
+            }
+        });
+    }
+
+    function ToggleAccordionIcon(target, expand) {
+        var expandedIconClass = target.data("expanded-icon") || "icon-up-16x16";
+        var collapsedIconClass = target.data("collapsed-icon") || "icon-down-16x16";
+        var classToAdd = expand ? expandedIconClass : collapsedIconClass;
+        var classToRemove = expand ? collapsedIconClass : expandedIconClass;
+
+        target
+            .prev('.panel-heading')
+            .find("." + classToRemove)
+            .removeClass(classToRemove).addClass(classToAdd);
+    }
+
+    function SetupAccordion() {
+        // Accordion
+        // This event fires immediately when the show instance method is called.
+        $('[data-toggle="collapsible-element"]').on('show.bs.collapse', function (e) {
+            ToggleAccordionIcon($(e.target), true);
+        });
+        // This event is fired immediately when the hide method has been called.
+        $('[data-toggle="collapsible-element"]').on('hide.bs.collapse', function (e) {
+            ToggleAccordionIcon($(e.target), false);
+        });
+    }
+
+    function ShowAccordionMenu(selector) {
+        $(selector).collapse("show");
+    }
+
+    function SetupTooltip() {
+        // tooltips
+        if (!('ontouchstart' in window)) {
+            $('[data-toggle="tooltip"]').tooltip({
+                placement: 'bottom'
+            });
+        } else {
+            $('[data-toggle-mobile="true"]').tooltip({
+                placement: 'bottom',
+                trigger: 'manual'
+            }).unbind().on('touchstart', function () {
+                $(this).tooltip('toggle');
+            });
+        }
+    }
+
+    function UpdateTooltip(element, newTitle) {
+        $(element).attr('title', newTitle).tooltip('fixTitle');
+    }
+
+    function CloseTooltip() {
+        $("body").on('click touchstart', function (e) {
+            $('[data-toggle="tooltip"]').each(function () {
+                //the 'is' for links that trigger tooltips
+                //the 'has' for icons within a link that triggers a tooltip
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0) {
+                    var canBeHidden = (e.type === "click") ? true : ($('.tooltip').has(e.target).length === 0);
+                    if (canBeHidden) {
+                        try {
+                            $(this).tooltip('hide');
+                        } catch(e) {
+                            return false;
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    function SetupPopover(placement, viewport, popoverSelector) {
+        if (!placement) {
+            placement = 'bottom';
+        }
+        if (!viewport) {
+            viewport = { selector: 'body', padding: 4 };
+        }
+
+        if (!popoverSelector) {
+            popoverSelector = "[data-toggle='popover']";
+        }
+        // popover with HTML prototypes
+        $(popoverSelector).popover({
+            trigger: 'manual',
+            html: true,
+            placement: placement,
+            viewport: viewport,
+            content: function () {
+                var selector = $(this).attr('data-bind');
+                return $('[data-toggle="' + selector + '"]').html();
+            }
+        }).unbind().on('click', function () {
+            $(this).popover('toggle');
+        });
+
+    }
+
+    function ClosePopover() {
+        $("body").on('click touchstart', function (e) {
+            $('[data-toggle="popover"]').each(function () {
+                //the 'is' for links that trigger popups
+                //the 'has' for icons within a link that triggers a popup
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0) {
+                    var canBeHidden = $('.popover').has(e.target).length === 0;
+                    if (e.type === "touchstart" && $('.popover').has(e.target).length > 0) {
+                        canBeHidden = true;
+                    } else if (e.type === "click") {
+                        canBeHidden = true;
+                    }
+                    if (canBeHidden) {
+                        $(this).popover('hide');
+                    }
+                }
+            });
+        });
+    }
+    // configure mCustomScrollbar
+    function SetupScrollbar() {
+        //scroll bar
+        $('[data-toggle="scrollbar"]').mCustomScrollbar({
+            autoHideScrollbar: false,
+            autoExpandScrollbar: false,
+            scrollInertia: 0,
+            mouseWheel: {
+                preventDefault: true
+            }
+        });
+    }
+
+    // configure twbsPagination
+    function SetupPagination() {
+        // pagination
+        var pagination = $('[data-toggle="pagination"]');
+        var pager = $('[data-toggle="pager"]');
+        if (pagination.twbsPagination || pager.twbsPagination) {
+            pagination.twbsPagination({
+                totalPages: 35,
+                visiblePages: 7,
+                first: 1,
+                last: 35,
+                prev: '<span class="icon-left"></span>',
+                next: '<span class="icon-right"></span>',
+            });
+
+            pager.twbsPagination({
+                isPager: true,
+                totalPages: 35,
+                visiblePages: 7,
+                first: '<span class="icon-first-page"></span>',
+                last: '<span class="icon-last-page"></span>',
+                prev: '<span class="icon-left"></span>',
+                next: '<span class="icon-right"></span>',
+            });
+        }
+    }
+
+    function ToggleSystemMessage(alertElm, timeoutSlideDown, timeoutSlideUp, alertTextReplacement) {
+        if (typeof alertElm !== "undefined") {
+            var clone, detached;
+            if (alertTextReplacement) {
+                clone = alertElm.clone();
+                clone.html(alertTextReplacement);
+                alertElm.after(clone);
+                detached = alertElm.detach();
+            }
+            timeoutSlideDown = typeof timeoutSlideDown === "undefined" ? 200 : timeoutSlideDown;
+            timeoutSlideUp = typeof timeoutSlideUp === "undefined" ? 3000 : timeoutSlideUp;
+            setTimeout(function () {
+                if (clone) {
+                    clone.addClass("on");
+                }
+                else {
+                    alertElm.addClass("on");
+                }
+            }, timeoutSlideDown);
+
+            setTimeout(function () {
+                if (clone) {
+                    clone.removeClass("on");
+                }
+                else {
+                    alertElm.removeClass("on");
+                }
+                //this needs to happen after above.
+                if (clone && detached) {
+                    clone.after(detached);
+                    clone.remove();
+                }
+            }, timeoutSlideUp);
+        }
+
+    }
+    function SetupSystemFeedback() {
+        $("#toggle-alert-loading").click(function () {
+            ToggleSystemMessage($(".sg-alert-section .alert-loading"), 100, 1000);
+        });
+        $("#toggle-alert-success").click(function () {
+            ToggleSystemMessage($(".sg-alert-section .alert-success"), 100, 1000);
+        });
+        $("#toggle-alert-warning").click(function () {
+            var alertElm = $(".sg-alert-section .alert-warning");
+            setTimeout(function () {
+                alertElm.addClass("on");
+            }, 100);
+            var close = $(".alert-system-feedback #close");
+            close.click(function () {
+                alertElm.removeClass("on");
+            });
+        });
+    }
+
+    function Placeholder() {
+        $('input[placeholder]').focus(function () {
+            var input = $(this);
+            if (input.val() == input.attr("placeholder")) {
+                input.val('');
+                input.removeClass("rbx-placeholder");
+            }
+        }).blur(function () {
+            var input = $(this);
+            if (input.val() == '' || input.val() == input.attr("placeholder")) {
+                input.addClass("rbx-placeholder");
+                input.val(input.attr("placeholder"));
+            }
+        });
+    }
+
+    var paraOverflowSelector = "para-overflow";
+    var paraOverflowElement = $("." + paraOverflowSelector);
+    function IsTruncated() {
+        paraOverflowElement.each(function () {
+            var elem = $(this);
+            var clone = $(this).clone().hide().height("auto");
+            clone.width(elem.width());
+
+            $("body").append(clone);
+            if (clone.height() <= elem.height()) {
+                elem.removeClass(paraOverflowSelector);
+                $(this).find(".toggle-para").hide();
+            }
+            clone.remove();
+        });
+    }
+    function TruncateParagraph(lineHeight, numberOfLines) {
+        var paraOverflowToggleSelector = "para-overflow-toggle";
+        var paraOverflowToggleElement = $("." + paraOverflowToggleSelector);
+        var paraHeightSelector = "para-height";
+        var paraOverFlowLoading = "para-overflow-page-loading";
+        lineHeight = !lineHeight ? 24 : lineHeight;
+        numberOfLines = !numberOfLines ? 5 : numberOfLines;
+        $(".toggle-para").show();
+
+        paraOverflowToggleElement.each(function () {
+            var elem = $(this);
+            var clone = $(this).clone().hide().height("auto");
+            clone.width(elem.width());
+
+            $("body").append(clone);
+            var maxHeight = lineHeight * numberOfLines;
+            if (clone.height() <= maxHeight || clone.height() <= elem.height()) {
+                elem.removeClass(paraOverflowToggleSelector)
+                    .removeClass(paraHeightSelector);
+                elem.find(".toggle-para").last().hide();
+            }
+            elem.removeClass(paraOverFlowLoading);
+            clone.remove();
+        });
+    }
+
+    function ToggleParagraph() {
+        var paraOverflowToggleOffSelector = "para-overflow-toggle-off";
+        var paraHeightSelector = "para-height";
+        
+        var bindToggleClick = function () {
+            $(this).bind("click touchstart", function () {
+                var paraOverflowToggleElement = $(".para-overflow-toggle");
+                var moreTitle = $(this).data("show-label");                
+                var lessTitle = $(this).data("hide-label");
+                if ($(this).text() === moreTitle) {
+                    paraOverflowToggleElement.removeClass(paraHeightSelector)
+                        .addClass(paraOverflowToggleOffSelector);
+                    $(this).text(lessTitle);
+                } else {
+                    paraOverflowToggleElement.removeClass(paraOverflowToggleOffSelector)
+                        .addClass(paraHeightSelector);
+                    $(this).text(moreTitle);
+                }
+            });
+        }        
+        $(".toggle-para").each(bindToggleClick);
+    }
+
+    /*
+    contentOverFlowLoading - This is used to hide the ... in the period between the page loading and the javascript executing. 
+                            we basically remove this class in the JS function 
+    data-container-id - This allows us to have the read more button anywhere in the html window rather than as a child of the parent container 
+    */
+    function TruncateContent() {
+        var contentOverflowToggleSelector = "content-overflow-toggle";
+        var contentOverflowToggleElement = $("." + contentOverflowToggleSelector);
+        var contentHeightSelector = "content-height";
+        var contentOverFlowLoading = "content-overflow-page-loading";
+        $(".toggle-content").removeClass("hidden");
+
+        contentOverflowToggleElement.each(function () {
+            var elem = $(this);
+            var clone = $(this).clone().hide().height("auto").width(elem.width());
+            elem.parent().append(clone);
+            clone.css("font-weight", elem.css("font-weight"));
+
+            var containerId = elem.attr('id');
+            var containerToggleElement = $(".toggle-content[data-container-id='" + containerId + "']");
+            var showMoreGradientEnd = $(".show-more-end[data-container-id='" + containerId + "']");
+            showMoreGradientEnd.removeClass("hide");
+
+            if (clone.height() <= elem.height() || !(containerToggleElement.is(":visible"))) {
+                elem.removeClass(contentOverflowToggleSelector)
+                    .removeClass(contentHeightSelector);
+                containerToggleElement.hide();
+                showMoreGradientEnd.addClass("hide");
+            }
+            elem.removeClass(contentOverFlowLoading);
+            clone.remove();
+        });
+    }
+
+    function ToggleContent() {
+        var contentOverflowToggleOffSelector = "content-overflow-toggle-off";
+        var contentHeightSelector = "content-height";
+
+        var bindToggleClick = function () {
+            var moreTitle = $(this).data("show-label");
+            var lessTitle = $(this).data("hide-label");
+            $(this).unbind('click'); // make sure element only have one click callback function
+            $(this).bind("click",
+                function() {
+                    var contentOverflowToggleElementId = $(this).data("container-id");
+                    var contentOverflowToggleElement = $("#" + contentOverflowToggleElementId);
+                    if ($(this).text() === moreTitle) {
+                        contentOverflowToggleElement.removeClass(contentHeightSelector)
+                            .addClass(contentOverflowToggleOffSelector);
+                        $(this).text(lessTitle);
+                        contentOverflowToggleElement.find(".show-more-end").addClass("hide");
+                    } else {
+                        contentOverflowToggleElement.removeClass(contentOverflowToggleOffSelector)
+                            .addClass(contentHeightSelector);
+                        $(this).text(moreTitle);
+                        contentOverflowToggleElement.find(".show-more-end").removeClass("hide");
+                    }
+                });
+        }
+
+        // If more than one toggle button, add click callback to each of them
+        $(".toggle-content").each(bindToggleClick);
+    }
+
+    function SetupCarousel(carouselId) {
+        carouselId = !carouselId ? "#carousel" : carouselId;
+        $(carouselId).carousel({
+            interval: 6000,
+            pause: "hover"
+        });
+    }
+
+    function SetupToggleButton() {
+        $(".btn-toggle").bind("click", function () {
+            if ($(this).hasClass("disabled")) {
+                return false;
+            }
+            $(this).toggleClass("on");
+            $(this).trigger("toggleBtnClick", {
+                id: $(this).attr("id"),
+                toggleOn: $(this).hasClass("on")
+            });
+        });
+    }
+
+    function SetupVerticalMenu() {
+        var currentX = 0;
+        var dir = 0;
+        var submenuContainerSelector = ".menu-secondary-container";
+
+        var dropdown = $('.submenus');
+        var listItems = dropdown.find('li');
+        var subLists = dropdown.find('li ' + submenuContainerSelector);
+        var hoverOverSublist = dropdown.find('li ' + submenuContainerSelector + '[hover=true]');
+
+        subLists.on('mouseover touchstart', function () {
+            $(this).attr('hover', 'true');
+        });
+        subLists.mouseout(function () {
+            $(this).attr('hover', 'false');
+        });
+
+        listItems.on('mouseover touchstart', function () {
+            var delay = $(this).data('delay');
+            
+            // if already hovering over sublist
+            if (hoverOverSublist.length !== 0) {
+                return;
+            } 
+
+            // add a hover effect so we know what the mouse is over right now
+            // and can show the appropriate menu after a delay
+            $(this).attr('hover', 'true');
+
+            // if the mouse is moving to the right or if special delay attribute
+            if (delay !== 'never' && (dir === 1 || delay === 'always')) {
+                window.setTimeout(function () {
+                    // if it's hovering over a slideout menu, don't show anything
+                    if (hoverOverSublist.length !== 0) {
+                        return;
+                    }
+
+                    // show the sublist of whatever is being hovered over right now
+                    var currentlyActiveMenu = dropdown.find('li[hover=true] ' + submenuContainerSelector);
+
+                    subLists.hide();
+
+                    if (currentlyActiveMenu.length !== 0) {
+                        currentlyActiveMenu.show();
+                    }
+                }, 1000);
+            } else {
+                subLists.hide();
+                var activeMenu = $(this).find(submenuContainerSelector);
+                activeMenu.show(); // show the associated sublist
+            }
+        });
+
+        // remove the hover attribute on mouseout of the element
+        listItems.mouseout(function () {
+            $(this).removeAttr('hover');
+        });
+
+        // hide all slideout menus when the mouse steps out of the entire dropdown div
+        dropdown.mouseleave(function () {
+            window.setTimeout(function () {
+                subLists.hide();
+            }, 100);
+            currentX = 0;
+            dir = 0;
+        });
+
+        // calculate the direction the mouse is moving in when hovering over the dropdown
+        // dir is used when calculating whether slideout menus should open or not
+        dropdown.mousemove(function (event) {
+            var oldX = currentX;
+            currentX = event.pageX;
+            if (oldX === currentX || oldX === 0) {
+                dir = 0;
+            }
+            if (oldX < currentX) {
+                dir = 1;
+            }
+            else {
+                dir = -1;
+            }
+        });
+
+        $("body").on('touchstart', function (e) {
+            // hide sublist if user touches outside of the vertical menu
+            if (!dropdown.is(e.target) && dropdown.has(e.target).length === 0) {
+                subLists.hide();
+            }
+        });
+    }
+
+    return {
+        SetupTabs: SetupTabs,
+        SetupDropdown: SetupDropdown,
+        SetupAccordion: SetupAccordion,
+        ShowAccordionMenu: ShowAccordionMenu,
+        SetupTooltip: SetupTooltip,
+        UpdateTooltip: UpdateTooltip,
+        CloseTooltip: CloseTooltip,
+        SetupPopover: SetupPopover,
+        ClosePopover: ClosePopover,
+        SetupScrollbar: SetupScrollbar,
+        SetupPagination: SetupPagination,
+        Placeholder: Placeholder,
+        IsTruncated: IsTruncated,
+        TruncateParagraph: TruncateParagraph,
+        ToggleParagraph: ToggleParagraph,
+        SetupCarousel: SetupCarousel,
+        SetupToggleButton: SetupToggleButton,
+        SetupSystemFeedback: SetupSystemFeedback,
+        ToggleSystemMessage: ToggleSystemMessage,
+        SetupVerticalMenu: SetupVerticalMenu,
+        TruncateContent: TruncateContent,
+        ToggleContent: ToggleContent
+    }
+}();
+
+$(function () {
+    Roblox.BootstrapWidgets.SetupTabs();
+    Roblox.BootstrapWidgets.SetupDropdown();
+    Roblox.BootstrapWidgets.SetupAccordion();
+    Roblox.BootstrapWidgets.SetupTooltip();
+    Roblox.BootstrapWidgets.CloseTooltip();
+    Roblox.BootstrapWidgets.SetupPopover();
+    Roblox.BootstrapWidgets.ClosePopover();
+    Roblox.BootstrapWidgets.SetupScrollbar();
+    Roblox.BootstrapWidgets.SetupPagination();
+
+    if (typeof Modernizr != "undefined" && !Modernizr.input.placeholder) {
+        Roblox.BootstrapWidgets.Placeholder();
+    }
+
+    Roblox.BootstrapWidgets.IsTruncated();
+    Roblox.BootstrapWidgets.TruncateParagraph();
+    Roblox.BootstrapWidgets.ToggleParagraph();
+    Roblox.BootstrapWidgets.SetupCarousel();
+    Roblox.BootstrapWidgets.SetupToggleButton();
+    Roblox.BootstrapWidgets.SetupSystemFeedback();
+    Roblox.BootstrapWidgets.ToggleSystemMessage();
+    Roblox.BootstrapWidgets.SetupVerticalMenu();
+    Roblox.BootstrapWidgets.TruncateContent();
+    Roblox.BootstrapWidgets.ToggleContent();
+});
+
+}
+
+/*
+     FILE ARCHIVED ON 17:36:58 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:49 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.484
+  load_resource: 468.128
+  PetaboxLoader3.resolve: 423.359
+  PetaboxLoader3.datanode: 25.693
+*/

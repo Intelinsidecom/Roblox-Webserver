@@ -262,5 +262,53 @@ namespace Control_Panel.Properties {
                 this["DefaultOwnerUserId"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
+        public string RccLogHost {
+            get {
+                return ((string)(this["RccLogHost"]));
+            }
+            set {
+                this["RccLogHost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5080")]
+        public string RccLogPort {
+            get {
+                return ((string)(this["RccLogPort"]));
+            }
+            set {
+                this["RccLogPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
+        public string ApiServiceHost {
+            get {
+                return ((string)(this["ApiServiceHost"]));
+            }
+            set {
+                this["ApiServiceHost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5081")]
+        public string ApiServicePort {
+            get {
+                return ((string)(this["ApiServicePort"]));
+            }
+            set {
+                this["ApiServicePort"] = value;
+            }
+        }
     }
 }

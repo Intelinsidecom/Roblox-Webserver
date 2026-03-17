@@ -100,6 +100,8 @@ app.UseStaticFiles(new StaticFileOptions
     ContentTypeProvider = provider
 });
 
+app.UseMiddleware<LockdownMiddleware>();
+
 app.UseRouting();
 
 app.UseRateLimiting();

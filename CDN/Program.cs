@@ -1,9 +1,16 @@
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using System.IO.Compression;
 
 var builder = WebApplication.CreateSlimBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolver = HealthResponseJsonContext.Default;
+});
 
 builder.Services.AddResponseCompression(o =>
 {
@@ -24,7 +31,7 @@ Directory.CreateDirectory(assetsRoot);
 // Simple root check
 app.MapGet("/", () => Results.Text("OK", "text/plain"));
 
-app.MapGet("/health", () => Results.Ok(new { ok = true }));
+app.MapGet("/health", () => Results.Ok(new HealthResponse(true)));
 
 // Catch-all route: serve direct path under assets root if it exists;
 // otherwise, if only a filename is provided, search subfolders (e.g. thumbnails) and serve first match.
@@ -75,3 +82,11 @@ app.MapGet("/{**path}", (HttpContext http, string? path) =>
 });
 
 app.Run();
+
+[JsonSerializable(typeof(HealthResponse))]
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default)]
+public partial class HealthResponseJsonContext : JsonSerializerContext
+{
+}
+
+public record HealthResponse(bool ok);

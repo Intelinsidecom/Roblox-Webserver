@@ -1,0 +1,181 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+if (typeof (Roblox) === 'undefined') {
+    Roblox = {};
+}
+
+if (typeof (Roblox.GamePlayEvents) === 'undefined') {
+    Roblox.GamePlayEvents = function () {
+        var contextCategories = {
+            joinUser: "JoinUser"
+        };
+
+        function getPage() {
+            var path = window.location.pathname.toLowerCase();
+            var profilePageString = "profile";
+            var profileLastIndex = path.lastIndexOf(profilePageString);
+            //roundabout way of saying .endsWith since .endsWith is not supported by IE. Surprise surprise!
+            if (profileLastIndex !== -1 && (path.length === (profileLastIndex + profilePageString.length))) {
+                return profilePageString;
+            } else if (path.indexOf("/develop") != -1) {
+                return "develop";
+            } else {
+                return "gameDetail";
+            }
+        }
+
+        function getProperties(placeId, referrerId) {
+            var placeLauncherInfo = $("#PlaceLauncherStatusPanel");
+            return {
+                lType: (placeLauncherInfo && placeLauncherInfo.data("is-protocol-handler-launch-enabled") && placeLauncherInfo.data("is-protocol-handler-launch-enabled").toLowerCase() == "true") ? "protocol" : "plugin",
+                pid: placeId,
+                refuid: referrerId,
+                pg: getPage()
+            };
+        }
+
+        function sendEvent(eventName, context, placeId, referrerId) {
+            if (!Roblox.EventStream) {
+                return;
+            }
+            if (context != null && context != "" && context != "unknown") {
+                my.lastContext = context;
+            }
+            else {  // no context provided.  used last known value.
+                context = my.lastContext;
+            }
+
+            Roblox.EventStream.SendEvent(eventName, context, getProperties(placeId, referrerId));
+        }
+
+        function sendGamePlayIntent(context, placeId, referrerId) {
+            sendEvent("gamePlayIntent", context, placeId, referrerId);
+            $(document).trigger("playButton:gamePlayIntent");
+        }
+
+        function sendDevelopIntent(context, placeId) {
+            sendEvent("developIntent", context, placeId);
+        }
+
+        function sendInstallBegin(context, placeId) {
+            sendEvent("installBegin", context, placeId);
+        }
+
+        function sendInstallSuccess(context, placeId) {
+            sendEvent("installSuccess", context, placeId);
+        }
+
+        function sendClientStartAttempt(context, placeId) {
+            sendEvent("clientStartAttempt", context, placeId);
+
+        }
+        function sendClientStartSuccessWeb(context, placeId) {
+            sendEvent("clientStartSuccessWeb", context, placeId);
+        }
+
+        function sendManualDownloadClick(context, placeId) {
+            sendEvent("manualDownload", context, placeId);
+        }
+
+        var my = {
+            SendGamePlayIntent: sendGamePlayIntent,
+            SendDevelopIntent: sendDevelopIntent,
+            SendInstallBegin: sendInstallBegin,
+            SendInstallSuccess: sendInstallSuccess,
+            SendClientStartAttempt: sendClientStartAttempt,
+            SendClientStartSuccessWeb: sendClientStartSuccessWeb,
+            SendManualDownloadClick: sendManualDownloadClick,
+            lastContext: "unknown",
+            contextCategories: contextCategories
+        };
+        return my;
+    }();
+}
+
+$(function () {
+    var allRunningGameInstancesSectionPath = "#rbx-running-games";
+    var allrunningGameInstancesJoinServerPath = ".rbx-game-server-item .rbx-game-server-join";
+    var runningGameInstancesForFriendsSectionPath = "#rbx-friends-running-games";
+    var runningGameInstancesForFriendsJoinServerPath = ".rbx-friends-game-server-item .rbx-friends-game-server-join";
+    var gameInstancesForVipServersSectionPath = "#game-instances";
+    var gameInstancesForVipJoinServerPath = "#rbx-vip-servers .rbx-vip-server-item .rbx-vip-server-join";
+    var eventsToWatch = "click";
+
+    //Generic visit buttons - game detail
+    $("body").on(eventsToWatch, ".VisitButtonPlay, .VisitButtonPlayGLI", function () {
+        var context;
+        var currentElement = $(this);
+        if (currentElement.hasClass("VisitButtonPlay") || currentElement.hasClass("VisitButtonPlayGLI")) {
+            context = "PlayButton";
+        }
+        if (context) {
+            var placeId = $(this).attr("placeid");
+            var referrerId = Roblox.UrlParser ? Roblox.UrlParser.getParameterValueByName("rbxp") : null;
+            Roblox.GamePlayEvents.SendGamePlayIntent(context, placeId, referrerId);
+        }
+    });
+
+    //Generic edit/build buttons - profile or game detail
+    $("body").on(eventsToWatch, ".VisitButtonEdit, .VisitButtonEditGLI", function () {
+        var placeId = $(this).attr("placeid");
+        Roblox.GamePlayEvents.SendDevelopIntent("Edit", placeId);
+    });
+
+    //Game detail page join instance from all running games
+    $(allRunningGameInstancesSectionPath).on(eventsToWatch, allrunningGameInstancesJoinServerPath, function () {
+        var placeId = $(this).data("placeid");
+        if (placeId) {
+            Roblox.GamePlayEvents.SendGamePlayIntent("JoinInstance", placeId);
+        }
+    });
+
+    //Game detail page join instance from running games that contain friends
+    $(runningGameInstancesForFriendsSectionPath).on(eventsToWatch, runningGameInstancesForFriendsJoinServerPath, function () {
+        var placeId = $(this).data("placeid");
+        if (placeId) {
+            Roblox.GamePlayEvents.SendGamePlayIntent("JoinInstance", placeId);
+        }
+    });
+
+    //Game detail page join VIPS
+    $(gameInstancesForVipServersSectionPath).on(eventsToWatch, gameInstancesForVipJoinServerPath, function () {
+        var placeId = $(this).data('placeid');
+        if (placeId) {
+            Roblox.GamePlayEvents.SendGamePlayIntent("PrivateServer", placeId);
+        }
+    });
+
+    //Develop page click edit
+    $("#build-page").on(eventsToWatch, ".roblox-edit-button", function () {
+        var tbl = $(this).parents("table.item-table");
+        var placeId = tbl.data("rootplace-id") || tbl.data("item-id");
+        if (placeId) {
+            Roblox.GamePlayEvents.SendDevelopIntent("Edit", placeId);
+        }
+    });
+
+});
+}
+
+/*
+     FILE ARCHIVED ON 18:23:26 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:50 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 1.198
+  load_resource: 173.659
+  PetaboxLoader3.resolve: 42.942
+  PetaboxLoader3.datanode: 14.829
+*/

@@ -1,0 +1,67 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+"use strict";
+
+Roblox = Roblox || {};
+
+Roblox.LazyLoad = (function () {
+    var imageSelector = "img[data-delaysrc]";
+    var iframeSelector = "iframe[data-delaysrc]:not('.src-replaced')";
+    var loginSelectors = "#head-login, #header-login";
+
+    function updateSrc(element) {
+        if (element) {
+            var delaySrc = element.attr("data-delaysrc");
+            if (typeof delaySrc !== "undefined") {
+                element.attr("src", delaySrc).addClass("src-replaced");
+            }
+        }
+    }
+
+    function setupLazyLoad() {
+        window.addEventListener("load", function () {
+            $(imageSelector + ", " + iframeSelector).each(function () {
+                updateSrc($(this));
+            });
+        }, false);
+    }
+
+    function addLoginButtonListenerToUpdateIframeSrc() {
+        $(loginSelectors).one("click touchstart", function () {
+            var loginIframe = $("#iframe-login:not('.src-replaced')");
+            updateSrc(loginIframe);
+        });
+    }
+
+    function init() {
+        setupLazyLoad();
+        addLoginButtonListenerToUpdateIframeSrc();
+    }
+
+    $(document).ready(function () {
+        init();
+    });
+})();
+}
+
+/*
+     FILE ARCHIVED ON 00:02:37 Jun 27, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:49 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.672
+  load_resource: 28.084
+  PetaboxLoader3.datanode: 14.399
+*/

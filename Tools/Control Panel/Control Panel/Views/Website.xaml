@@ -1,0 +1,201 @@
+<UserControl x:Class="Control_Panel.WebsiteView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Control_Panel"
+        mc:Ignorable="d"
+        Background="{DynamicResource Background}">
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <local:SettingsOverlay x:Name="GlobalSettingsOverlay" Grid.RowSpan="2" Panel.ZIndex="9999"/>
+            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          CanContentScroll="False">
+                <StackPanel Margin="0,0,0,30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Control Panel - Website" Style="{StaticResource DashboardTitle}" 
+                                       Foreground="{DynamicResource AccentPrimary}"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock Text="Roblox Webserver Management" 
+                                       Style="{StaticResource DashboardSubtitle}" 
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Refresh" Style="{StaticResource ModernButton}" 
+                                Background="{DynamicResource AccentPrimary}"
+                                Width="80" Height="35" HorizontalAlignment="Right"
+                                Click="RefreshButton_Click"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Auto"
+                          PanningMode="Both"
+                          CanContentScroll="False">
+                <StackPanel>
+                    <Grid Margin="0,0,0,15">
+                        <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                                BorderThickness="1" Padding="15" Height="200" HorizontalAlignment="Stretch" Margin="0,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Frontend Info" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentBlue}"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Website Status:" 
+                                               Style="{StaticResource LabelText}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="WebsiteStatusText" Grid.Column="1" Grid.Row="0" Text="Checking..." 
+                                               Style="{StaticResource LabelText}" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="1" Text="CDN Status:" 
+                                               Style="{StaticResource LabelText}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="CdnStatusText" Grid.Column="1" Grid.Row="1" Text="Checking..." 
+                                               Style="{StaticResource LabelText}" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="2" Text="API Service Status:" 
+                                               Style="{StaticResource LabelText}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="ApiServiceStatusText" Grid.Column="1" Grid.Row="2" Text="Checking..." 
+                                               Style="{StaticResource LabelText}" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="3" Text="RCC Log Service Status:" 
+                                               Style="{StaticResource LabelText}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="RccLogStatusText" Grid.Column="1" Grid.Row="3" Text="Checking..." 
+                                               Style="{StaticResource LabelText}" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                </Grid>
+                                <TextBlock Text="Frontend and Backend Service Metrics." 
+                                           Style="{StaticResource DashboardSectionDescription}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" 
+                                       Text="Website Global Message" 
+                                       Style="{StaticResource TitleText}"
+                                       Foreground="{DynamicResource Foreground}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,0,10"
+                                       FontSize="18"
+                                       FontWeight="Bold"/>
+                            <TextBox Grid.Row="1" 
+                                     Name="GlobalMessageTextBox"
+                                     Height="35"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"
+                                     Margin="0,0,0,10"
+                                     Padding="5,3"
+                                     Style="{StaticResource ModernTextBox}"
+                                     Text=""/>
+                            <TextBlock Grid.Row="3" 
+                                     Text="Shows the text on the layout in alert box on the website, to embed websites - [Hyperlink Name(Url Name)]" 
+                                     Style="{StaticResource DescriptionText}"
+                                     Foreground="{DynamicResource SubtleText}"
+                                     Margin="0,0,0,10"
+                                     TextWrapping="Wrap"/>
+                            <Button Grid.Row="4" 
+                                    Name="SaveMessageButton"
+                                    Width="80"
+                                    Content="Save" 
+                                    Style="{StaticResource ModernButton}"
+                                    HorizontalAlignment="Left"
+                                    Click="SaveMessageButton_Click"
+                                    Height="35"/>
+                        </Grid>
+                    </Border>
+                    
+                    <Border Background="{DynamicResource Background}" 
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="0" 
+                                           Text="Maintenance Mode" 
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1" 
+                                        Name="MaintenanceButton"
+                                        Width="80"
+                                        Content="Activate" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        Click="MaintenanceButton_Click"/>
+                                <TextBlock Grid.Column="2" 
+                                           Name="MaintenanceStatusText"
+                                           Text="Inactive" 
+                                           Style="{StaticResource NormalText}"
+                                           Foreground="Red"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1"
+                                           Text="Maintenance Reason:" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,10,0,5"/>
+                                <TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3"
+                                         Name="MaintenanceReasonTextBox"
+                                         Height="35"
+                                         TextWrapping="Wrap"
+                                         AcceptsReturn="True"
+                                         Margin="0,0,0,10"
+                                         Padding="5,3"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Text=""
+                                         IsEnabled="True"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1" 
+                                       Text="Use this to enable Maintenance mode for the website." 
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,48 @@
+/* Legacy CSS file - Please do not copy */
+div.MediaPlayerControls {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: 0;
+  height: 0;
+  border: 0; }
+
+div.MediaPlayerIcon {
+  background-image: url(/web/20180626152709im_/https://static.sitetest3.robloxlabs.com/images/AssetIcons/MediaPlayerIcons.png);
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  border: 0; }
+
+.MediaPlayerIcon.Play {
+  background-position: left top;
+  cursor: pointer; }
+
+.MediaPlayerIcon.Play:hover {
+  background-position: right top; }
+
+.MediaPlayerIcon.Pause {
+  background-position: left center;
+  cursor: pointer; }
+
+.MediaPlayerIcon.Pause:hover {
+  background-position: right center; }
+
+.MediaPlayerIcon.Error {
+  background-position: left bottom; }
+
+/*
+     FILE ARCHIVED ON 15:27:09 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:43 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.535
+  load_resource: 80.648
+  PetaboxLoader3.resolve: 41.325
+  PetaboxLoader3.datanode: 14.809
+*/

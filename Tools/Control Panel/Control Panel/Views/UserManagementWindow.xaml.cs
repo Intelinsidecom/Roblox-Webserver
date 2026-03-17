@@ -73,6 +73,7 @@ namespace Control_Panel.Views
             UserIdText.Text = "";
             UsernameText.Text = "";
             EmailText.Text = "";
+            GenderText.Text = "";
             RobuxBalanceText.Text = "";
             TixBalanceText.Text = "";
             StatusText.Text = "";
@@ -90,6 +91,7 @@ namespace Control_Panel.Views
             RobuxBalanceText.Text = _currentUser.RobuxBalanceFormatted;
             TixBalanceText.Text = _currentUser.TixBalanceFormatted;
             EmailText.Text = _currentUser.Email ?? "Not set";
+            GenderText.Text = _currentUser.GenderText;
             StatusText.Text = _currentUser.StatusText;
             CreatedText.Text = _currentUser.CreatedDateFormatted;
         }
@@ -103,6 +105,7 @@ namespace Control_Panel.Views
                 RobuxBalanceText.Text = "Loading...";
                 TixBalanceText.Text = "Loading...";
                 EmailText.Text = "Loading...";
+                GenderText.Text = "Loading...";
                 StatusText.Text = "Loading...";
                 CreatedText.Text = "Loading...";
             }

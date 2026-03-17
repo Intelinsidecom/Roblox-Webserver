@@ -72,9 +72,13 @@ namespace Control_Panel
             }
         }
         
-        private void LogsButton_Click(object sender, RoutedEventArgs e)
+        private void WebsiteButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowFeatureComingSoon("Logs");
+            var mainWindow = Window.GetWindow(this) as Main;
+            if (mainWindow != null)
+            {
+                mainWindow.SwitchToView("Website");
+            }
         }
         
         private void SettingsButton_Click(object sender, RoutedEventArgs e)

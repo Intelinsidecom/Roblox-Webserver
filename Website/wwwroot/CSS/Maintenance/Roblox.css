@@ -1,0 +1,350 @@
+/* Legacy CSS file - Please do not copy */
+/* TODO: Move to styleguide.css */
+html {
+  background-color: #fff; }
+
+body {
+  overflow-y: scroll; }
+
+a {
+  text-decoration: none; }
+
+a:hover {
+  text-decoration: underline; }
+
+a:link, a:visited, a:active {
+  color: #0055B3; }
+
+input:focus {
+  outline: none; }
+
+pre {
+  white-space: pre-wrap;
+  /* css-3 */
+  white-space: -pre-wrap;
+  /* Opera 4-6 */
+  white-space: -o-pre-wrap;
+  /* Opera 7 */
+  word-wrap: break-word;
+  /* Internet Explorer 5.5+ */ }
+
+textarea {
+  resize: none; }
+
+/* TODO: this rule can be removed once reset.css is fully in use */
+a img {
+  border: none; }
+
+/* TODO: Move to Error Page.css */
+#ErrorPage {
+  text-align: center; }
+
+#ErrorPage h1 {
+  display: block; }
+
+/* End Move to Error Page.css */
+/* Used to put an easy-to-notice border around Admin controls */
+.ImageButton {
+  cursor: pointer;
+  padding: 0;
+  border: 0;
+  text-decoration: none;
+  margin: 0;
+  display: inline-block; }
+
+.Button {
+  cursor: pointer;
+  background-color: #fff;
+  border: solid 1px #333;
+  color: #333;
+  font-size: 0.9em;
+  padding: 3px 10px;
+  text-decoration: none; }
+
+.Button:link, .Button:visited {
+  border: solid 1px #777;
+  color: #777; }
+
+.Button:hover, .Button:active {
+  background-color: #6e99c9;
+  border: solid 1px #000;
+  color: #fff; }
+
+#Body.simple-body {
+  margin-top: 35px; }
+
+#Body {
+  min-height: 550px;
+  padding: 5px 0px 25px 0px;
+  margin: 0 auto;
+  max-width: 970px;
+  background-color: White; }
+
+#MasterContainer {
+  overflow: visible;
+  width: 100%; }
+
+.TextBox {
+  border: 1px solid #ccc;
+  padding: 5px; }
+
+.Label {
+  font-weight: bold; }
+
+.ErrorReporting, .ErrorReportingThanks {
+  width: 500px;
+  margin: 16px auto;
+  padding: 10px; }
+
+.YesNoButtons {
+  text-align: right; }
+
+/*Modal Popup*/
+.modalBackground {
+  background-color: Gray;
+  filter: alpha(opacity=30);
+  opacity: 0.3; }
+
+.modalPopup {
+  background-color: #ffffdd;
+  border-width: 3px;
+  border-style: solid;
+  border-color: Gray;
+  padding: 3px; }
+
+.Attention {
+  color: Red; }
+
+.OKCancelButton {
+  width: 80px; }
+
+.Toolbox {
+  padding: 2px; }
+
+.ToolboxItem {
+  border-style: solid;
+  border-width: 2px;
+  width: 52px;
+  height: 52px; }
+
+.Title {
+  font-size: 18px; }
+
+a.Title:link, a.Title:visited, a.Title:active {
+  text-decoration: none; }
+
+a.Title:hover {
+  text-decoration: underline; }
+
+.Header {
+  font-size: 14px; }
+
+.Banner {
+  padding: 8px; }
+
+/************************** Gutter Ads **************************/
+#LeftGutterAdContainer {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: -900px; }
+
+#RightGutterAdContainer {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  margin-left: 500px; }
+
+.Paging_Input {
+  width: 20px;
+  text-align: center; }
+
+/* /js/DataPager.js */
+.JSPager_Container a {
+  margin: 0px 2px; }
+
+.JSPager_Container a:hover {
+  cursor: pointer; }
+
+.JSPager_Container a.disabled:hover {
+  cursor: default; }
+
+.JSPager_Container a.disabled {
+  color: #000;
+  text-decoration: none; }
+
+#FreeGames .SEOLinksContainer {
+  margin: 0px 60px 0px 0px;
+  float: left;
+  color: #666;
+  font-size: 11px; }
+
+#FreeGames ul {
+  list-style: none; }
+
+.SquareTabGray {
+  list-style: none;
+  float: left;
+  background-color: #D6D6D6;
+  padding: 7px;
+  border: 1px solid #9e9e9e;
+  font-weight: bold;
+  font-size: 15px;
+  color: #343434;
+  margin: 4px 2px 0px 1px;
+  border-bottom-width: 0px;
+  position: relative;
+  top: 2px; }
+
+.SquareTabGray a {
+  text-decoration: none;
+  color: #343434;
+  cursor: pointer; }
+
+.SquareTabGray a:hover {
+  text-decoration: none;
+  background-color: #e9e9e9; }
+
+.SquareTabGray.selected a:hover, .SquareTabGray.ui-tabs-selected a:hover {
+  text-decoration: none;
+  background-color: #fff; }
+
+.SquareTabGray:hover {
+  background-color: #e9e9e9;
+  cursor: pointer; }
+
+.SquareTabGray.selected, .SquareTabGray.selected:hover, .SquareTabGray.ui-tabs-selected, .SquareTabGray.ui-tabs-selected:hover {
+  background-color: #fff;
+  margin-top: 0px;
+  padding: 9px 7px 12px 7px;
+  position: relative;
+  top: 1px;
+  border-color: #ccc; }
+
+.TabContent {
+  display: none; }
+
+.TabContent.selected {
+  display: block; }
+
+.StandardPanelContainer {
+  position: relative;
+  clear: both;
+  padding-left: 5px; }
+
+.StandardPanelContainer .StandardPanelWhite {
+  background-color: #fff;
+  position: relative;
+  left: -5px;
+  top: -1px;
+  width: 100%;
+  padding: 6px;
+  margin-bottom: -6px; }
+
+.WhiteSquareTabsContainer {
+  background: url("/web/20180626143245im_/https://static.sitetest3.robloxlabs.com/images/Icons/MyMoney_fakeborderbg2.png") bottom repeat-x;
+  width: 100%;
+  position: relative;
+  padding: 0 0 0 5px;
+  display: inline-block;
+  margin: 0; }
+
+.SuperSafePanel {
+  position: relative;
+  display: block;
+  height: 0px;
+  z-index: 1001; }
+
+img.SuperSafePrivacyModeImg:hover {
+  cursor: pointer; }
+
+#CreateSetPopupContainerDiv .SuperSafePanel {
+  left: 324px; }
+
+/* Master page UI, fixing and unfixing header */
+#Container.unfixed, #MasterContainer.unfixed {
+  width: 100%; }
+
+#Container {
+  margin: 0 auto;
+  width: 100%;
+  padding: 0px;
+  border: 0px; }
+
+.Centered {
+  margin-left: auto;
+  margin-right: auto; }
+
+/* CSSCleanup - remove from this file, use styleguide defined style instead - update in other locations using it*/
+.errorStatusBar {
+  color: black;
+  background-color: #FAE5E5;
+  border: solid 1px #c00;
+  margin-bottom: 10px;
+  text-align: left;
+  padding-left: 10px;
+  height: inherit;
+  min-height: 26px; }
+
+/* CSSCleanup - same id used in login flows */
+#birthdayError {
+  float: left;
+  height: inherit;
+  left: 10px;
+  position: relative; }
+
+#UpdateCCButton {
+  width: 166px;
+  height: 50px;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: auto;
+  background-image: url(/web/20180626143245im_/https://static.sitetest3.robloxlabs.com/images/Buttons/btn-updatenow.png); }
+
+#UpdateCCButton:hover {
+  background-position: 0px 50px; }
+
+.ReportAbuse {
+  text-align: left;
+  font-size: 11px; }
+
+.ReportAbuse .AbuseButton a {
+  color: #F99;
+  background: none;
+  padding-left: 16px;
+  padding-bottom: 2px; }
+
+.ReportAbuse .AbuseButton a:hover {
+  background: url("/web/20180626143245im_/https://static.sitetest3.robloxlabs.com/images/cssspecific/rbx2/abuse.png") no-repeat scroll 0 2px transparent;
+  color: #FF0000; }
+
+.ReportAbuse img {
+  display: none; }
+
+.IncompleteFormField {
+  color: red; }
+
+input.default {
+  font-style: italic;
+  color: #888; }
+
+.error-msg-disable-pbs {
+  color: red;
+  display: none;
+  margin: 6px 0; }
+
+/*
+     FILE ARCHIVED ON 14:32:45 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:43 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.77
+  load_resource: 185.191
+  PetaboxLoader3.resolve: 66.937
+  PetaboxLoader3.datanode: 101.053
+*/

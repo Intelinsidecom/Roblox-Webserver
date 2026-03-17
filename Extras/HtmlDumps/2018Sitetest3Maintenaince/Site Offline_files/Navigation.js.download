@@ -1,0 +1,318 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {}
+Roblox.Navigation = function () {
+    "use strict";
+
+    function updateNotificationInLayout(selector, data) {
+        selector.attr("href", data.Url);
+        selector.attr("data-count", data.TotalCount);
+
+        var countSelector = selector.find(".notification-blue");
+
+        countSelector.html(data.DiaplayCount);
+        countSelector.attr("title", data.TotalCount);
+
+        if (data.TotalCount > 0) {
+            countSelector.removeClass("hide");
+        } else {
+            countSelector.addClass("hide");
+        }
+    }
+
+    function updateCurrencyInLayout(data) {
+        var robuxSelector = $("#navbar-robux");
+        var robuxIconSelector = robuxSelector.find("#nav-robux-icon");
+        if (data.HasError) {
+            robuxIconSelector.children().wrapAll("<span id='nav-robux-error' data-toggle='tooltip' data-original-title='" + data.ErrorMessage + "' data-placement='bottom'></span>");
+            robuxIconSelector.find("#nav-robux-error").tooltip();
+        }
+        robuxIconSelector.find("#nav-robux-amount").text(data.RobuxText);
+        $(".dropdown-menu #nav-robux-balance").text(data.RobuxMessage);
+    }
+
+    function getUserData() {
+        var url = Roblox.Endpoints.getAbsoluteUrl("/navigation/userData");
+        $.ajax({
+            url: url,
+            success: function (data) {
+                var friendData = data.FriendUserDataModel;
+                var friendSelector = $('#nav-friends');
+                updateNotificationInLayout(friendSelector, friendData);
+
+                var messageData = data.MessageUserDataModel;
+                var messageSelector = $("#nav-message");
+                updateNotificationInLayout(messageSelector, messageData);
+                updateCurrencyInLayout(data.CurrencyBalancesDisplay);
+            }
+        });
+    }
+
+    function updateFriendsOnNavigation() {
+        var url = "/navigation/friendRequestData";
+        $.ajax({
+            url: url,
+            success: function (data) {
+                var friendSelector = $('#nav-friends');
+                updateNotificationInLayout(friendSelector, data);
+            }
+        });
+    }
+
+    function updateMessagesOnNavigation() {
+        var url = Roblox.websiteLinks.GetMyUnreadMessagesCountLink;
+        $.ajax({
+            url: url,
+            success: function (data) {
+                var messageSelector = $("#nav-message");
+                updateNotificationInLayout(messageSelector, data);
+            }
+        });
+    }
+
+    function initializeRealTimeSubscriptions() {
+        if (Roblox && Roblox.RealTime) {
+            var realTimeClient = Roblox.RealTime.Factory.GetClient();
+            realTimeClient.Subscribe("FriendshipNotifications", function (data) {
+                switch (data.Type) {
+                    case "FriendshipCreated": // friend request is accepted
+                    case "FriendshipDestroyed": // remove friend
+                    case "FriendshipDeclined": // friend request is declined
+                    case "FriendshipRequested": // friend request is sent
+                        updateFriendsOnNavigation();
+                        break;
+                }
+            });
+        }
+    }
+
+    function init() {
+        // setup realtime subscription for friendship updated
+        var headerElm = $("#header");
+        var isAuthenticated = headerElm && headerElm.data("isauthenticated");
+        if (isAuthenticated) {
+            if (headerElm) {
+                initializeRealTimeSubscriptions();
+            }
+            // listen friend request count updated
+            $(document).on("Roblox.Friends.CountChanged", function () {
+                updateFriendsOnNavigation();
+            });
+
+
+            //Roblox.Messages.CountChanged is fired when a change in messages count happens. 
+            $(document).on('Roblox.Messages.CountChanged', function () {
+                updateMessagesOnNavigation();
+            });
+            getUserData();
+        }
+    }
+    return {
+        init: init
+    }
+}();
+
+// created for new skin bootstrap navigation
+$(function () {
+    "use strict";
+
+    // Declaring constants 
+    var minimumSearchLength = 1;
+
+    // toggle the navigation notification icon
+    $('[data-behavior="nav-notification"]').click(function () {
+        $('[data-behavior="left-col"]').toggleClass("nav-show", 100);
+    });
+
+    //SEARCH
+    var searchElem = $('#navbar-universal-search');
+    var searchInput = $('#navbar-universal-search #navbar-search-input');
+    var searchOptions = $('#navbar-universal-search .rbx-navbar-search-option');
+    var searchBtn = $('#navbar-universal-search #navbar-search-btn');
+    function cycleUniversalSearchSelection(event) {
+        var searchOptions = $('[data-behavior="univeral-search"] .rbx-navbar-search-option');
+        var selectedIndex = -1;
+        $.each(searchOptions, function (index, elem) {
+            if ($(elem).hasClass('selected')) {
+                $(elem).removeClass('selected');
+                selectedIndex = index;
+            }
+        });
+        if (event.which === 38) {
+            selectedIndex += searchOptions.length - 1;
+        } else {
+            selectedIndex += 1;
+        }
+        selectedIndex %= searchOptions.length;
+        $(searchOptions[selectedIndex]).addClass('selected');
+    }
+
+    searchInput.on('keydown', function (event) {
+        var query = $(this).val();
+        if ((event.which === 9 || event.which === 38 || event.which === 40) && query.length > 0) {
+            event.stopPropagation();
+            event.preventDefault();
+            cycleUniversalSearchSelection(event);
+        }
+    });
+
+    searchInput.on('keyup', function (event) {
+        var query = $(this).val();
+        if (event.which === 13) {
+            event.stopPropagation();
+            event.preventDefault();
+            var selectedOption = searchElem.find('.rbx-navbar-search-option.selected');
+            var searchUrl = selectedOption.data('searchurl');
+
+            if (query.length >= minimumSearchLength) {
+                window.location = searchUrl + encodeURIComponent(query);
+            }
+        }
+        else if (query.length > 0) {
+            searchElem.toggleClass('rbx-navbar-search-open', true);
+            $('.rbx-navbar-search-option').each(function () {
+                var searchOption = $(this);
+                var searchUrl = searchOption.data("searchurl");
+
+                searchOption.find('.rbx-navbar-search-string').text('"' + query + '"');
+                searchOption.find('.rbx-navbar-search-anchor').attr('href', searchUrl + encodeURIComponent(query));
+            });
+        } else {
+            searchElem.toggleClass('rbx-navbar-search-open', false);
+        }
+    });
+
+    searchBtn.click(function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        var query = searchInput.val();
+        var selectedOption = $('#navbar-universal-search .rbx-navbar-search-option.selected');
+        var searchUrl = selectedOption.data('searchurl');
+
+        if (query.length >= minimumSearchLength) {
+            window.location = searchUrl + encodeURIComponent(query);
+        }
+    });
+
+    searchOptions.on("touchstart", function (event) {
+        event.stopPropagation();
+        var query = searchInput.val();
+        if (query.length >= minimumSearchLength) {
+            var searchUrl = $(this).data('searchurl');
+            window.location = searchUrl + encodeURIComponent(query);
+        }
+    });
+
+    searchOptions.on("mouseover", function () {
+        searchOptions.removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+    searchInput.on('focus', function () {
+        var query = searchInput.val();
+        if (query.length > 0) {
+            searchElem.addClass('rbx-navbar-search-open');
+        }
+    });
+
+    $('[data-toggle="toggle-search"]').on('click touchstart', function (e) {
+        e.stopPropagation();
+        $('[data-behavior="univeral-search"]').toggleClass("show");
+        return false;
+    });
+
+    //logout link
+    $('.rbx-navbar-right').on('click touchstart', '[data-behavior="logout"]', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var elem = $(this);
+        if (typeof angular !== "undefined" && !angular.isUndefined(angular.element("#chat-container").scope())) {
+            var scope = angular.element("#chat-container").scope();
+            scope.$digest(scope.$broadcast('Roblox.Chat.destroyChatCookie'));
+        }
+        $.post(elem.attr('data-bind'), { redirectTohome: false }, function (data) {
+            var url = Roblox && Roblox.Endpoints ? Roblox.Endpoints.getAbsoluteUrl("/") : "/";
+            window.location.href = url; 
+           });
+        });
+
+    $('#nav-robux-icon').on('show.bs.popover', function () {
+        $("body").scrollLeft(0);
+    });
+
+    var ParseMessage = function (msg) {
+        // prevent iframe in ads and post message as object instead of string 
+        if (typeof msg !== "string") {
+            return;
+        }
+        if (msg.indexOf("resize") != -1) {
+            //msg = "resize,270px"
+            var args = msg.split(',');
+            $('#iframe-login').css({ 'height': args[1] });
+        }
+        if (msg.indexOf("fbRegister") != -1) {
+            var args = msg.split('^');
+            var qs = "&fbname=" + encodeURIComponent(args[1]) + "&fbem=" + encodeURIComponent(args[2]) + "&fbdt=" + encodeURIComponent(args[3]);
+            window.location.href = "../Login/Default.aspx?iFrameFacebookSync=true" + qs;
+        }
+    };
+    if ($.receiveMessage) {
+        $.receiveMessage(function (e) {
+            ParseMessage(e.data);
+        });
+    }
+
+    // close drop down
+    $('body').on('click touchstart', function (e) {
+        $('[data-behavior="univeral-search"]').each(function () {
+            //the 'is' for links that trigger popups
+            //the 'has' for icons within a link that triggers a popup
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0) {
+                $(this).removeClass('rbx-navbar-search-open');
+            }
+
+            if ($(this).has(e.target).length === 0 &&
+                $('[data-toggle="toggle-search"]').has(e.target).length === 0 &&
+                $('[data-behavior="univeral-search"]').css("display") === "block") {
+                $('[data-behavior="univeral-search"]').removeClass("show");
+            }
+        });
+        if ((!$(e.target).closest('#login-dropdown').length && !$(e.target).is('#login-dropdown')) &&
+            (!$(e.target).closest('#head-login').length && !$(e.target).is('#head-login'))) {
+            if ($('#login-dropdown').hasClass("show")) {
+                $('#login-dropdown').removeClass("show");
+            }
+        }
+    });
+    var loginModal = function () {
+        $('#head-login').click(function (e) {
+            $('#login-dropdown').toggleClass("show");
+        });
+    }
+
+    loginModal();
+    Roblox.Navigation.init();
+});
+}
+
+/*
+     FILE ARCHIVED ON 00:11:16 Jun 27, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:50 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.994
+  load_resource: 47.592
+  PetaboxLoader3.datanode: 9.392
+*/

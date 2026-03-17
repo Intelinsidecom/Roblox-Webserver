@@ -47,11 +47,8 @@ namespace Control_Panel
         {
             if (!string.IsNullOrEmpty(username))
             {
-                // Clear placeholder and set the search term
                 ClearPlaceholder(UsernameSearchTextBox);
                 UsernameSearchTextBox.Text = username;
-                
-                // Trigger the search by calling the method directly
                 UsernameSearchTextBox_TextChanged(UsernameSearchTextBox, null);
             }
         }
@@ -265,6 +262,13 @@ namespace Control_Panel
                     MessageBox.Show("Invalid user ID format.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+        
+        private void CreateUserButton_Click(object sender, RoutedEventArgs e)
+        {
+            UserCreateWindow createWindow = new UserCreateWindow();
+            createWindow.Owner = Window.GetWindow(this);
+            createWindow.ShowDialog();
         }
     }
 }

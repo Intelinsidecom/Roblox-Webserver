@@ -1,0 +1,104 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+var Roblox = Roblox || {};
+Roblox.CookieConstraint = Roblox.CookieConstraint || {};
+Roblox.CookieConstraint.Timer = (function () {
+    function countDownLayout (isVisible) {
+        $("#countDown").toggle(isVisible);
+    }
+
+    function formatCountDown(time) {
+        var _second = 1000;
+        var _minute = _second * 60;
+        var _hour = _minute * 60;
+        var _day = _hour * 24;
+
+        var days = Math.floor(time / _day);
+        var hours = Math.floor((time % _day) / _hour);
+        var minutes = Math.floor((time % _hour) / _minute);
+        var countdownString = "";
+        if (days) {
+            countdownString = (days == 1) ? days + " day " : days + " days ";
+        }
+
+        if (hours == 1 || hours == 0) {
+            countdownString += "0" + hours + " hr ";
+        } else {
+            if (hours < 10) {
+                hours = "0" + hours;
+            }
+            countdownString += hours + " hrs ";
+        }
+
+        if (minutes == 1 || minutes == 0) {
+            countdownString += "0" + minutes + " min ";
+        } else {
+            if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+            countdownString += minutes + " mins ";
+        }
+
+        if (time <= _minute) {
+            var seconds = Math.floor((time % _minute) / _second);
+            countdownString += seconds + " secs ";
+        }
+
+        return countdownString;
+    }
+    function timer() {
+        var refreshIntervalId;
+        var endTimeString = $("#cookie-constraint-container").attr("data-count-down-utc-time") + " UTC";
+
+        function setTime() {
+            var end = new Date(endTimeString);
+            var now = new Date();
+            var remaining = end - now;
+            if (remaining > 0) {
+                var countdownString = formatCountDown(remaining);
+                if (!$("#countDown").is(":visible")) {
+                    countDownLayout(true);
+                }
+                var countdownTimerElm = $("#timer");
+                countdownTimerElm.html(countdownString);
+
+            } else {
+                clearInterval(refreshIntervalId);
+                countDownLayout(false);
+                return;
+            }
+        }
+
+        refreshIntervalId = setInterval(setTime, 1000);
+    }
+
+    return {
+        init: timer
+    }
+})();
+
+Roblox.CookieConstraint.Timer.init();
+}
+
+/*
+     FILE ARCHIVED ON 21:03:15 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:12:01 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.607
+  load_resource: 69.209
+  PetaboxLoader3.resolve: 34.319
+  PetaboxLoader3.datanode: 25.712
+*/
