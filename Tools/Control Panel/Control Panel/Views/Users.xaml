@@ -30,9 +30,10 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="{Binding Id}" 
-                           Margin="5,5,0,0" VerticalAlignment="Center"
+                           Margin="5,0,0,0" VerticalAlignment="Center"
                            HorizontalAlignment="Left"
                            Style="{DynamicResource DefaultTextStyle}"
                            Foreground="{DynamicResource Foreground}"
@@ -45,6 +46,7 @@
                            Style="{DynamicResource DefaultTextStyle}"
                            Foreground="{DynamicResource Foreground}"
                            VerticalAlignment="Center"
+                           HorizontalAlignment="Left"
                            FontSize="14"/>
                 <Button Grid.Column="3" Content="More info" 
                         Style="{DynamicResource ModernButton}"
@@ -53,10 +55,10 @@
                         Padding="8,4"
                         FontSize="12"
                         MinWidth="70"
-                        Height="25"
+                        Height="22"
                         Click="MoreInfoButton_Click"
                         Tag="{Binding Id}"/>
-                <Line Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                <Line Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
                       X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" 
                       Stroke="{DynamicResource SubtleText}" StrokeThickness="1" 
                       Margin="0,0,0,0"/>
@@ -131,12 +133,23 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Text="ID" Style="{StaticResource DashboardSubtitle}" FontWeight="Bold" Margin="5,5,0,0" HorizontalAlignment="Left"/>
                                 <Line Grid.Column="1" X1="0" Y1="0" X2="0" Y2="1" Stretch="Fill" 
                                       Stroke="{DynamicResource SubtleText}" StrokeThickness="1" 
                                       Margin="0" VerticalAlignment="Stretch"/>
                                 <TextBlock Grid.Column="2" Text="Username" Style="{StaticResource DashboardSubtitle}" FontWeight="Bold" Margin="5"/>
+                                <Button Grid.Column="4" Content="Create User" 
+                                        Style="{StaticResource ModernButton}"
+                                        Background="{DynamicResource AccentPrimary}"
+                                        Foreground="White"
+                                        Margin="5,5,5,5"
+                                        Padding="6,3"
+                                        FontSize="11"
+                                        MinWidth="70"
+                                        Height="22"
+                                        Click="CreateUserButton_Click"/>
                             </Grid>
                             <Line x:Name="ResultsSeparator" X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" 
                                   Stroke="{DynamicResource SubtleText}" StrokeThickness="1" 

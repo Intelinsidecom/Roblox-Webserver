@@ -55,6 +55,8 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="User ID:" 
                                    Style="{StaticResource DashboardSubtitle}" 
@@ -96,19 +98,27 @@
                                    Style="{StaticResource LabelText}"
                                    Foreground="{DynamicResource Foreground}"
                                    Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Status:" 
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Gender:" 
                                    Style="{StaticResource DashboardSubtitle}" 
                                    Foreground="{DynamicResource Foreground}"
                                    Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Name="StatusText" 
+                        <TextBlock Grid.Row="5" Grid.Column="1" Name="GenderText" 
                                    Style="{StaticResource LabelText}"
                                    Foreground="{DynamicResource Foreground}"
                                    Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Created:" 
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Status:" 
                                    Style="{StaticResource DashboardSubtitle}" 
                                    Foreground="{DynamicResource Foreground}"
                                    Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="6" Grid.Column="1" Name="CreatedText" 
+                        <TextBlock Grid.Row="6" Grid.Column="1" Name="StatusText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Created:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" Name="CreatedText" 
                                    Style="{StaticResource LabelText}"
                                    Foreground="{DynamicResource Foreground}"
                                    Margin="0,0,0,15"/>

@@ -157,7 +157,7 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10)); // 10 second timeout
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
                 var statusTask = GetArbiterStatusAsync();
                 var completedTask = await Task.WhenAny(statusTask, timeoutTask);
 
@@ -313,8 +313,8 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(8)); // 8 second timeout
-                var apiServiceTask = GetApiServiceDataAsync(data);
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5)); // 5 second timeout
+                var cdnTask = GetCdnDataAsync(data);
                 
                 var completedTask = await Task.WhenAny(apiServiceTask, timeoutTask);
                 
@@ -463,9 +463,14 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var websiteServiceStatus = await _frontendQueries.GetWebsiteServiceStatusAsync();
-                data.WebsiteServiceStatus = websiteServiceStatus;
-                
+                var websiteStatus = await _frontendQueries.GetWebsiteStatusAsync();
+                data.WebsiteStatus = websiteStatus.Status;
+                data.WebsiteIsOnline = websiteStatus.IsOnline;
+                var apiStatus = await _frontendQueries.GetApiStatusAsync();
+                data.ApiStatus = apiStatus.Status;
+                data.ApiIsOnline = apiStatus.IsOnline;
+                data.ApiResponseTime = apiStatus.ResponseTime;
+                data.ApiErrorMessage = apiStatus.ErrorMessage;
                 var userStats = await _frontendQueries.GetUserStatisticsAsync();
                 if (userStats.IsSuccessful)
                 {

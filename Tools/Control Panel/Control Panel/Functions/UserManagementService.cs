@@ -4,6 +4,7 @@ using System.Data;
 using Npgsql;
 using Control_Panel;
 using Thumbnails;
+using Users;
 
 namespace ControlPanel.Functions
 {
@@ -12,6 +13,7 @@ namespace ControlPanel.Functions
         public long UserId { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
+        public string Gender { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? LastActivity { get; set; }
         public string AvatarThumbnailUrl { get; set; }
@@ -37,6 +39,20 @@ namespace ControlPanel.Functions
         public string LastActivityFormatted => LastActivity?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
         public string RobuxBalanceFormatted => $"{RobuxBalance:N0} Robux";
         public string TixBalanceFormatted => $"{TixBalance:N0} Tix";
+        
+        public string GenderText
+        {
+            get
+            {
+                return Gender?.ToLowerInvariant() switch
+                {
+                    "male" => "Male",
+                    "female" => "Female",
+                    "none" => "Unknown",
+                    _ => "Unknown"
+                };
+            }
+        }
         
         public string MembershipText
         {
@@ -71,12 +87,11 @@ namespace ControlPanel.Functions
 
                     string query = @"
                         SELECT 
-                            user_id, user_name, email, user_created, last_activity,
+                            user_id, user_name, email, gender, user_created, last_activity,
                             avatar_thumbnail_url, headshot_thumbnail_url,
                             robux_balance, tix_balance
                         FROM users 
                         WHERE user_id = @userId";
-
 
                     using (var command = new NpgsqlCommand(query, connection))
                     {
@@ -125,7 +140,7 @@ namespace ControlPanel.Functions
                     await connection.OpenAsync();
                     var validFields = new[]
                     {
-                        "user_name", "email"
+                        "user_name", "email", "gender"
                     };
 
                     if (!Array.Exists(validFields, field => field == fieldName))
@@ -153,7 +168,6 @@ namespace ControlPanel.Functions
             }
         }
 
-
         public async Task<bool> ResetUserPasswordAsync(long userId, string newPassword)
         {
             try
@@ -167,6 +181,50 @@ namespace ControlPanel.Functions
             }
         }
 
+        public async Task<(long userId, bool success, string errorMessage)> CreateUserAsync(string username, string password, string gender)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    long newUserId;
+                    using (var cmd = new NpgsqlCommand("select coalesce(max(user_id), 0) + 1 from users", connection))
+                    {
+                        var result = await cmd.ExecuteScalarAsync();
+                        newUserId = Convert.ToInt64(result);
+                    }
+
+                    string normalizedGender = gender?.ToLowerInvariant() switch
+                    {
+                        "male" => "male",
+                        "female" => "female",
+                        "unknown" => "none",
+                        _ => "none"
+                    };
+
+                    var createParams = new UserCreateParams
+                    {
+                        UserId = newUserId,
+                        UserName = username.Trim(),
+                        Password = password,
+                        Gender = normalizedGender,
+                        ModerationStatus = "ok"
+                    };
+
+                    var repository = new UsersRepository();
+                    await repository.CreateUserAsync(connectionString, createParams, failIfExists: true);
+
+                    return (newUserId, true, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                ConsoleWindow.Instance?.WriteError($"Error creating user: {ex.Message}");
+                return (0, false, ex.Message);
+            }
+        }
+
         private UserData MapReaderToUserData(NpgsqlDataReader reader)
         {
             return new UserData
@@ -174,12 +232,13 @@ namespace ControlPanel.Functions
                 UserId = reader.GetInt64(0),
                 Username = reader.GetString(1),
                 Email = reader.IsDBNull(2) ? null : reader.GetString(2),
-                CreatedAt = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3),
-                LastActivity = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
-                AvatarThumbnailUrl = reader.IsDBNull(5) ? null : reader.GetString(5),
-                HeadshotThumbnailUrl = reader.IsDBNull(6) ? null : reader.GetString(6),
-                RobuxBalance = reader.IsDBNull(7) ? 0 : reader.GetInt64(7),
-                TixBalance = reader.IsDBNull(8) ? 0 : reader.GetInt64(8)
+                Gender = reader.IsDBNull(3) ? "none" : reader.GetString(3),
+                CreatedAt = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
+                LastActivity = reader.IsDBNull(5) ? (DateTime?)null : reader.GetDateTime(5),
+                AvatarThumbnailUrl = reader.IsDBNull(6) ? null : reader.GetString(6),
+                HeadshotThumbnailUrl = reader.IsDBNull(7) ? null : reader.GetString(7),
+                RobuxBalance = reader.IsDBNull(8) ? 0 : reader.GetInt64(8),
+                TixBalance = reader.IsDBNull(9) ? 0 : reader.GetInt64(9)
             };
         }
     }

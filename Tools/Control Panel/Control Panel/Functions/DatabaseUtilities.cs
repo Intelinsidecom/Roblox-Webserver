@@ -374,8 +374,6 @@ namespace Control_Panel
                 using (var conn = new Npgsql.NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-                        
-                    // Check if schemaversions table exists
                     var checkTableCmd = new Npgsql.NpgsqlCommand(@"
                         SELECT COUNT(*) 
                         FROM information_schema.tables 
@@ -385,7 +383,6 @@ namespace Control_Panel
                         
                     if (tableExists)
                     {
-                        // Get executed migrations
                         var getMigrationsCmd = new Npgsql.NpgsqlCommand(@"
                             SELECT scriptname 
                             FROM public.schemaversions 
@@ -491,6 +488,22 @@ namespace Control_Panel
                 using (var conn = new Npgsql.NpgsqlConnection(connectionString))
                 {
                     conn.Open();
+                    var checkTableCmd = new Npgsql.NpgsqlCommand(@"
+                        SELECT COUNT(*) 
+                        FROM information_schema.tables 
+                        WHERE table_schema = 'public' AND table_name = 'schemaversions'", conn);
+                    
+                    var tableExists = Convert.ToInt64(checkTableCmd.ExecuteScalar()) > 0;
+                    
+                    if (!tableExists)
+                    {
+                        var createTableCmd = new Npgsql.NpgsqlCommand(@"
+                            CREATE TABLE public.schemaversions (
+                                scriptname VARCHAR(255) PRIMARY KEY,
+                                applied TIMESTAMP WITH TIME ZONE NOT NULL
+                            )", conn);
+                        createTableCmd.ExecuteNonQuery();
+                    }
                     
                     var insertCmd = new Npgsql.NpgsqlCommand(@"
                         INSERT INTO public.schemaversions (scriptname, applied) 
@@ -685,8 +698,6 @@ namespace Control_Panel
                 using (var conn = new Npgsql.NpgsqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    // Get all table names
                     var getTablesCmd = new Npgsql.NpgsqlCommand(@"
                         SELECT tablename 
                         FROM pg_tables 
@@ -1016,6 +1027,30 @@ namespace Control_Panel
             }
 
             return "pg_restore.exe";
+        }
+
+        /// <summary>
+        /// Checks if an exception is related to database issues
+        /// </summary>
+        public static bool IsDatabaseError(Exception ex)
+        {
+            if (ex == null) return false;
+            string message = ex.Message.ToLower();
+            if (message.Contains("42p01") || message.Contains("relation") && message.Contains("does not exist"))
+                return true;
+            if (message.Contains("connection") && (message.Contains("failed") || message.Contains("timeout") || message.Contains("refused")))
+                return true;
+            if (message.Contains("password") || message.Contains("authentication") || message.Contains("login"))
+                return true;
+            if (message.Contains("database") && message.Contains("does not exist"))
+                return true;
+            if (message.Contains("permission") && message.Contains("denied"))
+                return true;
+            if (message.Contains("syntax error") || message.Contains("sql"))
+                return true;
+            if (ex.InnerException != null)
+                return IsDatabaseError(ex.InnerException);
+            return false;
         }
     }
 }
