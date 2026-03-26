@@ -66,6 +66,12 @@ namespace ControlPanel.Functions
                     case "Assets":
                         view = new AssetsView();
                         break;
+                    case "Games":
+                        view = new GamesView();
+                        break;
+                    case "Website":
+                        view = new WebsiteView();
+                        break;
                     default:
                         _statusTextBlock.Text = $"Unknown view: {viewName}";
                         return;

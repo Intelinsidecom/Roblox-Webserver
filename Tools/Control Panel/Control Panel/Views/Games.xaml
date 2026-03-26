@@ -1,0 +1,384 @@
+<UserControl x:Class="Control_Panel.GamesView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Control_Panel"
+        mc:Ignorable="d"
+        Background="{DynamicResource Background}">
+    <UserControl.Resources>
+        <local:StatusToColorConverter x:Key="StatusToColorConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <local:SettingsOverlay x:Name="GlobalSettingsOverlay" Grid.RowSpan="2" Panel.ZIndex="9999"/>
+            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          CanContentScroll="False">
+                <StackPanel Margin="0,0,0,30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Game Servers Management" Style="{StaticResource DashboardTitle}" 
+                                       Foreground="{DynamicResource AccentPrimary}"
+                                       TextWrapping="Wrap"/>
+                            <TextBlock Text="Monitor and manage running Roblox game servers" 
+                                       Style="{StaticResource DashboardSubtitle}" 
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Refresh" Style="{StaticResource ModernButton}" 
+                                    Background="{DynamicResource AccentPrimary}"
+                                    Width="80" Height="35" Margin="0,0,10,0"
+                                    Click="RefreshButton_Click"/>
+                            <Button Content="Kill All" Style="{StaticResource ModernButton}" 
+                            Background="#FF4444" Foreground="White"
+                            Width="80" Height="35"
+                            Click="KillAllButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                    <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                            BorderThickness="1" Padding="15" Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Total Servers" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
+                                <TextBlock x:Name="TotalServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Active Players" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentGreen}" FontSize="14"/>
+                                <TextBlock x:Name="TotalPlayersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Running" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentGreen}" FontSize="14"/>
+                                <TextBlock x:Name="RunningServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="3">
+                                <TextBlock Text="Starting" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
+                                <TextBlock x:Name="ExpiredServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                        BorderThickness="1" Padding="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Running Game Servers" Style="{StaticResource DashboardSectionTitle}" 
+                                   Foreground="{DynamicResource AccentBlue}" Margin="0,0,0,15"/>
+                        <DataGrid x:Name="ServersDataGrid" Grid.Row="1"
+                                 AutoGenerateColumns="False"
+                                 CanUserAddRows="False"
+                                 CanUserDeleteRows="False"
+                                 CanUserReorderColumns="False"
+                                 CanUserResizeColumns="True"
+                                 CanUserResizeRows="False"
+                                 CanUserSortColumns="True"
+                                 GridLinesVisibility="Horizontal"
+                                 HeadersVisibility="Column"
+                                 SelectionMode="Single"
+                                 SelectionChanged="ServersDataGrid_SelectionChanged"
+                                 Background="{DynamicResource Background}"
+                                 Foreground="{DynamicResource PrimaryText}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Game ID" Binding="{Binding GameId}" Width="200" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Place ID" Binding="{Binding PlaceId}" Width="80" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Port" Binding="{Binding Port}" Width="60" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Players" Binding="{Binding PlayerCount}" Width="70" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Max Players" Binding="{Binding MaxPlayers}" Width="80" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="80" IsReadOnly="True">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{Binding Status, Converter={StaticResource StatusToColorConverter}}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="140" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Expires" Binding="{Binding Expiration, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="140" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                              Background="{DynamicResource SubtleText}" ShowsPreview="False"/>
+                <Border Grid.Column="2" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                        BorderThickness="1" Padding="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel x:Name="CreateServerPanel" Grid.Row="0" Grid.RowSpan="3" Visibility="Collapsed" 
+                                    Panel.ZIndex="100" IsEnabled="True">
+                            <TextBlock Text="Create New Server" Style="{StaticResource DashboardSectionTitle}" 
+                                       Foreground="{DynamicResource AccentBlue}" Margin="0,0,0,15"/>
+                            <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                                    BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="Server Configuration" FontWeight="Bold" 
+                                               Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,10"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Column="0" Grid.Row="0" Text="Place ID:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                        <TextBox x:Name="CreatePlaceIdTextBox" Grid.Column="1" Grid.Row="0" Text="12345" 
+                                                Foreground="{DynamicResource Foreground}"
+                                                Background="{DynamicResource Background}"
+                                                BorderBrush="{DynamicResource SubtleText}"
+                                                FontSize="16" FontFamily="Segoe UI"
+                                                Height="25" Margin="5,2,0,10"
+                                                Padding="8,0"
+                                                IsReadOnly="False" IsEnabled="True" Focusable="True" TabIndex="1"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Expiration (minutes):" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                <TextBox x:Name="CreateExpirationTextBox" Grid.Column="1" Grid.Row="1" Text="60" 
+                                                Foreground="{DynamicResource Foreground}"
+                                                Background="{DynamicResource Background}"
+                                                BorderBrush="{DynamicResource SubtleText}"
+                                                FontSize="16" FontFamily="Segoe UI"
+                                                Height="25" Margin="5,2,0,10"
+                                                Padding="8,0"
+                                                IsReadOnly="False" IsEnabled="True" Focusable="True" TabIndex="2"/>
+                                <TextBlock Grid.Column="0" Grid.Row="2" Text="Max Players:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                <TextBox x:Name="CreateMaxPlayersTextBox" Grid.Column="1" Grid.Row="2" Text="10" 
+                                                Foreground="{DynamicResource Foreground}"
+                                                Background="{DynamicResource Background}"
+                                                BorderBrush="{DynamicResource SubtleText}"
+                                                FontSize="16" FontFamily="Segoe UI"
+                                                Height="25" Margin="5,2,0,10"
+                                                Padding="8,0"
+                                                IsReadOnly="False" IsEnabled="True" Focusable="True" TabIndex="3"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Button x:Name="CreateServerButton" Content="Create Server" 
+                                    Style="{StaticResource ModernButton}" 
+                                    Background="{DynamicResource AccentPrimary}" Foreground="White" 
+                                    Height="35" Margin="0,10,0,0"
+                                    Click="CreateServerButton_Click" IsEnabled="True"
+                                    Focusable="True" TabIndex="4"/>
+                        </StackPanel>
+                        <Grid Grid.Row="0" Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="ServerDetailsHeader" Grid.Column="0" Text="Server Details" Style="{StaticResource DashboardSectionTitle}" 
+                                       Foreground="{DynamicResource AccentBlue}" VerticalAlignment="Center"/>
+                            <Button x:Name="CloseServerDetailsButton" Grid.Column="1" Content="✕" Style="{StaticResource SettingsButton}" 
+                                    Background="Transparent" Foreground="{DynamicResource SubtleText}" FontSize="16" Width="30" Height="30"
+                                    VerticalAlignment="Center"
+                                    Click="CloseServerDetailsButton_Click" ToolTip="Close Server Details"
+                                    Visibility="Collapsed"/>
+                        </Grid>
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" CanContentScroll="False">
+                            <StackPanel x:Name="ServerDetailsPanel">
+                                <Border x:Name="ServerInfoPanel" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                                        BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="Server Information" FontWeight="Bold" 
+                                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,10"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Game ID:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailGameIdText" Grid.Column="1" Grid.Row="0" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Place ID:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailPlaceIdText" Grid.Column="1" Grid.Row="1" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Port:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailPortText" Grid.Column="1" Grid.Row="2" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="3" Text="Players:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailPlayersText" Grid.Column="1" Grid.Row="3" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="4" Text="Private Server:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailPrivateServerText" Grid.Column="1" Grid.Row="4" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                                <Border x:Name="TimingInfoPanel" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                                        BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="Timing Information" FontWeight="Bold" 
+                                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,10"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Grid.Row="0" Text="Start Time:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailStartTimeText" Grid.Column="1" Grid.Row="0" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="1" Text="Expiration:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailExpirationText" Grid.Column="1" Grid.Row="1" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Last Activity:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailLastActivityText" Grid.Column="1" Grid.Row="2" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            <TextBlock Grid.Column="0" Grid.Row="3" Text="Inactivity Timeout:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                            <TextBlock x:Name="DetailInactivityTimeoutText" Grid.Column="1" Grid.Row="3" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                                <Border x:Name="AuthenticationPanel" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                                        BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                                    <StackPanel>
+                                        <TextBlock Text="Authentication Ticket" FontWeight="Bold" 
+                                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,10"/>
+                                        <Button x:Name="GenerateTicketButton" Content="Generate Authentication Ticket" 
+                                                Style="{StaticResource ModernButton}" 
+                                                Background="{DynamicResource AccentPrimary}" Foreground="White" 
+                                                Height="30" Margin="0,0,0,10"
+                                                Click="GenerateTicketButton_Click"/>
+                                        <StackPanel x:Name="TicketInfoPanel" Visibility="Collapsed">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <TextBlock Grid.Column="0" Grid.Row="0" Text="Join Script:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" VerticalAlignment="Top"/>
+                                                <TextBox x:Name="JoinScriptUrlTextBox" Grid.Column="1" Grid.Row="0" 
+                                                        Foreground="{DynamicResource Foreground}"
+                                                        Background="{DynamicResource Background}"
+                                                        BorderBrush="{DynamicResource SubtleText}"
+                                                        FontSize="12" FontFamily="Consolas"
+                                                        Height="60" Margin="5,2,5,5"
+                                                        Padding="8,4"
+                                                        TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                                        IsReadOnly="True" Focusable="False"/>
+                                                <Button x:Name="CopyJoinScriptButton" Grid.Column="2" Grid.Row="0" Content="📋" 
+                                                        Style="{StaticResource SettingsButton}" 
+                                                        Background="Transparent" Foreground="{DynamicResource SubtleText}" 
+                                                        Width="30" Height="30" Margin="0,2,0,5"
+                                                        VerticalAlignment="Top"
+                                                        Click="CopyJoinScriptButton_Click" ToolTip="Copy Join Script URL"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="1" Text="Auth Ticket:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" VerticalAlignment="Top"/>
+                                                <TextBox x:Name="AuthTicketTextBox" Grid.Column="1" Grid.Row="1" 
+                                                        Foreground="{DynamicResource Foreground}"
+                                                        Background="{DynamicResource Background}"
+                                                        BorderBrush="{DynamicResource SubtleText}"
+                                                        FontSize="12" FontFamily="Consolas"
+                                                        Height="60" Margin="5,2,5,5"
+                                                        Padding="8,4"
+                                                        TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                                        IsReadOnly="True" Focusable="False"/>
+                                                <Button x:Name="CopyAuthTicketButton" Grid.Column="2" Grid.Row="1" Content="📋" 
+                                                        Style="{StaticResource SettingsButton}" 
+                                                        Background="Transparent" Foreground="{DynamicResource SubtleText}" 
+                                                        Width="30" Height="30" Margin="0,2,0,5"
+                                                        VerticalAlignment="Top"
+                                                        Click="CopyAuthTicketButton_Click" ToolTip="Copy Authentication Ticket"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="2" Text="Auth URL:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" VerticalAlignment="Top"/>
+                                                <TextBox x:Name="AuthUrlTextBox" Grid.Column="1" Grid.Row="2" 
+                                                        Foreground="{DynamicResource Foreground}"
+                                                        Background="{DynamicResource Background}"
+                                                        BorderBrush="{DynamicResource SubtleText}"
+                                                        FontSize="12" FontFamily="Consolas"
+                                                        Height="60" Margin="5,2,5,5"
+                                                        Padding="8,4"
+                                                        TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                                        IsReadOnly="True" Focusable="False"/>
+                                                <Button x:Name="CopyAuthUrlButton" Grid.Column="2" Grid.Row="2" Content="📋" 
+                                                        Style="{StaticResource SettingsButton}" 
+                                                        Background="Transparent" Foreground="{DynamicResource SubtleText}" 
+                                                        Width="30" Height="30" Margin="0,2,0,5"
+                                                        VerticalAlignment="Top"
+                                                        Click="CopyAuthUrlButton_Click" ToolTip="Copy Authentication URL"/>
+                                                <TextBlock Grid.Column="0" Grid.Row="3" Text="Expires:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
+                                                <TextBlock x:Name="TicketExpirationText" Grid.Column="1" Grid.Row="3" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
+                                            </Grid>
+                                            <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource AccentBlue}" 
+                                                    BorderThickness="1" Padding="8" Margin="0,10,0,0">
+                                                <StackPanel>
+                                                    <TextBlock Text="Command Line Arguments:" FontWeight="Bold" 
+                                                               Foreground="{DynamicResource AccentBlue}" Margin="0,0,0,5"/>
+                                                    <TextBox x:Name="CommandLineArgsTextBox" 
+                                                            Foreground="{DynamicResource Foreground}"
+                                                            Background="{DynamicResource Background}"
+                                                            BorderBrush="Transparent"
+                                                            FontSize="11" FontFamily="Consolas"
+                                                            Height="40" Margin="0,0,0,5"
+                                                            Padding="0"
+                                                            TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                                                            IsReadOnly="True" Focusable="False"/>
+                                                    <Button x:Name="CopyCommandLineButton" Content="📋 Copy Command Line" 
+                                                            Style="{StaticResource ModernButton}" 
+                                                            Background="{DynamicResource AccentBlue}" Foreground="White" 
+                                                            Height="25" FontSize="11"
+                                                            Click="CopyCommandLineButton_Click"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                        <StackPanel Grid.Row="2" Margin="0,15,0,0">
+                            <StackPanel x:Name="ServerActionButtons">
+                                <Button x:Name="KillServerButton" Content="Kill Server" Style="{StaticResource ModernButton}" 
+                                        Background="#FF4444" Foreground="White" Height="35" Margin="0,0,0,10"
+                                        Click="KillServerButton_Click" IsEnabled="False"/>
+                                <Button x:Name="RefreshServerButton" Content="Refresh Status" Style="{StaticResource ModernButton}" 
+                                        Background="{DynamicResource AccentPrimary}" Height="35"
+                                        Click="RefreshServerButton_Click" IsEnabled="False"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

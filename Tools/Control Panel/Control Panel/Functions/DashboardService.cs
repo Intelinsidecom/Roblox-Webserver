@@ -11,10 +11,12 @@ namespace ControlPanel.Functions
     {
         private readonly string _connectionString;
         private readonly ArbiterQueries _arbiterQueries;
-        private readonly FrontendQueries _frontendQueries;
-        private readonly CdnQueries _cdnQueries;
+        private readonly ServiceQueries _frontendQueries;
+        private readonly ServiceQueries _cdnQueries;
+        private readonly ServiceQueries _rccLogQueries;
+        private readonly ServiceQueries _apiServiceQueries;
 
-        public DashboardService(string connectionString, string arbiterUrl = null, string frontendUrl = null, string cdnUrl = null)
+        public DashboardService(string connectionString, string arbiterUrl = null, string frontendUrl = null, string cdnUrl = null, string rccLogUrl = null, string apiServiceUrl = null)
         {
             _connectionString = connectionString;
             
@@ -34,8 +36,18 @@ namespace ControlPanel.Functions
             }
             
             _arbiterQueries = new ArbiterQueries();
-            _frontendQueries = new FrontendQueries(frontendUrl);
-            _cdnQueries = new CdnQueries(cdnUrl);
+            _frontendQueries = new ServiceQueries(frontendUrl, "Frontend Service");
+            _cdnQueries = new ServiceQueries(cdnUrl, "CDN Service");
+            
+            if (!string.IsNullOrEmpty(rccLogUrl))
+            {
+                _rccLogQueries = new ServiceQueries(rccLogUrl, "RCC Log Service");
+            }
+            
+            if (!string.IsNullOrEmpty(apiServiceUrl))
+            {
+                _apiServiceQueries = new ServiceQueries(apiServiceUrl, "API Service");
+            }
         }
 
         public async Task<DashboardData> GetDashboardDataAsync()
@@ -49,10 +61,20 @@ namespace ControlPanel.Functions
                 tasks.Add(dbTask);
                 var arbiterTask = GetArbiterStatusWithTimeoutAsync();
                 var frontendTask = GetFrontendDataWithTimeoutAsync(data);
-                var cdnTask = GetCdnDataWithTimeoutAsync(data);
                 tasks.Add(arbiterTask);
                 tasks.Add(frontendTask);
-                tasks.Add(cdnTask);
+                
+                var rccLogTask = _rccLogQueries != null ? GetRccLogDataWithTimeoutAsync(data) : null;
+                if (rccLogTask != null)
+                {
+                    tasks.Add(rccLogTask);
+                }
+                
+                var apiServiceTask = _apiServiceQueries != null ? GetApiServiceDataWithTimeoutAsync(data) : null;
+                if (apiServiceTask != null)
+                {
+                    tasks.Add(apiServiceTask);
+                }
 
                 try
                 {
@@ -68,6 +90,16 @@ namespace ControlPanel.Functions
                 data.RccStatus = arbiterStatus.Status;
                 data.RccVersion = arbiterStatus.Version;
                 data.LastUpdated = DateTime.Now;
+                
+                if (rccLogTask != null)
+                {
+                    await rccLogTask;
+                }
+                
+                if (apiServiceTask != null)
+                {
+                    await apiServiceTask;
+                }
             }
             catch (Exception ex)
             {
@@ -178,17 +210,19 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(8)); // 8 second timeout
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(8));
                 var frontendTask = GetFrontendDataAsync(data);
                 var completedTask = await Task.WhenAny(frontendTask, timeoutTask);
 
                 if (completedTask == timeoutTask)
                 {
-                    data.WebsiteStatus = "Unhealthy";
-                    data.WebsiteIsOnline = false;
-                    data.ApiStatus = "Unhealthy";
-                    data.ApiIsOnline = false;
-                    data.FrontendActiveUsers = -1; // Use -1 to indicate Unknown
+                    data.WebsiteServiceStatus = new WebsiteServiceStatus
+                    {
+                        Status = "Unhealthy",
+                        OverallIsOnline = false,
+                        LastChecked = DateTime.Now
+                    };
+                    data.FrontendActiveUsers = -1;
                     data.FrontendUserError = "";
                     
                     try
@@ -208,11 +242,13 @@ namespace ControlPanel.Functions
             }
             catch (Exception ex)
             {
-                data.WebsiteStatus = "Unhealthy";
-                data.WebsiteIsOnline = false;
-                data.ApiStatus = "Unhealthy";
-                data.ApiIsOnline = false;
-                data.FrontendActiveUsers = -1; // Use -1 to indicate Unknown
+                data.WebsiteServiceStatus = new WebsiteServiceStatus
+                {
+                    Status = "Unhealthy",
+                    OverallIsOnline = false,
+                    LastChecked = DateTime.Now
+                };
+                data.FrontendActiveUsers = -1;
                 data.FrontendUserError = "";
                 try
                 {
@@ -226,49 +262,96 @@ namespace ControlPanel.Functions
             }
         }
 
-        private async Task GetCdnDataWithTimeoutAsync(DashboardData data)
+        private async Task GetRccLogDataWithTimeoutAsync(DashboardData data)
         {
             try
             {
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5)); // 5 second timeout
-                var cdnTask = GetCdnDataAsync(data);
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(8));
+                var rccLogTask = GetRccLogDataAsync(data);
                 
-                var completedTask = await Task.WhenAny(cdnTask, timeoutTask);
+                var completedTask = await Task.WhenAny(rccLogTask, timeoutTask);
                 
                 if (completedTask == timeoutTask)
                 {
-                    data.CdnStatus = "Unhealthy";
-                    data.CdnIsOnline = false;
-                    data.CdnErrorMessage = "";
+                    data.RccLogStatus = "Unhealthy";
+                    data.RccLogIsOnline = false;
+                    data.RccLogErrorMessage = "";
                     
                     try
                     {
                         var consoleWindow = Control_Panel.ConsoleWindow.Instance;
-                        consoleWindow.WriteWarning("CDN data collection timed out after 5 seconds");
+                        consoleWindow.WriteWarning("RCC Log Service data collection timed out after 8 seconds");
                     }
                     catch
                     {
-                        System.Diagnostics.Debug.WriteLine("CDN data collection timed out");
+                        System.Diagnostics.Debug.WriteLine("RCC Log Service data collection timed out");
                     }
                 }
                 else
                 {
-                    await cdnTask;
+                    await rccLogTask;
                 }
             }
             catch (Exception ex)
             {
-                data.CdnStatus = "Unhealthy";
-                data.CdnIsOnline = false;
-                data.CdnErrorMessage = "";
+                data.RccLogStatus = "Unhealthy";
+                data.RccLogIsOnline = false;
+                data.RccLogErrorMessage = "";
                 try
                 {
                     var consoleWindow = Control_Panel.ConsoleWindow.Instance;
-                    consoleWindow.WriteError($"CDN data collection failed: {ex.Message}");
+                    consoleWindow.WriteError($"RCC Log Service data collection failed: {ex.Message}");
                 }
                 catch
                 {
-                    System.Diagnostics.Debug.WriteLine($"CDN data error: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"RCC Log Service data error: {ex.Message}");
+                }
+            }
+        }
+
+        private async Task GetApiServiceDataWithTimeoutAsync(DashboardData data)
+        {
+            try
+            {
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(8)); // 8 second timeout
+                var apiServiceTask = GetApiServiceDataAsync(data);
+                
+                var completedTask = await Task.WhenAny(apiServiceTask, timeoutTask);
+                
+                if (completedTask == timeoutTask)
+                {
+                    data.ApiServiceStatus = "Unhealthy";
+                    data.ApiServiceIsOnline = false;
+                    data.ApiServiceErrorMessage = "";
+                    
+                    try
+                    {
+                        var consoleWindow = Control_Panel.ConsoleWindow.Instance;
+                        consoleWindow.WriteWarning("API Service data collection timed out after 8 seconds");
+                    }
+                    catch
+                    {
+                        System.Diagnostics.Debug.WriteLine("API Service data collection timed out");
+                    }
+                }
+                else
+                {
+                    await apiServiceTask;
+                }
+            }
+            catch (Exception ex)
+            {
+                data.ApiServiceStatus = "Unhealthy";
+                data.ApiServiceIsOnline = false;
+                data.ApiServiceErrorMessage = "";
+                try
+                {
+                    var consoleWindow = Control_Panel.ConsoleWindow.Instance;
+                    consoleWindow.WriteError($"API Service data collection failed: {ex.Message}");
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine($"API Service data error: {ex.Message}");
                 }
             }
         }
@@ -343,7 +426,6 @@ namespace ControlPanel.Functions
                 try
                 {
                     var consoleWindow = Control_Panel.ConsoleWindow.Instance;
-                    consoleWindow.WriteSuccess($"Arbiter status checked: {status.Status} (Running: {status.IsRunning})");
                     if (!string.IsNullOrEmpty(status.Error))
                     {
                         consoleWindow.WriteWarning($"Arbiter error: {status.Error}");
@@ -381,14 +463,9 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var websiteStatus = await _frontendQueries.GetWebsiteStatusAsync();
-                data.WebsiteStatus = websiteStatus.Status;
-                data.WebsiteIsOnline = websiteStatus.IsOnline;
-                var apiStatus = await _frontendQueries.GetApiStatusAsync();
-                data.ApiStatus = apiStatus.Status;
-                data.ApiIsOnline = apiStatus.IsOnline;
-                data.ApiResponseTime = apiStatus.ResponseTime;
-                data.ApiErrorMessage = apiStatus.ErrorMessage;
+                var websiteServiceStatus = await _frontendQueries.GetWebsiteServiceStatusAsync();
+                data.WebsiteServiceStatus = websiteServiceStatus;
+                
                 var userStats = await _frontendQueries.GetUserStatisticsAsync();
                 if (userStats.IsSuccessful)
                 {
@@ -396,18 +473,20 @@ namespace ControlPanel.Functions
                 }
                 else
                 {
-                    data.FrontendActiveUsers = -1; // Use -1 to indicate Unknown
+                    data.FrontendActiveUsers = -1;
                     data.FrontendUserError = "";
                 }
 
             }
             catch (Exception ex)
             {
-                data.WebsiteStatus = "Unhealthy";
-                data.WebsiteIsOnline = false;
-                data.ApiStatus = "Unhealthy";
-                data.ApiIsOnline = false;
-                data.FrontendActiveUsers = -1; // Use -1 to indicate Unknown
+                data.WebsiteServiceStatus = new WebsiteServiceStatus
+                {
+                    Status = "Unhealthy",
+                    OverallIsOnline = false,
+                    LastChecked = DateTime.Now
+                };
+                data.FrontendActiveUsers = -1;
                 data.FrontendUserError = "";
                 
                 try
@@ -422,33 +501,66 @@ namespace ControlPanel.Functions
             }
         }
 
-        private async Task GetCdnDataAsync(DashboardData data)
+        private async Task GetRccLogDataAsync(DashboardData data)
         {
             try
             {
-                var cdnStatus = await _cdnQueries.GetCdnStatusAsync();
-                data.CdnStatus = cdnStatus.Status;
-                data.CdnIsOnline = cdnStatus.IsOnline;
+                var rccLogStatus = await _rccLogQueries.GetServiceStatusAsync();
+                data.RccLogStatus = rccLogStatus.Status;
+                data.RccLogIsOnline = rccLogStatus.IsOnline;
+                data.RccLogResponseTime = rccLogStatus.ResponseTime;
                 
-                if (!string.IsNullOrEmpty(cdnStatus.ErrorMessage))
+                if (!string.IsNullOrEmpty(rccLogStatus.Status) && rccLogStatus.Status != "Healthy")
                 {
-                    data.CdnErrorMessage = cdnStatus.ErrorMessage;
+                    data.RccLogErrorMessage = rccLogStatus.Status;
                 }
             }
             catch (Exception ex)
             {
-                data.CdnStatus = "Unhealthy";
-                data.CdnIsOnline = false;
-                data.CdnErrorMessage = "";
+                data.RccLogStatus = "Unhealthy";
+                data.RccLogIsOnline = false;
+                data.RccLogErrorMessage = "";
                 
                 try
                 {
                     var consoleWindow = Control_Panel.ConsoleWindow.Instance;
-                    consoleWindow.WriteError($"CDN data collection failed: {ex.Message}");
+                    consoleWindow.WriteError($"RCC Log Service data collection failed: {ex.Message}");
                 }
                 catch
                 {
-                    System.Diagnostics.Debug.WriteLine($"CDN data error: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"RCC Log Service data error: {ex.Message}");
+                }
+            }
+        }
+
+        private async Task GetApiServiceDataAsync(DashboardData data)
+        {
+            try
+            {
+                var apiServiceStatus = await _apiServiceQueries.GetServiceStatusAsync();
+                data.ApiServiceStatus = apiServiceStatus.Status;
+                data.ApiServiceIsOnline = apiServiceStatus.IsOnline;
+                data.ApiServiceResponseTime = apiServiceStatus.ResponseTime;
+                
+                if (!string.IsNullOrEmpty(apiServiceStatus.Status) && apiServiceStatus.Status != "Healthy")
+                {
+                    data.ApiServiceErrorMessage = apiServiceStatus.Status;
+                }
+            }
+            catch (Exception ex)
+            {
+                data.ApiServiceStatus = "Unhealthy";
+                data.ApiServiceIsOnline = false;
+                data.ApiServiceErrorMessage = "";
+                
+                try
+                {
+                    var consoleWindow = Control_Panel.ConsoleWindow.Instance;
+                    consoleWindow.WriteError($"API Service data collection failed: {ex.Message}");
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine($"API Service data error: {ex.Message}");
                 }
             }
         }
@@ -465,16 +577,16 @@ namespace ControlPanel.Functions
         public bool ArbiterIsRunning { get; set; }
         public string RccStatus { get; set; }
         public string RccVersion { get; set; }
-        public string WebsiteStatus { get; set; } = "Unknown";
-        public bool WebsiteIsOnline { get; set; }
-        public string ApiStatus { get; set; } = "Unknown";
-        public bool ApiIsOnline { get; set; }
-        public TimeSpan ApiResponseTime { get; set; }
-        public string ApiErrorMessage { get; set; }
+        public WebsiteServiceStatus WebsiteServiceStatus { get; set; }
         public long FrontendActiveUsers { get; set; }
         public string FrontendUserError { get; set; }
-        public string CdnStatus { get; set; } = "Unknown";
-        public bool CdnIsOnline { get; set; }
-        public string CdnErrorMessage { get; set; }
+        public string RccLogStatus { get; set; } = "Unknown";
+        public bool RccLogIsOnline { get; set; }
+        public TimeSpan RccLogResponseTime { get; set; }
+        public string RccLogErrorMessage { get; set; }
+        public string ApiServiceStatus { get; set; } = "Unknown";
+        public bool ApiServiceIsOnline { get; set; }
+        public TimeSpan ApiServiceResponseTime { get; set; }
+        public string ApiServiceErrorMessage { get; set; }
     }
 }

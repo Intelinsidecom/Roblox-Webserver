@@ -1,0 +1,64 @@
+/* Legacy CSS file - Please do not copy */
+/* Start Character PopUp and A|B Character Popup Styles*/
+.ABCloseCircle {
+  cursor: pointer;
+  position: absolute;
+  top: -10px;
+  right: -10px; }
+
+.Message {
+  margin-top: 12px;
+  float: right;
+  width: 200px;
+  color: #343434;
+  text-align: left;
+  padding: 0px; }
+
+/* END Character PopUp and A|B Character Popup Styles*/
+/* copied from Item.css on 2.19.2013 */
+.PurchaseModalMessage.SuccessMsg {
+  padding: 30px 20px 20px 20px;
+  height: auto; }
+
+.PurchaseModal span.robux,
+.PurchaseModal span.robux-text {
+  margin-bottom: 2px; }
+
+.VisitButton {
+  display: inline;
+  width: 10px; }
+
+.VisitButtonBuild, .VisitButtonEdit {
+  height: 50px; }
+
+h3.RecommendationHeader {
+  padding-left: 5px;
+  padding-top: 5px;
+  width: 100%; }
+
+h3.RecommendationHeader a {
+  margin-left: 13px; }
+
+.Description.Full {
+  white-space: pre; }
+
+.Description.body {
+  white-space: pre-line;
+  max-height: 200px;
+  overflow-x: hidden; }
+
+/*
+     FILE ARCHIVED ON 19:50:02 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:43 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.579
+  load_resource: 81.536
+  PetaboxLoader3.resolve: 51.426
+  PetaboxLoader3.datanode: 21.761
+*/

@@ -51,8 +51,10 @@ namespace Control_Panel
                 ArbiterPortTextBox.Text = Settings.Default.ArbiterPort ?? "";
                 WebsiteHostTextBox.Text = Settings.Default.WebsiteHost ?? "";
                 WebsitePortTextBox.Text = Settings.Default.WebsitePort ?? "";
-                ApiHostTextBox.Text = Settings.Default.ApiHost ?? "";
-                ApiPortTextBox.Text = Settings.Default.ApiPort ?? "";
+                ApiServiceHostTextBox.Text = Settings.Default.ApiServiceHost ?? "";
+                ApiServicePortTextBox.Text = Settings.Default.ApiServicePort ?? "";
+                RccLogHostTextBox.Text = Settings.Default.RccLogHost ?? "";
+                RccLogPortTextBox.Text = Settings.Default.RccLogPort ?? "";
                 CdnHostTextBox.Text = Settings.Default.CdnHost ?? "";
                 CdnPortTextBox.Text = Settings.Default.CdnPort ?? "";
             }
@@ -71,7 +73,8 @@ namespace Control_Panel
             {
                 urls["Arbiter"] = $"http://{ArbiterHostTextBox.Text.Trim()}:{ArbiterPortTextBox.Text.Trim()}";
                 urls["Website"] = $"http://{WebsiteHostTextBox.Text.Trim()}:{WebsitePortTextBox.Text.Trim()}";
-                urls["API"] = $"http://{ApiHostTextBox.Text.Trim()}:{ApiPortTextBox.Text.Trim()}";
+                urls["APIService"] = $"http://{ApiServiceHostTextBox.Text.Trim()}:{ApiServicePortTextBox.Text.Trim()}";
+                urls["RccLog"] = $"http://{RccLogHostTextBox.Text.Trim()}:{RccLogPortTextBox.Text.Trim()}";
                 urls["CDN"] = $"http://{CdnHostTextBox.Text.Trim()}:{CdnPortTextBox.Text.Trim()}";
             }
             catch (Exception ex)
@@ -99,8 +102,10 @@ namespace Control_Panel
             ArbiterStatusText.Foreground = (Brush)FindResource("SubtleText");
             WebsiteStatusText.Text = "Testing...";
             WebsiteStatusText.Foreground = (Brush)FindResource("SubtleText");
-            ApiStatusText.Text = "Testing...";
-            ApiStatusText.Foreground = (Brush)FindResource("SubtleText");
+            ApiServiceStatusText.Text = "Testing...";
+            ApiServiceStatusText.Foreground = (Brush)FindResource("SubtleText");
+            RccLogStatusText.Text = "Testing...";
+            RccLogStatusText.Foreground = (Brush)FindResource("SubtleText");
             CdnStatusText.Text = "Testing...";
             CdnStatusText.Foreground = (Brush)FindResource("SubtleText");
             var testResults = new List<string>();
@@ -173,37 +178,69 @@ namespace Control_Panel
                 WebsiteStatusText.Text = testResults[1];
                 WebsiteStatusText.Foreground = testResults[1].StartsWith("✓") ? 
                     (Brush)FindResource("Success") : (Brush)FindResource("Error");
-                ApiStatusText.Text = "Testing API...";
-                ApiStatusText.Foreground = (Brush)FindResource("SubtleText");
+                ApiServiceStatusText.Text = "Testing API Service...";
+                ApiServiceStatusText.Foreground = (Brush)FindResource("SubtleText");
                 await Task.Delay(100);
                 
                 try
                 {
-                    var response = await httpClient.GetAsync($"{serviceUrls["API"]}/api/health");
+                    var response = await httpClient.GetAsync(serviceUrls["APIService"]);
                     if (response.IsSuccessStatusCode)
                     {
-                        testResults.Add("✓ API: Connected");
+                        testResults.Add("✓ API Service: Connected");
                     }
                     else
                     {
-                        testResults.Add($"✗ API: HTTP {response.StatusCode}");
+                        testResults.Add($"✗ API Service: HTTP {response.StatusCode}");
                     }
                 }
                 catch (HttpRequestException)
                 {
-                    testResults.Add("✗ API: Connection failed");
+                    testResults.Add("✗ API Service: Connection failed");
                 }
                 catch (TaskCanceledException)
                 {
-                    testResults.Add("✗ API: Connection failed");
+                    testResults.Add("✗ API Service: Connection failed");
                 }
                 catch (Exception)
                 {
-                    testResults.Add("✗ API: Connection failed");
+                    testResults.Add("✗ API Service: Connection failed");
                 }
                 
-                ApiStatusText.Text = testResults[2];
-                ApiStatusText.Foreground = testResults[2].StartsWith("✓") ? 
+                ApiServiceStatusText.Text = testResults[2];
+                ApiServiceStatusText.Foreground = testResults[2].StartsWith("✓") ? 
+                    (Brush)FindResource("Success") : (Brush)FindResource("Error");
+                RccLogStatusText.Text = "Testing Data Service...";
+                RccLogStatusText.Foreground = (Brush)FindResource("SubtleText");
+                await Task.Delay(100);
+                
+                try
+                {
+                    var response = await httpClient.GetAsync(serviceUrls["RccLog"]);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        testResults.Add("✓ Data Service: Connected");
+                    }
+                    else
+                    {
+                        testResults.Add($"✗ Data Service: HTTP {response.StatusCode}");
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    testResults.Add("✗ Data Service: Connection failed");
+                }
+                catch (TaskCanceledException)
+                {
+                    testResults.Add("✗ Data Service: Connection failed");
+                }
+                catch (Exception)
+                {
+                    testResults.Add("✗ Data Service: Connection failed");
+                }
+                
+                RccLogStatusText.Text = testResults[3];
+                RccLogStatusText.Foreground = testResults[3].StartsWith("✓") ? 
                     (Brush)FindResource("Success") : (Brush)FindResource("Error");
                 CdnStatusText.Text = "Testing CDN...";
                 CdnStatusText.Foreground = (Brush)FindResource("SubtleText");
@@ -234,8 +271,8 @@ namespace Control_Panel
                     testResults.Add("✗ CDN: Connection failed");
                 }
 
-                CdnStatusText.Text = testResults[3];
-                CdnStatusText.Foreground = testResults[3].StartsWith("✓") ? 
+                CdnStatusText.Text = testResults[4];
+                CdnStatusText.Foreground = testResults[4].StartsWith("✓") ? 
                     (Brush)FindResource("Success") : (Brush)FindResource("Error");
                 var hasSuccessfulConnections = testResults.Any(r => r.StartsWith("✓"));
                 var hasFailedConnections = testResults.Any(r => r.StartsWith("✗"));
@@ -290,10 +327,18 @@ namespace Control_Panel
                     return;
                 }
                 
-                int apiPort;
-                if (!int.TryParse(ApiPortTextBox.Text.Trim(), out apiPort) || apiPort < 1 || apiPort > 65535)
+                int apiServicePort;
+                if (!int.TryParse(ApiServicePortTextBox.Text.Trim(), out apiServicePort) || apiServicePort < 1 || apiServicePort > 65535)
                 {
-                    StatusTextBlock.Text = "Invalid API port (must be 1-65535)";
+                    StatusTextBlock.Text = "Invalid API Service port (must be 1-65535)";
+                    StatusTextBlock.Foreground = (Brush)FindResource("Error");
+                    return;
+                }
+                
+                int rccLogPort;
+                if (!int.TryParse(RccLogPortTextBox.Text.Trim(), out rccLogPort) || rccLogPort < 1 || rccLogPort > 65535)
+                {
+                    StatusTextBlock.Text = "Invalid Data Service port (must be 1-65535)";
                     StatusTextBlock.Foreground = (Brush)FindResource("Error");
                     return;
                 }
@@ -310,8 +355,10 @@ namespace Control_Panel
                 Settings.Default.ArbiterPort = ArbiterPortTextBox.Text.Trim();
                 Settings.Default.WebsiteHost = WebsiteHostTextBox.Text.Trim();
                 Settings.Default.WebsitePort = WebsitePortTextBox.Text.Trim();
-                Settings.Default.ApiHost = ApiHostTextBox.Text.Trim();
-                Settings.Default.ApiPort = ApiPortTextBox.Text.Trim();
+                Settings.Default.ApiServiceHost = ApiServiceHostTextBox.Text.Trim();
+                Settings.Default.ApiServicePort = ApiServicePortTextBox.Text.Trim();
+                Settings.Default.RccLogHost = RccLogHostTextBox.Text.Trim();
+                Settings.Default.RccLogPort = RccLogPortTextBox.Text.Trim();
                 Settings.Default.CdnHost = CdnHostTextBox.Text.Trim();
                 Settings.Default.CdnPort = CdnPortTextBox.Text.Trim();
                 Settings.Default.Save();

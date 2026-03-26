@@ -1,5 +1,30 @@
 <!DOCTYPE html>
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@using Npgsql
+@using System.Text.RegularExpressions
+
+@functions {
+    private string ParseGlobalMessage(string message)
+    {
+        if (string.IsNullOrEmpty(message))
+            return message;
+        
+        var pattern = @"\[([^\(\)]+)\(([^\)]+)\)\]";
+        var regex = new Regex(pattern);
+        
+        return regex.Replace(message, match =>
+        {
+            var text = match.Groups[1].Value.Trim();
+            var url = match.Groups[2].Value.Trim();
+            if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+            {
+                url = "https://" + url;
+            }
+            
+            return $"<a href=\"{url}\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: #fff; text-decoration: underline;\">{text}</a>";
+        });
+    }
+}
 <html lang="en">
 <link href="~/favicon.ico" rel="icon">
 <head>
@@ -206,6 +231,38 @@
                 </ul>
             </div>
         </div>
+    }
+
+    @* Global Message Alert - positioned after left navigation *@
+    @{
+        string globalMessage = null;
+        var connStrGlobal = Configuration.GetConnectionString("Default");
+        if (!string.IsNullOrWhiteSpace(connStrGlobal))
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(connStrGlobal);
+                conn.Open();
+                using var cmd = new NpgsqlCommand("SELECT global_message FROM website_settings LIMIT 1", conn);
+                var result = cmd.ExecuteScalar();
+                globalMessage = result as string;
+            }
+            catch { }
+        }
+    }
+    @if (!string.IsNullOrEmpty(globalMessage))
+    {
+        var parsedMessage = ParseGlobalMessage(globalMessage);
+        <div class="alert-container" style="margin-top: 40px; z-index: 1; position: relative;">
+            <div class="alert-info">@Html.Raw(parsedMessage)</div>
+        </div>
+        <style>
+            @@media (max-width: 991px) {
+                .alert-container {
+                    margin-top: 80px !important;
+                }
+            }
+        </style>
     }
 
     <div id="navContent">

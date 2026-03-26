@@ -60,7 +60,11 @@ namespace Control_Panel
         
         private void GamesButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowFeatureComingSoon("Games");
+            var mainWindow = Window.GetWindow(this) as Main;
+            if (mainWindow != null)
+            {
+                mainWindow.SwitchToView("Games");
+            }
         }
         
         private void AssetsButton_Click(object sender, RoutedEventArgs e)
@@ -72,9 +76,13 @@ namespace Control_Panel
             }
         }
         
-        private void LogsButton_Click(object sender, RoutedEventArgs e)
+        private void WebsiteButton_Click(object sender, RoutedEventArgs e)
         {
-            ShowFeatureComingSoon("Logs");
+            var mainWindow = Window.GetWindow(this) as Main;
+            if (mainWindow != null)
+            {
+                mainWindow.SwitchToView("Website");
+            }
         }
         
         private void SettingsButton_Click(object sender, RoutedEventArgs e)

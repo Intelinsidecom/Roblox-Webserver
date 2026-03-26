@@ -3,6 +3,7 @@
 @{
     long robuxBalance = 0;
     long tixBalance = 0;
+    
     if (User.Identity.IsAuthenticated)
     {
         var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -198,7 +199,8 @@
             </li>
         </ul><!--rbx-navbar-->
     </div>
-</div>
+
+    </div>
 
 <noscript>
     <div class="alert-container noscript-alert">

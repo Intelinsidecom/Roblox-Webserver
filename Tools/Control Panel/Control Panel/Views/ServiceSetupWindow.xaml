@@ -106,7 +106,7 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Host:" Style="{DynamicResource LabelText}" 
                                        VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="1" x:Name="ApiHostTextBox" Style="{DynamicResource ModernTextBox}" 
+                            <TextBox Grid.Column="1" x:Name="ApiServiceHostTextBox" Style="{DynamicResource ModernTextBox}" 
                                      Text="localhost" Margin="10,0,0,0" Padding="8,4,8,6"/>
                         </Grid>
                         <Grid Margin="0,0,0,10">
@@ -117,11 +117,44 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Port:" Style="{DynamicResource LabelText}" 
                                        VerticalAlignment="Center"/>
-                            <TextBox Grid.Column="1" x:Name="ApiPortTextBox" Style="{DynamicResource ModernTextBox}" 
-                                     Text="5078" Margin="10,0,0,0" Height="40" Padding="8,4,8,0"/>
+                            <TextBox Grid.Column="1" x:Name="ApiServicePortTextBox" Style="{DynamicResource ModernTextBox}" 
+                                     Text="5081" Margin="10,0,0,0" Height="40" Padding="8,4,8,0"/>
                         </Grid>
                         
-                        <TextBlock Text="API Service for Logins and Mobile Clients" 
+                        <TextBlock Text="Special Service for Handling Client API requests." 
+                                   Style="{DynamicResource DescriptionText}" 
+                                   Foreground="{DynamicResource SubtleText}" 
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="{DynamicResource BackgroundSecondary}" BorderBrush="{DynamicResource SubtleText}" 
+                        BorderThickness="1" Padding="15" Margin="0,0,0,20">
+                    <StackPanel>
+                        <TextBlock Text="Data Service" Style="{DynamicResource SubtitleText}" 
+                                   Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,15"/>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Host:" Style="{DynamicResource LabelText}" 
+                                       VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" x:Name="RccLogHostTextBox" Style="{DynamicResource ModernTextBox}" 
+                                     Text="localhost" Margin="10,0,0,0" Padding="8,4,8,6"/>
+                        </Grid>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Port:" Style="{DynamicResource LabelText}" 
+                                       VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" x:Name="RccLogPortTextBox" Style="{DynamicResource ModernTextBox}" 
+                                     Text="5080" Margin="10,0,0,0" Height="40" Padding="8,4,8,0"/>
+                        </Grid>
+                        
+                        <TextBlock Text="RCC crash log service for collecting RCC Crash Logs." 
                                    Style="{DynamicResource DescriptionText}" 
                                    Foreground="{DynamicResource SubtleText}" 
                                    Margin="0,5,0,0"/>
@@ -168,7 +201,8 @@
                 <StackPanel Margin="0,15,0,0" x:Name="ServiceStatusPanel">
                     <TextBlock x:Name="ArbiterStatusText" Text="" Style="{DynamicResource NormalText}" Margin="0,2"/>
                     <TextBlock x:Name="WebsiteStatusText" Text="" Style="{DynamicResource NormalText}" Margin="0,2"/>
-                    <TextBlock x:Name="ApiStatusText" Text="" Style="{DynamicResource NormalText}" Margin="0,2"/>
+                    <TextBlock x:Name="ApiServiceStatusText" Text="" Style="{DynamicResource NormalText}" Margin="0,2"/>
+                    <TextBlock x:Name="RccLogStatusText" Text="" Style="{DynamicResource NormalText}" Margin="0,2"/>
                     <TextBlock x:Name="CdnStatusText" Text="" Style="{DynamicResource NormalText}" Margin="0,2"/>
                 </StackPanel>
             </StackPanel>

@@ -31,23 +31,18 @@ namespace RCCArbiter
             Console.WriteLine("=== RCC Service Arbiter ===");
             Console.WriteLine();
 
-            // Load configuration
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            // Determine RCC URL based on mode
             string rccUrl;
             bool autoStartRCC = false;
-
-            // HTTP server mode if --http flag is present OR config enables it; otherwise interactive console
             bool httpFlag = args.Any(a => string.Equals(a, "--http", StringComparison.OrdinalIgnoreCase));
             bool httpEnabledInConfig = string.Equals(_configuration["HttpServer:Enabled"], "true", StringComparison.OrdinalIgnoreCase);
             
             if (httpFlag || httpEnabledInConfig)
             {
-                // HTTP mode: check if we should auto-start Rendering RCC
                 autoStartRCC = string.Equals(_configuration["Rendering:AutoStart"], "true", StringComparison.OrdinalIgnoreCase);
                 
                 if (autoStartRCC)
@@ -81,7 +76,6 @@ namespace RCCArbiter
                 return;
             }
             
-            // Interactive mode: use Rendering RCC configuration
             autoStartRCC = string.Equals(_configuration["Rendering:AutoStart"], "true", StringComparison.OrdinalIgnoreCase);
             
             if (autoStartRCC)
@@ -112,7 +106,6 @@ namespace RCCArbiter
             Console.WriteLine($"Interactive Mode - Connecting to RCC Service at: {rccUrl}");
             Console.WriteLine();
 
-            // Interactive console mode
             try
             {
                 using (var client = new RCCClient(rccUrl))
@@ -150,7 +143,6 @@ namespace RCCArbiter
                         }
                         else
                         {
-                            // If input looks like a script name or filename, load it from Scripts/
                             var scriptsDir = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
                             string fileName = input.EndsWith(".lua", StringComparison.OrdinalIgnoreCase) ? input : input + ".lua";
                             var fullPath = Path.Combine(scriptsDir, fileName);
@@ -203,7 +195,6 @@ namespace RCCArbiter
             }
             finally
             {
-                // Clean up RCC process if we started it
                 if (_renderingRCC != null)
                 {
                     Console.WriteLine();
@@ -212,19 +203,15 @@ namespace RCCArbiter
             }
         }
 
-        // HTTP server removed; interactive console mode only
-
         private static void StartHttpServer(string rccUrl)
         {
             var builder = WebApplication.CreateBuilder();
-            // Bind to configured URLs if provided
             var urls = builder.Configuration["HttpServer:Urls"];
             if (!string.IsNullOrWhiteSpace(urls))
             {
                 builder.WebHost.UseUrls(urls);
             }
             
-            // Register shutdown handler to clean up RCC process
             builder.Services.AddHostedService<RCCCleanupService>();
             
             var app = builder.Build();
@@ -233,8 +220,6 @@ namespace RCCArbiter
             var jsonRoot = Path.Combine(Directory.GetCurrentDirectory(), "Json");
             var provider = new FileScriptProvider(scriptsRoot);
             var renderer = new ScriptRenderer();
-
-            // Initialize scalable Rendering RCC manager
             _renderMgr = new RenderingRccManager(builder.Configuration);
 
             app.MapGet("/health", () => Results.Ok(new { ok = true }));
@@ -356,10 +341,7 @@ namespace RCCArbiter
 
                 return Results.Ok(status);
             });
-
-            // Use RenderingRccManager to acquire URL per request if triggered
-
-            // Register all functions from registry as POST/GET /{name}
+}
             foreach (var kv in Functions.Registry)
             {
                 var name = kv.Key;
@@ -425,7 +407,6 @@ namespace RCCArbiter
                 });
             }
 
-            // Legacy: /run/{name} supports both GET and POST
             app.MapMethods("/run/{name}", new[] { "GET", "POST" }, async (HttpRequest req) =>
             {
                 try
@@ -461,7 +442,6 @@ namespace RCCArbiter
                 }
             });
 
-            // Compiled endpoints discovery and mapping
             var endpointTypes = Assembly.GetExecutingAssembly()
                 .GetTypes();
             foreach (var t in endpointTypes)
@@ -472,7 +452,6 @@ namespace RCCArbiter
                 if (Activator.CreateInstance(t) is not ICompiledEndpoint endpoint)
                     continue;
 
-                // Provide configuration to endpoint
                 endpoint.SetConfiguration(builder.Configuration);
 
                 var route = endpoint.Route.StartsWith("/") ? endpoint.Route : "/" + endpoint.Route;
@@ -483,7 +462,6 @@ namespace RCCArbiter
                     {
                         var mapped = endpoint.MapParameters(req);
 
-                        // Treat compiled endpoint route as trigger route
                         string urlToUse = rccUrl;
                         IDisposable? lease = null;
                         if (_renderMgr != null)
@@ -507,7 +485,6 @@ namespace RCCArbiter
                                 {
                                     using var client = new RCCClient(urlToUse);
 
-                                    // Determine whether to use JSON-based request instead of Lua
                                     bool forceJson = false;
                                     if (req.Query.TryGetValue("ForceJson", out var fq) || req.Query.TryGetValue("forceJson", out fq))
                                     {
@@ -528,7 +505,6 @@ namespace RCCArbiter
                                         var jsonPath = Path.Combine(jsonRoot, endpoint.ScriptName + ".json");
                                         if (!File.Exists(jsonPath))
                                         {
-                                            // If JSON template is missing, fall back to Lua script as before
                                             if (!provider.TryGetScript(endpoint.ScriptName, out var luaTemplateFallback))
                                             {
                                                 return Results.NotFound(new { error = $"Script '{endpoint.ScriptName}.lua' or JSON template '{endpoint.ScriptName}.json' not found" });
@@ -540,8 +516,6 @@ namespace RCCArbiter
                                         {
                                             var jsonTemplate = File.ReadAllText(jsonPath, Encoding.UTF8);
                                             var renderedJson = renderer.Render(jsonTemplate, mapped);
-
-                                            // Send rendered JSON directly as the RCC script body, matching pekora game-renderer behavior
                                             var scriptName = endpoint.ScriptName + "JsonPayload";
                                             results = runner.RunRawScript(scriptName, renderedJson ?? string.Empty);
                                         }
@@ -574,7 +548,6 @@ namespace RCCArbiter
                                 throw lastConnectionException;
                             }
 
-                            // Optional: for any endpoint, allow returning the PNG directly when requested
                             if (req.Query.TryGetValue("GiveImage", out var giveImg) &&
                                 string.Equals(giveImg.ToString(), "true", StringComparison.OrdinalIgnoreCase))
                             {
@@ -588,7 +561,6 @@ namespace RCCArbiter
                                     }
                                     catch
                                     {
-                                        // If decoding fails, fall back to JSON representation
                                     }
                                 }
                             }
@@ -606,6 +578,368 @@ namespace RCCArbiter
                 app.MapGet(route, Handle);
                 app.MapPost(route, Handle);
             }
+
+            var gameServerManager = new GameServerManager(rccUrl, builder.Configuration);
+
+            app.MapPost("/api/gameservers/start", async (StartGameServerRequest request) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-start");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        var gameId = await gameServerManager.StartGameServerAsync(
+                            request.PlaceId, 
+                            request.Port, 
+                            request.MaxPlayers, 
+                            request.PrivateServerId ?? "", 
+                            request.BaseUrl ?? "",
+                            request.MaxInactive ?? 0
+                        );
+                        return Results.Ok(new { gameId = gameId, status = "started" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/start", async (HttpRequest req) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-start");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 15;
+                        var port = int.TryParse(req.Query["port"], out var p) ? p : 53640;
+                        var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
+                        var privateServerId = req.Query["privateServerId"].FirstOrDefault() ?? "";
+                        var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.xyz";
+                        var maxInactive = int.TryParse(req.Query["maxInactive"], out var mi) ? mi : 0;
+
+                        var gameId = await gameServerManager.StartGameServerAsync(
+                            placeId, 
+                            port, 
+                            maxPlayers, 
+                            privateServerId, 
+                            baseUrl,
+                            maxInactive
+                        );
+                        return Results.Ok(new { gameId = gameId, status = "started" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/{gameId}/status", async (string gameId) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-status");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        var status = await gameServerManager.GetGameServerStatusAsync(gameId);
+                        return Results.Ok(status);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapDelete("/api/gameservers/{gameId}", (string gameId) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-stop");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        gameServerManager.StopGameServer(gameId);
+                        return Results.Ok(new { gameId = gameId, status = "stopped" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/by-place/{placeId}", (int placeId) =>
+            {
+                try
+                {
+                    var servers = gameServerManager.GetAllGameServers()
+                        .Where(s => s.PlaceId == placeId)
+                        .Select(s => new
+                        {
+                            gameId = s.GameId,
+                            port = s.Port,
+                            playerCount = s.PlayerCount,
+                            status = s.Status,
+                            startTime = s.StartTime,
+                            maxPlayers = s.MaxPlayers,
+                            baseUrl = s.BaseUrl,
+                            connectionUrl = $"roblox://localhost:{s.Port}?gameId={s.GameId}&placeId={placeId}"
+                        })
+                        .OrderByDescending(s => s.startTime)
+                        .ToList();
+
+                    return Results.Ok(new
+                    {
+                        placeId = placeId,
+                        serverCount = servers.Count,
+                        servers = servers
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/best-server/{placeId}", (int placeId) =>
+            {
+                try
+                {
+                    var bestServer = gameServerManager.GetAllGameServers()
+                        .Where(s => s.PlaceId == placeId && s.Status == "running")
+                        .OrderBy(s => s.PlayerCount)
+                        .ThenByDescending(s => s.StartTime)
+                        .FirstOrDefault();
+
+                    if (bestServer == null)
+                    {
+                        return Results.NotFound(new { error = $"No active servers found for place {placeId}" });
+                    }
+
+                    return Results.Ok(new
+                    {
+                        gameId = bestServer.GameId,
+                        port = bestServer.Port,
+                        playerCount = bestServer.PlayerCount,
+                        maxPlayers = bestServer.MaxPlayers,
+                        status = bestServer.Status,
+                        startTime = bestServer.StartTime,
+                        baseUrl = bestServer.BaseUrl,
+                        connectionUrl = $"roblox://localhost:{bestServer.Port}?gameId={bestServer.GameId}&placeId={placeId}",
+                        reason = bestServer.PlayerCount == 0 ? "Empty server available" : 
+                                bestServer.PlayerCount < bestServer.MaxPlayers / 2 ? "Low population server" : "Best available server"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/{gameId}/stop", (string gameId) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-stop");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        gameServerManager.StopGameServer(gameId);
+                        return Results.Ok(new { gameId = gameId, status = "stopped" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapPost("/api/gameservers/{gameId}/renew", async (string gameId, RenewLeaseRequest request) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-renew");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        await gameServerManager.RenewGameServerLeaseAsync(gameId, request.AdditionalSeconds);
+                        return Results.Ok(new { gameId = gameId, status = "renewed" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/{gameId}/renew", async (string gameId, HttpRequest req) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-renew");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        var additionalSeconds = int.TryParse(req.Query["additionalSeconds"], out var seconds) ? seconds : 3600;
+                        await gameServerManager.RenewGameServerLeaseAsync(gameId, additionalSeconds);
+                        return Results.Ok(new { gameId = gameId, status = "renewed", additionalSeconds = additionalSeconds });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers", () =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-list");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        var servers = gameServerManager.GetAllGameServers();
+                        return Results.Ok(servers);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapPost("/api/gameservers/cleanup", () =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-cleanup");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        gameServerManager.CleanupExpiredServers();
+                        return Results.Ok(new { status = "cleanup_completed" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/cleanup", () =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-cleanup");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        gameServerManager.CleanupExpiredServers();
+                        return Results.Ok(new { status = "cleanup_completed" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
 
             var bound = string.IsNullOrWhiteSpace(urls) ? "default Kestrel URLs (e.g. http://localhost:5000)" : urls;
             Console.WriteLine($"HTTP mode: listening on {bound}");
@@ -638,7 +972,6 @@ namespace RCCArbiter
             };
         }
 
-        // Removed console print utilities; HTTP responses still use FormatLuaValues
     }
 
     /// <summary>
@@ -653,7 +986,6 @@ namespace RCCArbiter
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            // Clean up RCC process when server stops
             if (Program.GetRenderingRCC() != null)
             {
                 Console.WriteLine();
@@ -670,4 +1002,19 @@ namespace RCCArbiter
         public static RCCProcessManager? GetRenderingRCC() => _renderingRCC;
         public static RenderingRccManager? GetRenderingManager() => _renderMgr;
     }
+}
+
+public class StartGameServerRequest
+{
+    public int PlaceId { get; set; }
+    public int Port { get; set; } = 53640;
+    public int MaxPlayers { get; set; } = 10;
+    public string? PrivateServerId { get; set; }
+    public string? BaseUrl { get; set; }
+    public int? MaxInactive { get; set; }
+}
+
+public class RenewLeaseRequest
+{
+    public int AdditionalSeconds { get; set; } = 3600;
 }

@@ -37,10 +37,10 @@
                         Background="Transparent" BorderThickness="0"
                         Style="{DynamicResource SidebarButtonBlack}"
                         Click="AssetsButton_Click"/>
-                <Button Content="Logs" Height="40" Margin="0,2" 
+                <Button Content="Website" Height="40" Margin="0,2" 
                         Background="Transparent" BorderThickness="0"
                         Style="{DynamicResource SidebarButtonBlack}"
-                        Click="LogsButton_Click"/>
+                        Click="WebsiteButton_Click"/>
                 <Button Content="About" Height="40" Margin="0,2" 
                         Background="Transparent" BorderThickness="0"
                         Style="{DynamicResource SidebarButtonBlack}"

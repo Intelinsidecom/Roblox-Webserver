@@ -1,0 +1,142 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+Roblox = Roblox || {};
+
+Roblox.Linkify = function () {
+    //this interacts with .toggleDesc, sometimes in a bad way.
+    //this converts texts containing links to actual HTML links and also upgrades their protocol execpt for specified domains that do not have https (eg. blog, wiki, etc)
+    "use strict";
+    var options = {
+        enabled: false,
+        hasProtocolRegex: /(https?:\/\/)/,
+        defaultProtocol: "https://",
+        httpProtocol: "http://",
+        cssClass: "text-link"
+    };
+
+    var optionsLoaded = false;
+
+    var isMobile = (Roblox.FixedUI && Roblox.FixedUI.isMobile);
+
+    function getOptions() {
+        var config = $("#roblox-linkify");
+        if (config.length) {
+            var regexString = config.data("regex");
+            var flags = config.data("regex-flags");
+            var asHttpRegexString = config.data("as-http-regex");
+
+            var extendedOptions = {
+                enabled: config.data("enabled"),
+                regex: new RegExp(regexString, flags),
+                doNotUpgradeToHttpsRegex: new RegExp(asHttpRegexString)
+            };
+            setOptions(extendedOptions);
+        }
+        optionsLoaded = true;
+    }
+    function setOptions(extendedOptions) {
+        $.extend(options, extendedOptions);
+    }
+
+    function alreadyLinkified(str) {
+        return ($("<div>" + str + "</div>").find("a[href]").length > 0);
+        //toggleDesc adds in <a onClick> elements which can make this return true incorrectly.
+    }
+
+    function doNotUpgradeProtocol(str) {
+        return str.match(options.doNotUpgradeToHttpsRegex);
+    }
+
+    function replaceAmpersandEntity(str) {
+        return str.replace(/\&amp;/g, "&");
+    }
+
+    function removePeriodsAtTheEnd(str) {
+        return str.replace(/\.+$/g, "");
+    }
+
+    // http://stackoverflow.com/questions/2419749/get-selected-elements-outer-html
+    function outerHtml(elem) {
+        return elem.clone().wrap("<div>").parent().html();
+    }
+
+    function addProtocolIfMissing(str) {
+        if (!str.match(options.hasProtocolRegex)) {
+            str = doNotUpgradeProtocol(str) ? options.httpProtocol + str : options.defaultProtocol + str;
+        }
+        return str;
+    }
+    function changeProtocol(str) {
+        return doNotUpgradeProtocol(str) ? str.replace("https://", "http://") : str.replace("http://", "https://");
+    }
+
+    function makeLink(match) {
+        match = replaceAmpersandEntity(match); //input is often HTML encoded
+        var text = match;
+        match = removePeriodsAtTheEnd(match);
+        var href = addProtocolIfMissing(match);
+        href = changeProtocol(href);
+       
+        var link = $("<a></a>");
+        link.addClass(options.cssClass);
+        link.attr("href", href);
+        link.text(text);
+        if (!isMobile) { //mobile links have to open in same tab
+            link.attr("target", "_blank");
+        }
+        
+        return outerHtml(link);
+    }
+
+    function linkifyString(str) {
+        if (!optionsLoaded) {getOptions();}
+        if (options.enabled && !alreadyLinkified(str)) {
+            str = str.replace(options.regex, makeLink);
+        }
+        return str;
+    }
+
+    return {
+        String: linkifyString,
+        SetOptions: setOptions
+    };
+}();
+
+$.fn.linkify = function() {
+    return this.each(function() {
+        var element = $(this);
+        var html = element.html();
+        if (typeof html !== "undefined" && html !== null) {
+            var newHtml = Roblox.Linkify.String(html);
+            element.html(newHtml);
+        }
+    });
+};
+
+$(function () {
+    $(".linkify").linkify();
+});
+}
+
+/*
+     FILE ARCHIVED ON 21:14:28 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:48 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.64
+  load_resource: 89.008
+  PetaboxLoader3.resolve: 52.613
+  PetaboxLoader3.datanode: 31.218
+*/

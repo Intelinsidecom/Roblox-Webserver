@@ -13,13 +13,15 @@ using RobloxWebserver.Assemblies.Catalog;
 using Assets;
 using Website.Services;
 using Website.Middleware;
+using Games;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
     .AddControllersWithViews()
-    .AddApplicationPart(typeof(LoginController).Assembly);
+    .AddApplicationPart(typeof(LoginController).Assembly)
+    .AddApplicationPart(System.Reflection.Assembly.GetExecutingAssembly());
 
 builder.Services.AddAntiforgery(options =>
 {
@@ -42,12 +44,14 @@ builder.Services.AddSingleton<GamesCacheService>();
 builder.Services.AddHostedService<GamesCacheService>(sp => sp.GetRequiredService<GamesCacheService>());
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
-builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
-builder.Services.AddSingleton<ICatalogService, CatalogService>();
 builder.Services.AddSingleton<AssetMetadataRepository>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
 builder.Services.AddWebOptimizerPipeline();
+
+// Add Games services
+builder.Services.AddSingleton<AuthenticationTicketService>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = "Passthrough";
@@ -80,13 +84,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
 }
 
 app.UseForwardedHeaders();
 
-app.UseHttpsRedirection();
+// Commented out HTTPS redirection to allow HTTP for development
+// app.UseHttpsRedirection();
 
 app.UseWebOptimizer();
 
@@ -99,6 +106,9 @@ app.UseStaticFiles(new StaticFileOptions
     DefaultContentType = "application/octet-stream",
     ContentTypeProvider = provider
 });
+
+app.UseMiddleware<LockdownMiddleware>();
+app.UseMiddleware<AntiCacheMiddleware>();
 
 app.UseRouting();
 

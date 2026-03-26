@@ -194,13 +194,11 @@ namespace Control_Panel
                 settings.Reload();
                 CDNUrlTextBox.Text = settings.ThumbnailUrl ?? string.Empty;
                 PublicBaseUrlTextBox.Text = settings.PublicBaseUrl ?? string.Empty;
-                ConfigStatusText.Text = "Configuration saved successfully!";
-                ConfigStatusText.Foreground = (System.Windows.Media.Brush)FindResource("AccentGreen");
+                _viewLoader?.UpdateStatus("Configuration saved successfully!");
             }
             catch (Exception ex)
             {
-                ConfigStatusText.Text = $"Error saving configuration: {ex.Message}";
-                ConfigStatusText.Foreground = System.Windows.Media.Brushes.Red;
+                _viewLoader?.UpdateStatus($"Error saving configuration: {ex.Message}");
             }
         }
 
@@ -380,8 +378,7 @@ namespace Control_Panel
             PutOnSaleCheckBox.IsChecked = true;
             LimitedFieldsGrid.IsEnabled = false;
             AssetTypeComboBox.SelectedIndex = -1;
-            ConfigStatusText.Text = "Click Save to apply configuration changes.";
-            ConfigStatusText.Foreground = (System.Windows.Media.Brush)FindResource("Foreground");
+            _viewLoader?.UpdateStatus("Click Save to apply configuration changes.");
         }
 
         private async void AssetSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)

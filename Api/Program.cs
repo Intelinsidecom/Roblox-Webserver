@@ -42,6 +42,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
 
+// Add Authentication Ticket Service for Client authentication
+builder.Services.AddSingleton<Games.AuthenticationTicketService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -9,6 +9,8 @@ public class DeviceController : ControllerBase
     [HttpPost("initialize")]
     public IActionResult Initialize()
     {
-        return Ok(new { success = true, message = string.Empty });
+        return Ok(new { 
+            browserTrackerId = "20000000000"
+        });
     }
 }

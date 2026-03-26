@@ -172,7 +172,7 @@
                             <TextBlock Text="Control Panel - Assets" Style="{StaticResource DashboardTitle}" 
                                        Foreground="{DynamicResource AccentPrimary}"
                                        TextWrapping="Wrap"/>
-                            <TextBlock Text="Roblox Webserver Asset Management" 
+                            <TextBlock Text="Roblox Webserver Management" 
                                        Style="{StaticResource DashboardSubtitle}" 
                                        TextWrapping="Wrap"/>
                         </StackPanel>
@@ -495,8 +495,6 @@
                                 <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
                                         BorderThickness="1" Padding="15">
                                     <StackPanel>
-                                        <TextBlock Text="Status" Style="{StaticResource DashboardSectionTitle}" 
-                                                   Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
                                         <Button x:Name="SaveConfigButton" Content="Save Configuration" 
                                                 Style="{StaticResource ModernButton}" 
                                                 Background="{DynamicResource AccentPrimary}"

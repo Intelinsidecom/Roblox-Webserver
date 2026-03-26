@@ -1,0 +1,194 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+//Please note: 
+//In Regular Mode this file depends on RobloxCookies.js being already loaded
+//In Service Worker Mode: this file depends on Fetch.js
+if (typeof Roblox === 'undefined') {
+    Roblox = {};
+}
+
+if (typeof Roblox.EventStream === 'undefined') {
+    Roblox.EventStream = function () {
+        var targetTypes = {
+            DEFAULT: 0,
+            WWW: 1,
+            STUDIO: 2,
+            DIAGNOSTIC: 3
+        }
+
+        var defaultUri, wwwUri, studioUri, diagnosticUri;
+
+        var serviceWorkerMode = false;
+
+        var excludeQueryStringFromUrl = false;
+
+        /// Sets the EventStream object to run in Service Worker mode. This mode has no
+        /// dependencies on jQuery or access to a page or DOM
+        function setServiceWorkerMode() {
+            serviceWorkerMode = true;
+        }
+
+        function setExcludeQueryStringFromUrl(value) {
+            excludeQueryStringFromUrl = value;
+        }
+        
+        function getEventParameters(eventName, context) {
+            var url;
+            if(!serviceWorkerMode) {
+                url = window.location.href;
+            } else {
+                url = this.location.href;
+            }
+
+            if (url && excludeQueryStringFromUrl) {
+                var indexOfQuestionMark = url.indexOf('?');
+
+                if (indexOfQuestionMark > -1) {
+                    url = url.slice(0, indexOfQuestionMark);
+                }
+            }
+
+            var defaultParams = {
+                evt: eventName,
+                ctx: context,
+                //Will be encoded later by $.param
+                url: url,
+                lt: new Date().toISOString()
+            };
+
+            if(!serviceWorkerMode) {
+                var guestId = Roblox.Cookies.getGuestId();
+                if (guestId) {
+                    defaultParams["gid"] = guestId;
+                }
+
+                var sessionId = Roblox.Cookies.getSessionId();
+                if (sessionId) {
+                    defaultParams["sid"] = sessionId;
+                }
+            }
+
+            return defaultParams;
+        }
+
+        function sendEventWithTarget(eventName, context, additionalProperties, targetType) {
+            var baseUrl = "";
+            switch (targetType) {
+                case targetTypes.DEFAULT:
+                    baseUrl = defaultUri;
+                    break;
+                case targetTypes.WWW:
+                    baseUrl = wwwUri;
+                    break;
+                case targetTypes.STUDIO:
+                    baseUrl = studioUri;
+                    break;
+                case targetTypes.DIAGNOSTIC:
+                    baseUrl = diagnosticUri;
+                    break;
+            }
+
+            // Only default target type is currently supported in service worker mode
+            if(serviceWorkerMode && targetType !== targetTypes.DEFAULT) {
+                throw "TargetType '" + targetType + "' is not supported in Service Worker mode";
+            }
+
+            if (!eventName || !context || baseUrl === "") {
+                return;
+            }
+            var defaultParams = getEventParameters(eventName, context);
+            
+            var url = baseUrl;
+            if (baseUrl.indexOf("?") === -1) {
+                url += "?";
+            }
+            else {
+                url += "&";
+            }
+
+            if(!serviceWorkerMode) {
+                //please do not modify the default parameters.
+                $.extend(additionalProperties, defaultParams);
+                url += $.param(additionalProperties);
+
+                //use Image to get around CORS
+                var img = new Image();
+                img.src = url;
+            } else {
+                //please do not modify the default parameters.
+                extend(additionalProperties, defaultParams);
+                url += toQueryStringParams(additionalProperties);
+                Roblox.Fetch.getWithNoCredentials(url);
+            }
+
+            // DO NOT CHANGE the order of how the params are pushed.
+            // Analytics uses regular expressions on few events and changing the order will have effect on numbers.
+            my.LocalEventLog.push({ eventName: eventName, context: context, additionalProperties: additionalProperties });
+        }
+
+        function sendEvent(eventName, context, additionalProperties) {
+            return sendEventWithTarget(eventName, context, additionalProperties, targetTypes.DEFAULT);
+        }
+
+        function init(defaulturl, www, studio, diagnostic) {
+            defaultUri = defaulturl;
+            wwwUri = www;
+            studioUri = studio;
+            diagnosticUri = diagnostic;
+        }
+
+        function extend(a, b) {
+            for (var key in b) {
+                if (b.hasOwnProperty(key)) {
+                    a[key] = b[key];
+                }
+            }
+            return a;
+        }
+
+        function toQueryStringParams(source) {
+            var array = [];
+            for (var key in source) {
+                if (source.hasOwnProperty(key)) {
+                    array.push(encodeURIComponent(key) + "=" + encodeURIComponent(source[key]));
+                }
+            }
+            return array.join("&");
+        }
+
+        var my = {
+            Init: init,
+            SendEvent: sendEvent,
+            SendEventWithTarget: sendEventWithTarget,
+            LocalEventLog: [],
+            TargetTypes: targetTypes,
+            SetServiceWorkerMode: setServiceWorkerMode,
+            SetExcludeQueryStringFromUrl: setExcludeQueryStringFromUrl
+        };
+        return my;
+    }();
+}
+}
+
+/*
+     FILE ARCHIVED ON 17:09:44 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:49 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 4.442
+  load_resource: 100.892
+  PetaboxLoader3.resolve: 44.128
+  PetaboxLoader3.datanode: 15.052
+*/

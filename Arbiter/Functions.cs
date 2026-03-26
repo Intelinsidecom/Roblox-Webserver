@@ -21,6 +21,23 @@ namespace RCCArbiter
                     Name: "userinfo",
                     ScriptName: "UserInfo",
                     ParamKeys: new [] { "userId", "username" } // order used for pipe-separated mapping
+                ),
+                
+                // Game server management functions
+                ["startgameserver"] = new ArbiterFunction(
+                    Name: "startgameserver",
+                    ScriptName: "StartGameServer",
+                    ParamKeys: new [] { "placeId", "port", "maxPlayers", "privateServerId", "baseUrl" }
+                ),
+                ["stopgameserver"] = new ArbiterFunction(
+                    Name: "stopgameserver",
+                    ScriptName: "StopGameServer",
+                    ParamKeys: new [] { "gameId" }
+                ),
+                ["gameserverstatus"] = new ArbiterFunction(
+                    Name: "gameserverstatus",
+                    ScriptName: "GetGameServerStatus",
+                    ParamKeys: new [] { "gameId" }
                 )
             };
 

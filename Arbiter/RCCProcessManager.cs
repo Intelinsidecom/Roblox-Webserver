@@ -17,6 +17,7 @@ namespace RCCArbiter
         private readonly string _arguments;
         private readonly string _workingDirectory;
         private readonly bool _separateWindow;
+        private bool _forceSeparateWindow;
 
         public RCCProcessManager(IConfiguration configuration, string configSection = "Rendering")
         {
@@ -56,6 +57,12 @@ namespace RCCArbiter
         public int Port => _port;
         public string ServiceUrl => $"http://localhost:{_port}";
         public bool IsRunning => _process != null && !_process.HasExited;
+        
+        public bool ForceSeparateWindow
+        {
+            get => _forceSeparateWindow;
+            set => _forceSeparateWindow = value;
+        }
 
         /// <summary>
         /// Start the RCC process
@@ -83,7 +90,7 @@ namespace RCCArbiter
                 FileName = executablePath,
                 Arguments = fullArguments,
                 WorkingDirectory = _workingDirectory,
-                UseShellExecute = _separateWindow,
+                UseShellExecute = _forceSeparateWindow || _separateWindow,
                 CreateNoWindow = false,
                 RedirectStandardOutput = false,
                 RedirectStandardError = false

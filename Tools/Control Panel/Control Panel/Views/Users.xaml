@@ -82,7 +82,7 @@
                             <TextBlock Text="Control Panel - Users" Style="{StaticResource DashboardTitle}" 
                                        Foreground="{DynamicResource AccentPrimary}"
                                        TextWrapping="Wrap"/>
-                            <TextBlock Text="Roblox Webserver User Management" 
+                            <TextBlock Text="Roblox Webserver Management" 
                                        Style="{StaticResource DashboardSubtitle}" 
                                        TextWrapping="Wrap"/>
                         </StackPanel>

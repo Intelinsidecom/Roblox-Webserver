@@ -1,0 +1,75 @@
+/* Legacy CSS file - Please do not copy */
+#videoPrerollPanel {
+  display: none;
+  width: 713px;
+  padding: 20px 20px 20px 35px;
+  background-color: #fff;
+  box-sizing: content-box; }
+
+#videoPrerollTitleDiv {
+  font-size: 18px;
+  font-weight: bold;
+  padding-bottom: 20px; }
+
+#videoPrerollMainDiv {
+  width: 391px;
+  height: 312px;
+  margin: 0;
+  padding: 0;
+  float: left; }
+
+#videoPrerollCompanionAd {
+  width: 300px;
+  height: 250px;
+  margin: 0;
+  padding-top: 25px;
+  padding-left: 20px;
+  float: left; }
+
+#videoPrerollLoadingDiv {
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: bold;
+  font-size: 13px;
+  clear: both;
+  width: 584px;
+  padding-top: 30px; }
+
+#videoPrerollLoadingBar {
+  width: 582px;
+  height: 8px;
+  border: 1px solid #697D03;
+  background-color: #808081; }
+
+#videoPrerollLoadingBarCompleted {
+  background-color: #CBFF01;
+  height: 8px;
+  width: 0px;
+  padding: 0;
+  margin: 0; }
+
+#videoPrerollJoinBC {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  padding-top: 22px; }
+
+#videoPrerollJoinBCButton {
+  display: inline-block;
+  vertical-align: middle; }
+
+/*
+     FILE ARCHIVED ON 17:11:19 Jun 26, 2018 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 18:11:44 Mar 12, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.486
+  load_resource: 126.513
+  PetaboxLoader3.resolve: 45.871
+  PetaboxLoader3.datanode: 41.772
+*/

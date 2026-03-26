@@ -153,10 +153,22 @@ namespace Control_Panel
         
         private void UpdateFrontendUI()
         {
-            WebsiteStatusText.Text = _dashboardData.WebsiteStatus;
-            WebsiteStatusText.Foreground = _dashboardData.WebsiteIsOnline ? 
-                new SolidColorBrush(Colors.Green) : 
-                (_dashboardData.WebsiteStatus == "Unhealthy" ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Gray));
+            // Update Website Service Status (combined)
+            WebsiteStatusText.Text = _dashboardData.WebsiteServiceStatus?.Status ?? "Unknown";
+            
+            // Set color based on overall status
+            if (_dashboardData.WebsiteServiceStatus?.Status == "Healthy")
+            {
+                WebsiteStatusText.Foreground = new SolidColorBrush(Colors.Green);
+            }
+            else if (_dashboardData.WebsiteServiceStatus?.Status == "Partially")
+            {
+                WebsiteStatusText.Foreground = new SolidColorBrush(Colors.Yellow);
+            }
+            else
+            {
+                WebsiteStatusText.Foreground = new SolidColorBrush(Colors.Red);
+            }
             if (_dashboardData.FrontendActiveUsers > 0 || !string.IsNullOrEmpty(_dashboardData.FrontendUserError))
             {
                 ActiveUsersText.Text = string.IsNullOrEmpty(_dashboardData.FrontendUserError) 
@@ -170,38 +182,6 @@ namespace Control_Panel
             {
                 ActiveUsersText.Text = _dashboardData.ActiveUsers.ToString();
                 ActiveUsersText.Foreground = new SolidColorBrush(Colors.Gray);
-            }
-            if (_dashboardData.CdnIsOnline || !string.IsNullOrEmpty(_dashboardData.CdnErrorMessage))
-            {
-                CdnStatusText.Text = string.IsNullOrEmpty(_dashboardData.CdnErrorMessage)
-                    ? _dashboardData.CdnStatus
-                    : _dashboardData.CdnErrorMessage;
-                CdnStatusText.Foreground = string.IsNullOrEmpty(_dashboardData.CdnErrorMessage)
-                    ? (_dashboardData.CdnStatus == "Unhealthy" ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Green))
-                    : new SolidColorBrush(Colors.Red);
-            }
-            else
-            {
-                CdnStatusText.Text = _dashboardData.CdnStatus;
-                CdnStatusText.Foreground = _dashboardData.CdnStatus == "Unhealthy" 
-                    ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Gray);
-            }
-            
-            if (_dashboardData.ApiIsOnline)
-            {
-                var responseTimeText = _dashboardData.ApiResponseTime.TotalMilliseconds > 0 
-                    ? $"({_dashboardData.ApiResponseTime.TotalMilliseconds:F0}ms)"
-                    : "";
-                APIResponseText.Text = $"{_dashboardData.ApiStatus} {responseTimeText}".Trim();
-                APIResponseText.Foreground = new SolidColorBrush(Colors.Green);
-            }
-            else
-            {
-                APIResponseText.Text = string.IsNullOrEmpty(_dashboardData.ApiErrorMessage)
-                    ? _dashboardData.ApiStatus
-                    : $"Error: {_dashboardData.ApiErrorMessage}";
-                APIResponseText.Foreground = _dashboardData.ApiStatus == "Unhealthy" 
-                    ? new SolidColorBrush(Colors.Red) : new SolidColorBrush(Colors.Gray);
             }
         }
         
@@ -227,8 +207,6 @@ namespace Control_Panel
             RCCVersionText.Text = "Checking...";
             WebsiteStatusText.Text = "Checking...";
             ActiveUsersText.Text = "Checking...";
-            CdnStatusText.Text = "Checking...";
-            APIResponseText.Text = "Checking...";
             var neutralColor = new SolidColorBrush(Colors.Gray);
             ServerHealthText.Foreground = neutralColor;
             DatabaseSizeText.Foreground = neutralColor;
@@ -236,8 +214,6 @@ namespace Control_Panel
             RCCVersionText.Foreground = neutralColor;
             WebsiteStatusText.Foreground = neutralColor;
             ActiveUsersText.Foreground = neutralColor;
-            CdnStatusText.Foreground = neutralColor;
-            APIResponseText.Foreground = neutralColor;
         }
         
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
