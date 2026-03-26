@@ -314,7 +314,7 @@ namespace ControlPanel.Functions
             try
             {
                 var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5)); // 5 second timeout
-                var cdnTask = GetCdnDataAsync(data);
+                var apiServiceTask = GetApiServiceDataAsync(data);
                 
                 var completedTask = await Task.WhenAny(apiServiceTask, timeoutTask);
                 
@@ -582,6 +582,12 @@ namespace ControlPanel.Functions
         public bool ArbiterIsRunning { get; set; }
         public string RccStatus { get; set; }
         public string RccVersion { get; set; }
+        public string WebsiteStatus { get; set; }
+        public bool WebsiteIsOnline { get; set; }
+        public string ApiStatus { get; set; }
+        public bool ApiIsOnline { get; set; }
+        public TimeSpan ApiResponseTime { get; set; }
+        public string ApiErrorMessage { get; set; }
         public WebsiteServiceStatus WebsiteServiceStatus { get; set; }
         public long FrontendActiveUsers { get; set; }
         public string FrontendUserError { get; set; }

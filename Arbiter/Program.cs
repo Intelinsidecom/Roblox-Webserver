@@ -341,7 +341,7 @@ namespace RCCArbiter
 
                 return Results.Ok(status);
             });
-}
+
             foreach (var kv in Functions.Registry)
             {
                 var name = kv.Key;

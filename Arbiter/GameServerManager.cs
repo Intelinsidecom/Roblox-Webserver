@@ -396,7 +396,7 @@ namespace RCCArbiter
             foreach (var gameId in expiredServers)
             {
                 try
-                {ing
+                {
                     var rccUrl = _rccManager.GetGameServerUrl(gameId);
                     StopGameServer(gameId);
                     Console.WriteLine($"Successfully cleaned up expired server {gameId}");
