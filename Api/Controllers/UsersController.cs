@@ -80,5 +80,33 @@ namespace Api.Controllers
 
             return Ok(payload);
         }
+
+        [HttpGet("get-studio-experiment-enrollments")]
+        public IActionResult GetStudioExperimentEnrollments([FromQuery] bool firstStudioVisit, [FromQuery] string browserTrackerId)
+        {
+            var response = new
+            {
+                experiments = new object[0], // Empty array - no active experiments
+                browserTrackerId = string.IsNullOrEmpty(browserTrackerId) 
+                    ? $"rbx_tracker_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}_{Guid.NewGuid():N}" 
+                    : browserTrackerId
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet("get-experiment-enrollments")]
+        public IActionResult GetExperimentEnrollments([FromQuery] string browserTrackerId)
+        {
+            var response = new
+            {
+                experiments = new object[0], // Empty array - no active experiments
+                browserTrackerId = string.IsNullOrEmpty(browserTrackerId) 
+                    ? $"rbx_tracker_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}_{Guid.NewGuid():N}" 
+                    : browserTrackerId
+            };
+
+            return Ok(response);
+        }
     }
 }

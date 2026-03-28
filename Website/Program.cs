@@ -186,8 +186,6 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "pages",
     pattern: "{*path}",
-    defaults: new { controller = "Pages", action = "Route" },
-    constraints: new { path = @"^(?!.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|gz|download)$).*" }
-);
+    defaults: new { controller = "Pages", action = "Route" });
 
 app.Run();

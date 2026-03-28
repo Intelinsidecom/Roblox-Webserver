@@ -142,3 +142,4 @@ CDN/Assets/
 packages/
 obj/
 bin/
+*.pfx

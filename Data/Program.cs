@@ -70,5 +70,45 @@ app.MapPost("/Error/Grid.ashx", async (HttpRequest request) =>
     return Results.Ok("Crash event uploaded.");
 });
 
+app.MapPost("/Error/Dmp.ashx", async (HttpRequest request) =>
+{
+    var filename = request.Query["filename"].ToString();
+
+    if (string.IsNullOrWhiteSpace(filename))
+    {
+        return Results.BadRequest("Missing filename query parameter.");
+    }
+
+    var crashesDir = Path.Combine(app.Environment.ContentRootPath, "CrashEvents");
+    Directory.CreateDirectory(crashesDir);
+    const long MaxFolderSizeBytes = 1L * 1024 * 1024 * 1024; // 1 GB
+    long folderSize = 0;
+    
+    try
+    {
+        var directoryInfo = new DirectoryInfo(crashesDir);
+        foreach (var file in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
+        {
+            folderSize += file.Length;
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error calculating folder size: {ex.Message}");
+    }
+
+    if (folderSize > MaxFolderSizeBytes)
+    {
+        return Results.Ok("Crash dump received successfully");
+    }
+
+    var safeFileName = Path.GetFileName(filename);
+    var targetPath = Path.Combine(crashesDir, safeFileName);
+    await using var targetStream = File.Create(targetPath);
+    await request.Body.CopyToAsync(targetStream);
+
+    return Results.Ok("Crash dump received successfully");
+});
+
 app.Run();
 
