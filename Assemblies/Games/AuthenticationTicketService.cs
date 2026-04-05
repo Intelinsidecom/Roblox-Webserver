@@ -82,6 +82,60 @@ namespace Games
         }
 
         /// <summary>
+        /// Creates a general authentication ticket for a user that can be used for any game
+        /// </summary>
+        public async Task<AuthenticationTicket> CreateGeneralTicketAsync(long userId, string? browserTrackerId = null)
+        {
+            var ticketToken = GenerateSecureToken();
+            var authenticationUrl = $"{_publicBaseUrl}/Game/PlaceLauncher.ashx?request=AuthenticateTicket";
+            var joinScriptUrl = $"{_publicBaseUrl}/Game/PlaceLauncher.ashx?request=RequestGame";
+            
+            var expiresAt = DateTimeOffset.UtcNow.AddMinutes(15); // Tickets expire in 15 minutes
+            var createdAt = DateTimeOffset.UtcNow;
+
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            using var cmd = new NpgsqlCommand(@"
+                insert into authentication_tickets 
+                (ticket_token, user_id, place_id, universe_id, authentication_url, join_script_url, browser_tracker_id, created_at, expires_at)
+                values (@token, @user_id, @place_id, @universe_id, @auth_url, @join_url, @tracker_id, @created_at, @expires_at)
+                returning ticket_id, created_at, expires_at", conn);
+
+            cmd.Parameters.AddWithValue("token", ticketToken);
+            cmd.Parameters.AddWithValue("user_id", userId);
+            cmd.Parameters.AddWithValue("place_id", DBNull.Value); // No specific place - allows access to all games
+            cmd.Parameters.AddWithValue("universe_id", DBNull.Value);
+            cmd.Parameters.AddWithValue("auth_url", authenticationUrl);
+            cmd.Parameters.AddWithValue("join_url", joinScriptUrl);
+            cmd.Parameters.AddWithValue("tracker_id", browserTrackerId ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("created_at", createdAt.UtcDateTime);
+            cmd.Parameters.AddWithValue("expires_at", expiresAt.UtcDateTime);
+
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new AuthenticationTicket
+                {
+                    TicketId = reader.GetInt64(0),
+                    TicketToken = ticketToken,
+                    UserId = userId,
+                    PlaceId = null, // Null means access to all games
+                    UniverseId = null,
+                    AuthenticationUrl = authenticationUrl,
+                    JoinScriptUrl = joinScriptUrl,
+                    BrowserTrackerId = browserTrackerId,
+                    CreatedAt = reader.GetDateTime(1),
+                    ExpiresAt = reader.GetDateTime(2),
+                    IsActive = true,
+                    TicketType = "general_session"
+                };
+            }
+
+            throw new InvalidOperationException("Failed to create general authentication ticket");
+        }
+
+        /// <summary>
         /// Validates and retrieves an authentication ticket
         /// </summary>
         public async Task<AuthenticationTicket?> ValidateTicketAsync(string ticketToken)

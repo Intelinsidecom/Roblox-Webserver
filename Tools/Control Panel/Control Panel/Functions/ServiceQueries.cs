@@ -27,6 +27,8 @@ namespace ControlPanel.Functions
             _httpClient.Timeout = TimeSpan.FromSeconds(8);
         }
 
+        public string BaseUrl => _baseUrl;
+
         public async Task<ServiceStatus> GetServiceStatusAsync()
         {
             var status = new ServiceStatus
@@ -564,5 +566,10 @@ namespace ControlPanel.Functions
     public class CdnQueries : ServiceQueries
     {
         public CdnQueries(string baseUrl) : base(baseUrl, "CDN Service") { }
+    }
+
+    public class SetupQueries : ServiceQueries
+    {
+        public SetupQueries(string baseUrl) : base(baseUrl, "Setup Service") { }
     }
 }

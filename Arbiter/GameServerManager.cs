@@ -15,8 +15,9 @@ namespace RCCArbiter
         private string _rccUrl;
         private readonly GameServerRccManager _rccManager;
         private readonly Dictionary<string, GameServerInfo> _activeServers = new();
-        private readonly object _serversLock = new object();
+        private readonly object _serversLock = new();
         private readonly Timer _cleanupTimer;
+        private readonly Timer _inactivityTimer;
 
         public class GameServerInfo
         {
@@ -32,7 +33,7 @@ namespace RCCArbiter
             public string BaseUrl { get; set; } = string.Empty;
             public Dictionary<string, object> LastStatus { get; set; } = new();
             public DateTime LastActivityTime { get; set; }
-            public TimeSpan InactivityTimeout { get; set; } = TimeSpan.FromMinutes(30); // Default 30 minutes
+            public TimeSpan InactivityTimeout { get; set; } = TimeSpan.FromMinutes(30);
             public bool AutoKillEnabled { get; set; } = true;
         }
 
@@ -42,7 +43,8 @@ namespace RCCArbiter
             _rccManager = new GameServerRccManager(config);
             _activeServers = new();
             _serversLock = new();
-            _cleanupTimer = new Timer(CleanupExpiredServers, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            _cleanupTimer = new Timer(state => CleanupExpiredServers(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            _inactivityTimer = new Timer(state => CleanupInactiveServers(), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
         }
 
         public void UpdateRccUrl(string newRccUrl)
@@ -50,9 +52,11 @@ namespace RCCArbiter
             _rccUrl = newRccUrl;
         }
 
-        public async Task<string> StartGameServerAsync(int placeId, int port = 53640, int maxPlayers = 10, string privateServerId = "", string baseUrl = "", int maxInactive = 0)
+        public async Task<string> StartGameServerAsync(int placeId, int port = 0, int maxPlayers = 10, string privateServerId = "", string baseUrl = "", int maxInactive = 0)
         {
             var gameId = Guid.NewGuid().ToString();
+            
+            Console.WriteLine($"[PortAllocation] StartGameServerAsync called with placeId={placeId}, port={port}");
             
             if (string.IsNullOrWhiteSpace(baseUrl))
                 baseUrl = "http://www.freblx.xyz";
@@ -67,7 +71,7 @@ namespace RCCArbiter
             var job = new Job
             {
                 id = gameId,
-                expirationInSeconds = maxInactive > 0 ? maxInactive * 60 : 3600, // Use maxInactive minutes or default to 1 hour
+                expirationInSeconds = maxInactive > 0 ? maxInactive * 60 : 3600,
                 category = 2, // Game server category
                 cores = 2
             };
@@ -80,10 +84,36 @@ namespace RCCArbiter
                 ["privateServerId"] = privateServerId,
                 ["baseUrl"] = baseUrl
             };
-
+            
             try
             {
                 using var client = new RCCClient(dedicatedRccUrl);
+                
+                int maxRetries = 6;
+                int retryDelayMs = 2000;
+                
+                for (int attempt = 1; attempt <= maxRetries; attempt++)
+                {
+                    try
+                    {
+                        Console.WriteLine($"Testing RCC connection... Attempt {attempt}/{maxRetries}");
+                        var version = client.GetVersion();
+                        Console.WriteLine($"RCC connection successful, version: {version}");
+                        break; // Success, exit retry loop
+                    }
+                    catch (Exception testEx)
+                    {
+                        Console.WriteLine($"RCC connection test failed (attempt {attempt}/{maxRetries}): {testEx.Message}");
+                        
+                        if (attempt == maxRetries)
+                        {
+                            throw new InvalidOperationException($"Cannot connect to RCC at {dedicatedRccUrl} after {maxRetries} attempts: {testEx.Message}", testEx);
+                        }
+                        
+                        Console.WriteLine($"Waiting {retryDelayMs}ms before retry...");
+                        await Task.Delay(retryDelayMs);
+                    }
+                }
                 
                 var scriptRenderer = new ScriptRenderer();
                 var scriptTemplate = LoadScriptTemplate("StartGameServer");
@@ -96,7 +126,7 @@ namespace RCCArbiter
                     script = renderedScript,
                     arguments = null
                 };
-
+                
                 var results = client.OpenJobEx(job, script);
 
                 lock (_serversLock)
@@ -114,15 +144,19 @@ namespace RCCArbiter
                         BaseUrl = baseUrl,
                         LastStatus = ParseLuaResults(results),
                         LastActivityTime = DateTime.UtcNow,
-                        InactivityTimeout = maxInactive > 0 ? TimeSpan.FromMinutes(maxInactive) : TimeSpan.MaxValue,
-                        AutoKillEnabled = maxInactive > 0
+                        InactivityTimeout = maxInactive > 0 ? TimeSpan.FromMinutes(maxInactive) : TimeSpan.FromMinutes(1),
+                        AutoKillEnabled = true
                     };
+                    
                 }
 
                 return gameId;
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error starting game server: {ex.GetType().Name}: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                Console.WriteLine($"Inner exception: {ex.InnerException?.Message}");
                 _rccManager.ReleaseGameServer(gameId);
                 throw new InvalidOperationException($"Failed to start game server: {ex.Message}", ex);
             }
@@ -137,64 +171,33 @@ namespace RCCArbiter
             return File.ReadAllText(scriptPath);
         }
 
-        public async Task<GameServerInfo> GetGameServerStatusAsync(string gameId)
+        public async Task<GameServerInfo> GetGameServerStatusAsync(string gameId, string? overrideRccUrl = null)
         {
             lock (_serversLock)
             {
                 if (!_activeServers.ContainsKey(gameId))
                     throw new ArgumentException("Game server not found");
+
+                var server = _activeServers[gameId];
+                
+                server.LastActivityTime = DateTime.UtcNow;
+                return server;
             }
+        }
 
-            var dedicatedRccUrl = _rccManager.GetGameServerUrl(gameId);
-            if (string.IsNullOrWhiteSpace(dedicatedRccUrl))
+        public void UpdatePlayerCount(string gameId, int playerCount)
+        {
+            lock (_serversLock)
             {
-                throw new InvalidOperationException($"Dedicated RCC instance not found for game {gameId}");
-            }
-
-            var script = new ScriptExecution
-            {
-                name = "GetGameServerStatus",
-                script = await LoadScriptAsync("GetGameServerStatus"),
-                arguments = new LuaValue[]
+                if (_activeServers.ContainsKey(gameId))
                 {
-                    new LuaValue { type = LuaType.LUA_TSTRING, value = gameId }
-                }
-            };
-
-            try
-            {
-                using var client = new RCCClient(dedicatedRccUrl);
-                var results = client.ExecuteEx(gameId, script);
-                var statusData = ParseLuaResults(results);
-
-                lock (_serversLock)
-                {
-                    if (_activeServers.ContainsKey(gameId))
+                    var server = _activeServers[gameId];
+                    if (playerCount != server.PlayerCount)
                     {
-                        var server = _activeServers[gameId];
-                        server.LastStatus = statusData;
-                        
-                        if (statusData.TryGetValue("players", out var playersObj) && 
-                            playersObj is JsonElement playersElement &&
-                            playersElement.TryGetProperty("count", out var countElement))
-                        {
-                            var newPlayerCount = countElement.GetInt32();
-                            if (newPlayerCount != server.PlayerCount)
-                            {
-                                server.LastActivityTime = DateTime.UtcNow;
-                            }
-                            server.PlayerCount = newPlayerCount;
-                        }
-                        
                         server.LastActivityTime = DateTime.UtcNow;
                     }
+                    server.PlayerCount = playerCount;
                 }
-
-                return _activeServers[gameId];
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to get game server status: {ex.Message}", ex);
             }
         }
 
@@ -208,10 +211,6 @@ namespace RCCArbiter
                     using var client = new RCCClient(dedicatedRccUrl);
                     client.CloseJob(gameId);
                 }
-                else
-                {
-                    Console.WriteLine($"No dedicated RCC found for game {gameId}, skipping job close");
-                }
             }
             catch (Exception ex)
             {
@@ -224,7 +223,14 @@ namespace RCCArbiter
 
             lock (_serversLock)
             {
-                _activeServers.Remove(gameId);
+                if (_activeServers.TryGetValue(gameId, out var server))
+                {
+                    lock (RCCArbiter.Endpoints.StartGameServerEndpoint._portLock)
+                    {
+                        RCCArbiter.Endpoints.StartGameServerEndpoint._allocatedPorts.Remove(server.Port);
+                    }
+                    _activeServers.Remove(gameId);
+                }
             }
         }
 
@@ -312,10 +318,14 @@ namespace RCCArbiter
                         if (inactiveDuration >= server.InactivityTimeout)
                         {
                             inactiveServers.Add(kvp.Key);
-                            Console.WriteLine($"Server {server.GameId} inactive for {inactiveDuration.TotalMinutes:F1} minutes, auto-killing...");
                         }
                     }
                 }
+            }
+
+            if (inactiveServers.Count == 0)
+            {
+                return;
             }
 
             foreach (var gameId in inactiveServers)
@@ -350,14 +360,22 @@ namespace RCCArbiter
                 if (_activeServers.TryGetValue(gameId, out var server))
                 {
                     server.InactivityTimeout = timeout;
-                    Console.WriteLine($"Set inactivity timeout for server {gameId} to {timeout.TotalMinutes} minutes");
                 }
             }
+        }
+
+        /// <summary>
+        /// Manually trigger inactivity cleanup (useful for testing)
+        /// </summary>
+        public void TriggerInactivityCheck()
+        {
+            CleanupInactiveServers();
         }
 
         public void Dispose()
         {
             _cleanupTimer?.Dispose();
+            _inactivityTimer?.Dispose();
             _rccManager?.Dispose();
         }
 
@@ -371,8 +389,6 @@ namespace RCCArbiter
 
             lock (_serversLock)
             {
-                Console.WriteLine($"Checking { _activeServers.Count} servers for expiration...");
-                
                 foreach (var kvp in _activeServers)
                 {
                     var server = kvp.Value;
@@ -383,7 +399,6 @@ namespace RCCArbiter
                     if (server.Expiration <= now)
                     {
                         expiredServers.Add(kvp.Key);
-                        Console.WriteLine($"Server {server.GameId} is EXPIRED and will be cleaned up");
                     }
                 }
             }
@@ -399,12 +414,10 @@ namespace RCCArbiter
                 {
                     var rccUrl = _rccManager.GetGameServerUrl(gameId);
                     StopGameServer(gameId);
-                    Console.WriteLine($"Successfully cleaned up expired server {gameId}");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error cleaning up expired server {gameId}: {ex.Message}");
-                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 }
             }
 

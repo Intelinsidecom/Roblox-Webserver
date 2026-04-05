@@ -5,20 +5,33 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local StatsService = game:GetService("Stats")
 
+print("=== GetGameServerStatus Debug ===")
+print("GameId:", gameId)
+print("Players service:", Players)
+print("NetworkServer:", NetworkServer)
+
 local playerList = {}
+local totalPing = 0
 for _, player in pairs(Players:GetPlayers()) do
+    print("Found player:", player.Name, "UserId:", player.UserId)
+    local ping = player:GetNetworkPing() or 0
+    totalPing = totalPing + ping
     table.insert(playerList, {
         Name = player.Name,
         UserId = player.UserId,
-        Ping = player:GetNetworkPing() or 0,
+        Ping = ping,
         CharacterAdded = player.Character ~= nil
     })
 end
 
+print("Total players found:", #playerList)
+print("Player list:", playerList)
+
 local networkStats = {}
 if NetworkServer then
+    local averagePing = #playerList > 0 and (totalPing / #playerList) or 0
     networkStats = {
-        AveragePing = NetworkServer:GetAveragePing() or 0,
+        AveragePing = averagePing,
         IncomingBytes = StatsService and StatsService:GetNetworkStats().IncomingBytes or 0,
         OutgoingBytes = StatsService and StatsService:GetNetworkStats().OutgoingBytes or 0
     }
@@ -39,7 +52,7 @@ local serverConfig = {
     PrivateServerOwnerId = game.PrivateServerOwnerId
 }
 
-return {
+local result = {
     gameId = gameId,
     status = "running",
     timestamp = tick(),
@@ -56,3 +69,10 @@ return {
     serverAge = Workspace.DistributedGameTime,
     isPrivateServer = serverConfig.PrivateServerId ~= nil and serverConfig.PrivateServerId ~= ""
 }
+
+print("=== Final Result ===")
+print("Result structure:", result)
+print("Players count:", result.players.count)
+print("Players list length:", #result.players.list)
+
+return result

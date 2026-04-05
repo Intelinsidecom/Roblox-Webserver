@@ -245,7 +245,7 @@
                 conn.Open();
                 using var cmd = new NpgsqlCommand("SELECT global_message FROM website_settings LIMIT 1", conn);
                 var result = cmd.ExecuteScalar();
-                globalMessage = result as string;
+                globalMessage = result?.ToString();
             }
             catch { }
         }

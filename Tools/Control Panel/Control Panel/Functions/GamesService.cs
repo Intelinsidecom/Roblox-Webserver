@@ -80,7 +80,10 @@ namespace ControlPanel.Functions
             public DateTime LastActivityTime { get; set; }
 
             [JsonPropertyName("inactivityTimeout")]
-            public string InactivityTimeout { get; set; } = string.Empty;
+            public TimeSpan InactivityTimeout { get; set; }
+
+            [JsonPropertyName("autoKillEnabled")]
+            public bool AutoKillEnabled { get; set; }
 
             [JsonPropertyName("connectionUrl")]
             public string ConnectionUrl => $"roblox://localhost:{Port}?gameId={GameId}&placeId={PlaceId}";
@@ -92,7 +95,7 @@ namespace ControlPanel.Functions
             public int PlaceId { get; set; }
 
             [JsonPropertyName("port")]
-            public int Port { get; set; } = 53640;
+            public int Port { get; set; } = 0;
 
             [JsonPropertyName("maxPlayers")]
             public int MaxPlayers { get; set; } = 10;
@@ -364,6 +367,50 @@ namespace ControlPanel.Functions
         #region Helper Methods
 
         /// <summary>
+        /// Get player count for a specific game server from the web API
+        /// </summary>
+        public async Task<int?> GetPlayerCountFromWebApiAsync(string gameId)
+        {
+            try
+            {
+                var websiteHost = Settings.Default.WebsiteHost?.Trim();
+                var websitePort = Settings.Default.WebsitePort?.Trim();
+                
+                if (string.IsNullOrEmpty(websiteHost))
+                {
+                    throw new Exception("Website Host not configured in settings");
+                }
+
+                var baseUrl = $"http://{websiteHost}";
+                if (!string.IsNullOrEmpty(websitePort) && websitePort != "80")
+                {
+                    baseUrl += $":{websitePort}";
+                }
+
+                var requestUrl = $"{baseUrl}/games/players/count?jobid={gameId}";
+                _httpClient.DefaultRequestHeaders.Clear();
+                var response = await _httpClient.GetAsync(requestUrl);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var playerCountResponse = JsonSerializer.Deserialize<PlayerCountResponse>(json);
+                    return playerCountResponse?.PlayerCount;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to get player count: HTTP {response.StatusCode}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error getting player count from web API: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Get statistics about game servers
         /// </summary>
         public async Task<Dictionary<string, int>> GetGameServerStatisticsAsync()
@@ -391,6 +438,111 @@ namespace ControlPanel.Functions
         #endregion
 
         #region Authentication Ticket Methods
+
+        /// <summary>
+        /// Create an authentication ticket for a specific game server
+        /// </summary>
+        public async Task<AuthenticationTicketInfo?> CreateAuthenticationTicketForServerAsync(long placeId, string gameId, int serverPort)
+        {
+            try
+            {
+                // Debug logging to help identify the issue
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] CreateAuthenticationTicketForServerAsync called with placeId={placeId}, gameId='{gameId}', serverPort={serverPort}");
+                
+                var websiteHost = Settings.Default.WebsiteHost?.Trim();
+                var websitePort = Settings.Default.WebsitePort?.Trim();
+                
+                if (string.IsNullOrEmpty(websiteHost))
+                {
+                    throw new Exception("Website Host not configured in settings");
+                }
+
+                var baseUrl = $"http://{websiteHost}";
+                if (!string.IsNullOrEmpty(websitePort) && websitePort != "80")
+                {
+                    baseUrl += $":{websitePort}";
+                }
+
+                var defaultUserIdStr = Settings.Default.DefaultOwnerUserId;
+                if (!long.TryParse(defaultUserIdStr, out var defaultUserId) || defaultUserId <= 0)
+                {
+                    throw new Exception("Default Owner User ID not configured in settings");
+                }
+
+                // Request ticket for specific server with job ID
+                var requestUrl = $"{baseUrl}/Game/PlaceLauncher.ashx?request=RequestGame&placeId={placeId}&serverPort={serverPort}&jobid={gameId}";
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Request URL: {requestUrl}");
+                
+                _httpClient.DefaultRequestHeaders.Clear();
+                var response = await _httpClient.GetAsync(requestUrl);
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] PlaceLauncher API response: {responseJson}");
+                    var placeLauncherResponse = JsonSerializer.Deserialize<PlaceLauncherResponse>(responseJson);
+                    if (placeLauncherResponse != null && placeLauncherResponse.status == 2)
+                    {
+                        return new AuthenticationTicketInfo
+                        {
+                            TicketToken = placeLauncherResponse.authenticationTicket,
+                            AuthenticationUrl = placeLauncherResponse.authenticationUrl,
+                            JoinScriptUrl = placeLauncherResponse.joinScriptUrl,
+                            ExpiresAt = DateTime.Now.AddHours(1),
+                            PlaceId = placeId,
+                            UniverseId = placeId,
+                            GameId = gameId,
+                            ServerPort = serverPort
+                        };
+                    }
+                    else
+                    {
+                        throw new Exception(placeLauncherResponse?.message ?? "Failed to create ticket for specific server");
+                    }
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    string errorMessage = $"HTTP {response.StatusCode}";
+                    try
+                    {
+                        var errorResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(errorContent);
+                        if (errorResponse != null && errorResponse.ContainsKey("error"))
+                        {
+                            errorMessage = errorResponse["error"].ToString() ?? errorMessage;
+                            
+                            if (errorResponse.ContainsKey("placeId"))
+                            {
+                                errorMessage += $" (Place ID: {errorResponse["placeId"]})";
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        if (!string.IsNullOrEmpty(errorContent))
+                        {
+                            errorMessage += $": {errorContent}";
+                        }
+                    }
+                    
+                    throw new Exception(errorMessage);
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                if (httpEx.InnerException?.InnerException != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error Details: {httpEx.InnerException.InnerException.Message}");
+                }
+                throw new Exception($"Failed to create authentication ticket for server (HTTP/SSL error): {httpEx.Message}", httpEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to create authentication ticket for server: {ex.Message}", ex);
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Create an authentication ticket for the specified place
@@ -503,10 +655,27 @@ namespace ControlPanel.Functions
             public DateTime ExpiresAt { get; set; }
             public long PlaceId { get; set; }
             public long? UniverseId { get; set; }
+            public string? GameId { get; set; }
+            public int? ServerPort { get; set; }
         }
 
         /// <summary>
-        /// Response from the PlaceLauncher API
+        /// Response from player count API
+        /// </summary>
+        public class PlayerCountResponse
+        {
+            [JsonPropertyName("success")]
+            public bool Success { get; set; }
+
+            [JsonPropertyName("jobId")]
+            public string JobId { get; set; } = string.Empty;
+
+            [JsonPropertyName("playerCount")]
+            public int PlayerCount { get; set; }
+        }
+
+        /// <summary>
+        /// Response from PlaceLauncher API
         /// </summary>
         public class PlaceLauncherResponse
         {

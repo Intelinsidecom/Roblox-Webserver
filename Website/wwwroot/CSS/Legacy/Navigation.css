@@ -7090,7 +7090,7 @@ textarea.form-control {
 	padding: 0;
 	background-color: #fff;
 	min-height: 420px;
-	width: 970px;
+	width: 1200px;
 	border: 1px solid #fff;
 	box-shadow: 0 0 5px 2px #adadad;
 	-webkit-box-sizing: border-box;
@@ -7167,15 +7167,39 @@ textarea.form-control {
 }
 
 .ph-installinstructions-step1-of4 {
-	width: 239px;
+	width: 295px;
 	height: 325px;
 }
 
 .ph-installinstructions-step2-of4,
 .ph-installinstructions-step3-of4,
 .ph-installinstructions-step4-of4 {
-	width: 240px;
+	width: 300px;
 	height: 340px;
+	border-left-width: 1px;
+	border-style: solid;
+	border-image: linear-gradient(to bottom, #B8B8B8, #fff) 1 100%;
+}
+
+.ph-installinstructions-step1-of4 p,
+.ph-installinstructions-step2-of4 p,
+.ph-installinstructions-step3-of4 p,
+.ph-installinstructions-step4-of4 p {
+	margin-left: 70px;
+	margin-right: 70px;
+}
+
+/* More specific rules to override modal-col-4 percentage widths */
+.modal-col-4 .ph-installinstructions-step1-of4 {
+	width: 295px !important;
+	height: 325px !important;
+}
+
+.modal-col-4 .ph-installinstructions-step2-of4,
+.modal-col-4 .ph-installinstructions-step3-of4,
+.modal-col-4 .ph-installinstructions-step4-of4 {
+	width: 300px !important;
+	height: 340px !important;
 	border-left-width: 1px;
 	border-style: solid;
 	border-image: linear-gradient(to bottom, #B8B8B8, #fff) 1 100%;

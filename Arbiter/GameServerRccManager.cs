@@ -55,7 +55,6 @@ namespace RCCArbiter
                     
                     var proc = new RCCProcessManager(_config, "RCCService", port);
                     
-                    proc.ForceSeparateWindow = true;
                     
                     proc.Start();
 

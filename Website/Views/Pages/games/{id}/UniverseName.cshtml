@@ -37,6 +37,7 @@
     <meta name=user-data data-userid=@ViewBag.CreatorUserId data-name="" data-isunder13=false>
     <link rel=canonical href="https://www.roblox.com/games/@ViewBag.Id/@ViewBag.Name">
     
+    <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/LeanBaseStyle.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/SiteStyle.css">
@@ -46,6 +47,7 @@
     <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/VideoPreRoll.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/Abp.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Legacy/Modal.css">
+    <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Fonts/SourceSansPro.css">
 
     <link rel="stylesheet" href="~/CSS/Legacy/VisitButtons.css">
@@ -55,7 +57,6 @@
     <link rel="stylesheet" href="~/CSS/Pages/Notifications/Notifications.css">
     <link rel="stylesheet" href="~/CSS/PartialViews/CardItem.css">
     <link rel="stylesheet" href="~/CSS/Pages/Shared/UpgradeToBuildersClubModal.css">
-    
     <style>
         .container-main {
             max-width: 970px;
@@ -978,7 +979,7 @@
     <script>
         function urchinTracker() {}
     </script>
-    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=roblox-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
+    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=freebloxia-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
         <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
             <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
             <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
@@ -1001,6 +1002,18 @@
     </div>
     <div id=ProtocolHandlerAreYouInstalled style=display:none class=protocol-handler-container>
         <div class="modalPopup ph-modal-popup">
+            <div class=ph-modal-header><span class="icon-close simplemodal-close"></span>
+            </div>
+            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-areyouinstalleddialog-content>
+                <p class=larger-font-size>You're moments away from getting into the game!
+                <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button></div>
+                <div class=small><a href=https://en.help.roblox.com/hc/en-us/articles/204473560 class=text-name target=_blank>Click here for help</a></div>
+            </div>
+        </div>
+    </div>
+    <div id=InstallationInstructions class=style2016 style=display:none>
+        <div class=ph-installinstructions>
             <div class=ph-modal-header><span class="icon-close-16x16 simplemodal-close"></span>
                 <h5 class=title>Thanks for playing ROBLOX</h5>
             </div>
@@ -1026,7 +1039,7 @@
                     </ul>
                 </div>
             </div>
-            <div class=xsmall>The ROBLOX installer should download shortly. If it doesn’t, start the <a href=# class=text-link onclick="Roblox.ProtocolHandlerClientInterface.manualDownload();return false">download now.</a></div>
+            <div class=xsmall>The ROBLOX installer should download shortly. If it doesn't, start the <a href=# class=text-link onclick="Roblox.ProtocolHandlerClientInterface.manualDownload();return false">download now.</a></div>
         </div>
     </div>
     <div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>

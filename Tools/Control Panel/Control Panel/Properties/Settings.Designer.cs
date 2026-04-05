@@ -310,5 +310,41 @@ namespace Control_Panel.Properties {
                 this["ApiServicePort"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("localhost")]
+        public string SetupHost {
+            get {
+                return ((string)(this["SetupHost"]));
+            }
+            set {
+                this["SetupHost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5082")]
+        public string SetupPort {
+            get {
+                return ((string)(this["SetupPort"]));
+            }
+            set {
+                this["SetupPort"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\SetupService")]
+        public string SetupServiceLocation {
+            get {
+                return ((string)(this["SetupServiceLocation"]));
+            }
+            set {
+                this["SetupServiceLocation"] = value;
+            }
+        }
     }
 }

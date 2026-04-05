@@ -150,13 +150,37 @@ namespace Control_Panel
             {
                 var servers = await _gamesService.GetAllGameServersAsync();
                 
+                var updatedServers = new List<GamesService.GameServerInfo>();
+                foreach (var server in servers)
+                {
+                    var webPlayerCount = await _gamesService.GetPlayerCountFromWebApiAsync(server.GameId);
+                    if (webPlayerCount.HasValue)
+                    {
+                        server.PlayerCount = webPlayerCount.Value;
+                    }
+                    updatedServers.Add(server);
+                }
+                
                 Dispatcher.Invoke(() =>
                 {
+                    var selectedServer = ServersDataGrid.SelectedItem as GamesService.GameServerInfo;
+                    bool selectedServerStillExists = false;
+                    
                     _servers.Clear();
-                    foreach (var server in servers)
+                    foreach (var server in updatedServers)
                     {
                         _servers.Add(server);
+                        if (selectedServer != null && server.GameId == selectedServer.GameId)
+                        {
+                            selectedServerStillExists = true;
+                        }
                     }
+                    
+                    if (!selectedServerStillExists && _currentTicket != null)
+                    {
+                        ClearTicketDisplay();
+                    }
+                    
                     UpdateStatistics();
                 });
             }
@@ -196,10 +220,16 @@ namespace Control_Panel
                 CloseServerDetailsButton.Visibility = Visibility.Visible;
                 AuthenticationPanel.Visibility = Visibility.Visible;
                 ServerActionButtons.Visibility = Visibility.Visible;
+                
+                if (_currentTicket != null && (!string.IsNullOrEmpty(_currentTicket.GameId) && _currentTicket.GameId != selectedServer.GameId))
+                {
+                    ClearTicketDisplay();
+                }
             }
             else
             {
                 ClearServerDetails();
+                ClearTicketDisplay();
                 KillServerButton.IsEnabled = false;
                 RefreshServerButton.IsEnabled = false;
                 CreateServerPanel.Visibility = Visibility.Visible;
@@ -222,7 +252,7 @@ namespace Control_Panel
             DetailStartTimeText.Text = server.StartTime.ToString("yyyy-MM-dd HH:mm:ss");
             DetailExpirationText.Text = server.Expiration.ToString("yyyy-MM-dd HH:mm:ss");
             DetailLastActivityText.Text = server.LastActivityTime.ToString("yyyy-MM-dd HH:mm:ss");
-            DetailInactivityTimeoutText.Text = server.InactivityTimeout;
+            DetailInactivityTimeoutText.Text = server.InactivityTimeout.ToString(@"hh\:mm\:ss");
         }
 
         private void ClearServerDetails()
@@ -236,6 +266,17 @@ namespace Control_Panel
             DetailExpirationText.Text = "N/A";
             DetailLastActivityText.Text = "N/A";
             DetailInactivityTimeoutText.Text = "N/A";
+        }
+
+        private void ClearTicketDisplay()
+        {
+            _currentTicket = null;
+            TicketInfoPanel.Visibility = Visibility.Collapsed;
+            JoinScriptUrlTextBox.Text = string.Empty;
+            AuthTicketTextBox.Text = string.Empty;
+            AuthUrlTextBox.Text = string.Empty;
+            TicketExpirationText.Text = "N/A";
+            CommandLineArgsTextBox.Text = string.Empty;
         }
 
 
@@ -340,7 +381,7 @@ namespace Control_Panel
                         BaseUrl = status.BaseUrl,
                         PrivateServerId = status.PrivateServerId,
                         LastActivityTime = status.LastActivityTime,
-                        InactivityTimeout = "01:00:00"
+                        InactivityTimeout = TimeSpan.Parse("01:00:00")
                     };
                     
                     var index = _servers.ToList().FindIndex(s => s.GameId == selectedServer.GameId);
@@ -371,9 +412,9 @@ namespace Control_Panel
                 return;
             }
 
-            if (!int.TryParse(CreateExpirationTextBox.Text, out int expirationMinutes) || expirationMinutes <= 0)
+            if (!int.TryParse(CreateExpirationTextBox.Text, out int expirationMinutes) || expirationMinutes < 0)
             {
-                UpdateStatus("Please enter a valid expiration time (positive number of minutes)", "warning");
+                UpdateStatus("Please enter a valid expiration time (0 or positive number of minutes)", "warning");
                 return;
             }
 
@@ -431,9 +472,10 @@ namespace Control_Panel
         {
             try
             {
-                if (!(ServersDataGrid.SelectedItem is GamesService.GameServerInfo selectedServer))
+                var selectedServer = ServersDataGrid.SelectedItem as GamesService.GameServerInfo;
+                if (selectedServer == null)
                 {
-                    UpdateStatus("Please select a server to generate a ticket for", "warning");
+                    UpdateStatus("Please select a server first", "error");
                     return;
                 }
 
@@ -441,12 +483,14 @@ namespace Control_Panel
                 GenerateTicketButton.Content = "Generating...";
                 UpdateStatus("Generating authentication ticket...", "info");
 
-                var ticket = await CreateAuthenticationTicketAsync(selectedServer.PlaceId);
+                // Use the new server-specific ticket creation method
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] Calling CreateAuthenticationTicketForServerAsync with selectedServer.GameId='{selectedServer?.GameId}'");
+                var ticket = await CreateAuthenticationTicketForServerAsync(selectedServer.PlaceId, selectedServer.GameId, selectedServer.Port);
                 if (ticket != null)
                 {
                     _currentTicket = ticket;
                     DisplayTicketInfo(ticket);
-                    UpdateStatus("Authentication ticket generated successfully", "success");
+                    UpdateStatus($"Authentication ticket generated for server {selectedServer.GameId}", "success");
                 }
                 else
                 {
@@ -455,13 +499,21 @@ namespace Control_Panel
             }
             catch (Exception ex)
             {
-                UpdateStatus($"Failed to generate ticket: {ex.Message}", "error");
+                UpdateStatus($"Error generating ticket: {ex.Message}", "error");
             }
             finally
             {
                 GenerateTicketButton.IsEnabled = true;
                 GenerateTicketButton.Content = "Generate Authentication Ticket";
             }
+        }
+
+        /// <summary>
+        /// Create an authentication ticket for a specific game server
+        /// </summary>
+        private async Task<GamesService.AuthenticationTicketInfo?> CreateAuthenticationTicketForServerAsync(long placeId, string gameId, int serverPort)
+        {
+            return await _gamesService.CreateAuthenticationTicketForServerAsync(placeId, gameId, serverPort);
         }
 
         /// <summary>
@@ -570,6 +622,40 @@ namespace Control_Panel
                 };
             }
             return new SolidColorBrush(Colors.Black);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class AutoKillToColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool autoKillEnabled)
+            {
+                return autoKillEnabled ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+            }
+            return new SolidColorBrush(Colors.Gray);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class AutoKillToTextConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool autoKillEnabled)
+            {
+                return autoKillEnabled ? "ON" : "OFF";
+            }
+            return "?";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -24,33 +24,21 @@ namespace Website.Controllers.Client
     {
         private readonly IConfiguration _configuration;
         private readonly AuthenticationTicketService _ticketService;
+        private readonly GamePresenceService _gamePresenceService;
+        private readonly string _privateKey;
+        private readonly string _publicKey;
 
-        // Key from void-main privatekey1 (for 2016)
-        private const string PrivateKey2016Pem = 
-            "-----BEGIN RSA PRIVATE KEY-----\n" +
-            "MIICXAIBAAKBgQDOirFwxWKEiVdFMlqqAaIofFcG31hIdEtnoC0tx0Ykx9BpoA3f\n" +
-            "bStwQfUUv7usn49qCgGh25OWrS88jkr6Y2tce663lLVVEV9pymS9APcoy4quVYn9\n" +
-            "/FbaDQh/bQGyPUR8AdUKaiA74dPI9w1yVp+uzOHAxHko7ou/9YK/+l3EtQIDAQAB\n" +
-            "AoGAVX9yLmV2/7g+qQVMJJ3ie3HlMJIZ4HxLjozuxsl7ztPsAR1hQMDXP3P+OOWZ\n" +
-            "kb7HRjT4MgFMGg58xEt+3CF1mid0UEmRxIezvrd2X5+muYckj/qOG1LHcYhWcHsp\n" +
-            "6vO5kejbHdjfY/DEpOGeLmuH6hF3HM+aD5boAgru9SDfgs0CQQDyGyVe1jc5iPZV\n" +
-            "Oaw2n01uvQD59azdnUy2WAb/nB2M+87+vUMrQ7z8Iat+jwSz/EAoL06b4FmEjt30\n" +
-            "ynWsuRkvAkEA2mUPw0aCnpDMCQHkzp/ASAOiIwHiTzrnPcI2af71eylXTBofD43u\n" +
-            "FbZKEIq7o6eFng1YGRNDt8kHwiWqvET/WwJAaCo/0ObvycRg39g5fSLbKOsO0Xzf\n" +
-            "TFZSXB3RnQZpPHBW5gk+Lg4t8Hj4FTKpflroq6F2+9/yA/OIEbtOF+tnpwJAOgpL\n" +
-            "syDlC9D9eJNZRJRuHHVivJz+kQHdfKtFnMvWX4HwIlh60r5sfLayXk0QawDVYNi5\n" +
-            "Bgj5oTk655ztEBXiKwJBAILWgqOVjICo4dfmM5cjmrmFydTL9QPuytmCzGNDKY2V\n" +
-            "O+8xRUgVTpDWfaQ/tGj+AxdAlae1w71DARe6fWItR34=\n" +
-            "-----END RSA PRIVATE KEY-----";
-
-        public PlaceLauncherController(IConfiguration configuration, AuthenticationTicketService ticketService)
+        public PlaceLauncherController(IConfiguration configuration, AuthenticationTicketService ticketService, GamePresenceService gamePresenceService)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _ticketService = ticketService ?? throw new ArgumentNullException(nameof(ticketService));
+            _gamePresenceService = gamePresenceService ?? throw new ArgumentNullException(nameof(gamePresenceService));
+            _privateKey = _configuration["RSA:PrivateKey"] ?? throw new InvalidOperationException("RSA:PrivateKey not found in configuration");
+            _publicKey = _configuration["RSA:PublicKey"] ?? throw new InvalidOperationException("RSA:PublicKey not found in configuration");
         }
 
         [HttpGet("PlaceLauncher.ashx")]
-        public async Task<IActionResult> PlaceLauncher([FromQuery] string request, [FromQuery] long? placeId)
+        public async Task<IActionResult> PlaceLauncher([FromQuery] string request, [FromQuery] long? placeId, [FromQuery] int? serverPort, [FromQuery] string? jobid)
         {
             if (placeId == null)
             {
@@ -61,7 +49,7 @@ namespace Website.Controllers.Client
             {
                 return request switch
                 {
-                    "RequestGame" or "RequestGameJob" or "RequestFollowUser" => await HandleRequestGame(placeId.Value, request),
+                    "RequestGame" or "RequestGameJob" or "RequestFollowUser" => await HandleRequestGame(placeId.Value, request, jobid, serverPort),
                     "AuthenticateTicket" => await HandleAuthenticateTicket(),
                     "LogJoinClick" => Ok(new { status = 1, message = "Logged" }),
                     _ => BadRequest(new { status = 0, message = "Invalid request type" })
@@ -77,7 +65,7 @@ namespace Website.Controllers.Client
             }
         }
 
-        private async Task<IActionResult> HandleRequestGame(long placeId, string requestType)
+        private async Task<IActionResult> HandleRequestGame(long placeId, string requestType, string? providedJobId, int? providedServerPort)
         {
             long userId = 1; 
 
@@ -87,11 +75,11 @@ namespace Website.Controllers.Client
             }
 
             var ticket = await _ticketService.CreateGameTicketAsync(userId, placeId);
-            var jobId = Guid.NewGuid().ToString();
-            var port = 53640;
+            var jobId = !string.IsNullOrEmpty(providedJobId) ? providedJobId : Guid.NewGuid().ToString();
+            var port = providedServerPort ?? 53640;
             var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/');
             int gamestatus = 2; // Success
-            var joinScriptUrl = $"{baseUrl}/Game/join.ashx?serverPort={port}&gameid={placeId}&jobid={jobId}";
+            var joinScriptUrl = $"{baseUrl}/game/join.ashx?serverPort={port}&gameid={placeId}&jobid={jobId}";
             var authenticationUrl = $"{baseUrl}/Login/Negotiate.ashx";
 
             return Ok(new PlaceLauncherResponse
@@ -109,48 +97,112 @@ namespace Website.Controllers.Client
         [Produces("text/plain")]
         public async Task<IActionResult> Join([FromQuery] long gameid, [FromQuery] int serverPort, [FromQuery] string jobid)
         {
-            long userId = 1;
-            var userName = "Admin";
-            var displayName = "Admin";
-            var membership = "None"; // or "BuildersClub", etc.
-            var accountAge = 365;
-            var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') + "/";
-
-            // Generate the JSON structure same like void does
-            var joinScript = new JoinScriptData
+            try
             {
-                MachineAddress = "127.0.0.1",
-                ServerPort = serverPort,
-                ServerConnections = new[] { new ServerConnection { Address = "127.0.0.1", Port = serverPort } },
-                PingUrl = $"{baseUrl}Game/ClientPresence.ashx?PlaceID={gameid}&userID={userId}",
-                UserName = userName,
-                DisplayName = displayName,
-                UserId = userId,
-                RobloxLocale = "en_us",
-                GameLocale = "en_us",
-                CharacterAppearance = $"{baseUrl}v1.1/avatar-fetch?userId={userId}&placeId={gameid}",
-                ClientTicket = GenerateAuthTicket(userId, userName, jobid),
-                GameId = jobid,
-                PlaceId = gameid,
-                UniverseId = gameid,
-                CreatorId = 1,
-                CreatorTypeEnum = "User",
-                MembershipType = membership,
-                AccountAge = accountAge,
-                BaseUrl = baseUrl
-            };
+                if (gameid <= 0 || serverPort <= 0 || string.IsNullOrEmpty(jobid))
+                {
+                    return BadRequest("Invalid parameters");
+                }
 
-            var options = new JsonSerializerOptions 
-            { 
-                PropertyNamingPolicy = null,
-                WriteIndented = false 
-            };
-            var data = JsonSerializer.Serialize(joinScript, options);
+                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+                
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                
+                try
+                {
+                    var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/{jobid}/status");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        
+                        var serverInfoOptions = new JsonSerializerOptions 
+                        { 
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
+                        };
+                        
+                        var serverInfoDict = JsonSerializer.Deserialize<Dictionary<string, object>>(json, serverInfoOptions);
+                        
+                        if (serverInfoDict != null && serverInfoDict.TryGetValue("port", out var portObj) && 
+                            int.TryParse(portObj.ToString(), out var actualPort))
+                        {
+                            if (actualPort != serverPort)
+                            {
+                                serverPort = actualPort;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] Error getting server port from Arbiter: {ex.Message}");
+                }
 
-            var signature = SignData("\r\n" + data);
-            var result = $"--rbxsig%{signature}%\r\n{data}";
+                long userId = 1;
+                var userName = "Admin";
+                var displayName = "Admin";
+                var membership = "None"; // or "BuildersClub", etc.
+                var accountAge = 365;
+                var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') + "/";
+                var machineAddress = "127.0.0.1";
+                var localhostMode = _configuration.GetValue<bool>("LocalhostMode", true);
+                
+                if (localhostMode)
+                {
+                    machineAddress = "127.0.0.1";
+                }
+                else
+                {
+                    machineAddress = _configuration["MachineAddress"] ?? "127.0.0.1";
+                }
 
-            return Content(result, "text/plain");
+                var ticket = await _ticketService.CreateGameTicketAsync(userId, gameid);
+                // Player count logging moved to ClientPresence.ashx - only record ticket usage here
+                await _ticketService.MarkTicketAsUsedAsync(ticket.TicketToken);
+
+                var joinScript = new JoinScriptData
+                {
+                    MachineAddress = machineAddress,
+                    ServerPort = serverPort,
+                    ServerConnections = new[] { new ServerConnection { Address = machineAddress, Port = serverPort } },
+                    PingUrl = $"{baseUrl}Game/ClientPresence.ashx?PlaceID={gameid}&userID={userId}&jobId={jobid}",
+                    UserName = userName,
+                    DisplayName = displayName,
+                    UserId = userId,
+                    RobloxLocale = "en_us",
+                    GameLocale = "en_us",
+                    CharacterAppearance = $"{baseUrl}Asset/CharacterFetch.ashx?userId={userId}",
+                    ClientTicket = ticket.TicketToken,
+                    GameId = jobid,
+                    PlaceId = gameid,
+                    UniverseId = gameid,
+                    CreatorId = 1,
+                    CreatorTypeEnum = "User",
+                    MembershipType = membership,
+                    AccountAge = accountAge,
+                    BaseUrl = baseUrl
+                };
+
+                var options = new JsonSerializerOptions 
+                { 
+                    PropertyNamingPolicy = null,
+                    WriteIndented = false,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                };
+                var data = JsonSerializer.Serialize(joinScript, options);
+
+                var signature = SignData("\r\n" + data);
+                var result = $"--rbxsig%{signature}%\r\n{data}";
+
+                return Content(result, "text/plain");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Join script error: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         private async Task<IActionResult> HandleAuthenticateTicket()
@@ -181,7 +233,7 @@ namespace Website.Controllers.Client
         {
             using (var rsa = RSA.Create())
             {
-                rsa.ImportFromPem(PrivateKey2016Pem);
+                rsa.ImportFromPem(_privateKey);
                 var data = Encoding.UTF8.GetBytes(content);
                 var signature = rsa.SignData(data, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
                 return Convert.ToBase64String(signature);
@@ -321,6 +373,42 @@ namespace Website.Controllers.Client
         {
             public string Address { get; set; } = "";
             public int Port { get; set; }
+        }
+
+        public class ArbiterGameServerInfo
+        {
+            [JsonPropertyName("gameId")]
+            public string GameId { get; set; } = string.Empty;
+
+            [JsonPropertyName("placeId")]
+            public int PlaceId { get; set; }
+
+            [JsonPropertyName("port")]
+            public int Port { get; set; }
+
+            [JsonPropertyName("maxPlayers")]
+            public int MaxPlayers { get; set; }
+
+            [JsonPropertyName("playerCount")]
+            public int PlayerCount { get; set; }
+
+            [JsonPropertyName("status")]
+            public string Status { get; set; } = string.Empty;
+
+            [JsonPropertyName("startTime")]
+            public DateTime StartTime { get; set; }
+
+            [JsonPropertyName("expiration")]
+            public DateTime Expiration { get; set; }
+
+            [JsonPropertyName("baseUrl")]
+            public string BaseUrl { get; set; } = string.Empty;
+
+            [JsonPropertyName("privateServerId")]
+            public string PrivateServerId { get; set; } = string.Empty;
+
+            [JsonPropertyName("lastActivityTime")]
+            public DateTime LastActivityTime { get; set; }
         }
     }
 }

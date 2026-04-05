@@ -5,7 +5,7 @@ using System.ServiceModel;
 namespace RCCArbiter
 {
     // Data Contracts
-    [DataContract(Namespace = "http://roblox.com/")]
+    [DataContract(Namespace = "http://freblx.xyz/")]
     public class Job
     {
         [DataMember(Order = 0)]
@@ -21,7 +21,7 @@ namespace RCCArbiter
         public double cores { get; set; }
     }
 
-    [DataContract(Namespace = "http://roblox.com/")]
+    [DataContract(Namespace = "http://freblx.xyz/")]
     public enum LuaType
     {
         [EnumMember]
@@ -36,7 +36,7 @@ namespace RCCArbiter
         LUA_TTABLE
     }
 
-    [DataContract(Namespace = "http://roblox.com/")]
+    [DataContract(Namespace = "http://freblx.xyz/")]
     public class LuaValue
     {
         [DataMember(Order = 0)]
@@ -54,7 +54,7 @@ namespace RCCArbiter
         }
     }
 
-    [DataContract(Namespace = "http://roblox.com/")]
+    [DataContract(Namespace = "http://freblx.xyz/")]
     public class ScriptExecution
     {
         [DataMember(Order = 0, IsRequired = false)]
@@ -67,7 +67,7 @@ namespace RCCArbiter
         public LuaValue[]? arguments { get; set; }
     }
 
-    [DataContract(Namespace = "http://roblox.com/")]
+    [DataContract(Namespace = "http://freblx.xyz/")]
     public class Status
     {
         [DataMember(Order = 0, IsRequired = false)]
@@ -78,61 +78,61 @@ namespace RCCArbiter
     }
 
     // Service Contract
-    [ServiceContract(Namespace = "http://roblox.com/", ConfigurationName = "RCCServiceSoap")]
+    [ServiceContract(Namespace = "http://freblx.xyz/", ConfigurationName = "RCCServiceSoap")]
     public interface IRCCServiceSoap
     {
-        [OperationContract(Action = "http://roblox.com/HelloWorld", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/HelloWorld", ReplyAction = "*")]
         string HelloWorld();
 
-        [OperationContract(Action = "http://roblox.com/GetVersion", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/GetVersion", ReplyAction = "*")]
         string GetVersion();
 
-        [OperationContract(Action = "http://roblox.com/GetStatus", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/GetStatus", ReplyAction = "*")]
         Status GetStatus();
 
-        [OperationContract(Action = "http://roblox.com/OpenJob", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/OpenJob", ReplyAction = "*")]
         LuaValue[] OpenJob(Job job, ScriptExecution script);
 
-        [OperationContract(Action = "http://roblox.com/OpenJobEx", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/OpenJobEx", ReplyAction = "*")]
         LuaValue[] OpenJobEx(Job job, ScriptExecution script);
 
-        [OperationContract(Action = "http://roblox.com/BatchJob", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/BatchJob", ReplyAction = "*")]
         LuaValue[] BatchJob(Job job, ScriptExecution script);
 
-        [OperationContract(Action = "http://roblox.com/BatchJobEx", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/BatchJobEx", ReplyAction = "*")]
         LuaValue[] BatchJobEx(Job job, ScriptExecution script);
 
-        [OperationContract(Action = "http://roblox.com/Execute", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/Execute", ReplyAction = "*")]
         LuaValue[] Execute(string jobID, ScriptExecution script);
 
-        [OperationContract(Action = "http://roblox.com/ExecuteEx", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/ExecuteEx", ReplyAction = "*")]
         LuaValue[] ExecuteEx(string jobID, ScriptExecution script);
 
-        [OperationContract(Action = "http://roblox.com/RenewLease", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/RenewLease", ReplyAction = "*")]
         double RenewLease(string jobID, double expirationInSeconds);
 
-        [OperationContract(Action = "http://roblox.com/CloseJob", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/CloseJob", ReplyAction = "*")]
         void CloseJob(string jobID);
 
-        [OperationContract(Action = "http://roblox.com/GetExpiration", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/GetExpiration", ReplyAction = "*")]
         double GetExpiration(string jobID);
 
-        [OperationContract(Action = "http://roblox.com/GetAllJobs", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/GetAllJobs", ReplyAction = "*")]
         Job[] GetAllJobs();
 
-        [OperationContract(Action = "http://roblox.com/GetAllJobsEx", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/GetAllJobsEx", ReplyAction = "*")]
         Job[] GetAllJobsEx();
 
-        [OperationContract(Action = "http://roblox.com/CloseExpiredJobs", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/CloseExpiredJobs", ReplyAction = "*")]
         int CloseExpiredJobs();
 
-        [OperationContract(Action = "http://roblox.com/CloseAllJobs", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/CloseAllJobs", ReplyAction = "*")]
         int CloseAllJobs();
 
-        [OperationContract(Action = "http://roblox.com/Diag", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/Diag", ReplyAction = "*")]
         LuaValue[] Diag(int type, string jobID);
 
-        [OperationContract(Action = "http://roblox.com/DiagEx", ReplyAction = "*")]
+        [OperationContract(Action = "http://freblx.xyz/DiagEx", ReplyAction = "*")]
         LuaValue[] DiagEx(int type, string jobID);
     }
 }

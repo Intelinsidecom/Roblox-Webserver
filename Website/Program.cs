@@ -23,6 +23,15 @@ builder.Services
     .AddApplicationPart(typeof(LoginController).Assembly)
     .AddApplicationPart(System.Reflection.Assembly.GetExecutingAssembly());
 
+// Add session support
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
@@ -51,6 +60,7 @@ builder.Services.AddWebOptimizerPipeline();
 
 // Add Games services
 builder.Services.AddSingleton<AuthenticationTicketService>();
+builder.Services.AddSingleton<GamePresenceService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -112,6 +122,7 @@ app.UseMiddleware<AntiCacheMiddleware>();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseRateLimiting();
 
 if (enableRequestLogging)
@@ -186,6 +197,8 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "pages",
     pattern: "{*path}",
-    defaults: new { controller = "Pages", action = "Route" });
+    defaults: new { controller = "Pages", action = "Route" },
+    constraints: new { path = @"^(?!.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|gz|download)$).*" }
+);
 
 app.Run();

@@ -19,6 +19,11 @@ using System.Net.Sockets;
 
 namespace RCCArbiter
 {
+    public class PlayerCountRequest
+    {
+        public int PlayerCount { get; set; }
+    }
+
     partial class Program
     {
         private static RCCClient? _rccClient;
@@ -598,9 +603,16 @@ namespace RCCArbiter
                     }
                     using (lease)
                     {
+                        // Generate dynamic port if not provided
+                        var port = request.Port;
+                        if (port == 0)
+                        {
+                            port = RCCArbiter.Endpoints.StartGameServerEndpoint.GenerateAvailablePort();
+                        }
+                        
                         var gameId = await gameServerManager.StartGameServerAsync(
                             request.PlaceId, 
-                            request.Port, 
+                            port, 
                             request.MaxPlayers, 
                             request.PrivateServerId ?? "", 
                             request.BaseUrl ?? "",
@@ -633,7 +645,17 @@ namespace RCCArbiter
                     using (lease)
                     {
                         var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 15;
-                        var port = int.TryParse(req.Query["port"], out var p) ? p : 53640;
+                        
+                        int port;
+                        if (int.TryParse(req.Query["port"], out var p))
+                        {
+                            port = p;
+                        }
+                        else
+                        {
+                            port = RCCArbiter.Endpoints.StartGameServerEndpoint.GenerateAvailablePort();
+                        }
+                        
                         var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
                         var privateServerId = req.Query["privateServerId"].FirstOrDefault() ?? "";
                         var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.xyz";
@@ -673,8 +695,28 @@ namespace RCCArbiter
                     }
                     using (lease)
                     {
-                        var status = await gameServerManager.GetGameServerStatusAsync(gameId);
-                        return Results.Ok(status);
+                        var status = await gameServerManager.GetGameServerStatusAsync(gameId, urlToUse);
+                        var serverInfo = gameServerManager.GetGameServerInfo(gameId);
+                        
+                        var response = new
+                        {
+                            gameId = status.GameId,
+                            placeId = status.PlaceId,
+                            port = status.Port,
+                            maxPlayers = status.MaxPlayers,
+                            playerCount = status.PlayerCount,
+                            status = status.Status,
+                            startTime = status.StartTime,
+                            expiration = status.Expiration,
+                            baseUrl = status.BaseUrl,
+                            privateServerId = status.PrivateServerId,
+                            lastActivityTime = status.LastActivityTime,
+                            inactivityTimeout = serverInfo?.InactivityTimeout ?? TimeSpan.MaxValue,
+                            autoKillEnabled = serverInfo?.AutoKillEnabled ?? false,
+                            lastStatus = status.LastStatus
+                        };
+                        
+                        return Results.Ok(response);
                     }
                 }
                 catch (Exception ex)
@@ -703,6 +745,19 @@ namespace RCCArbiter
                         gameServerManager.StopGameServer(gameId);
                         return Results.Ok(new { gameId = gameId, status = "stopped" });
                     }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapPost("/api/gameservers/trigger-inactivity-check", () =>
+            {
+                try
+                {
+                    gameServerManager.TriggerInactivityCheck();
+                    return Results.Ok(new { message = "Inactivity check triggered" });
                 }
                 catch (Exception ex)
                 {
@@ -914,6 +969,19 @@ namespace RCCArbiter
                 }
             });
 
+            app.MapPost("/api/gameservers/{gameId}/playercount", (string gameId, PlayerCountRequest request) =>
+            {
+                try
+                {
+                    gameServerManager.UpdatePlayerCount(gameId, request.PlayerCount);
+                    return Results.Ok(new { gameId = gameId, playerCount = request.PlayerCount, updated = true });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
             app.MapGet("/api/gameservers/cleanup", () =>
             {
                 try
@@ -1007,7 +1075,7 @@ namespace RCCArbiter
 public class StartGameServerRequest
 {
     public int PlaceId { get; set; }
-    public int Port { get; set; } = 53640;
+    public int Port { get; set; } = 0;
     public int MaxPlayers { get; set; } = 10;
     public string? PrivateServerId { get; set; }
     public string? BaseUrl { get; set; }

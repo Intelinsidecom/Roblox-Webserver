@@ -25,10 +25,10 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Game Servers Management" Style="{StaticResource DashboardTitle}" 
+                            <TextBlock Text="Control Panel - Games" Style="{StaticResource DashboardTitle}" 
                                        Foreground="{DynamicResource AccentPrimary}"
                                        TextWrapping="Wrap"/>
-                            <TextBlock Text="Monitor and manage running Roblox game servers" 
+                            <TextBlock Text="Roblox Webserver Management" 
                                        Style="{StaticResource DashboardSubtitle}" 
                                        TextWrapping="Wrap"/>
                         </StackPanel>

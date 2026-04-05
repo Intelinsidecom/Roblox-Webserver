@@ -7,11 +7,10 @@ using System.Security.Claims;
 namespace Api.Controllers
 {
     [ApiController]
-    [Route("users")]
     public class UsersController : ControllerBase
     {
         // GET /users/account-info
-        [HttpGet("account-info")]
+        [HttpGet("users/account-info")]
         public IActionResult GetAccountInfo([FromServices] IConfiguration config)
         {
             // Prefer user id from claims (set by Website middleware from sessions)
@@ -81,7 +80,7 @@ namespace Api.Controllers
             return Ok(payload);
         }
 
-        [HttpGet("get-studio-experiment-enrollments")]
+        [HttpGet("users/get-studio-experiment-enrollments")]
         public IActionResult GetStudioExperimentEnrollments([FromQuery] bool firstStudioVisit, [FromQuery] string browserTrackerId)
         {
             var response = new
@@ -95,15 +94,28 @@ namespace Api.Controllers
             return Ok(response);
         }
 
-        [HttpGet("get-experiment-enrollments")]
+        [HttpGet("users/get-experiment-enrollments")]
         public IActionResult GetExperimentEnrollments([FromQuery] string browserTrackerId)
         {
             var response = new
             {
-                experiments = new object[0], // Empty array - no active experiments
+                experiments = new object[0],
                 browserTrackerId = string.IsNullOrEmpty(browserTrackerId) 
                     ? $"rbx_tracker_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}_{Guid.NewGuid():N}" 
                     : browserTrackerId
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet("userblock/getblockedusers")]
+        public IActionResult GetBlockedUsers([FromQuery] long userId, [FromQuery] int page = 1)
+        {
+            // Theres no blocking functionality yet
+            var response = new
+            {
+                success = true,
+                userList = new object[0]
             };
 
             return Ok(response);

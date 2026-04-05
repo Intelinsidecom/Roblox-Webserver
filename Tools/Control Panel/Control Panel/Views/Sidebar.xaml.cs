@@ -85,6 +85,15 @@ namespace Control_Panel
             }
         }
         
+        private void ClientsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = Window.GetWindow(this) as Main;
+            if (mainWindow != null)
+            {
+                mainWindow.SwitchToView("Clients");
+            }
+        }
+        
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as Main;

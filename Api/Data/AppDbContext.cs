@@ -8,4 +8,5 @@ public class AppDbContext : DbContext
     {
     }
 
+    public DbSet<Setup> Setup { get; set; }
 }

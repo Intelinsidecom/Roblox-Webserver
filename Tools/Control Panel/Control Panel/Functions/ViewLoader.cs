@@ -72,6 +72,9 @@ namespace ControlPanel.Functions
                     case "Website":
                         view = new WebsiteView();
                         break;
+                    case "Clients":
+                        view = new ClientsView();
+                        break;
                     default:
                         _statusTextBlock.Text = $"Unknown view: {viewName}";
                         return;

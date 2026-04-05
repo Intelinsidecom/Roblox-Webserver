@@ -13,7 +13,11 @@
     },
     "SoapLogging": {
       "Enabled": true
-    }
+    },
+    "SeparateWindow": true,
+    "GameServerSeparateWindow": true,
+    "GameServerUseFixedPort": false,
+    "GameServerFixedPort": 64989
   },
   "Rendering": {
     "Year": "2016",

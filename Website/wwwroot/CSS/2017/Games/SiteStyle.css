@@ -6095,7 +6095,7 @@ textarea.form-control {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     max-width: 100%;
-    width: 400px;
+    width: 900px;
     display: inline-block;
     text-align: left;
     vertical-align: middle;
@@ -8044,51 +8044,6 @@ button.close {
     padding: 4px 0 0 6px;
 }
 
-.ph-modal-popup {
-    background-color: #fff;
-    min-height: 259px;
-    width: 399px;
-    border: 1px solid #fff;
-    box-shadow: 0 0 5px 2px #adadad;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.ph-modal-popup * {
-    -webkit-box-sizing: inherit;
-    -moz-box-sizing: inherit;
-    box-sizing: inherit;
-}
-
-.ph-modal-header .icon-close,
-.ph-modal-header .icon-close-16x16 {
-    opacity: .2;
-    cursor: pointer;
-}
-
-.ph-modal-header .icon-close:hover,
-.ph-modal-header .icon-close-16x16:hover {
-    opacity: .5;
-}
-
-.ph-logo-row {
-    text-align: center;
-}
-
-.ph-startingdialog-spinner-row {
-    text-align: center;
-    padding-top: 6px;
-    padding-bottom: 6px;
-}
-
-.ph-areyouinstalleddialog-content {
-    text-align: center;
-}
-
-.ph-areyouinstalleddialog-content .larger-font-size {
-    margin: 12px auto;
-}
 
 .modal-dialog .larger-font-size,
 .style2016 .larger-font-size {
@@ -8105,86 +8060,6 @@ button.close {
     color: #B8B8B8;
 }
 
-.ph-clickalwaysallowed {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: 10030;
-    background-color: #fff;
-}
-
-.ph-clickalwaysallowed p {
-    text-align: center;
-    margin-bottom: auto;
-    margin-top: auto;
-}
-
-.ph-clickalwaysallowed span.icon-moreinfo {
-    position: relative;
-    margin-top: 6px;
-    margin-bottom: 6px;
-}
-
-.ph-clickalwaysallowed img {
-    vertical-align: middle;
-    border: 0;
-}
-
-.ph-modal-header {
-    height: 40px;
-    padding-top: 10px;
-    padding-bottom: 13px;
-    text-align: right;
-    padding-right: 8px;
-}
-
-.install-instructions-modal h1 {
-    font-size: 36px;
-    font-weight: 400;
-    line-height: 1em;
-    margin: 0;
-    padding: 5px 0;
-}
-
-.install-instructions-modal h5 {
-    font-size: 18px;
-    font-weight: 400;
-}
-
-.install-instructions-modal p.larger-font-size {
-    margin: 0 0 15px 0;
-    padding: 0;
-}
-
-.install-instructions-modal .modal-dialog {
-    width: 1000px;
-    margin: 5% auto;
-}
-
-@media(max-width:991px) {
-    .install-instructions-modal .modal-dialog {
-        width: 90%;
-        width: calc(100% - 30px);
-    }
-}
-
-.install-instructions-modal .modal-dialog .modal-message:before,
-.install-instructions-modal .modal-dialog .modal-message:after {
-    content: " ";
-    display: table;
-}
-
-.install-instructions-modal .modal-dialog .modal-message:after {
-    clear: both;
-}
-
-.install-instructions-modal .modal-dialog .modal-content .modal-footer {
-    text-align: left;
-}
-
-.install-instructions-modal .modal-dialog .three-steps .ph-install-step {
-    width: 190px;
-}
 
 .modal-col-3:before,
 .modal-col-3:after {

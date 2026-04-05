@@ -235,14 +235,36 @@ namespace Control_Panel
                 ServerHealthText.Text = "Database not configured";
                 ServerHealthText.Foreground = new SolidColorBrush(Colors.Orange);
                 var databaseWindow = new DatabaseConnectionWindow();
-                databaseWindow.Owner = Window.GetWindow(this);
+                
+                var parentWindow = Window.GetWindow(this);
+                if (parentWindow != null && parentWindow.IsLoaded)
+                {
+                    databaseWindow.Owner = parentWindow;
+                }
+                
                 databaseWindow.Closed += async (sender, e) => {
-                    await System.Threading.Tasks.Task.Run(() => {
-                        Dispatcher.Invoke(() => {
-                            ClearStatusFields();
-                            LoadDashboardData().ConfigureAwait(false);
-                        });
-                    });
+                    if (Dispatcher.HasShutdownFinished)
+                        return;
+                        
+                    try
+                    {
+                        await Dispatcher.BeginInvoke(new Action(() => {
+                            try
+                            {
+                                ClearStatusFields();
+                                var loadTask = LoadDashboardData();
+                                loadTask.ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Error reloading dashboard: {ex.Message}");
+                            }
+                        }));
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Dispatcher error: {ex.Message}");
+                    }
                 };
                 
                 databaseWindow.ShowDialog();

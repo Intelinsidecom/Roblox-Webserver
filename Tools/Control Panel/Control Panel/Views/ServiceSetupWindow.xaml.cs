@@ -57,6 +57,17 @@ namespace Control_Panel
                 RccLogPortTextBox.Text = Settings.Default.RccLogPort ?? "";
                 CdnHostTextBox.Text = Settings.Default.CdnHost ?? "";
                 CdnPortTextBox.Text = Settings.Default.CdnPort ?? "";
+                
+                try
+                {
+                    SetupHostTextBox.Text = Settings.Default.SetupHost ?? "";
+                    SetupPortTextBox.Text = Settings.Default.SetupPort ?? "";
+                }
+                catch
+                {
+                    SetupHostTextBox.Text = "localhost";
+                    SetupPortTextBox.Text = "5192";
+                }
             }
             catch (Exception ex)
             {
@@ -76,6 +87,7 @@ namespace Control_Panel
                 urls["APIService"] = $"http://{ApiServiceHostTextBox.Text.Trim()}:{ApiServicePortTextBox.Text.Trim()}";
                 urls["RccLog"] = $"http://{RccLogHostTextBox.Text.Trim()}:{RccLogPortTextBox.Text.Trim()}";
                 urls["CDN"] = $"http://{CdnHostTextBox.Text.Trim()}:{CdnPortTextBox.Text.Trim()}";
+                urls["Setup"] = $"http://{SetupHostTextBox.Text.Trim()}:{SetupPortTextBox.Text.Trim()}";
             }
             catch (Exception ex)
             {
@@ -106,8 +118,10 @@ namespace Control_Panel
             ApiServiceStatusText.Foreground = (Brush)FindResource("SubtleText");
             RccLogStatusText.Text = "Testing...";
             RccLogStatusText.Foreground = (Brush)FindResource("SubtleText");
-            CdnStatusText.Text = "Testing...";
+            CdnStatusText.Text = "Testing CDN...";
             CdnStatusText.Foreground = (Brush)FindResource("SubtleText");
+            SetupStatusText.Text = "Testing Setup...";
+            SetupStatusText.Foreground = (Brush)FindResource("SubtleText");
             var testResults = new List<string>();
             var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(5);
@@ -274,6 +288,38 @@ namespace Control_Panel
                 CdnStatusText.Text = testResults[4];
                 CdnStatusText.Foreground = testResults[4].StartsWith("✓") ? 
                     (Brush)FindResource("Success") : (Brush)FindResource("Error");
+                SetupStatusText.Text = "Testing Setup Service...";
+                SetupStatusText.Foreground = (Brush)FindResource("SubtleText");
+                await Task.Delay(100);
+                
+                try
+                {
+                    var response = await httpClient.GetAsync($"{serviceUrls["Setup"]}/cdn.txt");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        testResults.Add("✓ Setup Service: Connected");
+                    }
+                    else
+                    {
+                        testResults.Add($"✗ Setup Service: HTTP {response.StatusCode}");
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    testResults.Add("✗ Setup Service: Connection failed");
+                }
+                catch (TaskCanceledException)
+                {
+                    testResults.Add("✗ Setup Service: Connection failed");
+                }
+                catch (Exception)
+                {
+                    testResults.Add("✗ Setup Service: Connection failed");
+                }
+
+                SetupStatusText.Text = testResults[5];
+                SetupStatusText.Foreground = testResults[5].StartsWith("✓") ? 
+                    (Brush)FindResource("Success") : (Brush)FindResource("Error");
                 var hasSuccessfulConnections = testResults.Any(r => r.StartsWith("✓"));
                 var hasFailedConnections = testResults.Any(r => r.StartsWith("✗"));
                 
@@ -351,6 +397,14 @@ namespace Control_Panel
                     return;
                 }
                 
+                int setupPort;
+                if (!int.TryParse(SetupPortTextBox.Text.Trim(), out setupPort) || setupPort < 1 || setupPort > 65535)
+                {
+                    StatusTextBlock.Text = "Invalid Setup Service port (must be 1-65535)";
+                    StatusTextBlock.Foreground = (Brush)FindResource("Error");
+                    return;
+                }
+                
                 Settings.Default.ArbiterHost = ArbiterHostTextBox.Text.Trim();
                 Settings.Default.ArbiterPort = ArbiterPortTextBox.Text.Trim();
                 Settings.Default.WebsiteHost = WebsiteHostTextBox.Text.Trim();
@@ -361,6 +415,18 @@ namespace Control_Panel
                 Settings.Default.RccLogPort = RccLogPortTextBox.Text.Trim();
                 Settings.Default.CdnHost = CdnHostTextBox.Text.Trim();
                 Settings.Default.CdnPort = CdnPortTextBox.Text.Trim();
+                
+                try
+                {
+                    Settings.Default.SetupHost = SetupHostTextBox.Text.Trim();
+                    Settings.Default.SetupPort = SetupPortTextBox.Text.Trim();
+                }
+                catch
+                {
+                    // Settings not available, ignore
+                    ConsoleWindow.Instance?.WriteWarning("SetupHost/SetupPort settings not available, skipping save");
+                }
+                
                 Settings.Default.Save();
                 StatusTextBlock.Text = "Service settings saved successfully!";
                 StatusTextBlock.Foreground = (Brush)FindResource("Success");
