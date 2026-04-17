@@ -7,7 +7,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
-using System.Security.Cryptography;
 using System.Net;
 using NpgsqlTypes;
 using Games;
@@ -93,7 +92,7 @@ namespace Api.Controllers
                 return StatusCode(500, new { errors = new[] { new { code = 7, message = "Login failed" } }, detail = ex.Message });
             }
 
-            if (userId <= 0 || string.IsNullOrEmpty(storedPassword) || !string.Equals(storedPassword, password, StringComparison.Ordinal))
+            if (userId <= 0 || string.IsNullOrEmpty(storedPassword) || !PasswordHasher.VerifyPassword(password, storedPassword))
             {
                 return StatusCode(403, new { message = "Credentials" });
             }

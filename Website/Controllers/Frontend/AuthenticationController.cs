@@ -2,24 +2,42 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Threading.Tasks;
+using Games;
 
 namespace RobloxWebserver.Controllers
 {
     public class AuthenticationController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly TokenService _tokenService;
 
-        public AuthenticationController(IConfiguration configuration)
+        public AuthenticationController(IConfiguration configuration, TokenService tokenService)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
-        // GET /authentication/logout
-        [HttpGet("authentication/logout")]
-        public IActionResult Logout()
+        // GET/POST /authentication/logout
+        [AcceptVerbs("GET", "POST")]
+        [Route("authentication/logout")]
+        public async Task<IActionResult> Logout()
         {
+            var token = Request.Cookies[".ROBLOSECURITY"];
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                await _tokenService.RevokeSessionAsync(token);
+            }
+
             var isHttps = Request.IsHttps;
-            var cookieDomain = _configuration["Auth:CookieDomain"]; // same semantics as Api SignOutController
+            var allowInsecure = _configuration.GetValue<bool>("Auth:AllowInsecureCookies");
+            var cookieDomain = _configuration["Auth:CookieDomain"];
+            var sameSiteConfig = (_configuration["Auth:CookieSameSite"] ?? "Lax").Trim();
+            var sameSite = SameSiteMode.Lax;
+            if (sameSiteConfig.Equals("None", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.None;
+            else if (sameSiteConfig.Equals("Strict", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.Strict;
+            if (sameSite == SameSiteMode.None) isHttps = true;
 
             Response.Cookies.Append(
                 ".ROBLOSECURITY",
@@ -27,8 +45,8 @@ namespace RobloxWebserver.Controllers
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = isHttps,
-                    SameSite = SameSiteMode.Lax,
+                    Secure = isHttps && !allowInsecure,
+                    SameSite = sameSite,
                     Expires = DateTimeOffset.UnixEpoch,
                     MaxAge = TimeSpan.Zero,
                     Path = "/",

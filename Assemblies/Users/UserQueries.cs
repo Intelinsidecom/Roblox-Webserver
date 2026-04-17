@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
+using Common;
 
 namespace Users
 {
@@ -52,6 +53,8 @@ namespace Users
 
             try
             {
+                string hashedPassword = PasswordHasher.HashPassword(newPassword);
+
                 await using var conn = new NpgsqlConnection(connectionString);
                 await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
                 
@@ -60,7 +63,7 @@ namespace Users
                     SET password = @password, password_last_changed_at = @changedAt
                     WHERE user_id = @userId", conn);
                 
-                cmd.Parameters.AddWithValue("password", newPassword); // In production, this should be hashed
+                cmd.Parameters.AddWithValue("password", hashedPassword);
                 cmd.Parameters.AddWithValue("changedAt", DateTime.UtcNow);
                 cmd.Parameters.AddWithValue("userId", userId);
 
@@ -69,7 +72,6 @@ namespace Users
             }
             catch (Exception ex)
             {
-                // Log the exception if logging is available
                 System.Diagnostics.Debug.WriteLine($"Error updating password for user {userId}: {ex.Message}");
                 throw;
             }

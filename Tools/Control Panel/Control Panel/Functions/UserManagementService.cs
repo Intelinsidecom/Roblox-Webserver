@@ -5,6 +5,7 @@ using Npgsql;
 using Control_Panel;
 using Thumbnails;
 using Users;
+using Common;
 
 namespace ControlPanel.Functions
 {
@@ -207,7 +208,7 @@ namespace ControlPanel.Functions
                     {
                         UserId = newUserId,
                         UserName = username.Trim(),
-                        Password = password,
+                        Password = PasswordHasher.HashPassword(password),
                         Gender = normalizedGender,
                         ModerationStatus = "ok"
                     };

@@ -9,6 +9,7 @@ using Npgsql;
 using System.Text.Json;
 using System.IO;
 using Games;
+using Common;
 
 namespace Api.Controllers
 {
@@ -177,11 +178,13 @@ namespace Api.Controllers
                 return StatusCode(500, new { errors = new[] { new { code = 6, message = "Failed to allocate user id" } }, detail = ex.Message });
             }
 
+            var hashedPassword = PasswordHasher.HashPassword(password);
+
             var createParams = new UserCreateParams
             {
                 UserId = newUserId,
                 UserName = username,
-                Password = password,
+                Password = hashedPassword,
                 Birthday = birthday,
                 Gender = gender,
                 Email = request.Email
