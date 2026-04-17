@@ -149,17 +149,7 @@ namespace Control_Panel
             try
             {
                 var servers = await _gamesService.GetAllGameServersAsync();
-                
-                var updatedServers = new List<GamesService.GameServerInfo>();
-                foreach (var server in servers)
-                {
-                    var webPlayerCount = await _gamesService.GetPlayerCountFromWebApiAsync(server.GameId);
-                    if (webPlayerCount.HasValue)
-                    {
-                        server.PlayerCount = webPlayerCount.Value;
-                    }
-                    updatedServers.Add(server);
-                }
+                var updatedServers = servers.ToList();
                 
                 Dispatcher.Invoke(() =>
                 {

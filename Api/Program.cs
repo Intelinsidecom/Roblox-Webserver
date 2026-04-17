@@ -24,30 +24,24 @@ builder.Services.AddHttpLogging(o =>
     o.MediaTypeOptions.AddText("application/x-www-form-urlencoded");
     o.MediaTypeOptions.AddText("text/*");
 });
-// Honor X-Forwarded-* headers from reverse proxy (e.g., Cloudflare)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
-// Ensure HTTPS redirection knows the external HTTPS port
-builder.Services.AddHttpsRedirection(options =>
-{
-    options.HttpsPort = 443;
-});
+
 builder.Services.AddHostedService<ConsoleKeyListenerHostedService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
 
-// Add Authentication Ticket Service for Client authentication
+
 builder.Services.AddSingleton<Games.AuthenticationTicketService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -55,14 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
-
-// Apply forwarded headers BEFORE HTTPS redirection
 app.UseForwardedHeaders();
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-// Only emit the default JSON body for 404 responses
 app.Use(async (context, next) =>
 {
     await next();

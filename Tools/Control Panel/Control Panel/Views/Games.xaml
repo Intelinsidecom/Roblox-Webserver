@@ -158,7 +158,7 @@
                                             <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <TextBlock Grid.Column="0" Grid.Row="0" Text="Place ID:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
-                                        <TextBox x:Name="CreatePlaceIdTextBox" Grid.Column="1" Grid.Row="0" Text="12345" 
+                                        <TextBox x:Name="CreatePlaceIdTextBox" Grid.Column="1" Grid.Row="0" Text="1818" 
                                                 Foreground="{DynamicResource Foreground}"
                                                 Background="{DynamicResource Background}"
                                                 BorderBrush="{DynamicResource SubtleText}"

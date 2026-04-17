@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Api.Data;
 using Api.Controllers;
 using System.Security.Claims;
@@ -60,6 +60,8 @@ builder.Services.AddWebOptimizerPipeline();
 
 // Add Games services
 builder.Services.AddSingleton<AuthenticationTicketService>();
+builder.Services.AddSingleton<TokenService>();
+builder.Services.AddHostedService<TokenCleanupService>();
 builder.Services.AddSingleton<GamePresenceService>();
 
 builder.Services.AddAuthentication(options =>
@@ -156,28 +158,48 @@ app.Use(async (context, next) =>
     var cookies = context.Request.Cookies;
     if (cookies.TryGetValue(".ROBLOSECURITY", out var raw))
     {
-        var connStr = context.RequestServices.GetRequiredService<IConfiguration>().GetConnectionString("Default");
-        if (!string.IsNullOrWhiteSpace(connStr))
+        var tokenService = context.RequestServices.GetRequiredService<TokenService>();
+        
+        try
         {
-            try
+            long? userId = null;
+            
+            if (raw.StartsWith("sess_"))
             {
-                await using var conn = new NpgsqlConnection(connStr);
-                await conn.OpenAsync();
-                await using var cmd = new NpgsqlCommand("select user_id from sessions where token = @t and (expires_at is null or expires_at > now() at time zone 'utc')", conn);
-                cmd.Parameters.AddWithValue("t", raw);
-                var obj = await cmd.ExecuteScalarAsync();
-                if (obj is long uid && uid > 0)
-                {
-                    var claims = new[]
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, uid.ToString()),
-                        new Claim(ClaimTypes.Name, $"User_{uid}")
-                    };
-                    var identity = new ClaimsIdentity(claims, "Cookie");
-                    context.User = new ClaimsPrincipal(identity);
-                }
+                userId = await tokenService.ValidateSessionAsync(raw);
             }
-            catch { /* ignore lookup errors */ }
+            else
+            {
+                userId = await tokenService.ValidateSessionAsync(raw);
+            }
+            
+            if (userId.HasValue && userId.Value > 0)
+            {
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()),
+                    new Claim(ClaimTypes.Name, $"User_{userId.Value}")
+                };
+                var identity = new ClaimsIdentity(claims, "Cookie");
+                context.User = new ClaimsPrincipal(identity);
+            }
+            else
+            {
+                context.Response.Cookies.Delete(".ROBLOSECURITY", new CookieOptions 
+                { 
+                    Path = "/",
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Lax
+                });
+            }
+        }
+        catch (Exception ex) { Console.WriteLine($"[AUTH] Error during auth: {ex.Message}"); }
+    }
+    else
+    {
+        if (context.User.Identity?.IsAuthenticated == true)
+        {
+            context.User = new ClaimsPrincipal(new ClaimsIdentity());
         }
     }
     await next();

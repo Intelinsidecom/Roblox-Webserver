@@ -1,0 +1,23 @@
+/* ~/CSS/Pages/Download/Thankyou.css */
+.icon-games{background-position:0 -80px;}.successful-message-div{text-align:center;background-color:white;width:970px;margin:30px auto;min-height:400px;}.successful-message-div .icon-games{background-size:200% auto;width:80px;height:80px;}.successful-message-div .successful-message-header{color:#02b757;}.successful-message-div .successful-message-description{width:500px;margin:50px auto;text-align:center;}
+
+/*
+     FILE ARCHIVED ON 14:14:45 Jun 18, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 20:17:57 Apr 05, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.568
+  exclusion.robots: 0.019
+  exclusion.robots.policy: 0.008
+  esindex: 0.01
+  cdx.remote: 15.497
+  LoadShardBlock: 109.022 (3)
+  PetaboxLoader3.datanode: 126.58 (4)
+  PetaboxLoader3.resolve: 110.2 (2)
+  load_resource: 144.192
+*/

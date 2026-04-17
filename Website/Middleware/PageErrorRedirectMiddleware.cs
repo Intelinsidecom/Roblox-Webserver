@@ -23,6 +23,7 @@ namespace Website.Middleware
             var path = context.Request.Path.Value?.ToLower() ?? "";
             var isApiRequest = path.StartsWith("/api/") || 
                                path.StartsWith("/v1/") ||
+                               path.StartsWith("/game/") ||
                                context.Request.Headers.ContainsKey("X-Requested-With") ||
                                context.Request.ContentType?.Contains("application/json") == true;
 

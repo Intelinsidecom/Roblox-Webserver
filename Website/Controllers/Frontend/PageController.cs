@@ -16,5 +16,17 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/Robux.cshtml");
         }
 
+        [HttpGet("Games.aspx")]
+        public IActionResult GamesPage()
+        {
+            return View("~/Views/Pages/Games.cshtml");
+        }
+
+        [HttpPost("Games.aspx")]
+        public IActionResult GamesPagePost()
+        {
+            return View("~/Views/Pages/Games.cshtml");
+        }
+
 	    }
 }

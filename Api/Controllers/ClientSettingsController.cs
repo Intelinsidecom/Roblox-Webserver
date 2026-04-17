@@ -13,8 +13,7 @@ namespace Api.Controllers
             _env = env;
         }
 
-        // Matches RCCService/Client expectations:
-        //   GET http://clientsettings.api.&lt;basehost&gt;/Setting/QuietGet/{group}/?apiKey=...
+        //   GET http://clientsettings.api.freblx.xyz/Setting/QuietGet/{group}/?apiKey=...
         // Example group for RCCService: "RCCService2015" (when SettingsKey=2015 in registry)
         // Example group for Bootstrapper: "WindowsBootstrapperSettings"
         [HttpGet]
@@ -27,7 +26,6 @@ namespace Api.Controllers
             string settingsPath;
             string jsonContent;
 
-            // Handle WindowsBootstrapperSettings group
             if (group.Equals("WindowsBootstrapperSettings", StringComparison.OrdinalIgnoreCase))
             {
                 settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FFLAG", "WindowsBootstrapperSettings.json");
@@ -47,7 +45,25 @@ namespace Api.Controllers
                 return Content(jsonContent, "application/json", Encoding.UTF8);
             }
 
-            // Handle RCCService groups (original logic)
+            if (group.Equals("ClientAppSettings", StringComparison.OrdinalIgnoreCase))
+            {
+                settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FFLAG", "ClientAppSettings.json");
+                
+                if (!System.IO.File.Exists(settingsPath))
+                    return NotFound();
+
+                try
+                {
+                    jsonContent = await System.IO.File.ReadAllTextAsync(settingsPath, Encoding.UTF8);
+                }
+                catch
+                {
+                    return NotFound();
+                }
+
+                return Content(jsonContent, "application/json", Encoding.UTF8);
+            }
+
             const string rccPrefix = "RCCService";
             if (!group.StartsWith(rccPrefix, StringComparison.OrdinalIgnoreCase))
                 return NotFound();
@@ -68,11 +84,9 @@ namespace Api.Controllers
             }
             catch
             {
-                // If we cannot read the file for some reason, behave as if no settings exist.
                 return NotFound();
             }
 
-            // Return raw JSON content as expected by LoadClientSettingsFromString.
             return Content(jsonContent, "application/json", Encoding.UTF8);
         }
     }

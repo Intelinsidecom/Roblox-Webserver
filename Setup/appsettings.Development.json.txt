@@ -1,0 +1,19 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "Roblox": {
+    "ClientVersion": "version-randomhash",
+    "StudioVersion": "version-randomhash", 
+    "BootstrapperVersion": "1, 6, 3, 127",
+    "DefaultVersion": "version-randomhash",
+    "CdnHost": "setup.freblx.xyz"
+  }
+}

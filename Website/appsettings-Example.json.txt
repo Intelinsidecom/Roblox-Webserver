@@ -7,8 +7,10 @@
     }
   },
   "AllowedHosts": "*",
+  "BaseUrl": "http://localhost:5077",
+  "PublicBaseUrl": "http://www.freblx.xyz",
   "Features": {
-    "EnableRequestLogging": false
+    "EnableRequestLogging": true
   },
   "ConnectionStrings": {
     "Default": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root"
@@ -26,7 +28,7 @@
   },
   "Assets": {
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets",
-    "PublicBaseUrl": "https://www.freblx.xyz"
+    "PublicBaseUrl": "http://www.freblx.xyz"
   },
   "Games": {
     "StarterPlacePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Places\\StartingPlace.rbxl",
@@ -48,7 +50,20 @@
     "DefaultApiRateLimitTimeInSeconds": 1
   },
   "RobloxAssetDelivery": {
-    "Enabled": false,
-    "BaseUrl": "https://assetdelivery.roblox.com"
+    "Enabled": true,
+    "BaseUrl": "http://assetdelivery.roblox.com"
+  },
+  "RSA": {
+    "PrivateKey": "-----BEGIN RSA PRIVATE KEY-----MIIQxj8fw+NSzFEqlcgJfoMSCb-----END RSA PRIVATE KEY-----",
+    "PublicKey": "BgIAAACkAABSU0ExAAQAAAEAAQAdopkj6LZ9EJ8LJmIn19GwSMXQGpej1qcjymBjuwhjzEC0LRpK2HeUiJtuDsaWKlHMUuPDHz/GkDM/V1JjWv4iKVJVhPiWfnv/vZWP35brLL/CVmEDS367gNSrGOKYrNHK1ZcWy5yvZVKxVuFkxzlnuyNELQyE0ToMgKMByrqGrQ=="
+  },
+  "LocalhostMode": true,
+  "MachineAddress": "127.0.0.1",
+  "Arbiter": {
+    "Host": "localhost",
+    "Port": "5000"
+  },
+  "Setup": {
+    "SetupServicePublicHost": "setup.freblx.xyz"
   }
 }

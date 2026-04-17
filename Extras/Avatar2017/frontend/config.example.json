@@ -1,0 +1,69 @@
+{
+  "serverRuntimeConfig": {
+    "backend": {}
+  },
+  "publicRuntimeConfig": {
+    "backend": {
+      "proxyEnabled": false,
+      "flags": {
+        "myAccountPage2016Enabled": true,
+        "catalogGenreFilterSupported": false,
+        "catalogPageLimit": 28,
+        "catalogSaleCountVisibleFromDetailsEndpoint": true,
+        "catalogDetailsPageResellerLimit": 10,
+        "avatarPageInventoryLimit": 10,
+        "friendsPageLimit": 25,
+        "settingsPageThemeSelectorEnabled": true,
+        "tradeWindowInventoryCollectibleLimit": 10,
+        "moneyPagePromotionTabVisible": false,
+        "gameGenreFilterMethod": "genre",
+        "gameGenreFilterSupported": true,
+        "avatarPageOutfitCreatedAtAvailable": true,
+        "catalogDetailsPageOwnersTabEnabled": true,
+        "showTicketBalace": true,
+        "accessoriesEnabled": true,
+        "userFeedEnabled": true,
+        "requireLoginThroughCookie": false,
+        "launchUsingEsURI": true,
+        "currencyExchangeEnabled": true,
+        "downloadPageEnabled": true,
+        "packagesEnabled": true,
+        "userProfileUserStatusEnabled": true,
+        "downloadGameClients": [
+          {
+            "imageUrl": "https://www.pekora.zip/img/player.png",
+            "title": "Download the Pekora Client for Windows",
+            "url": "https://github.com/shikataganaii/Pekora-Bootstrapper/releases"
+          },
+		  {
+            "imageUrl": "https://www.pekora.zip/img/Pekora.png",
+            "title": "Mobile clients",
+            "url": "https://www.pekora.zip/download2"
+          },
+          {
+            "imageUrl": "https://www.pekora.zip/img/studio.png",
+            "title": "Download the Pekora 2017 Studio for Windows (Unstable, 2018 recommended)",
+            "url": "https://setup.pekora.zip/PekoraStudio2017.zip"
+          },
+          {
+            "imageUrl": "https://www.pekora.zip/img/studio.png",
+            "title": "Download the Pekora 2018 Studio for Windows",
+            "url": "https://setup.pekora.zip/PekoraStudio2018.zip"
+          },
+          {
+            "imageUrl": "https://www.pekora.zip/img/studio.png",
+            "title": "Download the Pekora 2020 Studio for Windows",
+            "url": "https://setup.pekora.zip/PekoraStudio2020.zip"
+          },
+          {
+            "imageUrl": "https://www.pekora.zip/img/studio.png",
+            "title": "Download the Pekora 2021 Studio for Windows",
+            "url": "https://setup.pekora.zip/PekoraStudio2021.zip"
+          }
+        ]
+      },
+      "baseUrl": "https://www.roblox.com",
+      "apiFormat": "https://www.roblox.com/apisite/{0}{1}"
+    }
+  }
+}

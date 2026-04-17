@@ -1,0 +1,40 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+;// bundle: page___ba53db9f39721693eefe5e415f9678af_m
+;// files: GenericConfirmation.js, utilities/dialog.js
+
+;// GenericConfirmation.js
+typeof Roblox=="undefined"&&(Roblox={}),typeof Roblox.GenericConfirmation=="undefined"&&(Roblox.GenericConfirmation=function(){function w(){n.isOpen=!1,t()}function k(t){var a,e,o,s,l;n.isOpen=!0,a={titleText:"",bodyContent:"",footerText:"",acceptText:Roblox.Resources.GenericConfirmation.yes,declineText:Roblox.Resources.GenericConfirmation.No,acceptColor:u,declineColor:f,xToCancel:!1,onAccept:function(){return!1},onDecline:function(){return!1},onCancel:function(){return!1},imageUrl:null,allowHtmlContentInBody:!1,allowHtmlContentInFooter:!1,dismissable:!0,fieldValidationRequired:!1,onOpenCallback:function(){}},t=$.extend({},a,t),c.overlayClose=t.dismissable,c.escClose=t.dismissable,e=$(i),e.html(t.acceptText),e.attr("class","btn-large "+t.acceptColor),e.unbind(),e.bind("click",function(){return v(e)?!1:(t.fieldValidationRequired?nt(t.onAccept):h(t.onAccept),!1)}),o=$(r),o.html(t.declineText),o.attr("class","btn-large "+t.declineColor),o.unbind(),o.bind("click",function(){return v(o)?!1:(h(t.onDecline),!1)}),$('[data-modal-handle="confirmation"] div.Title').text(t.titleText),s=$("[data-modal-handle='confirmation']"),t.imageUrl==null?s.addClass("noImage"):(s.find("img.GenericModalImage").attr("src",t.imageUrl),s.removeClass("noImage")),t.allowHtmlContentInBody?$("[data-modal-handle='confirmation'] div.Message").html(t.bodyContent):$("[data-modal-handle='confirmation'] div.Message").text(t.bodyContent),$.trim(t.footerText)==""?$('[data-modal-handle="confirmation"] div.ConfirmationModalFooter').hide():$('[data-modal-handle="confirmation"] div.ConfirmationModalFooter').show(),t.allowHtmlContentInFooter?$('[data-modal-handle="confirmation"] div.ConfirmationModalFooter').html(t.footerText):$('[data-modal-handle="confirmation"] div.ConfirmationModalFooter').text(t.footerText),$("[data-modal-handle='confirmation']").modal(c),l=$("a.genericmodal-close"),l.unbind(),l.bind("click",function(){return h(t.onCancel),!1}),t.xToCancel||l.hide(),t.onOpenCallback()}function a(n){n.hasClass(f)?n.addClass(s):n.hasClass(l)?n.addClass(e):n.hasClass(u)&&n.addClass(o)}function v(n){return n.hasClass(o)||n.hasClass(s)||n.hasClass(e)?!0:!1}function b(){var n=$(i),t=$(r);a(n),a(t)}function g(){var u=$(i),t=$(r),n=o+" "+s+" "+e;u.removeClass(n),t.removeClass(n)}function p(){if(n.isOpen){var t=$(i);t.click()}}function y(){var n=$(r);n.click()}function t(t){n.isOpen=!1,typeof t!="undefined"?$.modal.close(t):$.modal.close()}function h(n){t(),typeof n=="function"&&n()}function nt(n){if(typeof n=="function"){var i=n();if(i!=="undefined"&&i==!1)return!1}t()}var l="btn-primary",u="btn-neutral",f="btn-negative",e="btn-disabled-primary",o="btn-disabled-neutral",s="btn-disabled-negative",d="btn-none",i="#roblox-confirm-btn",r="#roblox-decline-btn",n={isOpen:!1},c={overlayClose:!0,escClose:!0,opacity:80,overlayCss:{backgroundColor:"#000"},onClose:w};return{open:k,close:t,disableButtons:b,enableButtons:g,clickYes:p,clickNo:y,status:n,green:l,blue:u,gray:f,none:d}}()),$(document).keypress(function(n){Roblox.GenericConfirmation.status.isOpen&&n.which===13&&Roblox.GenericConfirmation.clickYes()});
+
+;// utilities/dialog.js
+typeof Roblox=="undefined"&&(Roblox={}),typeof Roblox.Dialog=="undefined"&&(Roblox.Dialog=function(){function d(){n.isOpen=!1,r()}function nt(r){var v,s,h,o,a;n.isOpen=!0,v={titleText:"",bodyContent:"",footerText:"",acceptText:Roblox.Resources.Dialog.yes,declineText:Roblox.Resources.Dialog.No,acceptColor:f,declineColor:e,xToCancel:!1,onAccept:function(){return!1},onDecline:function(){return!1},onCancel:function(){return!1},imageUrl:null,allowHtmlContentInBody:!1,allowHtmlContentInFooter:!1,dismissable:!0,fieldValidationRequired:!1,onOpenCallback:function(){}},r=$.extend({},v,r),u.overlayClose=r.dismissable,u.escClose=r.dismissable,s=$(t),s.html(r.acceptText),s.attr("class",r.acceptColor),s.unbind(),s.bind("click",function(){return l(s)?!1:(r.fieldValidationRequired?y(r.onAccept):c(r.onAccept),!1)}),h=$(i),h.html(r.declineText),h.attr("class",r.declineColor),h.unbind(),h.bind("click",function(){return l(h)?!1:(c(r.onDecline),!1)}),o=$('[data-modal-type="confirmation"]'),o.find(".modal-title").text(r.titleText),r.imageUrl==null?o.addClass("noImage"):(o.find("img.modal-thumb").attr("src",r.imageUrl),o.removeClass("noImage")),r.allowHtmlContentInBody?o.find(".modal-message").html(r.bodyContent):o.find(".modal-message").text(r.bodyContent),$.trim(r.footerText)==""?o.find(".modal-footer").hide():o.find(".modal-footer").show(),r.allowHtmlContentInFooter?o.find(".modal-footer").html(r.footerText):o.find(".modal-footer").text(r.footerText),o.modal(u),a=$(".modal-header .close"),a.unbind(),a.bind("click",function(){return c(r.onCancel),!1}),r.xToCancel||a.hide(),$("#rbx-body").addClass("modal-mask"),r.onOpenCallback()}function a(n){n.hasClass(e)?n.addClass(h):n.hasClass(v)?n.addClass(o):n.hasClass(f)&&n.addClass(s)}function l(n){return n.hasClass(s)||n.hasClass(h)||n.hasClass(o)?!0:!1}function p(){var n=$(t),r=$(i);a(n),a(r)}function w(){var u=$(t),r=$(i),n=s+" "+h+" "+o;u.removeClass(n),r.removeClass(n)}function b(){if(n.isOpen){var i=$(t);i.click()}}function k(){var n=$(i);n.click()}function r(t){n.isOpen=!1,typeof t!="undefined"?$.modal.close(t):$.modal.close(),$("#rbx-body").removeClass("modal-mask")}function c(n){r(),typeof n=="function"&&n()}function y(n){if(typeof n=="function"){var t=n();if(t!=="undefined"&&t==!1)return!1}r()}function tt(n,t){var i=$(".modal-body");n?(i.find(".modal-btns").hide(),i.find(".modal-processing").show()):(i.find(".modal-btns").show(),i.find(".modal-processing").hide()),typeof t!="undefined"&&t!==""&&$.modal.close("."+t)}var v="btn-primary-md",f="btn-secondary-md",e="btn-control-md",o="btn-primary-md disabled",s="btn-secondary-md disabled",h="btn-control-md disabled",g="btn-none",t=".modal-btns #confirm-btn",i=".modal-btns #decline-btn",n={isOpen:!1},u={overlayClose:!0,escClose:!0,opacity:80,zIndex:1040,overlayCss:{backgroundColor:"#000"},onClose:d,focus:!1};return{open:nt,close:r,disableButtons:p,enableButtons:w,clickYes:b,clickNo:k,status:n,toggleProcessing:tt,green:v,blue:f,white:e,none:g}}()),$(document).keypress(function(n){Roblox.Dialog.isOpen&&n.which===13&&Roblox.Dialog.clickYes()});
+
+}
+
+/*
+     FILE ARCHIVED ON 07:12:57 Jul 26, 2016 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 20:18:04 Apr 05, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.622
+  exclusion.robots: 0.017
+  exclusion.robots.policy: 0.007
+  esindex: 0.009
+  cdx.remote: 6.442
+  LoadShardBlock: 95.648 (3)
+  PetaboxLoader3.datanode: 135.763 (5)
+  PetaboxLoader3.resolve: 96.2 (4)
+  load_resource: 199.806 (2)
+*/

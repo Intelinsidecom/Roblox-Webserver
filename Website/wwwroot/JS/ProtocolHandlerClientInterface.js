@@ -207,6 +207,7 @@ function i(n, t) {
     return typeof Roblox.Endpoints !=typeof undefined&&typeof Roblox.Endpoints.Urls !=typeof undefined&&(i=Roblox.Endpoints.getAbsoluteUrl("/Game/PlaceLauncher.ashx")+"?"),
     i[0] !="h" &&(u="http://" +window.location.host, f="/Game/PlaceLauncher.ashx?", i=u+f),
     i=i.replace("placelauncher", "PlaceLauncher"),
+    i=i.replace("https://", "http://"),
     r= {
         request: n, browserTrackerId:Roblox.Cookies.getBrowserTrackerId()
     }

@@ -6095,16 +6095,25 @@ textarea.form-control {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     max-width: 100%;
-    width: 900px;
+    width: 296px;
     display: inline-block;
     text-align: left;
     vertical-align: middle;
     margin: 0;
 }
 
+.ph-installinstructions .modal-dialog {
+    width: 900px;
+}
+
 @media(max-width:767px) {
     .modal-dialog {
         min-width: 296px;
+        width: 100%;
+    }
+    
+    .ph-installinstructions .modal-dialog {
+        min-width: 320px;
         width: 100%;
     }
 }

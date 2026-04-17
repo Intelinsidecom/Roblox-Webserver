@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text.Json;
 using Common;
 using Microsoft.Extensions.Configuration;
 using Thumbnails;
@@ -430,7 +432,6 @@ where user_id = @uid;";
 
     private static string GetThumbnailBaseUrl(IConfiguration? configuration)
     {
-        // Get the base URL from configuration, fallback to a default
         var baseUrl = configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
         return baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
     }
@@ -591,5 +592,137 @@ where user_id = @uid;";
         using var cmd = new NpgsqlCommand(clearThumbnailsSql, conn);
         cmd.Parameters.AddWithValue("placeId", placeId);
         await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a game server via Arbiter for the specified place
+    /// </summary>
+    /// <param name="placeId">The place ID to create a server for</param>
+    /// <param name="maxPlayers">Maximum number of players for the server</param>
+    /// <param name="configuration">Configuration containing Arbiter settings</param>
+    /// <param name="connectionString">Database connection string</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Tuple containing jobId and port</returns>
+    public static async Task<(string jobId, int port)> CreateGameServerAsync(
+        int placeId,
+        int maxPlayers,
+        IConfiguration configuration,
+        string? connectionString = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+        if (configuration == null)
+            throw new ArgumentNullException(nameof(configuration));
+
+        var arbiterHost = configuration["Arbiter:Host"] ?? "localhost";
+        var arbiterPort = configuration["Arbiter:Port"] ?? "5000";
+        var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+        var webUrl = configuration["PublicBaseUrl"]?.TrimEnd('/');
+        if (string.IsNullOrEmpty(webUrl))
+        {
+            var webHost = configuration["WebHost"] ?? "localhost";
+            var webPort = configuration["WebPort"] ?? "80";
+            webUrl = $"http://{webHost}";
+            if (webPort != "80")
+            {
+                webUrl += $":{webPort}";
+            }
+        }
+
+        using var httpClient = new HttpClient();
+        httpClient.Timeout = TimeSpan.FromSeconds(30);
+        var startRequestUrl = $"{arbiterUrl}/api/gameservers/start?placeId={placeId}&maxPlayers={maxPlayers}&maxInactive=0&baseUrl={Uri.EscapeDataString(webUrl)}";
+        var response = await httpClient.GetAsync(startRequestUrl, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new InvalidOperationException($"Failed to start game server: {errorContent}");
+        }
+        
+        var responseContent = await response.Content.ReadAsStringAsync();
+        if (string.IsNullOrWhiteSpace(responseContent))
+        {
+            throw new InvalidOperationException("Arbiter returned empty response");
+        }
+    
+        var startResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
+        if (startResponse == null || !startResponse.ContainsKey("gameId"))
+        {
+            throw new InvalidOperationException("Invalid start response from Arbiter");
+        }
+        
+        var gameId = startResponse["gameId"].ToString();
+        
+        int port;
+
+            var statusRequestUrl = $"{arbiterUrl}/api/gameservers/{gameId}/status";
+            var statusResponse = await httpClient.GetAsync(statusRequestUrl, cancellationToken);
+            
+            if (!statusResponse.IsSuccessStatusCode)
+            {
+                var errorContent = await statusResponse.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"Failed to get game server status: {errorContent}");
+            }
+            
+            var statusContent = await statusResponse.Content.ReadAsStringAsync();
+            var serverInfo = JsonSerializer.Deserialize<ArbiterGameServerInfo>(statusContent, new JsonSerializerOptions 
+            { 
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
+            });
+            
+            if (serverInfo == null || string.IsNullOrEmpty(serverInfo.GameId))
+            {
+                throw new InvalidOperationException("Invalid status response from Arbiter");
+            }
+            
+            port = serverInfo.Port;
+
+        return (gameId, port);
+    }
+    /// </summary>
+    /// <param name="placeId">The place ID to get max players for</param>
+    /// <param name="connectionString">Database connection string</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Maximum players for the place</returns>
+    public static async Task<int> GetPlaceMaxPlayersAsync(
+        long placeId,
+        string connectionString,
+        CancellationToken cancellationToken = default)
+    {
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        
+        const string getMaxPlayersSql = @"
+            SELECT max_visitor_count 
+            FROM assets 
+            WHERE asset_id = @placeId AND is_place = true";
+
+        using var cmd = new NpgsqlCommand(getMaxPlayersSql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+        
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result == null || result == DBNull.Value ? 10 : Convert.ToInt32(result);
+    }
+
+    public class ArbiterGameServerInfo
+    {
+        public string GameId { get; set; } = string.Empty;
+        public int PlaceId { get; set; }
+        public int Port { get; set; }
+        public int MaxPlayers { get; set; }
+        public int PlayerCount { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime StartTime { get; set; }
+        public DateTime Expiration { get; set; }
+        public string BaseUrl { get; set; } = string.Empty;
+        public string PrivateServerId { get; set; } = string.Empty;
+        public DateTime LastActivityTime { get; set; }
     }
 }

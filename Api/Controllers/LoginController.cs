@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -10,6 +10,7 @@ using Common;
 using System.Security.Cryptography;
 using System.Net;
 using NpgsqlTypes;
+using Games;
 
 namespace Api.Controllers
 {
@@ -25,9 +26,8 @@ namespace Api.Controllers
 
         [HttpPost("v1")]
         [Consumes("application/json", "application/x-www-form-urlencoded", "multipart/form-data", "text/plain")]
-        public async Task<IActionResult> LoginV1([FromServices] IConfiguration config)
+        public async Task<IActionResult> LoginV1([FromServices] IConfiguration config, [FromServices] TokenService tokenService)
         {
-            // Parse input flexibly (form, query, or json)
             var username = string.Empty;
             var password = string.Empty;
 
@@ -95,50 +95,22 @@ namespace Api.Controllers
 
             if (userId <= 0 || string.IsNullOrEmpty(storedPassword) || !string.Equals(storedPassword, password, StringComparison.Ordinal))
             {
-                // Mirror legacy behavior: 403 on credential failure
                 return StatusCode(403, new { message = "Credentials" });
             }
 
-            // Create Roblox-style opaque token and persist session
-            var token = HashingUtilities.GenerateSecurityToken();
-            var expires = DateTimeOffset.UtcNow.AddYears(1);
-
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+            string token;
             try
             {
-                await using var conn = new NpgsqlConnection(connString);
-                await conn.OpenAsync();
-                // Ensure sessions table exists
-                await using (var createCmd = new NpgsqlCommand(@"create table if not exists sessions (
-                    token text primary key,
-                    user_id bigint not null,
-                    created_at timestamptz not null,
-                    expires_at timestamptz not null,
-                    last_ip inet null
-                );", conn))
-                {
-                    await createCmd.ExecuteNonQueryAsync();
-                }
-
-                await using (var ins = new NpgsqlCommand("insert into sessions(token, user_id, created_at, expires_at, last_ip) values (@t,@uid, now() at time zone 'utc', @exp, @ip)", conn))
-                {
-                    ins.Parameters.AddWithValue("t", token);
-                    ins.Parameters.AddWithValue("uid", userId);
-                    ins.Parameters.AddWithValue("exp", expires.UtcDateTime);
-                    var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-                    if (string.IsNullOrWhiteSpace(ip))
-                        ins.Parameters.AddWithValue("ip", DBNull.Value);
-                    else
-                        ins.Parameters.AddWithValue("ip", NpgsqlDbType.Inet, IPAddress.Parse(ip));
-                    await ins.ExecuteNonQueryAsync();
-                }
+                token = await tokenService.CreateSessionAsync(userId, ip);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { errors = new[] { new { code = 8, message = "Session create failed" } }, detail = ex.Message });
             }
-
-            // Set session cookie to the opaque token
+            var expires = DateTimeOffset.UtcNow.AddYears(1);
             var isHttps = Request.IsHttps;
+            var allowInsecure = config.GetValue<bool>("Auth:AllowInsecureCookies");
             var cookieDomain = config["Auth:CookieDomain"];
             var sameSiteConfig = (config["Auth:CookieSameSite"] ?? "Lax").Trim();
             var sameSite = SameSiteMode.Lax;
@@ -151,7 +123,7 @@ namespace Api.Controllers
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = isHttps,
+                    Secure = isHttps && !allowInsecure,
                     SameSite = sameSite,
                     Expires = expires,
                     Path = "/",
@@ -173,3 +145,4 @@ namespace Api.Controllers
         }
     }
 }
+

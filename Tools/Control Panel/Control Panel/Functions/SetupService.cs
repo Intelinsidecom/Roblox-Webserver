@@ -480,8 +480,9 @@ namespace ControlPanel.Functions
                     var bootstrapperDestPath = Path.Combine(wwwrootPath, bootstrapperFileName);
                     
                     File.Copy(bootstrapperPath, bootstrapperDestPath, true);
-                    packagedFiles.Add(bootstrapperFileName);
-                    
+                    packagedFiles.Add(bootstrapperFileName);                
+                    var launcherPath = Path.Combine(wwwrootPath, "RobloxPlayerLauncher.exe");
+                    File.Copy(bootstrapperPath, launcherPath, overwrite: true);
                 }
                 else if (!string.IsNullOrEmpty(bootstrapperPath))
                 {

@@ -1,0 +1,27 @@
+﻿{
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:5073;http://localhost:5071",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "C:/certs/_.freblx.xyz-crt.pem",
+        "ASPNETCORE_Kestrel__Certificates__Default__KeyPath": "C:/certs/_.freblx.xyz-key-pkcs8.pem"
+      }
+    },
+    "Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "https://localhost:5073;http://localhost:5071",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "ASPNETCORE_Kestrel__Certificates__Default__Path": "C:/certs/_.freblx.xyz-crt.pem",
+        "ASPNETCORE_Kestrel__Certificates__Default__KeyPath": "C:/certs/_.freblx.xyz-key-pkcs8.pem"
+      }
+    }
+  }
+}

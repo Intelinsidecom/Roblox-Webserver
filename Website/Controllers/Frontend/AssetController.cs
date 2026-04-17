@@ -44,38 +44,41 @@ namespace Website.Controllers
             string? hash = null;
             string? ext = null;
             string? contentType = null;
-
-            // Get asset metadata using service
             var metadata = await _assetService.GetAssetMetadataAsync(id.Value);
             hash = metadata.Hash;
             ext = metadata.Extension;
             contentType = metadata.ContentType;
 
-            if (string.IsNullOrWhiteSpace(hash))
-                return NotFound(new { error = "Asset not found" });
-
-            var assetsRoot = _configuration["Assets:Directory"];
-            if (string.IsNullOrWhiteSpace(assetsRoot))
-                return StatusCode(500, "Assets directory is not configured.");
-
-            var fullPath = _assetService.GetAssetFilePath(hash, ext);
-            if (string.IsNullOrEmpty(fullPath) || !System.IO.File.Exists(fullPath))
+            if (!string.IsNullOrWhiteSpace(hash))
             {
-                if (_assetService.IsRobloxAssetDeliveryEnabled())
+                var assetsRoot = _configuration["Assets:Directory"];
+                if (!string.IsNullOrWhiteSpace(assetsRoot))
                 {
-                    var result = await _assetService.TryFetchFromRobloxAssetDeliveryAsync(id.Value, contentType);
-                    if (result.Stream != null)
+                    var fullPath = _assetService.GetAssetFilePath(hash, ext);
+                    if (!string.IsNullOrEmpty(fullPath) && System.IO.File.Exists(fullPath))
                     {
-                        return File(result.Stream, result.ContentType);
+                        var ct = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType;
+                        var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+                        return File(stream, ct);
                     }
-                    return NotFound(new { error = result.Error });
                 }
-                return NotFound(new { error = "Asset file not found" });
             }
 
-            var ct = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType;
-            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
-            return File(stream, ct);
+            if (_assetService.IsRobloxAssetDeliveryEnabled())
+            {
+                var result = await _assetService.TryFetchFromRobloxAssetDeliveryAsync(id.Value, contentType);
+                if (result.Stream != null)
+                {
+                    return File(result.Stream, result.ContentType);
+                }
+                if (string.IsNullOrWhiteSpace(hash))
+                    return NotFound(new { error = "Asset not found" });
+                return NotFound(new { error = result.Error });
+            }
+
+            if (string.IsNullOrWhiteSpace(hash))
+                return NotFound(new { error = "Asset not found" });
+            return NotFound(new { error = "Asset file not found" });
         }
 
         // GET /Asset/characterfetch.ashx?player={id}

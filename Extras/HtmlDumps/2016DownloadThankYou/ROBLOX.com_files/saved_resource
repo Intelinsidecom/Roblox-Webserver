@@ -1,0 +1,33 @@
+var _____WB$wombat$assign$function_____=function(name){return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name))||self[name];};if(!self.__WB_pmw){self.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opens = _____WB$wombat$assign$function_____("opens");
+/* PLEASE DO NOT COPY AND PASTE THIS CODE. */
+!function(){var t=document.createElement("script");t.setAttribute("ec-api-script", "true");t.type="text/javascript",t.async=!0,t.src="https://web.archive.org/web/20210822221104/https://roblox-api.arkoselabs.com/cdn/fc/js/e67ba60992d616f29f00d3b20e67e573e381e46e/standard/funcaptcha_api.js";var e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(t,e)}();
+}
+
+/*
+     FILE ARCHIVED ON 22:11:04 Aug 22, 2021 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 20:23:30 Apr 05, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  captures_list: 0.689
+  exclusion.robots: 0.017
+  exclusion.robots.policy: 0.007
+  esindex: 0.01
+  cdx.remote: 38.355
+  LoadShardBlock: 543.192 (6)
+  PetaboxLoader3.datanode: 464.387 (7)
+  PetaboxLoader3.resolve: 289.613 (3)
+  load_resource: 275.266
+*/

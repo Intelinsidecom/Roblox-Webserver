@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,109 @@ namespace RCCArbiter
     public class PlayerCountRequest
     {
         public int PlayerCount { get; set; }
+    }
+
+    /// <summary>
+    /// Token-based callback system for game server reporting
+    /// Ensures only authorized callbacks can complete report requests
+    /// </summary>
+    public class ReportCallbackManager
+    {
+        private readonly ConcurrentDictionary<string, CallbackEntry> _pendingCallbacks = new();
+        private readonly Timer _cleanupTimer;
+        private readonly TimeSpan _tokenTimeout = TimeSpan.FromSeconds(30);
+
+        private class CallbackEntry
+        {
+            public string Token { get; set; } = string.Empty;
+            public string GameId { get; set; } = string.Empty;
+            public TaskCompletionSource<Dictionary<string, object>> CompletionSource { get; set; } = new();
+            public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+            public bool IsCompleted { get; set; } = false;
+        }
+
+        public ReportCallbackManager()
+        {
+            _cleanupTimer = new Timer(_ => CleanupExpiredTokens(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+        }
+
+        /// <summary>
+        /// Create a new callback token and return the completion task
+        /// </summary>
+        public (string token, Task<Dictionary<string, object>> completionTask) CreateCallback(string gameId)
+        {
+            var token = Guid.NewGuid().ToString("N"); // N format = 32 chars no dashes
+            var entry = new CallbackEntry
+            {
+                Token = token,
+                GameId = gameId,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _pendingCallbacks[token] = entry;
+            return (token, entry.CompletionSource.Task);
+        }
+
+        /// <summary>
+        /// Complete a callback with received data. Returns true if token was valid.
+        /// </summary>
+        public bool CompleteCallback(string token, Dictionary<string, object> data)
+        {
+            if (!_pendingCallbacks.TryGetValue(token, out var entry))
+            {
+                return false;
+            }
+
+            if (entry.IsCompleted)
+            {
+                return false;
+            }
+
+            if (DateTime.UtcNow - entry.CreatedAt > _tokenTimeout)
+            {
+                _pendingCallbacks.TryRemove(token, out _);
+                return false;
+            }
+
+            entry.IsCompleted = true;
+            _pendingCallbacks.TryRemove(token, out _);
+            entry.CompletionSource.TrySetResult(data);
+            
+            return true;
+        }
+
+        /// <summary>
+        /// Cancel a pending callback (e.g., if script execution fails)
+        /// </summary>
+        public void CancelCallback(string token, string reason)
+        {
+            if (_pendingCallbacks.TryRemove(token, out var entry))
+            {
+                entry.CompletionSource.TrySetCanceled();
+            }
+        }
+
+        private void CleanupExpiredTokens()
+        {
+            var now = DateTime.UtcNow;
+            var expired = _pendingCallbacks
+                .Where(kvp => now - kvp.Value.CreatedAt > _tokenTimeout)
+                .Select(kvp => kvp.Key)
+                .ToList();
+
+            foreach (var token in expired)
+            {
+                if (_pendingCallbacks.TryRemove(token, out var entry))
+                {
+                    entry.CompletionSource.TrySetCanceled();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            _cleanupTimer?.Dispose();
+        }
     }
 
     partial class Program
@@ -208,6 +312,133 @@ namespace RCCArbiter
             }
         }
 
+        /// <summary>
+        /// Automatically collect status reports from all active game servers
+        /// </summary>
+        private static async Task CollectReportsFromAllServersAsync(GameServerManager gameServerManager, string rccUrl, ReportCallbackManager callbackManager)
+        {
+            var servers = gameServerManager.GetAllGameServers().ToList();
+            
+            if (servers.Count == 0)
+            {
+                return;
+            }
+            
+            var tasks = servers.Select(async server =>
+            {
+                try
+                {
+                    var reportData = await CollectSingleServerReportAsync(server.GameId, gameServerManager, rccUrl, callbackManager);
+                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[AutoCollect] Error collecting report from {server.GameId}: {ex.Message}");
+                }
+            });
+            
+            await Task.WhenAll(tasks);
+            Console.WriteLine("[AutoCollect] Automatic status collection completed");
+        }
+        
+        /// <summary>
+        /// Collect status report from a single game server
+        /// </summary>
+        private static async Task<Dictionary<string, object>?> CollectSingleServerReportAsync(string gameId, GameServerManager gameServerManager, string rccUrl, ReportCallbackManager callbackManager)
+        {
+            try
+            {
+                var serverInfo = gameServerManager.GetGameServerInfo(gameId);
+                if (serverInfo == null)
+                {
+                    return null;
+                }
+                
+                string urlToUse = rccUrl;
+                var dedicatedRccUrl = gameServerManager.GetGameServerRccUrl(gameId);
+                if (!string.IsNullOrWhiteSpace(dedicatedRccUrl))
+                {
+                    urlToUse = dedicatedRccUrl;
+                }
+                
+                var (token, completionTask) = callbackManager.CreateCallback(gameId);
+                var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
+                var provider = new FileScriptProvider(scriptsRoot);
+                var renderer = new ScriptRenderer();
+                
+                if (!provider.TryGetScript("CollectGameServerStatus", out var template))
+                {
+                    callbackManager.CancelCallback(token, "Script not found");
+                    return null;
+                }
+                
+                var parameters = new Dictionary<string, string>
+                {
+                    ["reportType"] = "ping",
+                    ["callbackToken"] = token,
+                    ["arbiterUrl"] = "https://www.freblx.xyz"
+                };
+                
+                var renderedScript = renderer.Render(template, parameters);
+                using var client = new RCCClient(urlToUse);
+                var script = new ScriptExecution
+                {
+                    name = "CollectGameServerStatus",
+                    script = renderedScript,
+                    arguments = null
+                };
+                
+                _ = Task.Run(async () =>
+                {
+                    // sometimes RCC doesn't receive the script
+                    const int maxRetries = 3;
+                    for (int attempt = 1; attempt <= maxRetries; attempt++)
+                    {
+                        try
+                        {
+                            var results = client.ExecuteEx(gameId, script);
+                            
+                            if (results != null && results.Length > 0)
+                            {
+                                return;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[AutoCollect] ExecuteEx attempt {attempt} failed for {gameId}: {ex.Message}");
+                            if (attempt == maxRetries)
+                            {
+                                Console.WriteLine($"[AutoCollect] All {maxRetries} attempts failed for {gameId}, script did not execute RCC-side");
+                            }
+                            else
+                            {
+                                await Task.Delay(500 * attempt);
+                            }
+                        }
+                    }
+                });
+                
+                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+                var completedTask = await Task.WhenAny(completionTask, timeoutTask);
+                
+                if (completedTask == timeoutTask)
+                {
+                    callbackManager.CancelCallback(token, "Timeout");
+                    return null;
+                }
+                
+                var statusData = await completionTask;
+                gameServerManager.UpdateGameServerStatus(gameId, statusData);
+                
+                return statusData;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AutoCollect] Error collecting report from {gameId}: {ex.Message}");
+                return null;
+            }
+        }
+
         private static void StartHttpServer(string rccUrl)
         {
             var builder = WebApplication.CreateBuilder();
@@ -226,6 +457,7 @@ namespace RCCArbiter
             var provider = new FileScriptProvider(scriptsRoot);
             var renderer = new ScriptRenderer();
             _renderMgr = new RenderingRccManager(builder.Configuration);
+            var callbackManager = new ReportCallbackManager();
 
             app.MapGet("/health", () => Results.Ok(new { ok = true }));
 
@@ -585,6 +817,17 @@ namespace RCCArbiter
             }
 
             var gameServerManager = new GameServerManager(rccUrl, builder.Configuration);
+            var reportCollectionTimer = new Timer(async _ => 
+            {
+                try
+                {
+                    await CollectReportsFromAllServersAsync(gameServerManager, rccUrl, callbackManager);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[AutoReportCollection] Error: {ex.Message}");
+                }
+            }, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2));
 
             app.MapPost("/api/gameservers/start", async (StartGameServerRequest request) =>
             {
@@ -603,7 +846,6 @@ namespace RCCArbiter
                     }
                     using (lease)
                     {
-                        // Generate dynamic port if not provided
                         var port = request.Port;
                         if (port == 0)
                         {
@@ -618,6 +860,20 @@ namespace RCCArbiter
                             request.BaseUrl ?? "",
                             request.MaxInactive ?? 0
                         );
+                        
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay(3000);
+                                var report = await CollectSingleServerReportAsync(gameId, gameServerManager, rccUrl, callbackManager);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[InitialReport] Error collecting first report from {gameId}: {ex.Message}");
+                            }
+                        });
+                        
                         return Results.Ok(new { gameId = gameId, status = "started" });
                     }
                 }
@@ -669,6 +925,25 @@ namespace RCCArbiter
                             baseUrl,
                             maxInactive
                         );
+                        
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay(3000);
+                                Console.WriteLine($"[InitialReport] Collecting first report from new server {gameId}");
+                                var report = await CollectSingleServerReportAsync(gameId, gameServerManager, rccUrl, callbackManager);
+                                if (report != null)
+                                {
+                                    Console.WriteLine($"[InitialReport] First report collected for {gameId}: {report.GetValueOrDefault("playerCount", 0)} players");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[InitialReport] Error collecting first report from {gameId}: {ex.Message}");
+                            }
+                        });
+                        
                         return Results.Ok(new { gameId = gameId, status = "started" });
                     }
                 }
@@ -915,7 +1190,7 @@ namespace RCCArbiter
                 }
             });
 
-            app.MapGet("/api/gameservers", () =>
+            app.MapGet("/api/gameservers", async () =>
             {
                 try
                 {
@@ -932,6 +1207,8 @@ namespace RCCArbiter
                     }
                     using (lease)
                     {
+                        await CollectReportsFromAllServersAsync(gameServerManager, rccUrl, callbackManager);
+                        
                         var servers = gameServerManager.GetAllGameServers();
                         return Results.Ok(servers);
                     }
@@ -1009,6 +1286,319 @@ namespace RCCArbiter
                 }
             });
 
+            async Task<IResult> HandleReportRequest(HttpRequest req)
+            {
+                try
+                {
+                    var gameId = req.Query["gameId"].FirstOrDefault() ?? "";
+                    var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 0;
+                    var reportType = req.Query["type"].FirstOrDefault() ?? "full";
+                    
+                    if (string.IsNullOrWhiteSpace(gameId))
+                    {
+                        return Results.BadRequest(new { error = "gameId is required" });
+                    }
+                    
+                    var serverInfo = gameServerManager.GetGameServerInfo(gameId);
+                    if (serverInfo == null)
+                    {
+                        return Results.NotFound(new { error = $"Game server {gameId} not found" });
+                    }
+                    
+                    string urlToUse = rccUrl;
+
+                    if (!string.IsNullOrWhiteSpace(serverInfo.BaseUrl))
+                    {
+                        var dedicatedRccUrl = gameServerManager.GetGameServerRccUrl(gameId);
+                        if (!string.IsNullOrWhiteSpace(dedicatedRccUrl))
+                        {
+                            urlToUse = dedicatedRccUrl;
+                        }
+                    }
+                    
+                    var (token, completionTask) = callbackManager.CreateCallback(gameId);
+                    var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
+                    var provider = new FileScriptProvider(scriptsRoot);
+                    var renderer = new ScriptRenderer();
+                    
+                    if (!provider.TryGetScript("CollectGameServerStatus", out var template))
+                    {
+                        callbackManager.CancelCallback(token, "Script not found");
+                        return Results.NotFound(new { error = "Status collection script not found" });
+                    }
+                    
+                    var parameters = new Dictionary<string, string>
+                    {
+                        ["reportType"] = reportType,
+                        ["callbackToken"] = token,
+                        ["arbiterUrl"] = "https://www.freblx.xyz"
+                    };
+                    
+                    var renderedScript = renderer.Render(template, parameters);
+                    using var client = new RCCClient(urlToUse);
+                    var script = new ScriptExecution
+                    {
+                        name = "CollectGameServerStatus",
+                        script = renderedScript,
+                        arguments = null
+                    };
+                    
+                    _ = Task.Run(async () =>
+                    {
+                        const int maxRetries = 3;
+                        for (int attempt = 1; attempt <= maxRetries; attempt++)
+                        {
+                            try
+                            {
+                                var results = client.ExecuteEx(gameId, script);
+
+                                if (results != null && results.Length > 0 && results[0].type != LuaType.LUA_TNIL)
+                                {
+                                    return; // Success, exit retry loop
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                if (attempt == maxRetries)
+                                {
+                                    Console.WriteLine($"[Report] All {maxRetries} attempts failed for {gameId}, script did NOT execute RCC-side");
+                                }
+                                else
+                                {
+                                    await Task.Delay(500 * attempt);
+                                }
+                            }
+                        }
+                    });
+                    
+                    var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
+                    var completedTask = await Task.WhenAny(completionTask, timeoutTask);
+                    
+                    if (completedTask == timeoutTask)
+                    {
+                        callbackManager.CancelCallback(token, "Timeout waiting for callback");
+                        
+                        var cachedServerInfo = gameServerManager.GetGameServerInfo(gameId);
+                        if (cachedServerInfo != null && cachedServerInfo.HasReceivedReport)
+                        {
+                            return Results.Ok(new 
+                            { 
+                                gameId = gameId, 
+                                reportType = reportType,
+                                collected = true,
+                                source = "cached",
+                                playerCount = cachedServerInfo.PlayerCount,
+                                warning = "Callback timeout, using cached data"
+                            });
+                        }
+                        
+                        return Results.Ok(new 
+                        { 
+                            gameId = gameId, 
+                            reportType = reportType,
+                            collected = false,
+                            error = "Timeout waiting for game server report callback",
+                            token = token.Substring(0, 8) + "..."
+                        });
+                    }
+                    
+
+                    try
+                    {
+                        var statusData = await completionTask;
+                        gameServerManager.UpdateGameServerStatus(gameId, statusData);
+                        int playerCount = 0;
+                        if (statusData.TryGetValue("players", out var playersObj) && playersObj is Dictionary<string, object> players)
+                        {
+                            if (players.TryGetValue("total", out var totalObj))
+                            {
+                                if (totalObj is double total)
+                                {
+                                    playerCount = (int)total;
+                                }
+                                else if (totalObj is long totalLong)
+                                {
+                                    playerCount = (int)totalLong;
+                                }
+                                else if (int.TryParse(totalObj?.ToString(), out var parsedInt))
+                                {
+                                    playerCount = parsedInt;
+                                }
+                            }
+                        }
+                        
+                        return Results.Ok(new 
+                        { 
+                            gameId = gameId, 
+                            reportType = reportType,
+                            collected = true,
+                            source = "callback",
+                            playerCount = playerCount,
+                            data = statusData
+                        });
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return Results.Ok(new 
+                        { 
+                            gameId = gameId, 
+                            reportType = reportType,
+                            collected = false,
+                            error = "Callback was cancelled"
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            }
+            
+            app.MapGet("/api/gameservers/report", HandleReportRequest);
+            app.MapPost("/api/gameservers/report", HandleReportRequest);
+            app.MapPost("/gs/callback", async (HttpRequest req) =>
+            {
+                try
+                {
+                    var form = await req.ReadFormAsync();
+                    
+                    if (!form.TryGetValue("CallbackToken", out var tokenValue) || 
+                        string.IsNullOrWhiteSpace(tokenValue))
+                    {
+                        return Results.BadRequest(new { error = "CallbackToken is required" });
+                    }
+                    
+                    var token = tokenValue.ToString();
+                    
+                    if (!form.TryGetValue("ServerId", out var serverIdValue) || 
+                        string.IsNullOrWhiteSpace(serverIdValue))
+                    {
+                        return Results.BadRequest(new { error = "serverId is required" });
+                    }
+                    
+                    var serverId = serverIdValue.ToString();
+                    var placeId = int.TryParse(form["PlaceId"], out var pid) ? pid : 0;
+                    var playerCount = int.TryParse(form["PlayerCount"], out var pc) ? pc : 0;
+                    var authenticatedCount = int.TryParse(form["AuthenticatedCount"], out var ac) ? ac : 0;
+                    var guestCount = int.TryParse(form["GuestCount"], out var gc) ? gc : 0;
+                    var fps = double.TryParse(form["FPS"], out var f) ? f : 0;
+                    var memory = int.TryParse(form["Memory"], out var m) ? m : 0;
+                    var ping = double.TryParse(form["Ping"], out var p) ? p : 0;
+                    var timestamp = double.TryParse(form["Timestamp"], out var t) ? t : 0;
+                    var statusData = new Dictionary<string, object>
+                    {
+                        ["gameId"] = serverId,
+                        ["placeId"] = placeId,
+                        ["timestamp"] = timestamp,
+                        ["isAlive"] = true,
+                        ["players"] = new Dictionary<string, object>
+                        {
+                            ["total"] = playerCount,
+                            ["authenticatedCount"] = authenticatedCount,
+                            ["guestCount"] = guestCount,
+                            ["maxPlayers"] = 10
+                        },
+                        ["performance"] = new Dictionary<string, object>
+                        {
+                            ["fps"] = fps,
+                            ["memoryUsage"] = memory,
+                            ["averagePing"] = ping
+                        }
+                    };
+                    
+                    var success = callbackManager.CompleteCallback(token, statusData);
+                    
+                    if (!success)
+                    {
+                        return Results.BadRequest(new { error = "Invalid or expired token" });
+                    }
+                    
+                    return Results.Ok(new 
+                    { 
+                        received = true,
+                        token = token.Substring(0, Math.Min(8, token.Length)) + "..."
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+            
+            app.MapPost("/gs/ping", (GameServerPingRequest request) =>
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(request.ServerId))
+                    {
+                        return Results.BadRequest(new { error = "serverId is required" });
+                    }
+                    
+                    gameServerManager.UpdateServerActivity(request.ServerId);
+                    gameServerManager.UpdatePlayerCount(request.ServerId, request.PlayerCount);
+                    
+                    return Results.Ok(new 
+                    { 
+                        serverId = request.ServerId,
+                        received = true,
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+            
+            app.MapPost("/gs/players/report", (PlayerEventRequest request) =>
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(request.ServerId))
+                    {
+                        return Results.BadRequest(new { error = "serverId is required" });
+                    }
+                    
+                    gameServerManager.RecordPlayerEvent(request.ServerId, request.UserId, request.EventType);
+                    
+                    return Results.Ok(new 
+                    { 
+                        serverId = request.ServerId,
+                        userId = request.UserId,
+                        eventType = request.EventType,
+                        recorded = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+            
+            app.MapPost("/gs/shutdown", (GameServerShutdownRequest request) =>
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(request.ServerId))
+                    {
+                        return Results.BadRequest(new { error = "serverId is required" });
+                    }
+                    
+                    gameServerManager.RecordShutdown(request.ServerId, request.Reason);
+                    
+                    return Results.Ok(new 
+                    { 
+                        serverId = request.ServerId,
+                        reason = request.Reason,
+                        shutdownRecorded = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
             var bound = string.IsNullOrWhiteSpace(urls) ? "default Kestrel URLs (e.g. http://localhost:5000)" : urls;
             Console.WriteLine($"HTTP mode: listening on {bound}");
             app.Run();
@@ -1037,6 +1627,46 @@ namespace RCCArbiter
                 LuaType.LUA_TSTRING => new { type = "string", value = value.value },
                 LuaType.LUA_TTABLE => new { type = "table", value = FormatLuaValues(value.table) },
                 _ => new { type = "unknown", value = (string?)null }
+            };
+        }
+
+        /// <summary>
+        /// Parses a Lua table value into a Dictionary for use with GameServerManager.UpdateGameServerStatus
+        /// </summary>
+        static Dictionary<string, object> ParseLuaTableToDictionary(LuaValue tableValue)
+        {
+            var dict = new Dictionary<string, object>();
+            
+            if (tableValue.type != LuaType.LUA_TTABLE || tableValue.table == null)
+                return dict;
+            
+            for (int i = 0; i < tableValue.table.Length - 1; i += 2)
+            {
+                var key = tableValue.table[i];
+                var value = tableValue.table[i + 1];
+                
+                if (key.type == LuaType.LUA_TSTRING && !string.IsNullOrEmpty(key.value))
+                {
+                    dict[key.value] = ConvertLuaValueToObject(value);
+                }
+            }
+            
+            return dict;
+        }
+        
+        /// <summary>
+        /// Converts a LuaValue to its corresponding C# object for dictionary storage
+        /// </summary>
+        static object? ConvertLuaValueToObject(LuaValue value)
+        {
+            return value.type switch
+            {
+                LuaType.LUA_TNIL => null,
+                LuaType.LUA_TBOOLEAN => bool.TryParse(value.value, out var b) ? b : value.value,
+                LuaType.LUA_TNUMBER => double.TryParse(value.value, out var n) ? n : value.value,
+                LuaType.LUA_TSTRING => value.value,
+                LuaType.LUA_TTABLE => ParseLuaTableToDictionary(value),
+                _ => value.value
             };
         }
 
@@ -1085,4 +1715,37 @@ public class StartGameServerRequest
 public class RenewLeaseRequest
 {
     public int AdditionalSeconds { get; set; } = 3600;
+}
+
+public class GameServerPingRequest
+{
+    public string ServerId { get; set; } = string.Empty;
+    public int PlayerCount { get; set; } = 0;
+    public int PlaceId { get; set; } = 0;
+}
+
+public class PlayerEventRequest
+{
+    public string ServerId { get; set; } = string.Empty;
+    public long UserId { get; set; } = 0;
+    public string EventType { get; set; } = string.Empty; // "Join" or "Leave"
+    public int PlaceId { get; set; } = 0;
+}
+
+public class GameServerShutdownRequest
+{
+    public string ServerId { get; set; } = string.Empty;
+    public string Reason { get; set; } = string.Empty;
+    public int PlaceId { get; set; } = 0;
+}
+
+public class GameServerCallbackRequest
+{
+    public string Token { get; set; } = string.Empty;
+    public string ServerId { get; set; } = string.Empty;
+    public int PlaceId { get; set; } = 0;
+    public double Timestamp { get; set; } = 0;
+    public Dictionary<string, object>? Players { get; set; }
+    public Dictionary<string, object>? Performance { get; set; }
+    public Dictionary<string, object>? Network { get; set; }
 }

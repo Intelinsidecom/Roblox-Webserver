@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Games;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Website.Controllers.Frontend
 {
@@ -9,11 +10,13 @@ namespace Website.Controllers.Frontend
     public class JoinController : Controller
     {
         private readonly AuthenticationTicketService _ticketService;
+        private readonly TokenService _tokenService;
         private readonly GamePresenceService _gamePresenceService;
 
-        public JoinController(AuthenticationTicketService ticketService, GamePresenceService gamePresenceService)
+        public JoinController(AuthenticationTicketService ticketService, TokenService tokenService, GamePresenceService gamePresenceService)
         {
             _ticketService = ticketService ?? throw new System.ArgumentNullException(nameof(ticketService));
+            _tokenService = tokenService ?? throw new System.ArgumentNullException(nameof(tokenService));
             _gamePresenceService = gamePresenceService ?? throw new System.ArgumentNullException(nameof(gamePresenceService));
         }
 
@@ -22,17 +25,25 @@ namespace Website.Controllers.Frontend
         {
             try
             {
-                long userId = 1;
+                var claimVal = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                long userId;
+                bool isGuest = false;
                 
-                var ticket = await _ticketService.CreateGeneralTicketAsync(userId);
+                if (string.IsNullOrEmpty(claimVal) || !long.TryParse(claimVal, out userId) || userId <= 0)
+                {
+                    userId = 0;
+                    isGuest = true;
+                }
                 
-                if (ticket == null)
+                var ticketToken = await _tokenService.CreateGameTicketAsync(userId, placeId ?? 0, null);
+                
+                if (string.IsNullOrEmpty(ticketToken))
                 {
                     return StatusCode(500, "Failed to create authentication ticket");
                 }
 
                 Response.Headers["Content-Type"] = "text/plain";
-                return Content(ticket.TicketToken, "text/plain");
+                return Content(ticketToken, "text/plain");
             }
             catch (System.Exception ex)
             {
@@ -45,11 +56,17 @@ namespace Website.Controllers.Frontend
         {
             try
             {
-                // Get the current user ID from session or authentication
-                // For now, we'll use a default user ID (you should get this from actual authentication)
-                long userId = 1;
+
+                long userId;
+                var claimVal = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!string.IsNullOrEmpty(claimVal) && long.TryParse(claimVal, out userId))
+                {
+                }
+                else
+                {
+                    userId = 0;
+                }
                 
-                // Store the client status in session
                 HttpContext.Session.SetString("ClientStatus", status ?? "Unknown");
                 
                 if (status == "Connected" && placeId.HasValue && !string.IsNullOrEmpty(jobId) && !string.IsNullOrEmpty(ticketToken))

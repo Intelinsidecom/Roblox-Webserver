@@ -131,7 +131,8 @@ yarn-error.log*
 
 ## Webserver Related Stuff
 
-*.json
+appsettings.json
+appsettings.Development.json
 asset/
 CDN/Assets/thumbnails/
 3DAvatar/

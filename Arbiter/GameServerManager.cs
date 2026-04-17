@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using RCCArbiter.Scripting;
+using System.Collections.Concurrent;
 
 namespace RCCArbiter
 {
@@ -14,10 +15,12 @@ namespace RCCArbiter
     {
         private string _rccUrl;
         private readonly GameServerRccManager _rccManager;
-        private readonly Dictionary<string, GameServerInfo> _activeServers = new();
-        private readonly object _serversLock = new();
+        private readonly ConcurrentDictionary<string, GameServerInfo> _activeServers;
+        private readonly object _serversLock;
         private readonly Timer _cleanupTimer;
         private readonly Timer _inactivityTimer;
+        private readonly Timer _zeroPlayerKillTimer;
+        private readonly TimeSpan _rccKeepAliveDuration = TimeSpan.FromMinutes(10);
 
         public class GameServerInfo
         {
@@ -35,6 +38,24 @@ namespace RCCArbiter
             public DateTime LastActivityTime { get; set; }
             public TimeSpan InactivityTimeout { get; set; } = TimeSpan.FromMinutes(30);
             public bool AutoKillEnabled { get; set; } = true;
+            public bool HasReceivedReport { get; set; } = false;
+            public int MaxInactiveMinutes { get; set; } = 0;
+            public int AuthenticatedPlayerCount { get; set; } = 0;
+            public int GuestPlayerCount { get; set; } = 0;
+            public List<PlayerInfo> AuthenticatedPlayers { get; set; } = new();
+            public List<PlayerInfo> GuestPlayers { get; set; } = new();
+            public List<string> PlayerEvents { get; set; } = new();
+            public string? ShutdownReason { get; set; }
+        }
+
+        public class PlayerInfo
+        {
+            public string Name { get; set; } = string.Empty;
+            public long UserId { get; set; } = 0;
+            public string DisplayName { get; set; } = string.Empty;
+            public bool CharacterLoaded { get; set; } = false;
+            public double Ping { get; set; } = 0;
+            public DateTime JoinTime { get; set; } = DateTime.UtcNow;
         }
 
         public GameServerManager(string rccUrl, IConfiguration config)
@@ -45,6 +66,7 @@ namespace RCCArbiter
             _serversLock = new();
             _cleanupTimer = new Timer(state => CleanupExpiredServers(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             _inactivityTimer = new Timer(state => CleanupInactiveServers(), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            _zeroPlayerKillTimer = new Timer(state => CleanupZeroPlayerServers(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
         }
 
         public void UpdateRccUrl(string newRccUrl)
@@ -71,7 +93,7 @@ namespace RCCArbiter
             var job = new Job
             {
                 id = gameId,
-                expirationInSeconds = maxInactive > 0 ? maxInactive * 60 : 3600,
+                expirationInSeconds = maxInactive > 0 ? maxInactive * 60 : 31536000, // 0 = 1 year (never expire)
                 category = 2, // Game server category
                 cores = 2
             };
@@ -82,7 +104,9 @@ namespace RCCArbiter
                 ["port"] = port.ToString(),
                 ["maxPlayers"] = maxPlayers.ToString(),
                 ["privateServerId"] = privateServerId,
-                ["baseUrl"] = baseUrl
+                ["baseUrl"] = baseUrl,
+                ["gameId"] = gameId,
+                ["arbiterUrl"] = "http://localhost:5000" // Default Arbiter URL
             };
             
             try
@@ -139,13 +163,14 @@ namespace RCCArbiter
                         MaxPlayers = maxPlayers,
                         PrivateServerId = privateServerId,
                         StartTime = DateTime.UtcNow,
-                        Expiration = DateTime.UtcNow.AddSeconds(job.expirationInSeconds),
+                        Expiration = job.expirationInSeconds > 0 ? DateTime.UtcNow.AddSeconds(job.expirationInSeconds) : DateTime.MaxValue,
                         Status = "running",
                         BaseUrl = baseUrl,
                         LastStatus = ParseLuaResults(results),
                         LastActivityTime = DateTime.UtcNow,
                         InactivityTimeout = maxInactive > 0 ? TimeSpan.FromMinutes(maxInactive) : TimeSpan.FromMinutes(1),
-                        AutoKillEnabled = true
+                        AutoKillEnabled = true,
+                        MaxInactiveMinutes = maxInactive
                     };
                     
                 }
@@ -197,11 +222,12 @@ namespace RCCArbiter
                         server.LastActivityTime = DateTime.UtcNow;
                     }
                     server.PlayerCount = playerCount;
+                    server.HasReceivedReport = true;
                 }
             }
         }
 
-        public void StopGameServer(string gameId)
+        public void StopGameServer(string gameId, bool keepRccAlive = true)
         {
             try
             {
@@ -210,14 +236,24 @@ namespace RCCArbiter
                 {
                     using var client = new RCCClient(dedicatedRccUrl);
                     client.CloseJob(gameId);
+
+                    if (keepRccAlive)
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            await Task.Delay(_rccKeepAliveDuration);
+                            _rccManager.ReleaseGameServer(gameId);
+                        });
+                    }
+                    else
+                    {
+                        _rccManager.ReleaseGameServer(gameId);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error closing RCC job {gameId}: {ex.Message}");
-            }
-            finally
-            {
                 _rccManager.ReleaseGameServer(gameId);
             }
 
@@ -227,11 +263,29 @@ namespace RCCArbiter
                 {
                     lock (RCCArbiter.Endpoints.StartGameServerEndpoint._portLock)
                     {
-                        RCCArbiter.Endpoints.StartGameServerEndpoint._allocatedPorts.Remove(server.Port);
+                        RCCArbiter.Endpoints.StartGameServerEndpoint._allocatedPorts.RemoveWhere(p => p == server.Port);
                     }
-                    _activeServers.Remove(gameId);
+                    _activeServers.Remove(gameId, out _);
                 }
             }
+        }
+
+        /// <summary>
+        /// Immediately kill a server when reports show 0 players (fast shutdown path)
+        /// </summary>
+        public void KillZeroPlayerServer(string gameId)
+        {
+
+            lock (_serversLock)
+            {
+                if (_activeServers.TryGetValue(gameId, out var server))
+                {
+                    server.Status = "killing_0players";
+                    server.ShutdownReason = "Zero players reported";
+                }
+            }
+            
+            StopGameServer(gameId, keepRccAlive: true);
         }
 
         public Task RenewGameServerLeaseAsync(string gameId, int additionalSeconds = 3600)
@@ -353,6 +407,196 @@ namespace RCCArbiter
             }
         }
 
+        public string? GetGameServerRccUrl(string gameId)
+        {
+            return _rccManager.GetGameServerUrl(gameId);
+        }
+
+        public void UpdateGameServerStatus(string gameId, Dictionary<string, object> data)
+        {
+            lock (_serversLock)
+            {
+                if (!_activeServers.TryGetValue(gameId, out var server))
+                    return;
+
+                server.LastStatus = data;
+                server.LastActivityTime = DateTime.UtcNow;
+
+                if (data.TryGetValue("players", out var playersObj) && playersObj is Dictionary<string, object> players)
+                {
+                    server.HasReceivedReport = true;
+                    
+                    if (players.TryGetValue("total", out var totalObj))
+                    {
+                        if (totalObj is double total)
+                        {
+                            server.PlayerCount = (int)total;
+                        }
+                        else if (totalObj is long totalLong)
+                        {
+                            server.PlayerCount = (int)totalLong;
+                        }
+                        else if (totalObj is int totalInt)
+                        {
+                            server.PlayerCount = totalInt;
+                        }
+                        else if (int.TryParse(totalObj?.ToString(), out var parsedInt))
+                        {
+                            server.PlayerCount = parsedInt;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Failed to parse total player count: {totalObj} (type: {totalObj?.GetType().Name})");
+                        }
+                    }
+                    
+                    if (players.TryGetValue("authenticatedCount", out var authObj))
+                    {
+                        if (authObj is double auth)
+                        {
+                            server.AuthenticatedPlayerCount = (int)auth;
+                        }
+                        else if (authObj is long authLong)
+                        {
+                            server.AuthenticatedPlayerCount = (int)authLong;
+                        }
+                        else if (authObj is int authInt)
+                        {
+                            server.AuthenticatedPlayerCount = authInt;
+                        }
+                        else if (int.TryParse(authObj?.ToString(), out var parsedAuth))
+                        {
+                            server.AuthenticatedPlayerCount = parsedAuth;
+                        }
+                    }
+                    
+                    if (players.TryGetValue("guestCount", out var guestObj))
+                    {
+                        if (guestObj is double guest)
+                        {
+                            server.GuestPlayerCount = (int)guest;
+                        }
+                        else if (guestObj is long guestLong)
+                        {
+                            server.GuestPlayerCount = (int)guestLong;
+                        }
+                        else if (guestObj is int guestInt)
+                        {
+                            server.GuestPlayerCount = guestInt;
+                        }
+                        else if (int.TryParse(guestObj?.ToString(), out var parsedGuest))
+                        {
+                            server.GuestPlayerCount = parsedGuest;
+                        }
+                    }
+
+                    if (players.TryGetValue("authenticated", out var authListObj) && authListObj is object[] authList)
+                    {
+                        server.AuthenticatedPlayers = ParsePlayerList(authList);
+                    }
+                    if (players.TryGetValue("guests", out var guestListObj) && guestListObj is object[] guestList)
+                    {
+                        server.GuestPlayers = ParsePlayerList(guestList);
+                    }
+                }
+
+
+                var serverAge = DateTime.UtcNow - server.StartTime;
+                var canKillOnZeroPlayers = server.MaxInactiveMinutes == 0 || server.Expiration <= DateTime.UtcNow;
+                
+                if (server.PlayerCount == 0 && server.AutoKillEnabled && server.Status != "killing_0players" && server.HasReceivedReport && serverAge.TotalSeconds >= 20 && canKillOnZeroPlayers)
+                {
+                    _ = Task.Run(() => KillZeroPlayerServer(gameId));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cleanup servers that have 0 players reported via status updates
+        /// Called every 10 seconds by timer
+        /// </summary>
+        private void CleanupZeroPlayerServers()
+        {
+            var now = DateTime.UtcNow;
+            var zeroPlayerServers = new List<string>();
+
+            lock (_serversLock)
+            {
+                foreach (var kvp in _activeServers)
+                {
+                    var server = kvp.Value;
+                    
+                    if (server.AutoKillEnabled && server.PlayerCount == 0 && server.Status != "killing_0players" && server.HasReceivedReport)
+                    {
+                        var inactiveDuration = now - server.LastActivityTime;
+                        var serverAge = now - server.StartTime;
+                        var canKillZeroPlayer = server.MaxInactiveMinutes == 0 || server.Expiration <= now;
+                        if (inactiveDuration >= TimeSpan.FromSeconds(30) && serverAge.TotalSeconds >= 20 && canKillZeroPlayer)
+                        {
+                            zeroPlayerServers.Add(kvp.Key);
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+        private List<PlayerInfo> ParsePlayerList(object[] players)
+        {
+            var list = new List<PlayerInfo>();
+            foreach (var p in players)
+            {
+                if (p is Dictionary<string, object> dict)
+                {
+                    var player = new PlayerInfo
+                    {
+                        Name = dict.TryGetValue("Name", out var name) ? name?.ToString() ?? "" : "",
+                        DisplayName = dict.TryGetValue("DisplayName", out var dname) ? dname?.ToString() ?? "" : "",
+                        UserId = dict.TryGetValue("UserId", out var uid) && uid is double uidVal ? (long)uidVal : 0,
+                        CharacterLoaded = dict.TryGetValue("CharacterLoaded", out var loaded) && loaded is bool loadedVal && loadedVal,
+                        Ping = dict.TryGetValue("Ping", out var ping) && ping is double pingVal ? pingVal : 0
+                    };
+                    list.Add(player);
+                }
+            }
+            return list;
+        }
+
+        public void RecordPlayerEvent(string gameId, long userId, string eventType)
+        {
+            lock (_serversLock)
+            {
+                if (!_activeServers.TryGetValue(gameId, out var server))
+                    return;
+
+                var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                var eventLog = $"[{timestamp}] User {userId} {eventType}";
+                server.PlayerEvents.Add(eventLog);
+
+                if (server.PlayerEvents.Count > 100)
+                {
+                    server.PlayerEvents.RemoveAt(0);
+                }
+
+                server.LastActivityTime = DateTime.UtcNow;
+
+            }
+        }
+
+        public void RecordShutdown(string gameId, string reason)
+        {
+            lock (_serversLock)
+            {
+                if (!_activeServers.TryGetValue(gameId, out var server))
+                    return;
+
+                server.ShutdownReason = reason;
+                server.Status = "shutting_down";
+
+            }
+        }
+
         public void SetServerInactivityTimeout(string gameId, TimeSpan timeout)
         {
             lock (_serversLock)
@@ -376,6 +620,7 @@ namespace RCCArbiter
         {
             _cleanupTimer?.Dispose();
             _inactivityTimer?.Dispose();
+            _zeroPlayerKillTimer?.Dispose();
             _rccManager?.Dispose();
         }
 
@@ -393,8 +638,6 @@ namespace RCCArbiter
                 {
                     var server = kvp.Value;
                     var timeUntilExpiration = server.Expiration - now;
-                    
-                    Console.WriteLine($"Server {server.GameId}: expires in {timeUntilExpiration.TotalMinutes:F1} minutes");
                     
                     if (server.Expiration <= now)
                     {
@@ -480,7 +723,7 @@ namespace RCCArbiter
                     ParseLuaTable(value, dict);
                     return dict;
                 default:
-                    return value.value;
+                    return value.value ?? string.Empty;
             }
         }
     }

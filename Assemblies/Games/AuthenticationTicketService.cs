@@ -58,7 +58,15 @@ namespace Games
             cmd.Parameters.AddWithValue("created_at", createdAt.UtcDateTime);
             cmd.Parameters.AddWithValue("expires_at", expiresAt.UtcDateTime);
 
-            using var reader = await cmd.ExecuteReaderAsync();
+            await cmd.ExecuteNonQueryAsync();
+            using var selectCmd = new NpgsqlCommand(@"
+                select ticket_id, created_at, expires_at
+                from authentication_tickets 
+                where ticket_token = @token
+                order by ticket_id desc limit 1", conn);
+            selectCmd.Parameters.AddWithValue("token", ticketToken);
+            
+            using var reader = await selectCmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
                 return new AuthenticationTicket
@@ -104,7 +112,7 @@ namespace Games
 
             cmd.Parameters.AddWithValue("token", ticketToken);
             cmd.Parameters.AddWithValue("user_id", userId);
-            cmd.Parameters.AddWithValue("place_id", DBNull.Value); // No specific place - allows access to all games
+            cmd.Parameters.AddWithValue("place_id", DBNull.Value);
             cmd.Parameters.AddWithValue("universe_id", DBNull.Value);
             cmd.Parameters.AddWithValue("auth_url", authenticationUrl);
             cmd.Parameters.AddWithValue("join_url", joinScriptUrl);
@@ -112,7 +120,16 @@ namespace Games
             cmd.Parameters.AddWithValue("created_at", createdAt.UtcDateTime);
             cmd.Parameters.AddWithValue("expires_at", expiresAt.UtcDateTime);
 
-            using var reader = await cmd.ExecuteReaderAsync();
+            await cmd.ExecuteNonQueryAsync();
+            
+            using var selectCmd = new NpgsqlCommand(@"
+                select ticket_id, created_at, expires_at
+                from authentication_tickets 
+                where ticket_token = @token
+                order by ticket_id desc limit 1", conn);
+            selectCmd.Parameters.AddWithValue("token", ticketToken);
+            
+            using var reader = await selectCmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
                 return new AuthenticationTicket
@@ -142,14 +159,15 @@ namespace Games
         {
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
-
             using var cmd = new NpgsqlCommand(@"
                 select ticket_id, ticket_token, user_id, place_id, universe_id, 
                        authentication_url, join_script_url, browser_tracker_id,
                        created_at, expires_at, used_at, client_ip, client_user_agent,
                        is_active, ticket_type
                 from authentication_tickets 
-                where ticket_token = @token and is_active = true and expires_at > now()
+                where ticket_token = @token 
+                  and is_active = true 
+                  and expires_at > now() at time zone 'utc'
                 limit 1", conn);
 
             cmd.Parameters.AddWithValue("token", ticketToken);

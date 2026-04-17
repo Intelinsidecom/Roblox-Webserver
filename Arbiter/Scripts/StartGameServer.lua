@@ -19,7 +19,7 @@
 	local url = "%baseUrl%"
 	
 	local assetId = placeId -- might be able to remove this now
-	
+
 	local scriptContext = game:GetService('ScriptContext')
 	pcall(function() scriptContext:AddStarterScript(37801172) end)
 	scriptContext.ScriptsDisabled = true

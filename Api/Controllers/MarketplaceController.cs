@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
+using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -126,14 +128,19 @@ namespace Api.Controllers
                                 result.Creator,
                                 UniverseId = universeId,
                                 MaxPlayers = maxPlayers,
-                                Visits = 0, // No visits column available
-                                Favorites = 0, // No favorites count column available
+                                Visits = 0,
+                                Favorites = 0,
                                 Playing = playing
                             };
                         }
                     }
 
-                    return Ok(result);
+                    var jsonOptions = new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = null
+                    };
+                    
+                    return new JsonResult(result, jsonOptions);
                 }
                 else
                 {
@@ -144,6 +151,86 @@ namespace Api.Controllers
             {
                 return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
+        }
+
+        /// <summary>
+        /// POST /marketplace/validatepurchase?receipt={receipt}
+        /// Validates a purchase receipt/ticket
+        /// Called by MarketplaceService to verify client purchase claims
+        /// </summary>
+        [HttpPost("validatepurchase")]
+        [Consumes("application/x-www-form-urlencoded", "multipart/form-data", "application/json")]
+        public async Task<IActionResult> ValidatePurchase([FromQuery] string receipt)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(receipt) && Request.HasFormContentType)
+                {
+                    receipt = Request.Form["receipt"].FirstOrDefault();
+                }
+
+                if (string.IsNullOrEmpty(receipt))
+                {
+                    return BadRequest(new { error = "Receipt parameter is required" });
+                }
+
+                var response = new
+                {
+                    isValid = true,
+                    receipt = receipt,
+                    playerId = 0,
+                    productId = 0,
+                    placeId = 0,
+                    currencyType = 1, // Robux
+                    currencySpent = 0,
+                    message = "Purchase validated (placeholder)",
+                    validatedAt = DateTime.UtcNow
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    isValid = true,
+                    receipt = receipt ?? "unknown",
+                    error = ex.Message,
+                    message = "Validation error - allowing purchase (placeholder)"
+                });
+            }
+        }
+
+        /// <summary>
+        /// GET /marketplace/validatepurchase
+        /// Alternative GET endpoint for validating purchases
+        /// </summary>
+        [HttpGet("validatepurchase")]
+        public async Task<IActionResult> ValidatePurchaseGet([FromQuery] string receipt)
+        {
+            return await ValidatePurchase(receipt);
+        }
+
+        /// <summary>
+        /// POST /marketplace/validatepurchaseticket
+        /// Alternative endpoint name used by some client versions
+        /// </summary>
+        [HttpPost("validatepurchaseticket")]
+        [Consumes("application/x-www-form-urlencoded", "multipart/form-data", "application/json")]
+        public async Task<IActionResult> ValidatePurchaseTicket()
+        {
+            string receipt = null;
+            
+            if (Request.HasFormContentType)
+            {
+                receipt = Request.Form["receipt"].FirstOrDefault();
+            }
+            else
+            {
+                receipt = Request.Query["receipt"].FirstOrDefault();
+            }
+
+            return await ValidatePurchase(receipt);
         }
     }
 }
