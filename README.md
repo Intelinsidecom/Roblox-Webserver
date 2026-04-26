@@ -15,9 +15,9 @@ Webserver designed to work nicely with all Roblox Clients (Hosting, Joining and 
 
 - [X] Users, Database Stuff, Signup/Login.
 - [X] RCC Arbiter that can send lua scripts to RCC binary (JSON support not added).
-- [ ] Assets (Items and so on).
-- [ ] Game Server Hosting using Arbiter.
-- [ ] Game Server Joining with Clients.
+- [X] Assets.
+- [X] Game Server Hosting using Arbiter.
+- [X] Game Server Joining with Clients.
 - [ ] Base Support for All Clients (Android, Windows, IOS, MacOS, Xbox, UWP and maybe custom 2016 Ports)
 
 ## Additional Logic:
@@ -26,13 +26,13 @@ Webserver designed to work nicely with all Roblox Clients (Hosting, Joining and 
 - [ ] Friends, Economy (For buying items, gears or doing purchases in games).
 - [ ] All Pages (Games, Home, Develop, Avatar Customizer, Catalog and so on).
 - [ ] Make Pages work on Mobiles, Okd Webviews and be optimised.
-- [ ] All Adittional Client Apis (Android, IOS, UWP, Xbox (idk bout Xbox).
+- [ ] All Adittional Client Apis (Android, IOS, UWP, Xbox (idk about Xbox).
 - [ ] Studio Support, Editing, Uploading, Team Create and So On.
 
 ## Supported Clients:
- None.
+- Windows
 
-Documentation will be made in gitub Wiki Form.
+Documentation will be made in github Wiki Form.
 
 P.S. UWP 2016 gets to login, is able to login, sign out and loads some Apis for Info Like Balance, User Info, device/initialize not fixed as it still isnt analyzed as to what it expects for response.
 
