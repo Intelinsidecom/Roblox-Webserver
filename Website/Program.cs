@@ -63,6 +63,7 @@ builder.Services.AddSingleton<AuthenticationTicketService>();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddHostedService<TokenCleanupService>();
 builder.Services.AddSingleton<GamePresenceService>();
+builder.Services.AddHostedService<GamePresenceCleanupService>();
 
 builder.Services.AddAuthentication(options =>
 {

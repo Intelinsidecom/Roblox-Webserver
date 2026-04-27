@@ -513,6 +513,8 @@ namespace RobloxWebserver.Controllers
                 ViewBag.Name = universe.Name;
                 ViewBag.Description = description ?? string.Empty;
                 ViewBag.CreatorUserId = universe.CreatorUserId;
+                ViewBag.VisitCount = universe.VisitCount;
+                ViewBag.Playing = universe.PlayingCount;
                 ViewBag.CreatorUserName = creatorUserName;
                 ViewBag.UpVotes = upVotes;
                 ViewBag.DownVotes = downVotes;

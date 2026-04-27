@@ -17,6 +17,8 @@
 	local placeId = tonumber(%placeId%)
 	local port = tonumber(%port%)
 	local url = "%baseUrl%"
+	local accessKey = "%accessKey%"
+	local jobId = "%gameId%"
 	
 	local assetId = placeId -- might be able to remove this now
 
@@ -69,10 +71,26 @@
 	
 	game:GetService("Players").PlayerAdded:connect(function(player)
 		print("Player " .. player.userId .. " added")
+		
+		if player.userId > 0 then
+			pcall(function()
+				local postUrl = url .. "/Game/Joined"
+				local postData = "userId=" .. tostring(player.userId) .. "&placeId=" .. tostring(placeId) .. "&jobId=" .. jobId .. "&token=" .. accessKey
+				game:HttpPost(postUrl, postData, false, "application/x-www-form-urlencoded")
+			end)
+		end
 	end)
-	
+
 	game:GetService("Players").PlayerRemoving:connect(function(player)
 		print("Player " .. player.userId .. " leaving")
+		
+		if player.userId > 0 then
+			pcall(function()
+				local postUrl = url .. "/Game/Left"
+				local postData = "userId=" .. tostring(player.userId) .. "&placeId=" .. tostring(placeId) .. "&jobId=" .. jobId .. "&token=" .. accessKey
+				game:HttpPost(postUrl, postData, false, "application/x-www-form-urlencoded")
+			end)
+		end
 	end)
 	
 	if placeId~=nil and url~=nil then

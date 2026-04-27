@@ -342,6 +342,43 @@ namespace RCCArbiter
         }
         
         /// <summary>
+        /// Collect status reports only from game servers running a specific place ID
+        /// Optimized to avoid querying irrelevant RCC instances
+        /// </summary>
+        private static async Task<List<(string GameId, Dictionary<string, object> Data)>> CollectReportsForPlaceAsync(int placeId, GameServerManager gameServerManager, string rccUrl, ReportCallbackManager callbackManager)
+        {
+            var servers = gameServerManager.GetGameServersByPlaceId(placeId);
+            var results = new List<(string GameId, Dictionary<string, object> Data)>();
+
+            if (servers.Count == 0)
+            {
+                return results;
+            }
+
+            var tasks = servers.Select(async server =>
+            {
+                try
+                {
+                    var reportData = await CollectSingleServerReportAsync(server.GameId, gameServerManager, rccUrl, callbackManager);
+                    if (reportData != null)
+                    {
+                        lock (results)
+                        {
+                            results.Add((server.GameId, reportData));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[PlaceCollect] Error collecting report from {server.GameId} for place {placeId}: {ex.Message}");
+                }
+            });
+
+            await Task.WhenAll(tasks);
+            return results;
+        }
+
+        /// <summary>
         /// Collect status report from a single game server
         /// </summary>
         private static async Task<Dictionary<string, object>?> CollectSingleServerReportAsync(string gameId, GameServerManager gameServerManager, string rccUrl, ReportCallbackManager callbackManager)
@@ -1098,8 +1135,95 @@ namespace RCCArbiter
                         startTime = bestServer.StartTime,
                         baseUrl = bestServer.BaseUrl,
                         connectionUrl = $"roblox://localhost:{bestServer.Port}?gameId={bestServer.GameId}&placeId={placeId}",
-                        reason = bestServer.PlayerCount == 0 ? "Empty server available" : 
+                        reason = bestServer.PlayerCount == 0 ? "Empty server available" :
                                 bestServer.PlayerCount < bestServer.MaxPlayers / 2 ? "Low population server" : "Best available server"
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            /// <summary>
+            /// Get player count and list of authenticated players for a specific place ID
+            /// Aggregates data from all running game servers for this place
+            /// </summary>
+            app.MapGet("/api/gameservers/players/{placeId}", async (int placeId, bool live = false) =>
+            {
+                try
+                {
+                    if (live)
+                    {
+                        var freshReports = await CollectReportsForPlaceAsync(placeId, gameServerManager, rccUrl, callbackManager);
+                        int totalAuthCount = 0;
+                        int totalGuestCount = 0;
+                        var allPlayers = new List<object>();
+
+                        foreach (var (gameId, data) in freshReports)
+                        {
+                            if (data.TryGetValue("players", out var playersObj) && playersObj is Dictionary<string, object> playersDict)
+                            {
+                                if (playersDict.TryGetValue("count", out var countObj))
+                                {
+                                    totalAuthCount += Convert.ToInt32(countObj);
+                                }
+                                if (playersDict.TryGetValue("list", out var listObj) && listObj is List<Dictionary<string, object>> playerList)
+                                {
+                                    foreach (var p in playerList)
+                                    {
+                                        allPlayers.Add(new
+                                        {
+                                            userId = p.TryGetValue("UserId", out var uid) ? uid : 0,
+                                            name = p.TryGetValue("Name", out var name) ? name : "",
+                                            ping = p.TryGetValue("Ping", out var ping) ? ping : 0,
+                                            characterLoaded = p.TryGetValue("CharacterAdded", out var charAdded) ? charAdded : false
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                        return Results.Ok(new
+                        {
+                            placeId = placeId,
+                            totalPlayerCount = totalAuthCount + totalGuestCount,
+                            authenticatedPlayerCount = totalAuthCount,
+                            guestPlayerCount = totalGuestCount,
+                            serverCount = freshReports.Count,
+                            live = true,
+                            players = allPlayers
+                        });
+                    }
+
+                    var (authenticatedCount, guestCount, totalCount, players) = gameServerManager.GetPlayerCountByPlaceId(placeId);
+                    var servers = gameServerManager.GetGameServersByPlaceId(placeId);
+
+                    return Results.Ok(new
+                    {
+                        placeId = placeId,
+                        totalPlayerCount = totalCount,
+                        authenticatedPlayerCount = authenticatedCount,
+                        guestPlayerCount = guestCount,
+                        serverCount = servers.Count,
+                        live = false,
+                        servers = servers.Select(s => new
+                        {
+                            gameId = s.GameId,
+                            playerCount = s.PlayerCount,
+                            authenticatedCount = s.AuthenticatedPlayerCount,
+                            guestCount = s.GuestPlayerCount,
+                            status = s.Status
+                        }),
+                        players = players.Select(p => new
+                        {
+                            userId = p.UserId,
+                            name = p.Name,
+                            displayName = p.DisplayName,
+                            ping = p.Ping,
+                            joinTime = p.JoinTime,
+                            characterLoaded = p.CharacterLoaded
+                        })
                     });
                 }
                 catch (Exception ex)

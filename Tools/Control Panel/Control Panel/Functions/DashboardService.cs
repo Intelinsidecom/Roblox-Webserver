@@ -157,32 +157,60 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
-                var statusTask = GetArbiterStatusAsync();
-                var completedTask = await Task.WhenAny(statusTask, timeoutTask);
-
-                if (completedTask == timeoutTask)
+            const int maxRetries = 3;
+                for (int attempt = 1; attempt <= maxRetries; attempt++)
                 {
-                    try
+                    var timeoutSeconds = 10 + (attempt - 1) * 5;
+                    var timeoutTask = Task.Delay(TimeSpan.FromSeconds(timeoutSeconds));
+                    var statusTask = GetArbiterStatusAsync();
+                    var completedTask = await Task.WhenAny(statusTask, timeoutTask);
+
+                    if (completedTask == timeoutTask)
                     {
-                        var consoleWindow = Control_Panel.ConsoleWindow.Instance;
-                        consoleWindow.WriteWarning("Arbiter status check timed out after 10 seconds");
-                    }
-                    catch
-                    {
-                        System.Diagnostics.Debug.WriteLine("Arbiter status check timed out");
+                        if (attempt < maxRetries)
+                        {
+                            try
+                            {
+                                var consoleWindow = Control_Panel.ConsoleWindow.Instance;
+                                consoleWindow.WriteWarning($"Arbiter status check timed out (attempt {attempt}/{maxRetries}), retrying...");
+                            }
+                            catch
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Arbiter status check timed out (attempt {attempt}), retrying...");
+                            }
+                            await Task.Delay(TimeSpan.FromSeconds(2));
+                            continue;
+                        }
+                        
+                        try
+                        {
+                            var consoleWindow = Control_Panel.ConsoleWindow.Instance;
+                            consoleWindow.WriteWarning("Arbiter status check timed out after all retry attempts");
+                        }
+                        catch
+                        {
+                            System.Diagnostics.Debug.WriteLine("Arbiter status check timed out after all retries");
+                        }
+                        
+                        return new ArbiterStatus 
+                        { 
+                            IsRunning = false, 
+                            Status = "Timeout", 
+                            LastChecked = DateTime.Now,
+                            Error = "Request timed out after all retry attempts"
+                        };
                     }
                     
-                    return new ArbiterStatus 
-                    { 
-                        IsRunning = false, 
-                        Status = "Timeout", 
-                        LastChecked = DateTime.Now,
-                        Error = "Request timed out after 10 seconds"
-                    };
+                    return await statusTask;
                 }
                 
-                return await statusTask;
+                return new ArbiterStatus 
+                { 
+                    IsRunning = false, 
+                    Status = "Timeout", 
+                    LastChecked = DateTime.Now,
+                    Error = "Request timed out after all retry attempts"
+                };
             }
             catch (Exception ex)
             {
@@ -482,6 +510,17 @@ namespace ControlPanel.Functions
                     data.FrontendUserError = "";
                 }
 
+                data.WebsiteServiceStatus = new WebsiteServiceStatus
+                {
+                    Status = (data.WebsiteIsOnline && data.ApiIsOnline) ? "Healthy" : 
+                             (data.WebsiteIsOnline || data.ApiIsOnline) ? "Partially" : "Unhealthy",
+                    OverallIsOnline = data.WebsiteIsOnline && data.ApiIsOnline,
+                    LastChecked = DateTime.Now,
+                    WebsiteIsOnline = data.WebsiteIsOnline,
+                    ApiIsOnline = data.ApiIsOnline,
+                    WebsiteStatusCode = data.WebsiteIsOnline ? 200 : 0,
+                    ApiStatusCode = data.ApiIsOnline ? 200 : 0
+                };
             }
             catch (Exception ex)
             {

@@ -125,7 +125,7 @@ namespace RCCArbiter
         }
 
         /// <summary>
-        /// Stop the RCC process
+        /// Stop the RCC process with escalating force if needed
         /// </summary>
         public void Stop()
         {
@@ -134,13 +134,32 @@ namespace RCCArbiter
                 return;
             }
 
-            Console.WriteLine($"Stopping RCC ({_year})...");
+            var pid = _process.Id;
+            Console.WriteLine($"Stopping RCC ({_year}) PID {pid}...");
             
             try
             {
-                _process.Kill();
-                _process.WaitForExit(5000);
-                Console.WriteLine($"RCC ({_year}) stopped.");
+                _process.Kill(entireProcessTree: true);
+                var exited = _process.WaitForExit(15000);
+                
+                if (!exited && !_process.HasExited)
+                {
+                    try
+                    {
+                        KillProcessTree(pid);
+                    }
+                    catch (Exception treeEx)
+                    {
+                        Console.WriteLine($"Warning: Failed to kill process tree: {treeEx.Message}");
+                    }
+                    
+                    _process.WaitForExit(5000);
+                }
+                
+            }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine($"RCC ({_year}) already exited.");
             }
             catch (Exception ex)
             {
@@ -150,6 +169,51 @@ namespace RCCArbiter
             {
                 _process?.Dispose();
                 _process = null;
+            }
+        }
+
+        /// <summary>
+        /// Kill a process and all its children recursively
+        /// </summary>
+        private void KillProcessTree(int processId)
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                try
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = "taskkill",
+                        Arguments = $"/PID {processId} /T /F",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    };
+                    
+                    using var process = Process.Start(psi);
+                    process?.WaitForExit(3000);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"taskkill failed: {ex.Message}");
+                }
+            }
+            else
+            {
+                try
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = "pkill",
+                        Arguments = $"-P {processId}",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+                    using var pkill = Process.Start(psi);
+                    pkill?.WaitForExit(2000);
+                }
+                catch { }
             }
         }
 

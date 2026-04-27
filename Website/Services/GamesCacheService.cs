@@ -158,7 +158,7 @@ namespace Website.Services
 
                 var sql = @"
                     SELECT universe_id, place_id, name, creator_name, creator_user_id,
-                           icon_url, thumbnail_url, playing, up_votes, down_votes, 
+                           icon_url, thumbnail_url, playing, up_votes, down_votes,
                            created_at, cached_at, sort_filter, genre_filter, cache_order
                     FROM cached_games 
                     WHERE sort_filter = @sortFilter 
@@ -358,7 +358,7 @@ namespace Website.Services
             var sql = @"
                 INSERT INTO cached_games (
                     universe_id, place_id, name, creator_name, creator_user_id,
-                    icon_url, thumbnail_url, playing, up_votes, down_votes, 
+                    icon_url, thumbnail_url, playing, up_votes, down_votes,
                     created_at, cached_at, sort_filter, genre_filter, cache_order
                 ) VALUES (
                     @universeId, @placeId, @name, @creatorName, @creatorUserId,

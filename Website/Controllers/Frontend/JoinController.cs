@@ -72,6 +72,14 @@ namespace Website.Controllers.Frontend
                 if (status == "Connected" && placeId.HasValue && !string.IsNullOrEmpty(jobId) && !string.IsNullOrEmpty(ticketToken))
                 {
                     await _gamePresenceService.RecordGameJoinAsync(userId, placeId.Value, jobId, ticketToken);
+                    
+                    var config = HttpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
+                    var connString = config.GetConnectionString("Default");
+                    var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connString, placeId.Value);
+                    if (universeId.HasValue)
+                    {
+                        await VisitTracking.RecordVisitAsync(userId, universeId.Value, config);
+                    }
                 }
                 else if (status == "Disconnected")
                 {
@@ -88,70 +96,6 @@ namespace Website.Controllers.Frontend
             }
         }
 
-        [HttpPost("game/joined")]
-        public async Task<IActionResult> GameJoined([FromBody] GameJoinRequest request)
-        {
-            try
-            {
-                if (request == null || string.IsNullOrEmpty(request.TicketToken))
-                {
-                    return BadRequest("Invalid request or missing ticket token");
-                }
-
-                var ticket = await _ticketService.ValidateTicketAsync(request.TicketToken);
-                if (ticket == null)
-                {
-                    return Unauthorized("Invalid or expired ticket");
-                }
-
-                await _gamePresenceService.RecordGameJoinAsync(
-                    ticket.UserId, 
-                    request.PlaceId, 
-                    request.JobId, 
-                    request.TicketToken);
-
-                return Ok(new { success = true, message = "Game join recorded" });
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        [HttpPost("game/left")]
-        public async Task<IActionResult> GameLeft([FromBody] GameLeaveRequest request)
-        {
-            try
-            {
-                if (request == null)
-                {
-                    return BadRequest("Invalid request");
-                }
-
-                long userId = request.UserId;
-                if (!string.IsNullOrEmpty(request.TicketToken))
-                {
-                    var ticket = await _ticketService.ValidateTicketAsync(request.TicketToken);
-                    if (ticket != null)
-                    {
-                        userId = ticket.UserId;
-                    }
-                }
-
-                if (userId <= 0)
-                {
-                    return BadRequest("Invalid user identification");
-                }
-
-                await _gamePresenceService.RemoveFromGameAsync(userId);
-
-                return Ok(new { success = true, message = "Game leave recorded" });
-            }
-            catch (System.Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
 
         [HttpGet("game/presence/{userId}")]
         public async Task<IActionResult> GetUserPresence(long userId)

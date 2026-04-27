@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -13,12 +14,14 @@ namespace Games
     {
         private readonly string _connectionString;
         private readonly AuthenticationTicketService _ticketService;
+        private readonly IConfiguration _configuration;
 
         public GamePresenceService(IConfiguration configuration, AuthenticationTicketService ticketService)
         {
             _connectionString = configuration.GetConnectionString("Default") 
                 ?? throw new ArgumentNullException("Database connection string not configured");
             _ticketService = ticketService ?? throw new ArgumentNullException(nameof(ticketService));
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -32,6 +35,8 @@ namespace Games
                 await InsertOrUpdateGamePresenceAsync(userId, placeId, jobId);
                 await IncrementAssetPlayerCountAsync(placeId);
                 await UpdateUserClientStatusAsync(userId, "Connected");
+                
+                await PlayerCountTracking.UpdateUserGameStatusAsync(userId, placeId, true, _configuration);
             }
             catch (Exception ex)
             {
@@ -73,6 +78,8 @@ namespace Games
                 }
 
                 await UpdateUserClientStatusAsync(userId, "Disconnected");
+                
+                await PlayerCountTracking.UpdateUserGameStatusAsync(userId, null, false, _configuration);
             }
             catch (Exception ex)
             {
@@ -180,6 +187,7 @@ namespace Games
 
         /// <summary>
         /// Cleans up stale game presence entries (older than specified timeout)
+        /// Properly decrements player counts for removed users
         /// </summary>
         public async Task CleanupStalePresenceAsync(TimeSpan maxAge)
         {
@@ -188,12 +196,39 @@ namespace Games
                 using var conn = new NpgsqlConnection(_connectionString);
                 await conn.OpenAsync();
 
-                using var cmd = new NpgsqlCommand(@"
-                    DELETE FROM game_presence 
-                    WHERE updated_at < NOW() - INTERVAL '1 second' * @seconds", conn);
+                var staleEntries = new List<(long userId, long placeId)>();
+                const string selectSql = @"
+                    SELECT uid, placeid FROM game_presence 
+                    WHERE updated_at < NOW() - INTERVAL '1 second' * @seconds";
+                
+                using (var selectCmd = new NpgsqlCommand(selectSql, conn))
+                {
+                    selectCmd.Parameters.AddWithValue("seconds", (long)maxAge.TotalSeconds);
+                    using var reader = await selectCmd.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
+                    {
+                        staleEntries.Add((reader.GetInt64(0), reader.GetInt64(1)));
+                    }
+                }
 
-                cmd.Parameters.AddWithValue("seconds", (long)maxAge.TotalSeconds);
-                await cmd.ExecuteNonQueryAsync();
+                if (staleEntries.Count == 0)
+                    return;
+
+
+                const string deleteSql = @"
+                    DELETE FROM game_presence 
+                    WHERE updated_at < NOW() - INTERVAL '1 second' * @seconds";
+                using (var deleteCmd = new NpgsqlCommand(deleteSql, conn))
+                {
+                    deleteCmd.Parameters.AddWithValue("seconds", (long)maxAge.TotalSeconds);
+                    await deleteCmd.ExecuteNonQueryAsync();
+                }
+
+                foreach (var (userId, placeId) in staleEntries)
+                {
+                    await DecrementAssetPlayerCountAsync(placeId);
+                    await PlayerCountTracking.UpdateUserGameStatusAsync(userId, null, false, _configuration);
+                }
             }
             catch (Exception ex)
             {
@@ -231,7 +266,7 @@ namespace Games
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            using var cmd = new NpgsqlCommand("UPDATE assets SET player_count = player_count + 1 WHERE asset_id = @placeId", conn);
+            using var cmd = new NpgsqlCommand("UPDATE assets SET player_count = player_count + 1 WHERE asset_id = @placeId AND is_place = true", conn);
             cmd.Parameters.AddWithValue("placeId", placeId);
             await cmd.ExecuteNonQueryAsync();
         }
@@ -244,7 +279,7 @@ namespace Games
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
 
-            using var cmd = new NpgsqlCommand("UPDATE assets SET player_count = GREATEST(player_count - 1, 0) WHERE asset_id = @placeId", conn);
+            using var cmd = new NpgsqlCommand("UPDATE assets SET player_count = GREATEST(player_count - 1, 0) WHERE asset_id = @placeId AND is_place = true", conn);
             cmd.Parameters.AddWithValue("placeId", placeId);
             await cmd.ExecuteNonQueryAsync();
         }
@@ -315,7 +350,7 @@ namespace Games
         }
 
         /// <summary>
-        /// Gets the number of players in a specific game server (by job ID) - only counts active players with recent pings
+        /// Gets the number of players in a specific game server (by job ID) - only counts active players with recent pings (30 sec timeout)
         /// </summary>
         public async Task<int> GetPlayerCountByJobIdAsync(string jobId)
         {
@@ -337,7 +372,7 @@ namespace Games
         }
 
         /// <summary>
-        /// Gets the number of players in a place - only counts active players with recent pings
+        /// Gets the number of players in a place - only counts active players with recent pings (30 sec timeout)
         /// </summary>
         public async Task<int> GetActivePlayerCountByPlaceAsync(long placeId)
         {

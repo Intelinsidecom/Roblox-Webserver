@@ -728,5 +728,37 @@ where asset_id = @id";
             return null;
         }
 
+        /// <summary>
+        /// Gets the creator user ID (owner) for a given asset ID
+        /// </summary>
+        /// <param name="connectionString">Database connection string</param>
+        /// <param name="assetId">Asset ID to look up</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Creator user ID if found, null otherwise</returns>
+        public static async Task<long?> GetAssetCreatorIdAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"SELECT owner_user_id 
+                               FROM assets 
+                               WHERE asset_id = @assetId";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("assetId", assetId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            
+            if (result == null || result == DBNull.Value)
+                return null;
+                
+            return Convert.ToInt64(result);
+        }
+
         }
 }

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Games;
+using Assets;
 using Npgsql;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
@@ -340,6 +341,40 @@ namespace Website.Controllers.Client
                     ? ""
                     : $"guest-{userName}";
                 
+                if (userId > 0)
+                {
+                    var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_configuration.GetConnectionString("Default"), gameid);
+                    if (universeId.HasValue)
+                    {
+                        await VisitTracking.RecordVisitAsync(userId, universeId.Value, _configuration);
+                    }
+                    
+                    // Create game presence for alternative ping tracking
+                    // This is for clients that don't call ClientPresence.ashx
+                    try
+                    {
+                        var existingPresence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
+                        if (existingPresence != null && existingPresence.PlaceId != gameid)
+                        {
+                            // User was in a different place, remove from old one
+                            await _gamePresenceService.RemoveFromGameAsync(userId);
+                        }
+                        
+                        // Create a ticket for this join
+                        var ticketToken = await _tokenService.CreateGameTicketAsync(userId, gameid, jobid);
+                        if (!string.IsNullOrEmpty(ticketToken))
+                        {
+                            await _gamePresenceService.RecordGameJoinAsync(userId, gameid, jobid, ticketToken);
+                            Console.WriteLine($"[join.ashx] Created game presence for user {userId} in place {gameid}, job {jobid}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log but don't fail the join
+                        Console.WriteLine($"[join.ashx] Failed to create game presence: {ex.Message}");
+                    }
+                }
+                
                 var joinScript = new JoinScriptData
                 {
                     MachineAddress = machineAddress,
@@ -356,7 +391,9 @@ namespace Website.Controllers.Client
                     GameId = jobid,
                     PlaceId = gameid,
                     UniverseId = gameid,
-                    CreatorId = 1,
+                    CreatorId = await AssetsRepository.GetAssetCreatorIdAsync(
+                        _configuration.GetConnectionString("Default")!, 
+                        gameid) ?? 1L,
                     CreatorTypeEnum = "User",
                     MembershipType = membership,
                     AccountAge = accountAge,

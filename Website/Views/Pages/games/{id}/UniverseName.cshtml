@@ -3,6 +3,18 @@
 }
 
 @using Assets
+@functions {
+    string FormatVisitCount(int count)
+    {
+        if (count >= 1000000000)
+            return (count / 1000000000.0).ToString("0.##") + "B+";
+        if (count >= 1000000)
+            return (count / 1000000.0).ToString("0.##") + "M+";
+        if (count >= 1000)
+            return (count / 1000.0).ToString("0.##") + "K+";
+        return count.ToString("N0");
+    }
+}
 @{
     var isAllGenresAllowed = ViewBag.IsAllGenresAllowed as bool? ?? false;
     var allowedGearTypes = ViewBag.AllowedGearTypes as string ?? "[]";
@@ -60,7 +72,7 @@
     <style>
         .container-main {
             max-width: 970px;
-            margin: 20px auto 0 auto !important;
+            margin: 0 auto 10px auto !important;
             position: relative;
             z-index: 0;
             margin-bottom: 70px;
@@ -518,10 +530,10 @@
                                         <ul class=game-stats-container>
                                             <li class=game-stat>
                                                 <p class=text-label>Playing
-                                                <p class=text-lead>12,834
+                                                <p class=text-lead title="@(ViewBag.Playing?.ToString("N0") ?? "0")">@FormatVisitCount(ViewBag.Playing ?? 0)
                                             <li class=game-stat>
                                                 <p class=text-label>Visits
-                                                <p class=text-lead title=728,684,195>728M+
+                                                <p class=text-lead title="@ViewBag.VisitCount.ToString("N0")">@FormatVisitCount(ViewBag.VisitCount)
                                             <li class=game-stat>
                                                 <p class=text-label>Created
                                                 <p class=text-lead>@(ViewBag.CreatedAt?.ToString("M/d/yyyy") ?? "Unknown")

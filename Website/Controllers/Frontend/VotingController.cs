@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Games;
 using Common;
+using Npgsql;
 
 namespace Website.Controllers.Frontend;
 
@@ -17,10 +18,12 @@ namespace Website.Controllers.Frontend;
 public class VotingController : ControllerBase
 {
     private readonly VotingService _votingService;
+    private readonly string _connectionString;
 
     public VotingController(IConfiguration configuration)
     {
         var connectionString = DatabaseUtilities.GetConnectionString(configuration);
+        _connectionString = connectionString;
         _votingService = new VotingService(connectionString);
     }
 
@@ -297,11 +300,12 @@ public class VotingController : ControllerBase
         return userId;
     }
 
-    private async Task<bool> CanUserVoteAsync(long userId, long universeId)
+    private async Task<bool> CanUserVoteAsync(long userId, long assetId)
     {
-        // - Check if user has played the game
-        // For now, returning true as placeholder
-        return await Task.FromResult(true);
+        var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_connectionString, assetId);
+        if (!universeId.HasValue) return false;
+        
+        return await VisitTracking.HasVisitedAsync(userId, universeId.Value, _connectionString);
     }
 }
 

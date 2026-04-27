@@ -455,7 +455,16 @@ namespace ControlPanel.Functions
                     throw new FileNotFoundException($"Required executable not found: {exeName} in {folderPath}");
                 }
                 
-                var version = !string.IsNullOrEmpty(bootstrapperVersion) ? CalculateMD5Hash(exePath) : bootstrapperVersion;
+                if (string.IsNullOrEmpty(bootstrapperVersion))
+                {
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = "Bootstrapper version is required."
+                    };
+                }
+                
+                var version = bootstrapperVersion;
                 
                 var setupServiceLocation = GetSetupServiceLocation();
                 var wwwrootPath = Path.Combine(setupServiceLocation, "wwwroot");
@@ -474,20 +483,31 @@ namespace ControlPanel.Functions
                 var zipFilePath = Path.Combine(wwwrootPath, zipFileName);
                 var packagedFiles = await CreateZipPackage(zipFilePath, packageFiles);
                 
-                if (!string.IsNullOrEmpty(bootstrapperPath) && File.Exists(bootstrapperPath))
+                if (string.IsNullOrEmpty(bootstrapperPath))
                 {
-                    var bootstrapperFileName = $"version-{version}-Roblox.exe";
-                    var bootstrapperDestPath = Path.Combine(wwwrootPath, bootstrapperFileName);
-                    
-                    File.Copy(bootstrapperPath, bootstrapperDestPath, true);
-                    packagedFiles.Add(bootstrapperFileName);                
-                    var launcherPath = Path.Combine(wwwrootPath, "RobloxPlayerLauncher.exe");
-                    File.Copy(bootstrapperPath, launcherPath, overwrite: true);
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = "Bootstrapper path is required."
+                    };
                 }
-                else if (!string.IsNullOrEmpty(bootstrapperPath))
+                
+                if (!File.Exists(bootstrapperPath))
                 {
-                    LogWarning($"Bootstrapper file not found: {bootstrapperPath}");
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = $"Bootstrapper file not found: {bootstrapperPath}"
+                    };
                 }
+                
+                var bootstrapperFileName = $"version-{version}-Roblox.exe";
+                var bootstrapperDestPath = Path.Combine(wwwrootPath, bootstrapperFileName);
+                
+                File.Copy(bootstrapperPath, bootstrapperDestPath, true);
+                packagedFiles.Add(bootstrapperFileName);                
+                var launcherPath = Path.Combine(wwwrootPath, "RobloxPlayerLauncher.exe");
+                File.Copy(bootstrapperPath, launcherPath, overwrite: true);
                 
                 createdZipFiles.Add("RobloxApp.zip");
                 

@@ -340,11 +340,11 @@
                                                 <TextBlock Grid.Column="0" Grid.Row="3" Text="Expires:" Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0"/>
                                                 <TextBlock x:Name="TicketExpirationText" Grid.Column="1" Grid.Row="3" Text="N/A" Style="{StaticResource LabelText}" Margin="5,2,0,0"/>
                                             </Grid>
-                                            <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource AccentBlue}" 
+                                            <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource AccentPrimary}" 
                                                     BorderThickness="1" Padding="8" Margin="0,10,0,0">
                                                 <StackPanel>
                                                     <TextBlock Text="Command Line Arguments:" FontWeight="Bold" 
-                                                               Foreground="{DynamicResource AccentBlue}" Margin="0,0,0,5"/>
+                                                               Foreground="{DynamicResource AccentPrimary}" Margin="0,0,0,5"/>
                                                     <TextBox x:Name="CommandLineArgsTextBox" 
                                                             Foreground="{DynamicResource Foreground}"
                                                             Background="{DynamicResource Background}"
@@ -356,7 +356,7 @@
                                                             IsReadOnly="True" Focusable="False"/>
                                                     <Button x:Name="CopyCommandLineButton" Content="📋 Copy Command Line" 
                                                             Style="{StaticResource ModernButton}" 
-                                                            Background="{DynamicResource AccentBlue}" Foreground="White" 
+                                                            Background="{DynamicResource AccentPrimary}" Foreground="White" 
                                                             Height="25" FontSize="11"
                                                             Click="CopyCommandLineButton_Click"/>
                                                 </StackPanel>

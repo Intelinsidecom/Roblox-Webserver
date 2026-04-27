@@ -10,4 +10,6 @@ public sealed class UniverseInfo
     public string? ThumbnailUrl { get; set; }
     public int PrivacyLevel { get; set; } = 1;
     public bool Studio_Access_To_APIs { get; set; } = false;
+    public int VisitCount { get; set; } = 0;
+    public int PlayingCount { get; set; } = 0;
 }

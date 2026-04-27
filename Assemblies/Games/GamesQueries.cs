@@ -1,6 +1,8 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -104,6 +106,7 @@ public static class GamesQueries
         public string IconUrl { get; set; } = string.Empty;
         public string ThumbnailUrl { get; set; } = string.Empty;
         public int Playing { get; set; }
+        public int VisitCount { get; set; }
         public int UpVotes { get; set; }
         public int DownVotes { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -143,11 +146,12 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                0 as playing_count
+                COALESCE(u.visit_count, 0) as visit_count,
+                COALESCE(a.player_count, 0) as player_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
-            WHERE a.is_place = true 
+            WHERE a.is_place = true
             AND a.access_type = 1 -- Public access only
             AND u.root_place_id IS NOT NULL";
 
@@ -208,7 +212,8 @@ public static class GamesQueries
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
-                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+                VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
+                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
             };
             games.Add(game);
         }
@@ -248,12 +253,13 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                0 as playing_count
+                COALESCE(u.visit_count, 0) as visit_count,
+                COALESCE(a.player_count, 0) as player_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE u.creator_user_id = @userId
-            AND a.is_place = true 
+            AND a.is_place = true
             AND a.access_type = 1 -- Public access only
             AND u.root_place_id IS NOT NULL";
 
@@ -292,7 +298,8 @@ public static class GamesQueries
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
-                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+                VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
+                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
             };
             games.Add(game);
         }
@@ -344,11 +351,12 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                0 as playing_count
+                COALESCE(u.visit_count, 0) as visit_count,
+                COALESCE(a.player_count, 0) as player_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
-            WHERE a.is_place = true 
+            WHERE a.is_place = true
             AND a.access_type = 1 -- Public access only
             AND u.root_place_id IS NOT NULL
             AND ({searchCondition})
@@ -377,7 +385,8 @@ public static class GamesQueries
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
-                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+                VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
+                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
             };
             games.Add(game);
         }
@@ -452,7 +461,8 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                0 as playing_count
+                COALESCE(u.visit_count, 0) as visit_count,
+                COALESCE(a.player_count, 0) as player_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
@@ -471,16 +481,18 @@ public static class GamesQueries
         {
             var game = new GameEntry
             {
-                PlaceId = reader.GetInt64(1), // root_place_id
-                Name = reader.GetString(2),
-                CreatorUserId = reader.GetInt64(3),
-                CreatorName = reader.GetString(4),
-                IconUrl = reader.GetString(5),
-                ThumbnailUrl = reader.GetString(6),
-                CreatedAt = reader.GetDateTime(7),
-                UpVotes = reader.GetInt32(8),
-                DownVotes = reader.GetInt32(9),
-                Playing = reader.GetInt32(10)
+                UniverseId = reader.GetInt64(reader.GetOrdinal("universe_id")),
+                PlaceId = reader.GetInt64(reader.GetOrdinal("root_place_id")),
+                Name = reader.GetString(reader.GetOrdinal("name")),
+                CreatorName = reader.GetString(reader.GetOrdinal("creator_name")),
+                CreatorUserId = reader.GetInt64(reader.GetOrdinal("creator_user_id")),
+                IconUrl = reader.GetString(reader.GetOrdinal("icon_url")),
+                ThumbnailUrl = reader.GetString(reader.GetOrdinal("thumbnail_url")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
+                DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
+                VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
+                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
             };
             games.Add(game);
         }
@@ -586,11 +598,12 @@ public static class GamesQueries
                 a.last_updated,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                0 as playing_count
+                COALESCE(u.visit_count, 0) as visit_count,
+                COALESCE(a.player_count, 0) as player_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
-            WHERE a.is_place = true 
+            WHERE a.is_place = true
             AND a.access_type = 1 -- Public access only
             AND u.root_place_id IS NOT NULL
             AND ({string.Join(" AND ", searchConditions)})
@@ -624,11 +637,214 @@ public static class GamesQueries
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
-                Playing = reader.GetInt32(reader.GetOrdinal("playing_count"))
+                VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
+                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
             };
             games.Add(game);
         }
 
         return games;
+    }
+
+    /// <summary>
+    /// Gets live player count for a specific place by querying the Arbiter
+    /// Returns real-time player data from all running game servers for this place
+    /// </summary>
+    public static async Task<(int TotalPlayers, int AuthenticatedPlayers, int GuestPlayers, List<PlayerInfo> Players)> GetLivePlayerCountForPlaceAsync(
+        int placeId,
+        string arbiterBaseUrl,
+        bool useLiveData = false,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
+
+            var url = $"{arbiterBaseUrl}/api/gameservers/players/{placeId}?live={useLiveData}";
+            var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return (0, 0, 0, new List<PlayerInfo>());
+            }
+
+            var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            using var doc = JsonDocument.Parse(content);
+            var root = doc.RootElement;
+
+            int totalPlayers = root.GetProperty("totalPlayerCount").GetInt32();
+            int authPlayers = root.GetProperty("authenticatedPlayerCount").GetInt32();
+            int guestPlayers = root.GetProperty("guestPlayerCount").GetInt32();
+
+            var players = new List<PlayerInfo>();
+            if (root.TryGetProperty("players", out var playersElement))
+            {
+                foreach (var player in playersElement.EnumerateArray())
+                {
+                    players.Add(new PlayerInfo
+                    {
+                        UserId = player.TryGetProperty("userId", out var uid) ? uid.GetInt64() : 0,
+                        Name = player.TryGetProperty("name", out var name) ? name.GetString() ?? "" : "",
+                        DisplayName = player.TryGetProperty("displayName", out var dname) ? dname.GetString() ?? "" : ""
+                    });
+                }
+            }
+
+            return (totalPlayers, authPlayers, guestPlayers, players);
+        }
+        catch
+        {
+            return (0, 0, 0, new List<PlayerInfo>());
+        }
+    }
+
+    /// <summary>
+    /// Player info returned from Arbiter player queries
+    /// </summary>
+    public class PlayerInfo
+    {
+        public long UserId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Gets all place IDs associated with a universe
+    /// </summary>
+    public static async Task<List<long>> GetUniversePlaceIdsAsync(long universeId, string connectionString, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        const string sql = @"
+            SELECT root_place_id, place_ids
+            FROM universes
+            WHERE universe_id = @universeId";
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        var placeIds = new List<long>();
+
+        if (result != null && result != DBNull.Value)
+        {
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var rootPlaceId = reader.IsDBNull(0) ? 0L : reader.GetInt64(0);
+                var placeIdsArray = reader.IsDBNull(1) ? new long[0] : (long[])reader.GetValue(1);
+
+                if (rootPlaceId > 0)
+                    placeIds.Add(rootPlaceId);
+
+                placeIds.AddRange(placeIdsArray.Where(pid => pid > 0));
+            }
+        }
+
+        return placeIds.Distinct().ToList();
+    }
+
+    /// <summary>
+    /// Gets live player counts for all places in a universe by querying the Arbiter
+    /// Aggregates player counts across all running game servers for all places in the universe
+    /// </summary>
+    public static async Task<UniversePlayersResult> GetLivePlayerCountForUniverseAsync(
+        long universeId,
+        string connectionString,
+        string arbiterBaseUrl,
+        bool useLiveData = false,
+        CancellationToken cancellationToken = default)
+    {
+        var placeIds = await GetUniversePlaceIdsAsync(universeId, connectionString, cancellationToken).ConfigureAwait(false);
+
+        if (placeIds.Count == 0)
+        {
+            return new UniversePlayersResult
+            {
+                UniverseId = universeId,
+                TotalPlayers = 0,
+                AuthenticatedPlayers = 0,
+                GuestPlayers = 0,
+                PlaceCount = 0,
+                ActiveServers = 0,
+                Players = new List<PlayerInfo>(),
+                PlaceBreakdown = new List<PlacePlayerInfo>()
+            };
+        }
+
+        var allPlayers = new List<PlayerInfo>();
+        var placeBreakdown = new List<PlacePlayerInfo>();
+        int totalAuth = 0;
+        int totalGuest = 0;
+        int totalServers = 0;
+        var tasks = placeIds.Select(async placeId =>
+        {
+            var result = await GetLivePlayerCountForPlaceAsync((int)placeId, arbiterBaseUrl, useLiveData, cancellationToken).ConfigureAwait(false);
+
+            lock (allPlayers)
+            {
+                totalAuth += result.AuthenticatedPlayers;
+                totalGuest += result.GuestPlayers;
+                allPlayers.AddRange(result.Players);
+            }
+
+            return new PlacePlayerInfo
+            {
+                PlaceId = placeId,
+                TotalPlayers = result.TotalPlayers,
+                AuthenticatedPlayers = result.AuthenticatedPlayers,
+                GuestPlayers = result.GuestPlayers,
+                PlayerNames = result.Players.Select(p => p.Name).ToList()
+            };
+        });
+
+        var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+        placeBreakdown.AddRange(results);
+
+        return new UniversePlayersResult
+        {
+            UniverseId = universeId,
+            TotalPlayers = totalAuth + totalGuest,
+            AuthenticatedPlayers = totalAuth,
+            GuestPlayers = totalGuest,
+            PlaceCount = placeIds.Count,
+            ActiveServers = totalServers,
+            Players = allPlayers,
+            PlaceBreakdown = placeBreakdown
+        };
+    }
+
+    /// <summary>
+    /// Result containing player info for a universe
+    /// </summary>
+    public class UniversePlayersResult
+    {
+        public long UniverseId { get; set; }
+        public int TotalPlayers { get; set; }
+        public int AuthenticatedPlayers { get; set; }
+        public int GuestPlayers { get; set; }
+        public int PlaceCount { get; set; }
+        public int ActiveServers { get; set; }
+        public List<PlayerInfo> Players { get; set; } = new();
+        public List<PlacePlayerInfo> PlaceBreakdown { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Player info per place
+    /// </summary>
+    public class PlacePlayerInfo
+    {
+        public long PlaceId { get; set; }
+        public int TotalPlayers { get; set; }
+        public int AuthenticatedPlayers { get; set; }
+        public int GuestPlayers { get; set; }
+        public List<string> PlayerNames { get; set; } = new();
     }
 }

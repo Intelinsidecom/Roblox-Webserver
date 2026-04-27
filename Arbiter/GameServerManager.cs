@@ -14,6 +14,7 @@ namespace RCCArbiter
     public class GameServerManager
     {
         private string _rccUrl;
+        private readonly IConfiguration _configuration;
         private readonly GameServerRccManager _rccManager;
         private readonly ConcurrentDictionary<string, GameServerInfo> _activeServers;
         private readonly object _serversLock;
@@ -61,6 +62,7 @@ namespace RCCArbiter
         public GameServerManager(string rccUrl, IConfiguration config)
         {
             _rccUrl = rccUrl;
+            _configuration = config;
             _rccManager = new GameServerRccManager(config);
             _activeServers = new();
             _serversLock = new();
@@ -98,6 +100,7 @@ namespace RCCArbiter
                 cores = 2
             };
 
+            var accessKey = _configuration["Arbiter:AccessKey"] ?? "ChangeMe";
             var parameters = new Dictionary<string, string>
             {
                 ["placeId"] = placeId.ToString(),
@@ -106,7 +109,8 @@ namespace RCCArbiter
                 ["privateServerId"] = privateServerId,
                 ["baseUrl"] = baseUrl,
                 ["gameId"] = gameId,
-                ["arbiterUrl"] = "http://localhost:5000" // Default Arbiter URL
+                ["arbiterUrl"] = "http://localhost:5000", // Default Arbiter URL
+                ["accessKey"] = accessKey
             };
             
             try
@@ -724,6 +728,63 @@ namespace RCCArbiter
                     return dict;
                 default:
                     return value.value ?? string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Gets all players for a specific place ID by aggregating data from all running game servers for that place
+        /// </summary>
+        public List<PlayerInfo> GetPlayersByPlaceId(int placeId)
+        {
+            lock (_serversLock)
+            {
+                var allPlayers = new List<PlayerInfo>();
+
+                foreach (var server in _activeServers.Values)
+                {
+                    if (server.PlaceId == placeId)
+                    {
+                        allPlayers.AddRange(server.AuthenticatedPlayers);
+                    }
+                }
+
+                return allPlayers;
+            }
+        }
+
+        /// <summary>
+        /// Gets player count summary for a specific place ID
+        /// </summary>
+        public (int AuthenticatedCount, int GuestCount, int TotalCount, List<PlayerInfo> Players) GetPlayerCountByPlaceId(int placeId)
+        {
+            lock (_serversLock)
+            {
+                int authenticatedCount = 0;
+                int guestCount = 0;
+                var players = new List<PlayerInfo>();
+
+                foreach (var server in _activeServers.Values)
+                {
+                    if (server.PlaceId == placeId)
+                    {
+                        authenticatedCount += server.AuthenticatedPlayerCount;
+                        guestCount += server.GuestPlayerCount;
+                        players.AddRange(server.AuthenticatedPlayers);
+                    }
+                }
+
+                return (authenticatedCount, guestCount, authenticatedCount + guestCount, players);
+            }
+        }
+
+        /// <summary>
+        /// Gets all game servers for a specific place ID
+        /// </summary>
+        public List<GameServerInfo> GetGameServersByPlaceId(int placeId)
+        {
+            lock (_serversLock)
+            {
+                return _activeServers.Values.Where(s => s.PlaceId == placeId).ToList();
             }
         }
     }

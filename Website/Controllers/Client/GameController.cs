@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Games;
 using System.Threading.Tasks;
@@ -13,12 +14,20 @@ namespace Website.Controllers.Client
         private readonly AppDbContext _dbContext;
         private readonly GamePresenceService _gamePresenceService;
         private readonly AuthenticationTicketService _ticketService;
+        private readonly IConfiguration _configuration;
 
-        public GameController(AppDbContext dbContext, GamePresenceService gamePresenceService, AuthenticationTicketService ticketService)
+        public GameController(AppDbContext dbContext, GamePresenceService gamePresenceService, AuthenticationTicketService ticketService, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _gamePresenceService = gamePresenceService;
             _ticketService = ticketService ?? throw new ArgumentNullException(nameof(ticketService));
+            _configuration = configuration;
+        }
+
+        private bool ValidateArbiterToken(string token)
+        {
+            var expectedToken = _configuration["Arbiter:AccessKey"];
+            return !string.IsNullOrEmpty(expectedToken) && token == expectedToken;
         }
 
         [HttpPost("game/report-stats")]
@@ -121,6 +130,78 @@ namespace Website.Controllers.Client
             }
         }
 
+        [HttpPost("/Game/Joined")]
+        public async Task<IActionResult> PlayerJoined([FromForm] long userId, [FromForm] long placeId, [FromForm] string jobId, [FromForm] string token)
+        {
+            if (!ValidateArbiterToken(token))
+            {
+                return Unauthorized("Invalid authentication token");
+            }
+
+            try
+            {
+                var existingPresence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
+                
+                if (existingPresence != null)
+                {
+                    if (existingPresence.PlaceId == placeId && existingPresence.JobId == jobId)
+                    {
+                        await _gamePresenceService.UpdatePlayerActivityAsync(userId, placeId);
+                        return Json(new { success = true, message = "Player activity updated" });
+                    }
+                    else
+                    {
+                        await _gamePresenceService.RemoveFromGameAsync(userId);
+                    }
+                }
+
+                var ticket = await _ticketService.CreateGameTicketAsync(userId, placeId);
+                if (ticket != null)
+                {
+                    await _gamePresenceService.RecordGameJoinAsync(userId, placeId, jobId, ticket.TicketToken);
+                    return Json(new { success = true, message = "Player joined game" });
+                }
+
+                return Json(new { success = false, message = "Failed to create ticket" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameController.PlayerJoined] Error: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("/Game/Left")]
+        public async Task<IActionResult> PlayerLeft([FromForm] long userId, [FromForm] long placeId, [FromForm] string jobId, [FromForm] string token)
+        {
+            if (!ValidateArbiterToken(token))
+            {
+                return Unauthorized("Invalid authentication token");
+            }
+
+            try
+            {
+                var presence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
+                
+                if (presence != null && presence.PlaceId == placeId && presence.JobId == jobId)
+                {
+                    await _gamePresenceService.RemoveFromGameAsync(userId);
+                    return Json(new { success = true, message = "Player left game" });
+                }
+                else if (presence != null)
+                {
+                    return Json(new { success = true, message = "Player is in a different game, not removing" });
+                }
+                
+                return Json(new { success = true, message = "Player not in game" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameController.PlayerLeft] Error: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpGet("/Game/ClientPresence.ashx")]
         public async Task<IActionResult> ClientPresence(long? userID, long? PlaceID, string? action, string? jobId)
         {
@@ -193,6 +274,25 @@ namespace Website.Controllers.Client
                 }
                 else if (action == "create")
                 {
+                    if (existingPresence != null)
+                    {
+                        if (existingPresence.PlaceId == PlaceID.Value && 
+                            (!string.IsNullOrEmpty(jobId) && existingPresence.JobId == jobId))
+                        {
+                            return Json(new { 
+                                success = true,
+                                inGame = true,
+                                placeID = existingPresence.PlaceId,
+                                jobID = existingPresence.JobId,
+                                lastPing = existingPresence.UpdatedAt,
+                                playerCount = await _gamePresenceService.GetActivePlayerCountByPlaceAsync(PlaceID.Value),
+                                message = "Already in game"
+                            });
+                        }
+                        
+                        await _gamePresenceService.RemoveFromGameAsync(userID.Value);
+                    }
+                    
                     var ticket = await _ticketService.CreateGameTicketAsync(userID.Value, PlaceID.Value);
                     if (ticket != null)
                     {

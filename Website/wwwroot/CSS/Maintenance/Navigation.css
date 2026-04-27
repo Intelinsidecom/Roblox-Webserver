@@ -7445,14 +7445,13 @@ textarea.form-control {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   max-width: 100%;
-  width: 400px;
+  width: auto;
   display: inline-block;
   text-align: left;
   vertical-align: middle;
   margin: 0; }
   @media (max-width: 767px) {
     .modal-dialog {
-      min-width: 296px;
       width: 100%; } }
   .modal-dialog .modal-content {
     border-radius: 0; }
