@@ -1,6 +1,8 @@
 // Games/GamesPageContainerBehavior.js
 "use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.GamesPageContainerBehavior = {
     init: function() {
         this.bindEvents();
@@ -25,7 +27,12 @@ Roblox.GamesPageContainerBehavior = {
     
     initializeGames: function() {
         if (typeof Roblox.GamesPage !== 'undefined') {
-            Roblox.GamesPage.init();
+            // Check if dependencies are loaded before calling init
+            if (typeof Roblox.GamesPage.Settings !== 'undefined' && typeof Roblox.GamesPage.State !== 'undefined') {
+                Roblox.GamesPage.init();
+            } else {
+                console.log('GamesPageContainerBehavior: Dependencies not loaded, skipping init');
+            }
         }
     },
     
@@ -62,5 +69,7 @@ Roblox.GamesPageContainerBehavior = {
 };
 
 $(function() {
-    Roblox.GamesPageContainerBehavior.init();
+    if (typeof Roblox.GamesPageContainerBehavior !== 'undefined' && Roblox.GamesPageContainerBehavior.init) {
+        Roblox.GamesPageContainerBehavior.init();
+    }
 });

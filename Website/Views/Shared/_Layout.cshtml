@@ -3,6 +3,26 @@
 @using Npgsql
 @using System.Text.RegularExpressions
 
+@{
+    var userAgent = ViewContext.HttpContext.Request.Headers["User-Agent"].ToString() ?? "";
+    bool containsAndroid = userAgent.Contains("Android");
+    bool containsRobloxAndroid = userAgent.Contains("ROBLOX Android App");
+    bool containsIPhone = userAgent.Contains("iPhone");
+    bool containsIPad = userAgent.Contains("iPad");
+    bool containsIPod = userAgent.Contains("iPod");
+    bool containsRobloxiOS = userAgent.Contains("ROBLOX iOS App");
+    bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || userAgent.Contains("WOW64");
+    
+    bool isMobile = containsAndroid || containsIPhone || containsIPad || containsIPod || containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
+    
+    ViewBag.IsMobile = isMobile;
+    ViewBag.IsAndroid = containsAndroid || containsRobloxAndroid;
+    ViewBag.IsIOS = containsIPhone || containsIPad || containsIPod || containsRobloxiOS;
+    ViewBag.ProtocolName = (containsIPhone || containsIPad || containsIPod || containsRobloxiOS) ? "robloxmobile" : "freblx-player";
+    ViewBag.DebugUserAgent = userAgent;
+    ViewBag.DebugIsMobile = isMobile;
+}
+
 @functions {
     private string ParseGlobalMessage(string message)
     {
@@ -276,6 +296,8 @@
     <partial name="_Footer" />
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

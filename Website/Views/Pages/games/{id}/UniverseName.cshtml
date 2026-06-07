@@ -1,5 +1,19 @@
 @{
     Layout = "_Layout";
+
+    var userAgent = ViewContext.HttpContext.Request.Headers["User-Agent"].ToString() ?? "";
+    bool containsAndroid = userAgent.Contains("Android");
+    bool containsRobloxAndroid = userAgent.Contains("ROBLOX Android App");
+    bool containsIPhone = userAgent.Contains("iPhone");
+    bool containsIPad = userAgent.Contains("iPad");
+    bool containsIPod = userAgent.Contains("iPod");
+    bool containsRobloxiOS = userAgent.Contains("ROBLOX iOS App");
+    bool containsRobloxUWP = userAgent.Contains("WOW64");
+
+    bool isMobile = containsAndroid || containsIPhone || containsIPad || containsIPod || containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
+
+    ViewBag.ProtocolName = isMobile ? "robloxmobile" : "freblx-player";
+    ViewBag.IsMobile = isMobile;
 }
 
 @using Assets
@@ -413,7 +427,14 @@
                             </div>
                             <div class=game-buttons-container>
                                 <div class=game-play-buttons data-autoplay=false>
-                                    <div id=MultiplayerVisitButton class="VisitButton VisitButtonPlayGLI" placeid=@ViewBag.Id data-action=play data-is-membership-level-ok=true><a class=btn-primary-lg>Play</a></div>
+                                    @if (containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP)
+                                    {
+                                        <a href="/games/start?placeid=@ViewBag.Id" placeid="@ViewBag.Id" class="VisitButton VisitButtonPlayGLI btn-primary-lg" style="display:inline-block;text-decoration:none;">Play</a>
+                                    }
+                                    else
+                                    {
+                                        <div id=MultiplayerVisitButton class="VisitButton VisitButtonPlayGLI" placeid=@ViewBag.Id data-action=play data-is-membership-level-ok=true><a class=btn-primary-lg>Play</a></div>
+                                    }
                                     <script>
                                         Roblox = Roblox || {};
                                         Roblox.BCUpsellModal = function() {
@@ -991,7 +1012,7 @@
     <script>
         function urchinTracker() {}
     </script>
-    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=freblx-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
+    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=@(ViewBag.IsMobile == true ? "Mobile" : "Windows") data-protocol-name-for-client="@(ViewBag.ProtocolName)" data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1 data-is-mobile=@((ViewBag.IsMobile == true).ToString().ToLower())>
         <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
             <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
             <div id=status style="min-height:40px;text-align:center;margin:5px 20px">

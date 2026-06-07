@@ -173,6 +173,8 @@ body, html {
 
 
     <script>
+        var googletag = window.googletag = window.googletag || {};
+        googletag.cmd = googletag.cmd || [];
         var Roblox = Roblox || {};
         Roblox.AdsHelper = Roblox.AdsHelper || {};
         Roblox.AdsLibrary = Roblox.AdsLibrary || {};
@@ -252,7 +254,8 @@ body, html {
                                                         console.warn('AdsHelper not available for GamePageAdDiv1, using fallback');
                                                         googletag.display("3636383534373435");
                                                     }
-                                            });
+                                                });
+                                            }, 0);
                                         });
                                     </script>
                                 </div>
@@ -270,7 +273,8 @@ body, html {
                                                         console.warn('AdsHelper not available for GamePageAdDiv2, using fallback');
                                                         googletag.display("3536303432303230");
                                                     }
-                                            });
+                                                });
+                                            }, 0);
                                         });
                                     </script>
                                 </div>
@@ -621,9 +625,6 @@ body, html {
                         Roblox.GamesListBehavior.RefreshAdsInGamesPageEnabled = true;
                         Roblox.GamesListBehavior.isUserEligibleForMultirowFirstSort = false;
                         
-                        if (typeof Roblox.GamesPage !== 'undefined' && Roblox.GamesPage.init) {
-                            Roblox.GamesPage.init();
-                        }
                     });
                 </script>
     <div ng-modules="robloxApp, notificationStream, emailAndPhoneUpsell" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
@@ -878,7 +879,7 @@ body, html {
         
         function initializeGamesPage() {
             try {
-                if (Roblox.GamesPage.state) {
+                if (typeof Roblox !== 'undefined' && Roblox.GamesPage && Roblox.GamesPage.state) {
                     if (typeof Roblox.GamesPage.state.isCreateNewAd === 'undefined') {
                         Roblox.GamesPage.state.isCreateNewAd = false;
                     }
@@ -914,8 +915,6 @@ body, html {
                                 pushState: function() { /* noop */ }
                             };
                         }
-                        
-                        Roblox.GamesPage.init();
                     } catch (e) {
                         console.error('Stack trace:', e.stack);
                     }
@@ -1086,5 +1085,3 @@ body, html {
     }
 }
 </style>
-}
-}
