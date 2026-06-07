@@ -1,6 +1,8 @@
 // utilities/touchMovementSensitivity.js
 "use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.TouchMovementSensitivity = function () {
     function n(n, t) {
         return /touch/.test(n.type) ? (n.originalEvent || n).changedTouches[0][t] : n[t]

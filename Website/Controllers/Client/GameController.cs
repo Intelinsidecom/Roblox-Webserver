@@ -42,6 +42,12 @@ namespace Website.Controllers.Client
             return Json(new { success = true });
         }
 
+        [HttpPost("/game/report-event")]
+        public IActionResult ReportEvent()
+        {
+            return Json(new { success = true });
+        }
+
         [HttpGet("/Game/LuaWebService/HandleSocialRequest.ashx")]
         public IActionResult HandleSocialRequest(string method, int playerid, int? userid, int? groupid)
         {

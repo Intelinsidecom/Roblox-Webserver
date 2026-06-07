@@ -1,6 +1,8 @@
 // Games/Refactor/constants.js
 "use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.GamesPageConstants = {
     initialAdHeight: 1326,
     subsequentAdHeight: 800,

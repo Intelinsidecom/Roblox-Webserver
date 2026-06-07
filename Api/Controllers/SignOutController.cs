@@ -23,7 +23,7 @@ namespace Api.Controllers
                 {
                     HttpOnly = true,
                     Secure = isHttps,
-                    SameSite = SameSiteMode.Lax,
+                    SameSite = SameSiteMode.Unspecified,
                     Expires = DateTimeOffset.UnixEpoch,
                     MaxAge = TimeSpan.Zero,
                     Path = "/",

@@ -1,5 +1,5 @@
 // Games/Refactor/gamesList.js
-Roblox = Roblox || {}, Roblox.GamesPage.GamesList = function(n, t, i, r, u, f) {
+Roblox = Roblox || {}, Roblox.GamesPage = Roblox.GamesPage || {}, Roblox.GamesPage.GamesList = function(n, t, i, r, u, f) {
     var e = Roblox.GamesPageConstants;
     this.parent = Roblox.GamesPage, this.divId = n, this.id = n.replace("GamesListContainer", ""), this.container = null, this.gamesListElement = null, this.haveGamesBeenLoaded = !1, this.isFirst = !1, this.isShown = !1, this.sortFilter = t, this.gameFilter = i, this.regionFilter = r, this.timeFilter = e.timeFilters.current, this.genreId = 1, this.minBcLevel = u, this.personalizedUniverseId = f, this.numberOfRowsToOccupy = 0, this.numberOfGamesToFetch = 0, this.numberOfGamesOnScreen = 0, this.startIndex = 0, this.jqxhr = null, this.reachedHorizontalScrollMax = !1, this.numberOfGamesOnLastRow = 0, this.isSearchResults = !1, this.getContainer().hasClass("search-results-container") && (this.isSearchResults = !0)
 }, Roblox.GamesPage.GamesList.prototype = {
@@ -92,7 +92,7 @@ Roblox = Roblox || {}, Roblox.GamesPage.GamesList = function(n, t, i, r, u, f) {
         return this.getContainer().find(".games-list .show-in-multiview-mode-only")
     },
     getSettings: function() {
-        return Roblox.GamesPage.getSettings()
+        return Roblox.GamesPage.settings
     },
     getState: function() {
         return Roblox.GamesPage.state

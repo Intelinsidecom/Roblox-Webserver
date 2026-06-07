@@ -1,6 +1,8 @@
 // Games/Refactor/filters.js
 "use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.GamesPage.Filters = function() {
     var n = Roblox.GamesPageConstants,
         t, r, u, f;
@@ -82,7 +84,7 @@ Roblox.GamesPage.Filters = function() {
             return $("#" + n.sortFilters.genreFilter)
         },
         getSettings: function() {
-            return Roblox.GamesPage.getSettings()
+            return Roblox.GamesPage.settings
         },
         getFilterElementByType: function(n) {
             var t = Roblox.GamesPageConstants,

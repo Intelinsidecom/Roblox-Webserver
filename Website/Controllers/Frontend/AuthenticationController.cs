@@ -33,12 +33,6 @@ namespace RobloxWebserver.Controllers
             var isHttps = Request.IsHttps;
             var allowInsecure = _configuration.GetValue<bool>("Auth:AllowInsecureCookies");
             var cookieDomain = _configuration["Auth:CookieDomain"];
-            var sameSiteConfig = (_configuration["Auth:CookieSameSite"] ?? "Lax").Trim();
-            var sameSite = SameSiteMode.Lax;
-            if (sameSiteConfig.Equals("None", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.None;
-            else if (sameSiteConfig.Equals("Strict", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.Strict;
-            if (sameSite == SameSiteMode.None) isHttps = true;
-
             Response.Cookies.Append(
                 ".ROBLOSECURITY",
                 string.Empty,
@@ -46,7 +40,7 @@ namespace RobloxWebserver.Controllers
                 {
                     HttpOnly = true,
                     Secure = isHttps && !allowInsecure,
-                    SameSite = sameSite,
+                    SameSite = SameSiteMode.Unspecified,
                     Expires = DateTimeOffset.UnixEpoch,
                     MaxAge = TimeSpan.Zero,
                     Path = "/",

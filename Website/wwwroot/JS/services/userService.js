@@ -1,8 +1,8 @@
 "use strict";
 
-var Roblox=Roblox|| {}
-
-;
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 
 Roblox.CurrentUser=Roblox.CurrentUser|| {}
 

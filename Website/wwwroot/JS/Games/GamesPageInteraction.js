@@ -1,6 +1,10 @@
 // Games/GamesPageInteraction.js
 "use strict";
-typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.GamesPageInteraction == "undefined" && (Roblox.GamesPageInteraction = function() {
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
+if (typeof Roblox.GamesPageInteraction === 'undefined') {
+    Roblox.GamesPageInteraction = function() {
     function n(n, t) {
         Roblox.EventStream && Roblox.EventStream.SendEvent("gamesPageInteraction", n, t)
     }
@@ -12,9 +16,9 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.GamesPageInteractio
             case "TimeFilter":
                 return "TFMenu";
             case "GenreFilter":
-                return "GFMenu"
+                return "GFMenu";
         }
-        return ""
+        return "";
     }
 
     function r(i) {
@@ -64,7 +68,9 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.GamesPageInteractio
         SendPagerClick: e,
         SendSeeAllClick: o
     }
-}()), $(function() {
+}();
+}
+$(function() {
     $("div#FiltersAndSort").on("mousedown", ".input-group-btn", function(n) {
         if (n.which == 1)
             if ($(this).hasClass("open")) {

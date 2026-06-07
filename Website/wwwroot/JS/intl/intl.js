@@ -37,16 +37,18 @@
     }
     i.d(t, "b", function() {
         return r
-    }), t.a = u;
+    }), i.d(t, "a", function() {
+        return u
+    });
     var r = Object.prototype.hasOwnProperty
 }, function(n, t, i) {
     "use strict";
     Object.defineProperty(t, "__esModule", {
         value: !0
     });
-    var r = i(2),
-        u = i(7);
-    r.a.__addLocaleData(u.a), r.a.defaultLocale = "en", Roblox = Roblox || {},
+    var r = i(2);
+    var u = i(7);
+    r.a.__addLocaleData(u.a), r.a.defaultLocale = "en", window.Roblox = window.Roblox || {},
         function(n) {
             var t = function(n, t, i) {
                 var u = "RobloxLocaleCode",
@@ -141,7 +143,7 @@
                     }
                 }))
             }, n.Intl = t
-        }(Roblox)
+        }(window.Roblox)
 }, function(n, t, i) {
     "use strict";
 

@@ -1,6 +1,8 @@
 // Games/Refactor/search.js
 "use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.GamesPage.Search = function() {
     var n, t, i, r, u;
     return {
@@ -55,7 +57,7 @@ Roblox.GamesPage.Search = function() {
             return u || (u = $("#SearchResultsContainer .search-query-text")), u
         },
         getSettings: function() {
-            return Roblox.GamesPage.getSettings()
+            return Roblox.GamesPage.settings
         },
         getState: function() {
             return Roblox.GamesPage.getState()

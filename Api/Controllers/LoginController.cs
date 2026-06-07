@@ -111,11 +111,6 @@ namespace Api.Controllers
             var isHttps = Request.IsHttps;
             var allowInsecure = config.GetValue<bool>("Auth:AllowInsecureCookies");
             var cookieDomain = config["Auth:CookieDomain"];
-            var sameSiteConfig = (config["Auth:CookieSameSite"] ?? "Lax").Trim();
-            var sameSite = SameSiteMode.Lax;
-            if (sameSiteConfig.Equals("None", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.None;
-            else if (sameSiteConfig.Equals("Strict", StringComparison.OrdinalIgnoreCase)) sameSite = SameSiteMode.Strict;
-            if (sameSite == SameSiteMode.None) isHttps = true;
             Response.Cookies.Append(
                 ".ROBLOSECURITY",
                 token,
@@ -123,7 +118,7 @@ namespace Api.Controllers
                 {
                     HttpOnly = true,
                     Secure = isHttps && !allowInsecure,
-                    SameSite = sameSite,
+                    SameSite = SameSiteMode.Unspecified,
                     Expires = expires,
                     Path = "/",
                     Domain = string.IsNullOrWhiteSpace(cookieDomain) ? null : cookieDomain

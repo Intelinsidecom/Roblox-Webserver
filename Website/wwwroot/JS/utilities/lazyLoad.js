@@ -1,6 +1,9 @@
 // utilities/lazyLoad.js
 "use strict";
-Roblox = Roblox || {}, Roblox.LazyLoad = function() {
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
+Roblox.LazyLoad = function() {
     function n(n) {
         if (n) {
             var t = n.attr("data-delaysrc");

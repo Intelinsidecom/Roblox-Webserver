@@ -14,6 +14,24 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AuthCors", policy =>
+    {
+        policy.WithOrigins(
+                "https://www.freblx.xyz",
+                "https://api.freblx.xyz",
+                "http://www.freblx.xyz",
+                "http://api.freblx.xyz",
+                "http://localhost:5077",
+                "http://localhost:3000",
+                "http://127.0.0.1:5077",
+                "http://127.0.0.1:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 builder.Services.AddHttpLogging(o =>
 {
     o.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders | HttpLoggingFields.ResponsePropertiesAndHeaders | HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
@@ -37,8 +55,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
 });
 
+builder.Services.AddMemoryCache();
 
 builder.Services.AddSingleton<Games.AuthenticationTicketService>();
+builder.Services.AddSingleton<Games.TokenService>();
 
 var app = builder.Build();
 
@@ -49,7 +69,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
+
+
 app.UseForwardedHeaders();
+app.UseCors("AuthCors");
 app.UseAuthorization();
 app.Use(async (context, next) =>
 {

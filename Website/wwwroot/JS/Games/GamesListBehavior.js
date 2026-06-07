@@ -1,6 +1,8 @@
 // Games/GamesListBehavior.js
 "use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.GamesListBehavior = {
     RefreshAdsInGamesPageEnabled: true,
     isUserEligibleForMultirowFirstSort: false,
@@ -99,5 +101,7 @@ Roblox.GamesListBehavior = {
 };
 
 $(function() {
-    Roblox.GamesListBehavior.init();
+    if (typeof Roblox.GamesListBehavior !== 'undefined' && Roblox.GamesListBehavior.init) {
+        Roblox.GamesListBehavior.init();
+    }
 });

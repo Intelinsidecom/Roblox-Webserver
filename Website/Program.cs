@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Api.Data;
 using Api.Controllers;
 using System.Security.Claims;
@@ -22,6 +22,18 @@ builder.Services
     .AddControllersWithViews()
     .AddApplicationPart(typeof(LoginController).Assembly)
     .AddApplicationPart(System.Reflection.Assembly.GetExecutingAssembly());
+
+// Add CORS service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .WithExposedHeaders("*");
+    });
+});
 
 // Add session support
 builder.Services.AddDistributedMemoryCache();
@@ -110,6 +122,13 @@ app.UseForwardedHeaders();
 
 app.UseWebOptimizer();
 
+// Add CORS for UWP WebView support
+app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .WithExposedHeaders("*"));
+
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".file"] = "application/octet-stream";
 
@@ -117,7 +136,16 @@ app.UseStaticFiles(new StaticFileOptions
 {
     ServeUnknownFileTypes = true,
     DefaultContentType = "application/octet-stream",
-    ContentTypeProvider = provider
+    ContentTypeProvider = provider,
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, OPTIONS");
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Headers", "*");
+        ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+        ctx.Context.Response.Headers["Pragma"] = "no-cache";
+        ctx.Context.Response.Headers["Expires"] = "0";
+    }
 });
 
 app.UseMiddleware<LockdownMiddleware>();
@@ -206,6 +234,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

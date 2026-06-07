@@ -46,7 +46,7 @@ Roblox.AdsHelper = Roblox.AdsHelper || {}, Roblox.AdsHelper.AdRefresher = Roblox
             return $("#" + this.rightGutterId)
         },
         getSettings: function() {
-            return Roblox.GamesPage.getSettings()
+            return Roblox.GamesPage.settings
         },
         getState: function() {
             return Roblox.GamesPage.state

@@ -1,6 +1,7 @@
 // Games/Refactor/gamesPage.js
-"use strict";
-var Roblox = Roblox || {};
+if (typeof Roblox === 'undefined') {
+    var Roblox = {};
+}
 Roblox.GamesPage = function() {
     var r = Roblox.GamesPageConstants,
         t, i, n, f, u = {
