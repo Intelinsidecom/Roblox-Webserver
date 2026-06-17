@@ -7,4 +7,5 @@ public sealed class Avatar3DCacheResult
     public string ObjFileName { get; set; } = "avatar.obj";
     public string MtlFileName { get; set; } = "avatar.mtl";
     public bool AlreadyExisted { get; set; }
+    public string? CameraJson { get; set; }
 }

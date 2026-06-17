@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
 using System;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -12,10 +13,13 @@ namespace Api.Controllers
     public class MarketplaceController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
+        private readonly IConfiguration _configuration;
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
 
-        public MarketplaceController(AppDbContext dbContext)
+        public MarketplaceController(AppDbContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _configuration = configuration;
         }
 
         [HttpGet("productinfo")]
@@ -100,20 +104,25 @@ namespace Api.Controllers
                             var maxPlayers = placeReader.IsDBNull(1) ? 0 : placeReader.GetInt32(1);
                             
                             placeReader.Close();
-                            
-                            using var playerCommand = connection.CreateCommand();
-                            playerCommand.CommandText = @"
-                                SELECT COUNT(*) 
-                                FROM game_presence 
-                                WHERE placeid = @assetId";
-                            
-                            var playerParam = playerCommand.CreateParameter();
-                            playerParam.ParameterName = "@assetId";
-                            playerParam.Value = assetId;
-                            playerCommand.Parameters.Add(playerParam);
-                            
-                            var playingCount = await playerCommand.ExecuteScalarAsync();
-                            var playing = playingCount != null ? Convert.ToInt32(playingCount) : 0;
+
+                            var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
+                            var playing = 0;
+
+                            try
+                            {
+                                var response = await _httpClient.GetAsync($"{arbiterUrl}/api/gameservers/players/{assetId}?live=false");
+                                if (response.IsSuccessStatusCode)
+                                {
+                                    var content = await response.Content.ReadAsStringAsync();
+                                    using var doc = JsonDocument.Parse(content);
+                                    var root = doc.RootElement;
+                                    playing = root.TryGetProperty("totalPlayerCount", out var count) ? count.GetInt32() : 0;
+                                }
+                            }
+                            catch
+                            {
+                                playing = 0;
+                            }
 
                             result = new
                             {

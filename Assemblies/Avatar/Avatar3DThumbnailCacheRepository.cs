@@ -45,6 +45,22 @@ namespace Avatar
             return (true, entry);
         }
 
+        public async Task DeleteByConfigHashAsync(string connectionString, string configHash, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (string.IsNullOrWhiteSpace(configHash))
+                throw new ArgumentException("configHash is required", nameof(configHash));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = "delete from avatar_3d_cache where config_hash = @h";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("h", configHash);
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task UpsertAsync(
             string connectionString,
             string configHash,

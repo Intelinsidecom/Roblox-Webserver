@@ -144,3 +144,4 @@ packages/
 obj/
 bin/
 *.pfx
+Setup/wwwroot

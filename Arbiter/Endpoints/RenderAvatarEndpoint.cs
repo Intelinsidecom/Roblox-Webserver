@@ -31,7 +31,7 @@ namespace RCCArbiter.Endpoints
                 case "headshot":
                     defaultX = "1024"; defaultY = "1024"; break;
                 case "avatar":
-                    defaultX = "420"; defaultY = "800"; break;
+                    defaultX = "420"; defaultY = "420"; break;
                 case "full":
                 case "fullbody":
                     defaultX = "1024"; defaultY = "1024"; break;

@@ -65,6 +65,7 @@ builder.Services.AddSingleton<GamesCacheService>();
 builder.Services.AddHostedService<GamesCacheService>(sp => sp.GetRequiredService<GamesCacheService>());
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
+builder.Services.AddSingleton<Website.Services.DevelopTabService>();
 builder.Services.AddSingleton<AssetMetadataRepository>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();

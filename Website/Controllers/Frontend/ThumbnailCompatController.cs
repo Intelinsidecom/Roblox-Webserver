@@ -58,6 +58,7 @@ public class ThumbnailCompatController : ControllerBase
 
         var html = $"<div class=\"thumbnail-holder\" data-reset-enabled-every-page data-3d-thumbs-enabled=\"true\" data-url=\"{selfUrl}\" style=\"width:{w}px;height:{h}px\">" +
                    $"<span class=\"thumbnail-span\" data-js-files=\"{threeJsFiles}\" data-3d-url=\"{threeDeeUrl}\"><img src=\"{imageUrl}\" alt=\"User avatar\" /></span>" +
+                   "<span class=\"enable-three-dee btn-control btn-control-small\">3D</span>" +
                    "</div>";
 
         return Content(html, "text/html");

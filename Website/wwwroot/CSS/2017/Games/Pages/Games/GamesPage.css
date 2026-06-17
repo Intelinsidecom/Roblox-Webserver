@@ -339,8 +339,8 @@ a:hover .icon-dislike-gray-16x16 {
     .games-page-left {
         padding: 0 15px;
     }
-    
-    
+
+
     .games-list-container:nth-child(n+6) {
         display: none !important;
     }
@@ -1093,4 +1093,3 @@ a:hover .icon-dislike-gray-16x16 {
         margin-bottom: 41px;
     }
 }
-

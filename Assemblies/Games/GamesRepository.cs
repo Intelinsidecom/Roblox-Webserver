@@ -239,12 +239,9 @@ public static class GamesRepository
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         const string sql = @"SELECT u.universe_id, u.name, u.creator_user_id, u.place_ids, u.privacy_level, u.Studio_Access_To_APIs, u.root_place_id, 
-                                    COALESCE(u.visit_count, 0) as visit_count,
-                                    COALESCE(SUM(a.player_count), 0) as playing_count
+                                    COALESCE(u.visit_count, 0) as visit_count
                                FROM universes u
-                               LEFT JOIN assets a ON a.asset_id = ANY(u.place_ids) AND a.is_place = true
-                               WHERE u.universe_id = @universeId
-                               GROUP BY u.universe_id, u.name, u.creator_user_id, u.place_ids, u.privacy_level, u.Studio_Access_To_APIs, u.root_place_id, u.visit_count";
+                               WHERE u.universe_id = @universeId";
 
         using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("universeId", universeId);
@@ -265,7 +262,7 @@ public static class GamesRepository
                 PrivacyLevel = reader.IsDBNull(4) ? 1 : reader.GetInt16(4),
                 Studio_Access_To_APIs = reader.IsDBNull(5) ? false : reader.GetBoolean(5),
                 VisitCount = reader.GetInt32(7),
-                PlayingCount = reader.GetInt32(8),
+                PlayingCount = 0,
                 Description = null
             };
         }

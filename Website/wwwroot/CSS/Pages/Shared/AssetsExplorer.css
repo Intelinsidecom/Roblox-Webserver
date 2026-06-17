@@ -3,6 +3,22 @@
     position: static;
 }
 
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
 .icon-default-iconlabels,
 .icon-bc-label,
 .icon-tbc-label,
@@ -27,11 +43,11 @@
 .icon-thirteen-plus-limited-unique-bc-label,
 .icon-thirteen-plus-limited-unique-tbc-label,
 .icon-thirteen-plus-limited-unique-obc-label {
-    background-image: url(/images/AssetIcons/itemlabel_06282017.svg);
+    background-image: url(/images/AssetIcons/icon_labels_06292016.svg);
     background-repeat: no-repeat;
     background-size: auto auto;
-    width: 123px;
-    height: 18px;
+    width: 118px;
+    height: 14px;
     display: inline-block;
     vertical-align: middle;
 }
@@ -41,91 +57,91 @@
 }
 
 .icon-tbc-label {
-    background-position: 0 -18px;
+    background-position: 0 -14px;
 }
 
 .icon-obc-label {
-    background-position: 0 -36px;
+    background-position: 0 -28px;
 }
 
 .icon-limited-label {
-    background-position: 0 -54px;
+    background-position: 0 -42px;
 }
 
 .icon-limited-bc-label {
-    background-position: 0 -72px;
+    background-position: 0 -56px;
 }
 
 .icon-limited-tbc-label {
-    background-position: 0 -90px;
+    background-position: 0 -70px;
 }
 
 .icon-limited-obc-label {
-    background-position: 0 -108px;
+    background-position: 0 -84px;
 }
 
 .icon-limited-unique-label {
-    background-position: 0 -126px;
+    background-position: 0 -98px;
 }
 
 .icon-limited-unique-bc-label {
-    background-position: 0 -144px;
+    background-position: 0 -112px;
 }
 
 .icon-limited-unique-tbc-label {
-    background-position: 0 -162px;
+    background-position: 0 -126px;
 }
 
 .icon-limited-unique-obc-label {
-    background-position: 0 -180px;
+    background-position: 0 -140px;
 }
 
 .icon-thirteen-plus-label {
-    background-position: 0 -198px;
+    background-position: 0 -154px;
 }
 
 .icon-thirteen-plus-bc-label {
-    background-position: 0 -216px;
+    background-position: 0 -168px;
 }
 
 .icon-thirteen-plus-tbc-label {
-    background-position: 0 -234px;
+    background-position: 0 -182px;
 }
 
 .icon-thirteen-plus-obc-label {
-    background-position: 0 -252px;
+    background-position: 0 -196px;
 }
 
 .icon-thirteen-plus-limited-label {
-    background-position: 0 -270px;
+    background-position: 0 -210px;
 }
 
 .icon-thirteen-plus-limited-bc-label {
-    background-position: 0 -288px;
+    background-position: 0 -224px;
 }
 
 .icon-thirteen-plus-limited-tbc-label {
-    background-position: 0 -306px;
+    background-position: 0 -238px;
 }
 
 .icon-thirteen-plus-limited-obc-label {
-    background-position: 0 -324px;
+    background-position: 0 -252px;
 }
 
 .icon-thirteen-plus-limited-unique-label {
-    background-position: 0 -342px;
+    background-position: 0 -266px;
 }
 
 .icon-thirteen-plus-limited-unique-bc-label {
-    background-position: 0 -360px;
+    background-position: 0 -280px;
 }
 
 .icon-thirteen-plus-limited-unique-tbc-label {
-    background-position: 0 -378px;
+    background-position: 0 -294px;
 }
 
 .icon-thirteen-plus-limited-unique-obc-label {
-    background-position: 0 -396px;
+    background-position: 0 -308px;
 }
 
 .item-card {
@@ -260,8 +276,8 @@
 
 .item-card-thumb-container span[class^="icon-"] {
     position: absolute;
-    bottom: -2px;
-    left: -2px;
+    bottom: 0;
+    left: 0;
 }
 
 .item-card-name,

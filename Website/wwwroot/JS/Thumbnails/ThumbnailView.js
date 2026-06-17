@@ -1,183 +1,159 @@
 // Thumbnails/ThumbnailView.js
 typeof Roblox == "undefined" && (Roblox = {}), Roblox.ThumbnailView = function() {
-    function h() {
-        try {
-            var n = document.createElement("canvas");
-            return !!window.WebGLRenderingContext && (n.getContext("webgl") || n.getContext("experimental-webgl"))
-        } catch (t) {
-            return !1
-        }
+    function f(n) {
+        var t = n.find("canvas");
+        t.remove()
     }
 
-    function c() {
-        return $(i).data("3d-thumbs-enabled") !== undefined ? !0 : !1
-    }
-
-    function l() {
-        return g(u) === !0
-    }
-
-    function tt() {
-        if (typeof localStorage != "undefined" && localStorage != null) {
-            var n = localStorage.getItem(u);
-            return n == "false" || !1
-        }
-        return !1
-    }
-
-    function s(n) {
-        nt(u, n)
-    }
-
-    function nt(n, t) {
-        typeof localStorage != "undefined" && localStorage != null && localStorage.setItem(n, t)
-    }
-
-    function g(n) {
-        if (typeof localStorage != "undefined" && localStorage != null) {
-            var t = localStorage.getItem(n);
-            return t == "true" || !1
-        }
-        return !1
-    }
-
-    function d() {
-        var n = $(".enable-three-dee");
-        n.addClass("disabled")
-    }
-
-    function v() {
-        if (c() && h()) {
-            function i(n) {
-                n === !0 ? t.text("2D") : t.text("3D")
-            }
-            var n = l(),
-                t = $(".enable-three-dee");
-            i(n), t.css("visibility", "visible");
-            t.on("click", function() {
-                // Always allow toggling; ignore the 'disabled' class so users can still
-                // switch between 2D and 3D even if a previous 3D load failed.
-                n == !1 ? GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnails", "Enable 3D Button Clicked"]) : GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnails", "Disable 3D Button Clicked"]),
-                n = !n,
-                s(n),
-                // When enabling 3D, explicitly show a thumbnail spinner over the
-                // avatar thumbnail so the user always sees loading feedback,
-                // even if the backend 3D endpoint is slow or failing.
-                n === !0 && window.Roblox && Roblox.ThumbnailSpinner && (function() {
-                    var u = $(".avatar-thumbnail .thumbnail-span");
-                    u.length && Roblox.ThumbnailSpinner.show(u);
-                })(),
-                n === !1 ? f() : y(),
-                // When toggling back to 2D, hide any spinner that might be
-                // lingering on the avatar thumbnail.
-                n === !1 && window.Roblox && Roblox.ThumbnailSpinner && (function() {
-                    var u = $(".avatar-thumbnail .thumbnail-span");
-                    u.length && Roblox.ThumbnailSpinner.hide(u);
-                })(),
-                i(n)
-            })
-        }
-    }
-
-    function it() {
-        if (r) {
-            // Reload only the thumbnail-holder content so we don't wipe out
-            // overlay controls (e.g., the 2D/3D toggle button) that live
-            // alongside the holder in the parent container.
-            var f = n.find(i),
-                u = f.data("url");
-
-            // If the page defines a global showAvatarSpinner/hideAvatarSpinner
-            // helper (Avatar editor), use it to show a loading spinner while
-            // the thumbnail markup is being refreshed.
-            try {
-                if (typeof showAvatarSpinner === "function") {
-                    showAvatarSpinner();
-                }
-            } catch (e) {}
-
-            u = u + "&_=" + $.now(), f.load(u, function() {
-                t = f.find(o);
-
-                // After new markup is loaded, ensure the inner <img> uses a
-                // cache-busted URL so the browser does not serve a stale
-                // avatar image from cache (especially for /bust-thumbnail/image
-                // avatars).
-                try {
-                    var img = t.find('> img');
-                    if (img && img.length) {
-                        var src = img.attr('src');
-                        if (src) {
-                            var hasQuery = src.indexOf('?') !== -1;
-                            var separator = hasQuery ? '&' : '?';
-                            var cacheParam = 'avatarCacheBust=' + $.now();
-
-                            // Strip any previous avatarCacheBust parameter we
-                            // might have added before appending a fresh one.
-                            var cleaned = src.replace(/([?&])avatarCacheBust=[^&]*/g, '$1').replace(/[?&]$/, '');
-                            var newSrc = cleaned + separator + cacheParam;
-                            img.attr('src', newSrc);
-                        }
-                    }
-                } catch (e) {}
-
-                p();
-
-                // Once the new thumbnail markup has been loaded, clear the
-                // avatar spinner if the helper exists so it never stays stuck
-                // on screen.
-                try {
-                    if (typeof hideAvatarSpinner === "function") {
-                        hideAvatarSpinner();
-                    }
-                } catch (e) {}
-            })
-        }
-    }
-
-    function p() {
-        h() && l() && c() ? v() : (f(), v())
-    }
-
-    function y() {
-        w(), e = t.load3DThumbnail(function(t) {
-            GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnail Loading", "Load succeeded"]), n.find("canvas").not(t).remove()
-        }, function() {
-            GoogleAnalyticsEvents && GoogleAnalyticsEvents.FireEvent(["3D Thumbnail Loading", "Load failed"]), d(), f()
+    function l(n) {
+        n.forEach(function(n) {
+            n.reload()
         })
     }
 
-    function k() {
-        e !== undefined && e.cancel()
+    function a(n) {
+        n.forEach(function(n) {
+            n.showSpinner()
+        })
     }
 
-    function b() {
-        k(), n.find("canvas").remove(), n.find(".thumbnail-spinner").remove()
+    function h() {
+        if (n === null) try {
+            var t = document.createElement("canvas");
+            n = !!window.WebGLRenderingContext && (t.getContext("webgl") || t.getContext("experimental-webgl")) ? !0 : !1
+        } catch (i) {
+            n = !1
+        }
+        return n
     }
 
-    function w() {
-        var t = n.find(o + " > img");
-        t.hide()
+    function c() {
+        return window.localStorage && localStorage.setItem && localStorage.getItem
     }
 
-    function a() {
-        r && t.find(" > img").attr("src", rt)
+    function v() {
+        c() && (localStorage.getItem(r) === "true" ? i = !0 : (i = !1, localStorage.setItem(r, "false")))
     }
 
-    function f() {
-        b(), t.find(" > img").show();
-        var i = n.find("span[data-retry-url]");
-        i.length > 0 && (a(), i.loadRobloxThumbnails())
+    function t(n) {
+        return h() ? o(n) ? i : !1 : !1
     }
-    var r = !1,
-        n, t, e, i = ".thumbnail-holder",
-        o = ".thumbnail-span",
-        rt = "/images/Spinners/ajax_loader_blue_300.gif",
-        u = "RobloxUse3DThumbnailsV2";
-    return $(function() {
-        $(i).length > 0 && ($(i).data("reset-enabled-every-page") !== undefined && (tt() || s(!0)), n = $(i).parent(), t = n.find(o), p(), r = !0)
+
+    function y(n, t) {
+        (h() || (i = !1), o(t) || n !== !0) && (i = n, c() && localStorage.setItem(r, n.toString()))
+    }
+
+    function o(n) {
+        return typeof n.data("3d-thumbs-enabled") == "string"
+    }
+
+    function p(i) {
+        function r() {
+            return i.find(".thumbnail-span")
+        }
+
+        function a() {
+            return r().find("img")
+        }
+
+        function h() {
+            return i.find(".thumbnail-holder")
+        }
+
+        function l() {
+            return i.find(s)
+        }
+
+        function p() {
+            return h().data("3dtype") || "static"
+        }
+
+        function et() {
+            return p() === "static" && "2D" || ut
+        }
+
+        function tt() {
+            return p() === "static" && "3D" || ft
+        }
+
+        function g() {
+            f(i), Roblox.ThumbnailSpinner.show(r()), a().hide();
+            r().one("thumbnailLoaded", function() {
+                a().show(), Roblox.ThumbnailSpinner.hide(r())
+            })
+        }
+
+        function nt() {
+            l().html(t(h()) ? et() : tt()), t(h()) || (o(h()) ? n ? l().css("visibility", "visible") : l().addClass("disabled") : l().css("visibility", "hidden"))
+        }
+
+        function k(n) {
+            c = undefined, i.find("canvas").not(n).remove()
+        }
+
+        function b() {
+            c = undefined, l().addClass("disabled")
+        }
+
+        function rt() {
+            c && c.cancel();
+            var n = t(h());
+            y(!n, h()), n !== t(h()) && v()
+        }
+
+        function w() {
+            v()
+        }
+
+        function v() {
+            var o = t(h()),
+                n, u;
+            o ? (e && (e = !1, n = r().data("orig-retry-url"), n && (r().data("retry-url", n + (n.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now()), r().loadRobloxThumbnails())), f(i), a().hide(), c = p() === "static" ? r().load3DThumbnail(k, b) : r().loadAnimatedThumbnail(k, b), a().hide()) : (e && (e = !1, n = r().data("orig-retry-url"), n && r().data("retry-url", n + (n.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now())), u = r().data("retry-url"), u ? (g(), r().loadRobloxThumbnails()) : (f(i), Roblox.ThumbnailSpinner.hide(r()), a().show())), nt()
+        }
+
+        function it() {
+            var f, n, u;
+            if (e = !0, f = t(h()), f) {
+                v();
+                return
+            }
+            n = r().data("orig-retry-url"), typeof n != "undefined" ? (r().data("retry-url", n + (n.indexOf("?") > -1 ? "&" : "?") + "_=" + Date.now()), v()) : (u = h().data("url"), u && i.load(u + "&_=" + $.now(), function() {
+                w()
+            }))
+        }
+        var c, ft = "<span class='icon-bigplay'></span>",
+            ut = "<span class='icon-bigstop'></span>",
+            d = {
+                container: i,
+                holder: h,
+                span: r,
+                button: l,
+                showSpinner: g,
+                load: w,
+                reload: it
+            };
+        i.on("click", s, function() {
+            $(this).hasClass("disabled") || rt()
+        });
+        return w(), u.push(d), d
+    }
+    var r = "RobloxUse3DThumbnailsV2",
+        u = [],
+        s = ".enable-three-dee",
+        n = null,
+        i = !1,
+        e = !1;
+    return v(), $(function() {
+        $(".thumbnail-holder").each(function() {
+            var n = $(this).parent();
+            p(n)
+        })
     }), {
-        showSpinner: a,
-        reloadThumbnail: it
+        showSpinner: function() {
+            return a(u)
+        },
+        reloadThumbnail: function() {
+            return l(u)
+        }
     }
 }();

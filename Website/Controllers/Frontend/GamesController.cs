@@ -108,10 +108,6 @@ namespace RobloxWebserver.Controllers
             return Redirect("/develop?Page=universes");
         }
 
-        /// <summary>
-        /// Returns HTML game cards for the games page. This endpoint is called via AJAX
-        /// to load more games dynamically as users scroll or interact with filters.
-        /// </summary>
         [HttpGet("moreresultscached")]
         [AllowAnonymous]
         public async Task<IActionResult> MoreResultsCached(
@@ -139,8 +135,8 @@ namespace RobloxWebserver.Controllers
             try
             {
                 var connStr = _configuration.GetConnectionString("Default");
+                var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
                 List<GamesQueries.GameEntry> games = new List<GamesQueries.GameEntry>();
-
 
                 const int maxGamesLimit = 64;
                 if (StartRows >= maxGamesLimit)
@@ -155,24 +151,27 @@ namespace RobloxWebserver.Controllers
                 }
 
                 bool useCache = await _cacheService.IsCacheAvailableAsync(SortFilter, GenreID, cancellationToken);
-                
+                List<long> universeIds = null;
+
                 if (useCache)
                 {
-                    var cachedGames = await _cacheService.GetCachedGamesAsync(
+                    universeIds = await _cacheService.GetCachedUniverseIdsAsync(
                         SortFilter, GenreID, StartRows, adjustedMaxRows, cancellationToken);
-                    
-                    if (cachedGames.Count > 0)
+
+                    if (universeIds.Count > 0)
                     {
-                        games = GamesCacheService.ToGameEntries(cachedGames);
+                        games = await GamesQueries.GetGameEntriesByUniverseIdsAsync(
+                            universeIds, connStr, cancellationToken);
                     }
-                    else
-                    {
+
+                    if (games.Count == 0)
                         useCache = false;
-                    }
                 }
-                
+
                 if (!useCache)
                 {
+                    List<long> liveUniverseIds;
+
                     if (GameFilter == 0 && IsUserLoggedIn)
                     {
                         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -181,15 +180,46 @@ namespace RobloxWebserver.Controllers
                             return Content("<div class=\"hidden-item hidden\" id=keyword></div>", "text/html");
                         }
 
-                        games = await GamesQueries.GetUserPublicGamesAsync(
+                        var userGames = await GamesQueries.GetUserPublicGamesAsync(
                             userId, SortFilter, StartRows, adjustedMaxRows, GenreID, connStr, cancellationToken);
+                        liveUniverseIds = userGames.Select(g => g.UniverseId).ToList();
+                        games = userGames;
+                    }
+                    else if (SortFilter == 11)
+                    {
+                        var allIds = await GamesQueries.GetTopRatedUniverseIdsAsync(200, connStr, cancellationToken);
+                        liveUniverseIds = allIds.Skip(StartRows).Take(adjustedMaxRows).ToList();
                     }
                     else
                     {
-                        games = await GamesQueries.GetPublicGamesAsync(
-                            SortFilter, TimeFilter, GenreID, RegionFilter, 
-                            StartRows, adjustedMaxRows, connStr, cancellationToken);
+                        var allIds = await GamesQueries.GetPopularUniverseIdsAsync(200, connStr, cancellationToken);
+                        liveUniverseIds = allIds.Skip(StartRows).Take(adjustedMaxRows).ToList();
                     }
+
+                    if (games.Count == 0 && liveUniverseIds.Count > 0)
+                    {
+                        games = await GamesQueries.GetGameEntriesByUniverseIdsAsync(
+                            liveUniverseIds, connStr, cancellationToken);
+                    }
+                }
+
+                if (games.Count > 0)
+                {
+                    var gameUniverseIds = games.Select(g => g.UniverseId).Distinct().ToList();
+                    var liveCounts = await GamesQueries.GetLivePlayerCountsForUniverseIdsAsync(
+                        gameUniverseIds, connStr, arbiterUrl, cancellationToken);
+
+                    foreach (var game in games)
+                    {
+                        if (liveCounts.TryGetValue(game.UniverseId, out var count))
+                            game.Playing = count;
+                    }
+
+                    var withPlayers = games.Where(g => g.Playing > 0).OrderByDescending(g => g.Playing).ToList();
+                    var withoutPlayers = games.Where(g => g.Playing == 0).OrderByDescending(g => g.VisitCount).ToList();
+                    games.Clear();
+                    games.AddRange(withPlayers);
+                    games.AddRange(withoutPlayers);
                 }
 
                 var html = BuildGamesHtml(games, StartRows);
@@ -197,7 +227,6 @@ namespace RobloxWebserver.Controllers
             }
             catch (Exception ex)
             {
-                // Log error and return empty result
                 Console.WriteLine($"Error loading games: {ex.Message}");
                 return Content("<div class=\"hidden-item hidden\" id=keyword></div>", "text/html");
             }
@@ -495,7 +524,24 @@ namespace RobloxWebserver.Controllers
                     userVote = await votingService.GetUserVoteAsync(userId, id, cancellationToken);
                 }
 
+                var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
+
                 var recommendedGames = await GamesQueries.GetRecommendedGamesAsync(7, connStr, cancellationToken);
+
+                if (recommendedGames.Count > 0)
+                {
+                    var recUniverseIds = recommendedGames.Select(g => g.UniverseId).Distinct().ToList();
+                    var recLiveCounts = await GamesQueries.GetLivePlayerCountsForUniverseIdsAsync(
+                        recUniverseIds, connStr, arbiterUrl, cancellationToken);
+                    foreach (var game in recommendedGames)
+                    {
+                        if (recLiveCounts.TryGetValue(game.UniverseId, out var count))
+                            game.Playing = count;
+                    }
+                }
+
+                var liveUniverseResult = await GamesQueries.GetLivePlayerCountForUniverseAsync(
+                    universeId.Value, connStr, arbiterUrl, false, cancellationToken);
 
                 ViewBag.RecommendedGames = recommendedGames.Select(game => new
                 {
@@ -514,7 +560,7 @@ namespace RobloxWebserver.Controllers
                 ViewBag.Description = description ?? string.Empty;
                 ViewBag.CreatorUserId = universe.CreatorUserId;
                 ViewBag.VisitCount = universe.VisitCount;
-                ViewBag.Playing = universe.PlayingCount;
+                ViewBag.Playing = liveUniverseResult.TotalPlayers;
                 ViewBag.CreatorUserName = creatorUserName;
                 ViewBag.UpVotes = upVotes;
                 ViewBag.DownVotes = downVotes;

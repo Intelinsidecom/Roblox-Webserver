@@ -98,7 +98,6 @@ public class AvatarV1Controller : ControllerBase
             },
             bodyColorsPalette = new object[]
             {
-                // Full palette imported from frontend Roblox avatarules.json
                 new { brickColorId = 361, hexColor = "#564236", name = "Dirt brown" },
                 new { brickColorId = 192, hexColor = "#694028", name = "Reddish brown" },
                 new { brickColorId = 217, hexColor = "#7C5C46", name = "Brown" },
@@ -214,14 +213,11 @@ public class AvatarV1Controller : ControllerBase
         return Ok(payload);
     }
 
-    // POST v1/avatar/redraw-thumbnail?type=headshot
-    // Only the authenticated user may redraw their own thumbnail.
     [Authorize]
     [HttpPost("redraw-thumbnail")]
     [HttpGet("redraw-thumbnail")]
     public async Task<IActionResult> RedrawThumbnail([FromQuery] string? type, CancellationToken cancellationToken)
     {
-        // Resolve target type
         var renderType = (type ?? "headshot").Trim().ToLowerInvariant();
         switch (renderType)
         {
@@ -233,7 +229,6 @@ public class AvatarV1Controller : ControllerBase
                 return BadRequest(new { error = "Invalid type. Allowed: headshot, avatar, full" });
         }
 
-        // Resolve user from authentication only
         var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var targetUserId) || targetUserId <= 0)
             return Unauthorized(new { error = "Authentication required" });
@@ -256,12 +251,8 @@ public class AvatarV1Controller : ControllerBase
             {
                 if (renderType == "avatar")
                 {
-                    // Primary: update the main avatar thumbnail URL.
                     await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
 
-                    // Best-effort: pre-render and persist a fresh headshot so that
-                    // consumers of the headshot endpoint do not incur an extra
-                    // first-render delay after avatar changes.
                     try
                     {
                         var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", targetUserId, cancellationToken: cancellationToken);
@@ -270,14 +261,10 @@ public class AvatarV1Controller : ControllerBase
                     }
                     catch
                     {
-                        // Headshot pre-render is best-effort; ignore failures so avatar
-                        // redraw still succeeds.
                     }
                 }
                 else if (renderType == "headshot")
                 {
-                    // For headshot redraws, first best-effort pre-render avatar so both
-                    // variants stay in sync, then persist the requested headshot URL.
                     try
                     {
                         var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", targetUserId, cancellationToken: cancellationToken);
@@ -286,16 +273,66 @@ public class AvatarV1Controller : ControllerBase
                     }
                     catch
                     {
-                        // Avatar pre-render is best-effort.
                     }
 
                     await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
                 }
                 else if (renderType == "full")
                 {
-                    // "full" renders are not persisted directly.
-                    // Thumbnails are already refreshed above in the avatar/headshot branches.
                 }
+            }
+
+            try
+            {
+                var connStr3d = _configuration.GetConnectionString("Default");
+                string? configHash3d = null;
+
+                if (!string.IsNullOrWhiteSpace(connStr3d))
+                {
+                    var configBuilder = new AvatarRenderConfigBuilder();
+                    var config = await configBuilder
+                        .BuildAvatarRenderConfigAsync(connStr3d, targetUserId, "avatar3d", 352, 352, cancellationToken)
+                        .ConfigureAwait(false);
+                    configHash3d = config.configHash;
+                }
+
+                var avatar3dDir = _configuration["Thumbnails:Avatar3DDirectory"];
+                if (!string.IsNullOrWhiteSpace(avatar3dDir))
+                {
+                    var mapsDir = Path.Combine(avatar3dDir, "maps");
+                    var mapPath = Path.Combine(mapsDir, $"{targetUserId}_352x352.txt");
+                    if (System.IO.File.Exists(mapPath))
+                    {
+                        var oldHash = await System.IO.File.ReadAllTextAsync(mapPath, cancellationToken).ConfigureAwait(false);
+                        oldHash = oldHash.Trim();
+                        if (!string.IsNullOrWhiteSpace(oldHash))
+                        {
+                            var oldDir = Path.Combine(avatar3dDir, oldHash);
+                            if (System.IO.Directory.Exists(oldDir))
+                                System.IO.Directory.Delete(oldDir, true);
+                        }
+                        System.IO.File.Delete(mapPath);
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(connStr3d) && !string.IsNullOrWhiteSpace(configHash3d))
+                {
+                    var cacheRepo = new Avatar3DThumbnailCacheRepository();
+                    await cacheRepo.DeleteByConfigHashAsync(connStr3d, configHash3d, cancellationToken).ConfigureAwait(false);
+                }
+
+                var result3d = await _thumbnailService
+                    .RenderAvatar3DAndCacheAsync(targetUserId, 352, 352, force: true, cancellationToken)
+                    .ConfigureAwait(false);
+
+                if (!string.IsNullOrWhiteSpace(connStr3d) && !string.IsNullOrWhiteSpace(configHash3d))
+                {
+                    var cacheRepo = new Avatar3DThumbnailCacheRepository();
+                    await cacheRepo.UpsertAsync(connStr3d, configHash3d, result3d.Hash, result3d.ObjFileName, result3d.MtlFileName, 352, 352, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            catch
+            {
             }
 
             return Ok(new { hash, thumbnail_url = fullUrl });
@@ -329,14 +366,7 @@ public class AvatarV1Controller : ControllerBase
             LeftLegColorId = bodyColorsModel.leftLegColorId
         };
         await repo.SetBodyColorsAsync(connStr, userId, colors, cancellationToken);
-
-        // Update avatar_state_hash so caches and diagnostics can
-        // detect that the avatar configuration has changed.
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
-
-        // Warm avatar and headshot thumbnails so that by the time
-        // downstream consumers request them, the URLs are likely
-        // already rendered and stored.
         _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
 
         return Ok(new { success = true });

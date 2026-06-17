@@ -36,6 +36,7 @@ $(function() {
                             }
                         }
                         r.removeAttr("data-retry-url");
+                        r.trigger("thumbnailLoaded")
                     }
                     return;
                 }
@@ -73,7 +74,8 @@ $(function() {
                                 originalImg.attr("src", u.Url);
                             }
                         }
-                        r.removeAttr("data-retry-url")
+                        r.removeAttr("data-retry-url");
+                        r.trigger("thumbnailLoaded")
                     } else {
                         r.retryCount = r.retryCount ? r.retryCount + 1 : 1;
                         if (r.retryCount < i) {

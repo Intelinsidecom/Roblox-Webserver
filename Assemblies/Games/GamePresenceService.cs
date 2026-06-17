@@ -33,7 +33,6 @@ namespace Games
             {
                 await _ticketService.MarkTicketAsUsedAsync(ticketToken);
                 await InsertOrUpdateGamePresenceAsync(userId, placeId, jobId);
-                await IncrementAssetPlayerCountAsync(placeId);
                 await UpdateUserClientStatusAsync(userId, "Connected");
                 
                 await PlayerCountTracking.UpdateUserGameStatusAsync(userId, placeId, true, _configuration);
@@ -71,11 +70,6 @@ namespace Games
                 using var deleteCmd = new NpgsqlCommand("DELETE FROM game_presence WHERE uid = @uid", deleteConn);
                 deleteCmd.Parameters.AddWithValue("uid", userId);
                 await deleteCmd.ExecuteNonQueryAsync();
-
-                if (placeId > 0)
-                {
-                    await DecrementAssetPlayerCountAsync(placeId);
-                }
 
                 await UpdateUserClientStatusAsync(userId, "Disconnected");
                 
@@ -226,7 +220,6 @@ namespace Games
 
                 foreach (var (userId, placeId) in staleEntries)
                 {
-                    await DecrementAssetPlayerCountAsync(placeId);
                     await PlayerCountTracking.UpdateUserGameStatusAsync(userId, null, false, _configuration);
                 }
             }
@@ -255,32 +248,6 @@ namespace Games
             cmd.Parameters.AddWithValue("placeid", placeId);
             cmd.Parameters.AddWithValue("jobid", jobId);
 
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        /// <summary>
-        /// Increments the player count for a place in the assets table
-        /// </summary>
-        private async Task IncrementAssetPlayerCountAsync(long placeId)
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            using var cmd = new NpgsqlCommand("UPDATE assets SET player_count = player_count + 1 WHERE asset_id = @placeId AND is_place = true", conn);
-            cmd.Parameters.AddWithValue("placeId", placeId);
-            await cmd.ExecuteNonQueryAsync();
-        }
-
-        /// <summary>
-        /// Decrements the player count for a place in the assets table
-        /// </summary>
-        private async Task DecrementAssetPlayerCountAsync(long placeId)
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            await conn.OpenAsync();
-
-            using var cmd = new NpgsqlCommand("UPDATE assets SET player_count = GREATEST(player_count - 1, 0) WHERE asset_id = @placeId AND is_place = true", conn);
-            cmd.Parameters.AddWithValue("placeId", placeId);
             await cmd.ExecuteNonQueryAsync();
         }
 

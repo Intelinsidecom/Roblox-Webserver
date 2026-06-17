@@ -220,6 +220,7 @@ namespace RCCArbiter
         public void Dispose()
         {
             Stop();
+            PortManager.ReleasePort(_port);
         }
     }
 }

@@ -11,16 +11,16 @@
     bool containsIPad = userAgent.Contains("iPad");
     bool containsIPod = userAgent.Contains("iPod");
     bool containsRobloxiOS = userAgent.Contains("ROBLOX iOS App");
-    bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || userAgent.Contains("WOW64");
+    bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || userAgent.Contains("WOW64") || userAgent.Contains("Edge/");
     
-    bool isMobile = containsAndroid || containsIPhone || containsIPad || containsIPod || containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
+    bool isApp = containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
     
-    ViewBag.IsMobile = isMobile;
+    ViewBag.IsMobile = isApp;
     ViewBag.IsAndroid = containsAndroid || containsRobloxAndroid;
     ViewBag.IsIOS = containsIPhone || containsIPad || containsIPod || containsRobloxiOS;
     ViewBag.ProtocolName = (containsIPhone || containsIPad || containsIPod || containsRobloxiOS) ? "robloxmobile" : "freblx-player";
     ViewBag.DebugUserAgent = userAgent;
-    ViewBag.DebugIsMobile = isMobile;
+    ViewBag.DebugIsMobile = isApp;
 }
 
 @functions {
@@ -76,7 +76,6 @@
         <link rel="stylesheet" href="~/CSS/Pages/Login/SignupOrLogInIframe.css">
         <link rel="stylesheet" href="~/CSS/signup/SignupOrLogInLegacy.css">
 
-    
     <script async src="~/JS/lib/beacon/beacon.js"></script>
     <!-- Now we import the roblox js scripts, there is plenty of them -->
     <!-- dependencies other scripts may use or not, angular, ajax and so on -->
@@ -166,8 +165,11 @@
 
     @RenderSection("Head", required: false)
 </head>
-<body>
-    <partial name="_Header" />
+<body class="@(isApp && User.Identity.IsAuthenticated ? "no-header-nav" : "")">
+    @if (!(isApp && User.Identity.IsAuthenticated))
+    {
+        <partial name="_Header" />
+    }
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -252,8 +254,6 @@
             </div>
         </div>
     }
-
-    @* Global Message Alert - positioned after left navigation *@
     @{
         string globalMessage = null;
         var connStrGlobal = Configuration.GetConnectionString("Default");
@@ -270,7 +270,7 @@
             catch { }
         }
     }
-    @if (!string.IsNullOrEmpty(globalMessage))
+    @if (!string.IsNullOrEmpty(globalMessage) && !(isApp && User.Identity.IsAuthenticated))
     {
         var parsedMessage = ParseGlobalMessage(globalMessage);
         <div class="alert-container" style="margin-top: 40px; z-index: 1; position: relative;">
@@ -293,7 +293,10 @@
         </div>
     </div>
 
-    <partial name="_Footer" />
+    @if (!(isApp && User.Identity.IsAuthenticated))
+    {
+        <partial name="_Footer" />
+    }
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
 

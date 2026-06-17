@@ -146,8 +146,7 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                COALESCE(u.visit_count, 0) as visit_count,
-                COALESCE(a.player_count, 0) as player_count
+                COALESCE(u.visit_count, 0) as visit_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
@@ -213,7 +212,7 @@ public static class GamesQueries
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
                 VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
-                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
+                Playing = 0
             };
             games.Add(game);
         }
@@ -253,8 +252,7 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                COALESCE(u.visit_count, 0) as visit_count,
-                COALESCE(a.player_count, 0) as player_count
+                COALESCE(u.visit_count, 0) as visit_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
@@ -299,7 +297,7 @@ public static class GamesQueries
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
                 VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
-                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
+                Playing = 0
             };
             games.Add(game);
         }
@@ -351,8 +349,7 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                COALESCE(u.visit_count, 0) as visit_count,
-                COALESCE(a.player_count, 0) as player_count
+                COALESCE(u.visit_count, 0) as visit_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
@@ -386,7 +383,7 @@ public static class GamesQueries
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
                 VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
-                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
+                Playing = 0
             };
             games.Add(game);
         }
@@ -461,8 +458,7 @@ public static class GamesQueries
                 u.created_at,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                COALESCE(u.visit_count, 0) as visit_count,
-                COALESCE(a.player_count, 0) as player_count
+                COALESCE(u.visit_count, 0) as visit_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
@@ -492,7 +488,7 @@ public static class GamesQueries
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
                 VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
-                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
+                Playing = 0
             };
             games.Add(game);
         }
@@ -598,8 +594,7 @@ public static class GamesQueries
                 a.last_updated,
                 COALESCE(a.upvotes, 0) as up_votes,
                 COALESCE(a.downvotes, 0) as down_votes,
-                COALESCE(u.visit_count, 0) as visit_count,
-                COALESCE(a.player_count, 0) as player_count
+                COALESCE(u.visit_count, 0) as visit_count
             FROM universes u
             INNER JOIN users creator ON u.creator_user_id = creator.user_id
             INNER JOIN assets a ON u.root_place_id = a.asset_id
@@ -638,12 +633,170 @@ public static class GamesQueries
                 UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
                 DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
                 VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
-                Playing = reader.GetInt32(reader.GetOrdinal("player_count"))
+                Playing = 0
             };
             games.Add(game);
         }
 
         return games;
+    }
+
+    public static async Task<List<GameEntry>> GetGameEntriesByUniverseIdsAsync(
+        List<long> universeIds,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (universeIds == null || universeIds.Count == 0)
+            return new List<GameEntry>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT u.universe_id, u.root_place_id, u.name, u.creator_user_id,
+                   creator.user_name as creator_name,
+                   COALESCE(a.thumbnail_url, '/images/blocked.png') as icon_url,
+                   COALESCE(a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
+                   u.created_at,
+                   COALESCE(a.upvotes, 0) as up_votes,
+                   COALESCE(a.downvotes, 0) as down_votes,
+                   COALESCE(u.visit_count, 0) as visit_count
+            FROM universes u
+            INNER JOIN users creator ON u.creator_user_id = creator.user_id
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE u.universe_id = ANY(@universeIds)";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeIds", universeIds.ToArray());
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var games = new List<GameEntry>();
+        var idLookup = new HashSet<long>(universeIds);
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var uid = reader.GetInt64(reader.GetOrdinal("universe_id"));
+            if (!idLookup.Contains(uid)) continue;
+
+            games.Add(new GameEntry
+            {
+                UniverseId = uid,
+                PlaceId = reader.GetInt64(reader.GetOrdinal("root_place_id")),
+                Name = reader.GetString(reader.GetOrdinal("name")),
+                CreatorName = reader.GetString(reader.GetOrdinal("creator_name")),
+                CreatorUserId = reader.GetInt64(reader.GetOrdinal("creator_user_id")),
+                IconUrl = reader.GetString(reader.GetOrdinal("icon_url")),
+                ThumbnailUrl = reader.GetString(reader.GetOrdinal("thumbnail_url")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                UpVotes = reader.GetInt32(reader.GetOrdinal("up_votes")),
+                DownVotes = reader.GetInt32(reader.GetOrdinal("down_votes")),
+                VisitCount = reader.GetInt32(reader.GetOrdinal("visit_count")),
+                Playing = 0
+            });
+        }
+
+        return games;
+    }
+
+    public static async Task<List<long>> GetPopularUniverseIdsAsync(
+        int maxResults = 100,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT u.universe_id, COALESCE(u.visit_count, 0) as visit_count
+            FROM universes u
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true
+            AND a.access_type = 1
+            AND u.root_place_id IS NOT NULL
+            ORDER BY u.visit_count DESC
+            LIMIT @maxResults";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("maxResults", maxResults);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var ids = new List<long>();
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            ids.Add(reader.GetInt64(0));
+
+        return ids;
+    }
+
+    public static async Task<List<long>> GetTopRatedUniverseIdsAsync(
+        int maxResults = 50,
+        string connectionString = "",
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"
+            SELECT u.universe_id,
+                   ((COALESCE(a.upvotes, 0) * 1000 + COALESCE(jsonb_array_length(a.favorites), 0) * 1000)::float /
+                    GREATEST(COALESCE(a.upvotes, 0) * 1000 + COALESCE(jsonb_array_length(a.favorites), 0) * 1000 + COALESCE(a.downvotes, 0), 1)) * 1000 +
+                   LN(COALESCE(u.visit_count, 0) * 0.0001 + 1) as score
+            FROM universes u
+            INNER JOIN assets a ON u.root_place_id = a.asset_id
+            WHERE a.is_place = true
+            AND a.access_type = 1
+            AND u.root_place_id IS NOT NULL
+            ORDER BY score DESC
+            LIMIT @maxResults";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("maxResults", maxResults);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var ids = new List<long>();
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            ids.Add(reader.GetInt64(0));
+
+        return ids;
+    }
+
+    public static async Task<Dictionary<long, int>> GetLivePlayerCountsForUniverseIdsAsync(
+        List<long> universeIds,
+        string connectionString,
+        string arbiterBaseUrl,
+        CancellationToken cancellationToken = default)
+    {
+        var result = new Dictionary<long, int>();
+        if (universeIds == null || universeIds.Count == 0)
+            return result;
+
+        var tasks = universeIds.Select(async uid =>
+        {
+            try
+            {
+                var placeResult = await GetLivePlayerCountForUniverseAsync(uid, connectionString, arbiterBaseUrl, false, cancellationToken).ConfigureAwait(false);
+                return (UniverseId: uid, Count: placeResult.TotalPlayers);
+            }
+            catch
+            {
+                return (UniverseId: uid, Count: 0);
+            }
+        });
+
+        var counts = await Task.WhenAll(tasks).ConfigureAwait(false);
+        foreach (var (uid, count) in counts)
+            result[uid] = count;
+
+        return result;
     }
 
     /// <summary>

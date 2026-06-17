@@ -42,6 +42,21 @@ namespace Users
             return GetCreatorOfIdAsync(connectionString, userId, cancellationToken);
         }
 
+        public static async Task<bool> UsernameExistsAsync(string connectionString, string username, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (string.IsNullOrWhiteSpace(username))
+                return false;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand("select 1 from users where lower(user_name) = lower(@username)", conn);
+            cmd.Parameters.AddWithValue("username", username);
+            var obj = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return obj != null;
+        }
+
         public static async Task<bool> UpdateUserPasswordAsync(string connectionString, long userId, string newPassword, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

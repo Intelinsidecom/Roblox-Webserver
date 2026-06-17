@@ -93,12 +93,7 @@ namespace RCCArbiter
 
         private static int FindFreePort()
         {
-            // Ask OS for an available port and reserve it briefly
-            var listener = new TcpListener(IPAddress.Loopback, 0);
-            listener.Start();
-            int port = ((IPEndPoint)listener.LocalEndpoint).Port;
-            listener.Stop();
-            return port;
+            return PortManager.FindFreePort();
         }
 
         private void ReleaseInstance(Instance inst)

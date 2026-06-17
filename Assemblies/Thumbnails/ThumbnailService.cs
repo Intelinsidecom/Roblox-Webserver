@@ -183,7 +183,7 @@ public sealed class ThumbnailService : IThumbnailService
         return save;
     }
 
-    public async Task<Avatar3DCacheResult> RenderAvatar3DAndCacheAsync(long userId, int? x = null, int? y = null, CancellationToken cancellationToken = default)
+    public async Task<Avatar3DCacheResult> RenderAvatar3DAndCacheAsync(long userId, int? x = null, int? y = null, bool force = false, CancellationToken cancellationToken = default)
     {
         // Determine 3D avatar output root directory
         var baseDir = _configuration?["Thumbnails:Avatar3DDirectory"];
@@ -199,8 +199,7 @@ public sealed class ThumbnailService : IThumbnailService
         Directory.CreateDirectory(mapsDir);
         var mapPath = Path.Combine(mapsDir, cacheKey + ".txt");
 
-    
-        if (File.Exists(mapPath))
+        if (!force && File.Exists(mapPath))
         {
             var existingHash = File.ReadAllText(mapPath).Trim();
             if (!string.IsNullOrWhiteSpace(existingHash))
@@ -212,13 +211,16 @@ public sealed class ThumbnailService : IThumbnailService
                     var mtlFiles = Directory.GetFiles(existingDir, "*.mtl");
                     if (objFiles.Length > 0 && mtlFiles.Length > 0)
                     {
+                        var cameraFile = Path.Combine(existingDir, "camera.json");
+                        var cameraJson = File.Exists(cameraFile) ? File.ReadAllText(cameraFile).Trim() : null;
                         return new Avatar3DCacheResult
                         {
                             Hash = existingHash,
                             DirectoryPath = existingDir,
                             ObjFileName = Path.GetFileName(objFiles[0]),
                             MtlFileName = Path.GetFileName(mtlFiles[0]),
-                            AlreadyExisted = true
+                            AlreadyExisted = true,
+                            CameraJson = cameraJson
                         };
                     }
                 }
@@ -228,12 +230,147 @@ public sealed class ThumbnailService : IThumbnailService
         var base64 = await RenderAvatar3DBase64Async(userId, x, y, cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(base64))
             throw new InvalidOperationException("Base64 payload for 3D avatar was empty.");
-
-        var commaIdx = base64.IndexOf(',');
-        if (commaIdx >= 0)
-            base64 = base64.Substring(commaIdx + 1);
-
         byte[] bytes;
+        string? rccCameraJson = null;
+        if (base64.TrimStart().StartsWith("{"))
+        {
+            var jsonStr = base64;
+            bytes = Encoding.UTF8.GetBytes(jsonStr);
+            var hash = ComputeSha256(bytes);
+            var dir = Path.Combine(baseDir!, hash);
+            Directory.CreateDirectory(dir);
+
+            try
+            {
+                using var previewDoc = JsonDocument.Parse(jsonStr);
+                if (previewDoc.RootElement.TryGetProperty("camera", out var cameraEl) && cameraEl.ValueKind == JsonValueKind.Object)
+                {
+                    rccCameraJson = cameraEl.GetRawText();
+                }
+            }
+            catch { }
+
+            var existingObjFiles = Directory.GetFiles(dir, "*.obj");
+            var existingMtlFiles = Directory.GetFiles(dir, "*.mtl");
+            if (existingObjFiles.Length > 0 && existingMtlFiles.Length > 0)
+            {
+                File.WriteAllText(mapPath, hash);
+                return new Avatar3DCacheResult
+                {
+                    Hash = hash,
+                    DirectoryPath = dir,
+                    ObjFileName = Path.GetFileName(existingObjFiles[0]),
+                    MtlFileName = Path.GetFileName(existingMtlFiles[0]),
+                    AlreadyExisted = true,
+                    CameraJson = rccCameraJson
+                };
+            }
+
+            try
+            {
+                using var jDoc = JsonDocument.Parse(jsonStr);
+                if (jDoc.RootElement.ValueKind == JsonValueKind.Object)
+                {
+                    string objFileName = "avatar.obj";
+                    string mtlFileName = "avatar.mtl";
+                    bool extracted = false;
+
+                    if (jDoc.RootElement.TryGetProperty("camera", out var cameraEl) && cameraEl.ValueKind == JsonValueKind.Object)
+                    {
+                        rccCameraJson = cameraEl.GetRawText();
+                    }
+
+                    JsonElement filesEl;
+                    bool hasFilesWrapper = jDoc.RootElement.TryGetProperty("files", out filesEl) && filesEl.ValueKind == JsonValueKind.Object;
+
+                    var props = hasFilesWrapper
+                        ? filesEl.EnumerateObject()
+                        : jDoc.RootElement.EnumerateObject();
+
+                    foreach (var prop in props)
+                    {
+                        if (prop.Value.ValueKind != JsonValueKind.Object)
+                            continue;
+                        if (!prop.Value.TryGetProperty("content", out var contentEl) || contentEl.ValueKind != JsonValueKind.String)
+                            continue;
+                        if (!hasFilesWrapper && (string.Equals(prop.Name, "camera", StringComparison.OrdinalIgnoreCase) || string.Equals(prop.Name, "AABB", StringComparison.OrdinalIgnoreCase)))
+                            continue;
+
+                        var fileName = prop.Name;
+                        var fileBase64 = contentEl.GetString()!;
+                        byte[] fileBytes;
+                        try { fileBytes = Convert.FromBase64String(fileBase64); }
+                        catch { continue; }
+
+                        var targetPath = Path.Combine(dir, fileName);
+                        Directory.CreateDirectory(Path.GetDirectoryName(targetPath)!);
+                        File.WriteAllBytes(targetPath, fileBytes);
+                        extracted = true;
+
+                        var ext = Path.GetExtension(fileName).ToLowerInvariant();
+                        if (ext == ".obj") objFileName = fileName;
+                        else if (ext == ".mtl") mtlFileName = fileName;
+                    }
+
+                    if (extracted)
+                    {
+                        var mtlPath = Path.Combine(dir, mtlFileName);
+                        if (File.Exists(mtlPath))
+                        {
+                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+                            cdnBase = cdnBase.TrimEnd('/') + "/";
+                            var cdnPrefix = cdnBase + "3DAvatar/" + hash + "/";
+
+                            var mtlContent = File.ReadAllText(mtlPath);
+                            var lines = mtlContent.Split('\n');
+                            var rewritten = lines.Select(l => {
+                                var trimmed = l.TrimStart();
+                                if (trimmed.StartsWith("map_Kd", StringComparison.OrdinalIgnoreCase) || trimmed.StartsWith("map_kd", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    var parts = l.Split(new char[] { ' ', '\t' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                                    if (parts.Length == 2 && !parts[1].Contains("://"))
+                                        return parts[0] + " " + cdnPrefix + parts[1].Trim();
+                                }
+                                return l;
+                            });
+                            File.WriteAllText(mtlPath, string.Join("\n", rewritten));
+                        }
+                        else
+                        {
+                            File.WriteAllText(mtlPath, "newmtl default\nKd 1.000000 1.000000 1.000000\n");
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(rccCameraJson))
+                        {
+                            File.WriteAllText(Path.Combine(dir, "camera.json"), rccCameraJson);
+                        }
+                        File.WriteAllText(mapPath, hash);
+                        return new Avatar3DCacheResult
+                        {
+                            Hash = hash,
+                            DirectoryPath = dir,
+                            ObjFileName = objFileName,
+                            MtlFileName = mtlFileName,
+                            AlreadyExisted = false,
+                            CameraJson = rccCameraJson
+                        };
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        var commaIdx = -1;
+        var base64Trimmed = base64.TrimStart();
+        if (base64Trimmed.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+        {
+            commaIdx = base64.IndexOf(',');
+            if (commaIdx >= 0)
+                base64 = base64.Substring(commaIdx + 1);
+        }
+
         try
         {
             bytes = Convert.FromBase64String(base64);
@@ -243,29 +380,28 @@ public sealed class ThumbnailService : IThumbnailService
             bytes = Encoding.UTF8.GetBytes(base64);
         }
 
-        var hash = ComputeSha256(bytes);
+        var hash2 = ComputeSha256(bytes);
 
-        var dir = Path.Combine(baseDir!, hash);
-        Directory.CreateDirectory(dir);
+        var dir2 = Path.Combine(baseDir!, hash2);
+        Directory.CreateDirectory(dir2);
 
-        var existingObjFiles = Directory.GetFiles(dir, "*.obj");
-        var existingMtlFiles = Directory.GetFiles(dir, "*.mtl");
-        if (existingObjFiles.Length > 0 && existingMtlFiles.Length > 0)
+        var existingObjFiles2 = Directory.GetFiles(dir2, "*.obj");
+        var existingMtlFiles2 = Directory.GetFiles(dir2, "*.mtl");
+        if (existingObjFiles2.Length > 0 && existingMtlFiles2.Length > 0)
         {
-            File.WriteAllText(mapPath, hash);
+            File.WriteAllText(mapPath, hash2);
             return new Avatar3DCacheResult
             {
-                Hash = hash,
-                DirectoryPath = dir,
-                ObjFileName = Path.GetFileName(existingObjFiles[0]),
-                MtlFileName = Path.GetFileName(existingMtlFiles[0]),
+                Hash = hash2,
+                DirectoryPath = dir2,
+                ObjFileName = Path.GetFileName(existingObjFiles2[0]),
+                MtlFileName = Path.GetFileName(existingMtlFiles2[0]),
                 AlreadyExisted = true
             };
         }
 
-        string objFileName = "avatar.obj";
-        string mtlFileName = "avatar.mtl";
-
+        string objFileName2 = "avatar.obj";
+        string mtlFileName2 = "avatar.mtl";
 
         if (IsZip(bytes))
         {
@@ -276,49 +412,38 @@ public sealed class ThumbnailService : IThumbnailService
                 if (string.IsNullOrEmpty(entry.Name))
                     continue;
 
-                var targetPath = Path.Combine(dir, entry.Name);
+                var targetPath = Path.Combine(dir2, entry.Name);
                 using var zs = entry.Open();
                 using var fs = new FileStream(targetPath, FileMode.Create, FileAccess.Write, FileShare.None);
                 zs.CopyTo(fs);
 
                 var ext = Path.GetExtension(entry.Name).ToLowerInvariant();
                 if (ext == ".obj")
-                {
-                    objFileName = entry.Name;
-                }
+                    objFileName2 = entry.Name;
                 else if (ext == ".mtl")
-                {
-                    mtlFileName = entry.Name;
-                }
+                    mtlFileName2 = entry.Name;
             }
 
-            // Ensure we have at least a basic MTL file
-            var mtlPath = Path.Combine(dir, mtlFileName);
+            var mtlPath = Path.Combine(dir2, mtlFileName2);
             if (!File.Exists(mtlPath))
-            {
                 File.WriteAllText(mtlPath, "newmtl default\nKd 1.000000 1.000000 1.000000\n");
-            }
         }
         else
         {
-            // Fallback: assume the payload itself is an OBJ file
-            var objPath = Path.Combine(dir, objFileName);
+            var objPath = Path.Combine(dir2, objFileName2);
             File.WriteAllBytes(objPath, bytes);
 
-            // Create a simple default MTL file so loaders expecting MTL still work
-            var mtlPath = Path.Combine(dir, mtlFileName);
+            var mtlPath = Path.Combine(dir2, mtlFileName2);
             if (!File.Exists(mtlPath))
-            {
                 File.WriteAllText(mtlPath, "newmtl default\nKd 1.000000 1.000000 1.000000\n");
-            }
         }
 
         return new Avatar3DCacheResult
         {
-            Hash = hash,
-            DirectoryPath = dir,
-            ObjFileName = objFileName,
-            MtlFileName = mtlFileName,
+            Hash = hash2,
+            DirectoryPath = dir2,
+            ObjFileName = objFileName2,
+            MtlFileName = mtlFileName2,
             AlreadyExisted = false
         };
     }

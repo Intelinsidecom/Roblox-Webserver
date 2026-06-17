@@ -12,7 +12,7 @@ public class DeviceController : ControllerBase
     var result = new
     {
         browserTrackerId = 0,
-        appDeviceIdentifier = (object)null
+        appDeviceIdentifier = "generated-device-id"
     };
     
     return Ok(result);

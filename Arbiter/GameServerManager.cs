@@ -265,10 +265,7 @@ namespace RCCArbiter
             {
                 if (_activeServers.TryGetValue(gameId, out var server))
                 {
-                    lock (RCCArbiter.Endpoints.StartGameServerEndpoint._portLock)
-                    {
-                        RCCArbiter.Endpoints.StartGameServerEndpoint._allocatedPorts.RemoveWhere(p => p == server.Port);
-                    }
+                    PortManager.ReleasePort(server.Port);
                     _activeServers.Remove(gameId, out _);
                 }
             }

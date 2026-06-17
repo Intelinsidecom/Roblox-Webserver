@@ -58,11 +58,36 @@ limit 50;";
                     var assetTypeId = reader.GetInt32(2);
                     var thumbnailUrl = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
 
+                    var assetTypeName = assetTypeId switch
+                    {
+                        2  => "T-Shirt",
+                        8  => "Hat",
+                        11 => "Shirt",
+                        12 => "Pants",
+                        17 => "Head",
+                        18 => "Face",
+                        19 => "Gear",
+                        27 => "Torso",
+                        28 => "Right Arm",
+                        29 => "Left Arm",
+                        30 => "Left Leg",
+                        31 => "Right Leg",
+                        41 => "Hair Accessory",
+                        42 => "Face Accessory",
+                        43 => "Neck Accessory",
+                        44 => "Shoulder Accessory",
+                        45 => "Front Accessory",
+                        46 => "Back Accessory",
+                        47 => "Waist Accessory",
+                        _  => "Asset"
+                    };
+
                     items.Add(new
                     {
                         id = assetId,
                         name,
-                        assetTypeId,
+                        type = "Asset",
+                        assetType = new { id = assetTypeId, name = assetTypeName },
                         thumbnailUrl
                     });
                 }

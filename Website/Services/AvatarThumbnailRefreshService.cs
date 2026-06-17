@@ -131,7 +131,7 @@ public sealed class AvatarThumbnailRefreshService
         // break the caller since this is an optimization for smoother loading.
         try
         {
-            var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", userId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", userId, 420, 420, cancellationToken).ConfigureAwait(false);
             var avatarUrl = CombineUrl(baseUrl!, avatarSave.FileName);
             await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, userId, avatarUrl, cancellationToken).ConfigureAwait(false);
         }

@@ -136,7 +136,8 @@ where ua.user_id = @uid
                         ? null
                         : new System.Collections.Generic.Dictionary<string, object?>
                         {
-                            ["Url"] = thumbUrl
+                            ["Url"] = thumbUrl,
+                            ["Final"] = true
                         },
                     ["UserItem"] = new System.Collections.Generic.Dictionary<string, object?>
                     {

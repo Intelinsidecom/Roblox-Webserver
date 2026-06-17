@@ -18,25 +18,38 @@ namespace Api.Controllers
     public class SignupController : ControllerBase
     {
         [HttpGet("is-username-valid")]
-        public IActionResult IsUsernameValid([FromQuery] string username)
+        public async Task<IActionResult> IsUsernameValid([FromQuery] string username, [FromServices] IConfiguration config)
         {
             // Normalize
             var name = username?.Trim();
 
             // Basic checks based on Roblox-like requirements
             if (string.IsNullOrEmpty(name))
-                return Ok(new { IsValid = false, ErrorMessage = "Username is required." });
+                return Ok(new { IsValid = false, ErrorMessage = "UsernameInvalid" });
 
             if (name.Length < 3 || name.Length > 20)
-                return Ok(new { IsValid = false, ErrorMessage = "Username must be between 3 and 20 characters." });
+                return Ok(new { IsValid = false, ErrorMessage = "UsernameInvalid" });
 
             // Only letters and digits; no symbols or spaces
             if (!name.All(char.IsLetterOrDigit))
-                return Ok(new { IsValid = false, ErrorMessage = "Username can only contain letters and numbers." });
+                return Ok(new { IsValid = false, ErrorMessage = "UsernameInvalid" });
 
-            // If needed later: check profanity, reserved words, availability, etc.
+            // Check if username already exists in database
+            var connString = config.GetConnectionString("Default");
+            if (!string.IsNullOrWhiteSpace(connString))
+            {
+                try
+                {
+                    var exists = await UserQueries.UsernameExistsAsync(connString, name);
+                    if (exists)
+                        return Ok(new { IsValid = false, ErrorMessage = "UsernameTaken" });
+                }
+                catch
+                {
+                }
+            }
 
-            return Ok(new { IsValid = true, ErrorMessage = string.Empty });
+            return Ok(new { IsValid = true, ErrorMessage = "" });
         }
 
         private static async Task<SignupRequest> TryReadJsonAsync(HttpRequest request)
@@ -68,16 +81,10 @@ namespace Api.Controllers
 
             if (string.IsNullOrWhiteSpace(pwd))
                 return Ok(new { IsValid = false, ErrorMessage = "Password is required." });
-
-            // Frontend v2 rules: min length 8, allow symbols, no letter/digit requirement
             if (pwd.Length < 8 || pwd.Length > 128)
                 return Ok(new { IsValid = false, ErrorMessage = "Password must be between 8 and 128 characters." });
-
-            // Disallow password equal to username
             if (!string.IsNullOrEmpty(username) && string.Equals(pwd, username, StringComparison.Ordinal))
                 return Ok(new { IsValid = false, ErrorMessage = "Password shouldn't match username." });
-
-            // Disallow weak/common passwords
             if (IsWeakPassword(pwd))
                 return Ok(new { IsValid = false, ErrorMessage = "Please create a more complex password." });
 
@@ -88,24 +95,20 @@ namespace Api.Controllers
         [Consumes("application/json", "application/x-www-form-urlencoded", "multipart/form-data", "text/plain")]
         public async Task<IActionResult> SignupV1([FromServices] IConfiguration config)
         {
-            // Accept JSON or form submissions. Attempt to parse JSON if content-type indicates.
             var request = await TryReadJsonAsync(Request) ?? new SignupRequest();
 
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.Birthday) || string.IsNullOrWhiteSpace(request.Gender))
             {
-                // Read from form first if present, else query
                 if (Request.HasFormContentType)
                 {
                     var f = Request.Form;
                     request.Username = Coalesce(request.Username, f["username"], f["userName"], f["UserName"], f["SignupUsername"], f["signup-username"]);
                     request.Password = Coalesce(request.Password, f["password"], f["Password"], f["SignupPassword"], f["signup-password"]);
-                    // Birthday can be split into components
                     var bm = FirstNonEmpty(f["birthdayMonth"], f["MonthDropdown"], f["month"], f["Month"]);
                     var bd = FirstNonEmpty(f["birthdayDay"], f["DayDropdown"], f["day"], f["Day"]);
                     var by = FirstNonEmpty(f["birthdayYear"], f["YearDropdown"], f["year"], f["Year"]);
                     if (!string.IsNullOrWhiteSpace(bm) && !string.IsNullOrWhiteSpace(bd) && !string.IsNullOrWhiteSpace(by))
                     {
-                        // Normalize month which may be Jan/Feb or numeric
                         var month = NormalizeMonth(bm);
                         request.Birthday = $"{by}-{month:D2}-{int.Parse(bd):D2}";
                     }
@@ -146,7 +149,6 @@ namespace Api.Controllers
             if (string.IsNullOrWhiteSpace(password) || password.Length < 8 || password.Length > 128)
                 return BadRequest(new { errors = new[] { new { code = 3, message = "Invalid password" } } });
 
-            // Align with frontend v2 password checks
             if (!string.IsNullOrEmpty(username) && string.Equals(password, username, StringComparison.Ordinal))
                 return BadRequest(new { errors = new[] { new { code = 3, message = "Invalid password" } } });
 
@@ -268,7 +270,6 @@ namespace Api.Controllers
             if (p.Length == 0) return true; // whitespace-only
 
             var lower = p.ToLowerInvariant();
-            // Common/weak passwords from frontend list
             string[] weak = new[]
             {
                 "roblox123","password","password1","password12","password123","trustno1","iloveyou","princess","abcd1234",
