@@ -31,15 +31,18 @@ Roblox Webserver is a project designed to work nicely with all Roblox Clients (H
 
 ## Supported Clients:
 - Windows
+- UWP
 
 Documentation will be made in github Wiki Form.
 
-P.S. UWP 2016 gets to login, is able to login, sign out and loads some Apis for Info Like Balance, User Info, device/initialize not fixed as it still isnt analyzed as to what it expects for response.
-
 # How to Set it up for myself:
 1. Download NET. SDK 8.1 on Windows
-2. Change the AppSettings.json files to match your needs, expectations on hardware.
-3. Dotnet run in cmd in each directory where the project is
-4. Profit
+2. Download Latest PostgresSQL on Windows
+3. Change the AppSettings.json files to match your needs.
+4. Dotnet run in cmd in each directory where the project is
+5. Profit
 
-Note: If you dont have an domain but want to test it out, change the hosts file to redirect freblx.xyz or whatever url you want like roblox.com to localhost so the clients think its legit, on external Devices, umm, no idea rn.
+Note: If you dont have an domain but want to test it out, change the hosts file to redirect freblx.xyz or whatever url you want like and then make change client urls accordingly and also set the localhost mode to true in website project
+
+# Project is not affiliated with Roblox in any way
+Roblox assets from Pre 2021 era are only used for the core aesthetic of the project. in production its recommended to remake or change the JS, CSS, image assets.
