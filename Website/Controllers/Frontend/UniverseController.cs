@@ -1043,6 +1043,50 @@ namespace RobloxWebserver.Controllers
         }
 
         /// <summary>
+        /// POST /universes/setrootplace - Set the root place for a universe (Studio client API)
+        /// </summary>
+        [HttpPost("universes/setrootplace")]
+        [Authorize]
+        public async Task<IActionResult> SetRootPlace()
+        {
+            try
+            {
+                var (isAuthenticated, currentUserId) = AuthenticationHelper.GetCurrentUserId(User);
+                if (!isAuthenticated)
+                    return Json(new { success = false, message = "User not authenticated" });
+
+                var universeIdStr = Request.Query["universeid"].FirstOrDefault() ?? Request.Query["universeId"].FirstOrDefault();
+                var placeIdStr = Request.Query["placeid"].FirstOrDefault() ?? Request.Query["placeId"].FirstOrDefault();
+
+                if (string.IsNullOrWhiteSpace(universeIdStr) || !long.TryParse(universeIdStr, out var universeId))
+                    return Json(new { success = false, message = "Invalid universe ID" });
+
+                if (string.IsNullOrWhiteSpace(placeIdStr) || !long.TryParse(placeIdStr, out var placeId))
+                    return Json(new { success = false, message = "Invalid place ID" });
+
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var universeOwner = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId);
+                if (universeOwner == null || universeOwner != currentUserId)
+                    return Json(new { success = false, message = "Access denied - you do not own this universe" });
+
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, placeId);
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                    return Json(new { success = false, message = "Place not found or access denied" });
+
+                var success = await PlacesHandler.SetUniverseRootPlaceAsync(connectionString, universeId, placeId);
+
+                if (success)
+                    return Json(new { success = true, message = "Root place set successfully" });
+                else
+                    return Json(new { success = false, message = "Failed to set root place" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
+
+        /// <summary>
         /// POST /universes/remove-start-place - Remove the start place from a universe
         /// </summary>
         [HttpPost("universes/remove-start-place")]
@@ -1212,7 +1256,6 @@ namespace RobloxWebserver.Controllers
         /// </summary>
         [HttpPost("universes/removeplace")]
         [Authorize]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemovePlaceFromUniverse()
         {
             try
@@ -1223,8 +1266,8 @@ namespace RobloxWebserver.Controllers
                     return Json(new { success = false, message = "User not authenticated" });
                 }
 
-                var universeIdStr = Request.Form["universeId"].FirstOrDefault();
-                var placeIdStr = Request.Form["placeId"].FirstOrDefault();
+                var universeIdStr = Request.Query["universeId"].FirstOrDefault() ?? Request.Form["universeId"].FirstOrDefault();
+                var placeIdStr = Request.Query["placeId"].FirstOrDefault() ?? Request.Form["placeId"].FirstOrDefault();
 
                 if (string.IsNullOrWhiteSpace(universeIdStr) || !long.TryParse(universeIdStr, out var universeId))
                 {
@@ -1367,6 +1410,97 @@ namespace RobloxWebserver.Controllers
             {
                 return Content("<div class=\"error\">An error occurred while loading places.</div>", "text/html");
             }
+        }
+
+        /// <summary>
+        /// Stop all game servers for a universe
+        /// POST /universes/shutdown-all-games?universeId=
+        /// </summary>
+        [HttpPost("universes/shutdown-all-games")]
+        public async Task<IActionResult> ShutdownAllGames([FromForm] long universeId)
+        {
+            if (universeId <= 0)
+                return BadRequest(new { error = "Invalid universe ID" });
+
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeIds = await UniverseHandler.GetUniversePlaceIdsAsync(universeId, connectionString);
+
+                if (placeIds == null)
+                    return NotFound(new { error = "Universe not found" });
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                    return Unauthorized(new { error = "User not authenticated" });
+
+                var ownerId = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId);
+                if (!ownerId.HasValue || ownerId.Value != currentUserId)
+                    return StatusCode(403, new { error = "Access denied" });
+
+                if (placeIds.Count == 0)
+                    return Ok(new { universeId, stoppedCount = 0, message = "Universe has no places" });
+
+                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
+
+                var stoppedGameIds = new List<string>();
+                foreach (var placeId in placeIds)
+                {
+                    try
+                    {
+                        var byPlaceResponse = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-place/{placeId}");
+                        if (!byPlaceResponse.IsSuccessStatusCode)
+                            continue;
+
+                        var byPlaceJson = await byPlaceResponse.Content.ReadAsStringAsync();
+                        var byPlaceResult = JsonSerializer.Deserialize<ByPlaceResponse>(byPlaceJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        if (byPlaceResult?.Servers == null)
+                            continue;
+
+                        foreach (var server in byPlaceResult.Servers)
+                        {
+                            if (string.IsNullOrEmpty(server.GameId))
+                                continue;
+
+                            try
+                            {
+                                var killResponse = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/{server.GameId}/kill");
+                                if (killResponse.IsSuccessStatusCode)
+                                    stoppedGameIds.Add(server.GameId);
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return Ok(new { universeId, stoppedCount = stoppedGameIds.Count, gameIds = stoppedGameIds });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
+        private class ByPlaceResponse
+        {
+            public int PlaceId { get; set; }
+            public int ServerCount { get; set; }
+            public List<ServerEntry> Servers { get; set; } = new();
+        }
+
+        private class ServerEntry
+        {
+            public string GameId { get; set; } = string.Empty;
         }
     }
 }

@@ -1,0 +1,536 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:fb="http://www.facebook.com/2008/fbml">
+<html lang="en">
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@removeTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+<head data-machine-id="WEB1262">
+    <!-- MachineID: WEB1262 -->
+    <title>Publish New Place</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta ng-csp="no-unsafe-eval">
+
+<link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+<link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
+<link rel="stylesheet" href="/CSS/Pages/IDE/IDE.css">
+<link rel="stylesheet" href="/CSS/Pages/Build/BuildPage.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Modals.css">
+<link rel="stylesheet" href="/CSS/Pages/Places/Configure.css">
+
+<link rel="stylesheet" href="/CSS/Pages/IDE/Update.css">
+<link rel="stylesheet" href="/CSS/Pages/IDE/IDE.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/tipsy.css">
+
+
+
+    <script>
+        //Set if it browser's do not track flag is enabled
+        var Roblox = Roblox || {};
+        (function () {
+            var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+            if (typeof window.external !== "undefined" &&
+                typeof window.external.msTrackingProtectionEnabled !== "undefined") {
+                dnt = dnt || window.external.msTrackingProtectionEnabled();
+            }
+            Roblox.browserDoNotTrack = dnt == "1" || dnt == "yes" || dnt === true;
+        })();
+    </script>
+
+
+    <script type="text/javascript" src="/JS/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="/JS/roblox.js"></script>
+    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/JS/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/JS/common/forms.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+
+    <script type='text/javascript'>
+        Roblox.config.externalResources = [];
+        Roblox.config.paths['Pages.Catalog'] = '/JS/modules/Pages/Catalog.js';
+        Roblox.config.paths['Pages.CatalogShared'] = '/JS/modules/Pages/CatalogShared.js';
+        Roblox.config.paths['Widgets.AvatarImage'] = '/JS/modules/Widgets/AvatarImage.js';
+        Roblox.config.paths['Widgets.DropdownMenu'] = '/JS/modules/Widgets/DropdownMenu.js';
+        Roblox.config.paths['Widgets.HierarchicalDropdown'] =
+            '/JS/modules/Widgets/HierarchicalDropdown.js';
+        Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
+        Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
+    </script>
+    <script type="text/javascript" src="/JS/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="/JS/IDE/validator.js"></script>
+    <script type="text/javascript" src="/JS/IDE/create.js"></script>
+    <script type="text/javascript" src="/JS/Universes/Configure.js"></script>
+    <script type="text/javascript" src="/JS/places/Access.js"></script>
+    <script type="text/javascript" src="/JS/Places/DeviceSelection.js"></script>
+
+<style>
+.sell-access-tooltip,
+.place-access-tooltip,
+.private-server-tooltip,
+.builders-club-only-tooltip {
+    width: 12px;
+    height: 13px;
+    margin-bottom: 0;
+}
+</style>
+
+
+    <script type="text/javascript">
+        if (typeof (Roblox) === "undefined") {
+            Roblox = {};
+        }
+        Roblox.Endpoints = Roblox.Endpoints || {};
+        Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+    </script>
+</head>
+
+<body>
+
+    <div class="boxed-body" data-return-url="/ide/Upload.ashx">
+        <div id="navbar" class="nav-bar">
+            <div class="verticaltab selected" data-maindiv="basicSettings">
+                <a href="#">Basic Settings</a>
+            </div>
+            <div class="verticaltab" data-maindiv="thumbnails">
+                <a href="#">Thumbnails</a>
+            </div>
+            <div class="verticaltab" data-maindiv="access">
+                <a href="#">Access</a>
+            </div>
+            <div class="verticaltab" data-maindiv="advancedSettings">
+                <a href="#">Advanced Settings</a>
+            </div>
+        </div>
+        <div id="universe-configure" class="universe-content" style="width: 550px;">
+            <div id="basicSettings" class="configure-tab">
+                <div id="placeForm">
+                    <div class="headline">
+                        <h2>Basic Settings</h2>
+
+                    </div>
+                    <form id="basicSettingsForm" method="post" action="/ide/publish/newplace?universeId=@ViewBag.universeId">
+                        <input data-val="true" data-val-number="The field GroupId must be a number." id="GroupId" name="GroupId"
+                            type="hidden" value="" />
+                        <input id="UniverseId" name="universeId" type="hidden" value="@ViewBag.universeId" />
+
+                        <input name="__RequestVerificationToken" type="hidden"
+                            value="@ViewBag.xcsrftoken" />
+
+                        <label class="form-label" for="Name">Name:</label>
+                        <input class="text-box text-box-medium" data-val="true" data-val-required="Name is required" id="Name"
+                            name="Name" type="text" value="" /> <span id="nameRow"><span class="field-validation-valid"
+                                data-valmsg-for="Name" data-valmsg-replace="true"></span></span>
+
+                        <label class="form-label" for="Description">Description:</label>
+                        <textarea class="text-box text-area-medium" cols="80" id="Description" name="Description"
+                            rows="6"></textarea> <span class="field-validation-valid" data-valmsg-for="Description"
+                            data-valmsg-replace="true"></span>
+
+                        <label class="form-label" for="Genre">Genre:</label>
+                        <select class="form-select" id="Genre" name="Genre">
+                            <option selected="selected">All</option>
+                            <option>Adventure</option>
+                            <option>Building</option>
+                            <option>Comedy</option>
+                            <option>Fighting</option>
+                            <option>FPS</option>
+                            <option>Horror</option>
+                            <option>Medieval</option>
+                            <option>Military</option>
+                            <option>Naval</option>
+                            <option>RPG</option>
+                            <option>Sci-Fi</option>
+                            <option>Sports</option>
+                            <option>Town and City</option>
+                            <option>Western</option>
+                        </select>
+                        <span class="field-validation-valid" data-valmsg-for="Genre" data-valmsg-replace="true"></span>
+                    </div>
+            </div>
+            <div id="thumbnails" class="configure-tab" style="display:none;">
+                <div class="headline">
+                    <h2>THUMBNAILS</h2>
+                </div>
+                <div style="text-align: center;">
+                    <img id="snapshotImage" src="/images/SnapScreenshot.jpg" alt="Snapshot" style="width: 75%;" />
+                    <br />
+                    <br />
+                    <div class="divider-bottom" style="margin-top:30px"></div>
+                    <br />
+                    <a class="btn-medium btn-neutral" id="takeSnapshotButton">Take Snapshot</a>
+                </div>
+            </div>
+            <div id="access" class="configure-tab" style="display:none;">
+                <div class="headline">
+                    <h2>Access</h2>
+                </div>
+                <script type="text/javascript">
+                    var Roblox = Roblox || {};
+                    Roblox.AccessData = {"isDevelopSiteForVipServersEnabled":true,"vipServerConfigurationLink":"https://develop.miikart.de/v1/universes//configuration/vip-servers","privateServersAllowed":@(ViewBag.privateServersAllowed == true ? "true" : "false")};
+                </script>
+
+                <!-- Checkbox list needs custom extensions in the current version of mvc. -->    
+                <div class="deviceTypeSection" data-console-agreement-enabled="True">
+                    <label class="form-label" for="DeviceSectionHeader">Playable devices:</label>
+                    @{
+                        var playableDevices = ViewBag.playableDevices as List<string> ?? new List<string> { "Computer", "Phone", "Tablet" };
+                        var isComputerChecked = playableDevices.Contains("Computer") ? "checked=\"checked\"" : "";
+                        var isPhoneChecked = playableDevices.Contains("Phone") ? "checked=\"checked\"" : "";
+                        var isTabletChecked = playableDevices.Contains("Tablet") ? "checked=\"checked\"" : "";
+                        var isConsoleChecked = playableDevices.Contains("Console") ? "checked=\"checked\"" : "";
+                    }
+                    <label class="checkboxListItem" data-device="Computer" style="display: block;margin-bottom: 5px;">
+                        <input @isComputerChecked data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_0__Selected" name="PlayableDevices[0].Selected" type="checkbox" value="true"><input name="PlayableDevices[0].Selected" type="hidden" value="false">
+                        <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_0__DeviceType" name="PlayableDevices[0].DeviceType" type="hidden" value="Computer">
+                        Computer
+                    </label>
+                    <label class="checkboxListItem" data-device="Phone" style="display: block;margin-bottom: 5px;">
+                        <input @isPhoneChecked data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_1__Selected" name="PlayableDevices[1].Selected" type="checkbox" value="true"><input name="PlayableDevices[1].Selected" type="hidden" value="false">
+                        <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_1__DeviceType" name="PlayableDevices[1].DeviceType" type="hidden" value="Phone">
+                        Phone
+                    </label>
+                    <label class="checkboxListItem" data-device="Tablet" style="display: block;margin-bottom: 5px;">
+                        <input @isTabletChecked data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_2__Selected" name="PlayableDevices[2].Selected" type="checkbox" value="true"><input name="PlayableDevices[2].Selected" type="hidden" value="false">
+                        <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_2__DeviceType" name="PlayableDevices[2].DeviceType" type="hidden" value="Tablet">
+                        Tablet
+                    </label>
+                    <label class="checkboxListItem" data-device="Console" style="display: block;margin-bottom: 5px;">
+                        <input @isConsoleChecked data-val="true" data-val-required="The Selected field is required." id="PlayableDevices_3__Selected" name="PlayableDevices[3].Selected" type="checkbox" value="true"><input name="PlayableDevices[3].Selected" type="hidden" value="false">
+                        <input data-val="true" data-val-required="The DeviceType field is required." id="PlayableDevices_3__DeviceType" name="PlayableDevices[3].DeviceType" type="hidden" value="Console">
+                        Console
+                    </label>
+                    <div id="device-type-error" class="error-message" style="display: none;">You must select one or more playable devices.</div>
+                </div>
+
+                <div id="NumPlayers">
+                    <div class="universe-form-label">
+                        <label class="form-label" for="NumberOfPlayersMax">Maximum Visitor Count</label>:
+                    </div>
+                    @{
+                        var maxVisitorCount = ViewBag.maxVisitorCount ?? 8;
+                    }
+                    <select class="form-select no-margins" data-val="true" data-val-number="The field Maximum Visitor Count: must be a number." data-val-required="The Maximum Visitor Count: field is required." id="MaxPlayersInput" name="NumberOfPlayersMax">
+                        @for (int i = 1; i <= 100; i++)
+                        {
+                            <option value="@i" @(i == maxVisitorCount ? "selected=\"selected\"" : "")>@i</option>
+                        }
+                    </select>
+                    <img class="TipsyImg tooltip-bottom h2-tooltip number-of-players-max-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" title="The maximum number of people allowed in one instance of the game." />
+                    <span class="field-validation-valid" data-valmsg-for="NumberOfPlayersMax" data-valmsg-replace="true"></span>
+
+
+                <div id="GamePlaceAccess">
+                    <div class="universe-form-label">
+                        <label class="form-label" for="Access">Access</label>:
+                    </div>
+                    @{
+                        var accessType = ViewBag.accessType as string ?? "Everyone";
+                        var isEveryoneSelected = accessType == "Everyone" ? "selected=\"selected\"" : "";
+                        var isFriendsSelected = accessType == "Friends" ? "selected=\"selected\"" : "";
+                    }
+                    <select class="form-select no-margins" id="Access" name="Access">
+                        <option value="Everyone" @isEveryoneSelected>Everyone</option>
+                        <option value="Friends" @isFriendsSelected>Friends</option>
+                    </select>
+                    <img class="TipsyImg tooltip-bottom h2-tooltip place-access-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" alt="To restrict who may access this place, first you must disable VIP servers and not sell game access." title="To restrict who may access this place, first you must disable VIP servers and not sell game access." />
+                    <span class="field-validation-valid" data-valmsg-for="Access" data-valmsg-replace="true"></span>
+                </div>
+
+                <div id="BuildersClubOnlySection" class="privateserversaccess">
+                    <div class="universe-form-label">
+                        <label class="form-label" for="ArePrivateServersAllowed">Builders Club Only:</label>
+                    </div>
+                    @{
+                        var isBuildersClubOnlyChecked = ViewBag.privateServersAllowed == true ? "checked=\"checked\"" : "";
+                        var isBuildersClubOnlyDisabled = accessType == "Friends" ? "disabled=\"disabled\"" : "";
+                    }
+                    <label id="BuildersClubOnlyLabel" class="checkboxListItem">
+                        <input @isBuildersClubOnlyChecked @isBuildersClubOnlyDisabled data-val="true" data-val-required="The BuildersClubOnly field is required." id="BuildersClubOnlyCheckbox" name="BuildersClubOnly" type="checkbox" value="true" /><input name="BuildersClubOnly" type="hidden" value="false" />
+                        <span>
+                            Builders Club Only
+                            <a href="https://developer.roblox.com/en-us/articles/Creating-a-VIP-Server-on-Roblox" target="_blank">
+                                <img class="h2-tooltip private-server-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" alt="Click here to learn about private servers" data-toggle="tooltip" title="Click here to learn about private servers" />
+                            </a>
+                        </span>
+                    </label>
+                </div>
+
+                <div id="PrivateServersAccess" class="privateserversaccess">
+                    <div class="universe-form-label">
+                        <label class="form-label" for="ArePrivateServersAllowed">VIP Servers:</label>
+                    </div>
+                    @{
+                        var isPrivateServersChecked = ViewBag.privateServersAllowed == true ? "checked=\"checked\"" : "";
+                        var isPrivateServersDisabled = accessType == "Friends" ? "disabled=\"disabled\"" : "";
+                    }
+                    <label id="PrivateServerAccessLabel" class="checkboxListItem">
+                        <input @isPrivateServersChecked @isPrivateServersDisabled data-val="true" data-val-required="The ArePrivateServersAllowed field is required." id="AllowPrivateServersCheckbox" name="ArePrivateServersAllowed" type="checkbox" value="true" /><input name="ArePrivateServersAllowed" type="hidden" value="false" />
+                        <span>
+                            Allow VIP Servers
+                            <a href="https://developer.roblox.com/en-us/articles/Creating-a-VIP-Server-on-Roblox" target="_blank">
+                                <img class="h2-tooltip private-server-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" alt="Click here to learn about private servers" data-toggle="tooltip" title="Click here to learn about private servers" />
+                            </a>
+                        </span>
+                    </label>
+                    <div id="PrivateServerDetails">
+                        <div id="ActivePrivateServersCount">There are currently 0 VIP servers active for this place. Disabling private servers will disable all of these private servers. </div>
+                        <div id="ActivePrivateServersSubscriptions">There are currently 0 VIP server subscriptions active for this place. Changing the price will cancel all of these subscriptions.</div>
+                        <div id="PrivateServerDetailsError" class="status-error" style="display: none;">Unable to load private server subscriptions.</div>
+                        <div class="formRadio" id="PrivateServerRadioButtons">
+                            @{
+                                var isFreePrivateServerChecked = ViewBag.privateServersFree == true ? "checked=\"checked\"" : "";
+                                var isPaidPrivateServerChecked = ViewBag.privateServersFree != true ? "checked=\"checked\"" : "";
+                            }
+                            <label class="radio-selection"> <input @isFreePrivateServerChecked data-val="true" data-val-required="The IsFreePrivateServer field is required." id="FreePrivateServers" name="IsFreePrivateServer" type="radio" value="True" /> <span>Free</span></label>
+                            <label class="radio-selection"> <input @isPaidPrivateServerChecked id="PaidPrivateServers" name="IsFreePrivateServer" type="radio" value="False" /> <span>Paid</span></label>
+                        </div>
+                        <div id="PrivateServerPriceContainer" data-minprice="10" data-defaultprice="100" data-taxrate="0.3" style="display:none;">
+                            <div id="PrivateServerPrice" class="pricingrow">
+                                <div class="pricinglabel">Price: <span class="robux" style="margin-left: 5px;">&nbsp;</span></div>
+                                <div class="toppricingfield">
+                                    <span class="icon-robux-16x16"></span><input class="TextBox priceinput" data-val="true" data-val-number="The field Price: must be a number." data-val-required="The Price: field is required." id="PrivateServerPriceInput" name="PrivateServersPrice" type="text" value="@(ViewBag.privateServersPrice ?? 100)" />
+                                </div>
+                                <span id="PrivateServerPricingError" class="status-error priceerror">
+                                    The minimum price for this item is
+                                    <span class="icon-robux-16x16"></span><span>10</span>
+                                </span>
+                                <div style="clear: both"></div>
+                            </div>
+                            <div id="PrivateServerMarketplaceFee" class="pricingrow">
+                                <div class="pricinglabel">
+                                    Marketplace Fee <img class="h2-tooltip private-server-tooltip" src="/images/65cb6e4009a00247ca02800047aafb87.png" data-toggle="tooltip" data-toggle-mobile="true" data-original-title="30% - minimum 1" />: <span class="robux" style="margin-left: 5px;">&nbsp;</span><br />
+                                </div>
+                                <div class="pricingfield">
+                                    <span class="icon-robux-16x16"></span><span id="PrivateServerMarketplaceFeeText"></span>
+                                </div>
+                                <div style="clear: both"></div>
+                            </div>
+                            <div id="PrivateServerUserProfit" class="pricingrow">
+                                <div class="pricinglabel">You Earn: <span class="robux" style="margin-left: 5px;">&nbsp;</span></div>
+                                <div class="pricingfield">
+                                    <span class="icon-robux-16x16"></span><span id="PrivateServerUserProfitText"></span>
+                                </div>
+                                <div style="clear: both"></div>
+                            </div>
+                        </div>
+                        <div id="PrivateServerDisableWarning" class="status-error" style="display:none;">Warning: Disabling VIP servers will disable all active VIP servers.</div>
+                        <div id="PrivateServerPriceChangeWarning" class="status-error">Warning: Changing the price of private servers will cancel all existing subscriptions.</div>
+                    </div>
+                    <div id="PrivateServersError" class="status-error">To create a private server for this place, you must first allow access to Everyone, and you must disable Paid Access.</div>
+                </div>
+            </div>
+        </div>
+            <div id="advancedSettings" class="configure-tab" style="display:none">
+                <div class="headline">
+                    <h2>Gear Permissions</h2>
+                    <img class="TipsyImg tooltip-bottom h2-tooltip" data-toggle="tooltip" title="The type of gear allowed in your experience. By default the same genre of gear is allowed as the genre of the game." height="13" width="12" src="/images/65cb6e4009a00247ca02800047aafb87.png" alt="The type of gear allowed in your game. By default the same genre of gear is allowed as the genre of the game." />
+                </div>
+                <label class="form-label radio-button-label" for="IsAllGenresAllowed" style="margin-bottom: 10px; display: block;">Allowed Genre:</label>
+                @{
+                    var isAllGenresAllowed = ViewBag.isAllGenresAllowed != null ? (bool)ViewBag.isAllGenresAllowed : false;
+                    var isGameGenreChecked = !isAllGenresAllowed ? "checked=\"checked\"" : "";
+                    var isAllGenresChecked = isAllGenresAllowed ? "checked=\"checked\"" : "";
+                }
+                <label class="radio-selection">
+                    <input @isGameGenreChecked data-val="true" data-val-required="The Allowed Genre: field is required." id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="False" />
+                    <span class="checkboxListItem">Game genre (<span id="advancedsettings_genre">@(ViewBag.gamegenre ?? ViewBag.genre ?? "All")</span>)</span>
+                </label>
+                <label class="radio-selection-last">
+                    <input @isAllGenresChecked id="IsAllGenresAllowed" name="IsAllGenresAllowed" type="radio" value="True" /><span class="checkboxListItem" style="margin-left: 10px;">All genres</span>
+                </label>
+                <span class="field-validation-valid" data-valmsg-for="IsAllGenresAllowed" data-valmsg-replace="true"></span>
+
+                <label class="form-label check-box-label" style="margin-top: 30px; display: block;">Gear types:</label>
+                <ul id="gearTypes" style="list-style-type: none; width: 500px; overflow: hidden; margin-bottom: 10px;">
+                @{
+                    var allowedGearTypesJson = ViewBag.allowedGearTypes?.ToString() ?? "[]";
+                    List<string> allowedGearTypes = new List<string>();
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(allowedGearTypesJson) && allowedGearTypesJson != "[]")
+                        {
+                            var parsedTypeIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(allowedGearTypesJson) ?? new List<int>();
+                            var idToCategoryMap = new Dictionary<int, string>
+                            {
+                                { 1, "Melee" },
+                                { 2, "PowerUps" },
+                                { 3, "Ranged" },
+                                { 4, "Navigation" },
+                                { 5, "Explosive" },
+                                { 6, "Musical" },
+                                { 7, "Social" },
+                                { 8, "PersonalTransport" },
+                                { 9, "Building" }
+                            };
+                            foreach (var typeId in parsedTypeIds)
+                            {
+                                if (idToCategoryMap.TryGetValue(typeId, out string categoryName))
+                                {
+                                    allowedGearTypes.Add(categoryName);
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(allowedGearTypesJson) && allowedGearTypesJson != "[]")
+                            {
+                                var parsedTypes = System.Text.Json.JsonSerializer.Deserialize<List<string>>(allowedGearTypesJson) ?? new List<string>();
+                                foreach (var type in parsedTypes)
+                                {
+                                    if (int.TryParse(type, out int typeId))
+                                    {
+                                        var legacyIdToCategoryMap = new Dictionary<string, string>
+                                        {
+                                            { "1", "Melee" },
+                                            { "2", "PowerUps" },
+                                            { "3", "Ranged" },
+                                            { "4", "Navigation" },
+                                            { "5", "Explosive" },
+                                            { "6", "Musical" },
+                                            { "7", "Social" },
+                                            { "8", "PersonalTransport" },
+                                            { "9", "Building" }
+                                        };
+                                        if (legacyIdToCategoryMap.TryGetValue(type, out string categoryName))
+                                        {
+                                            allowedGearTypes.Add(categoryName);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        allowedGearTypes.Add(type);
+                                    }
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            allowedGearTypes = new List<string>();
+                        }
+                    }
+
+                    var gearTypes = new[]
+                    {
+                        new { DisplayName = "Melee", Category = "Melee" },
+                        new { DisplayName = "Power ups", Category = "PowerUps" },
+                        new { DisplayName = "Ranged", Category = "Ranged" },
+                        new { DisplayName = "Navigation", Category = "Navigation" },
+                        new { DisplayName = "Explosives", Category = "Explosive" },
+                        new { DisplayName = "Musical", Category = "Musical" },
+                        new { DisplayName = "Social", Category = "Social" },
+                        new { DisplayName = "Transport", Category = "PersonalTransport" },
+                        new { DisplayName = "Building", Category = "Building" }
+                    };
+
+                    for (int i = 0; i < gearTypes.Length; i++)
+                    {
+                        var gearType = gearTypes[i];
+                        var isChecked = allowedGearTypes.Contains(gearType.Category) ? "checked=\"checked\"" : "";
+                        <li class="gearCheckbox" style="width: 160px; float: left; margin-bottom: 2px;">
+                            <label class="checkboxListItem">
+                                <input @isChecked data-val="true" data-val-required="The IsSelected field is required." id="AllowedGearTypes_@(i)__IsSelected" name="AllowedGearTypes[@(i)].IsSelected" type="checkbox" value="true" />
+                                <input name="AllowedGearTypes[@(i)].IsSelected" type="hidden" value="false" />
+                                @gearType.DisplayName
+                            </label>
+                            <input id="AllowedGearTypes_@(i)__GearTypeDisplayName" name="AllowedGearTypes[@(i)].GearTypeDisplayName" type="hidden" value="@gearType.DisplayName" />
+                            <input data-val="true" data-val-required="The Category field is required." id="AllowedGearTypes_@(i)__Category" name="AllowedGearTypes[@(i)].Category" type="hidden" value="@gearType.Category" />
+                        </li>
+                    }
+                }
+                </ul>
+                <div class="divider-bottom spacing" style="margin-top: 15px;"></div>
+                <div class="headline" style="margin-top: 10px;">
+                    <h2 id="otherSettings">Other Permissions</h2>
+                </div>
+
+                <input id="ChatType" name="ChatType" type="hidden" value="Classic" />
+
+                <fieldset>
+                    <br>
+                    <label id="copyLock" style="margin-bottom: 4px; display: block;">
+                        <input data-val="true" data-val-required="The Allow Copying field is required." id="IsCopyingAllowed" name="IsCopyingAllowed" type="checkbox" value="true" @(ViewBag.isCopyingAllowed == true ? "checked=\"checked\"" : "") /><input name="IsCopyingAllowed" type="hidden" value="false" /> <span class="checkboxListItem">Copy Locked</span>
+                    </label>
+                    <label id="CommentsEnabled">
+                        <input data-val="true" data-val-required="The Comments Enabled Field is required." id="AreCommentsEnabled" name="AreCommentsEnabled" type="checkbox" value="true" @(ViewBag.areCommentsEnabled == true ? "checked=\"checked\"" : "") /><input name="AreCommentsEnabled" type="hidden" value="false" /><input name="AreCommentsEnabled" type="hidden" value="false" /> <span class="checkboxListItem">Comments Enabled</span>
+                    </label>
+                </fieldset>
+
+                <input data-val="true" data-val-required="The Avatar Appearance Override: field is required." id="OverridesDefaultAvatar" name="OverridesDefaultAvatar" type="hidden" value="False" />
+            </div>
+        </form>
+        </div>
+    </div>
+    <div class="footer-button-container divider-top">
+        <a class="btn-medium btn-primary" id="finishButton">Create Place</a><a class="btn-medium btn-negative"
+            id="cancelButton" style="margin-left: 3px;">Cancel</a>
+    </div>
+
+
+    <script type="text/javascript">
+        function urchinTracker() {}
+
+        $(function () {
+            $('#takeSnapshotButton').on('click', function (e) {
+                e.preventDefault();
+                try {
+                    if (window.external && window.external.TakeThumbnail) {
+                        var uploadUrl = '/ide/publish/newplace/thumbnail';
+                        window.external.TakeThumbnail(uploadUrl);
+                    } else {
+                        alert('Taking Snapshot is only available in Roblox Studio');
+                    }
+                } catch (ex) {
+                    console.error('Error calling TakeSnapshot:', ex);
+                }
+            });
+        });
+    </script>
+
+
+    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation"
+        style="display:none;">
+        <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+        <div class="Title"></div>
+        <div class="GenericModalBody">
+            <div class="TopBody">
+                <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays data-no-click>
+                    <img class="GenericModalImage" alt="generic image" />
+                </div>
+                <div class="Message"></div>
+            </div>
+            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+                <a href id="roblox-confirm-btn"><span></span></a>
+                <a href id="roblox-decline-btn"><span></span></a>
+            </div>
+            <div class="ConfirmationModalFooter">
+
+            </div>
+        </div>
+        <script type="text/javascript">
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+
+            Roblox.Resources.GenericConfirmation = {
+                yes: "Yes",
+                No: "No",
+                Confirm: "Confirm",
+                Cancel: "Cancel"
+            };
+        </script>
+    </div>
+
+
+</body>
+
+</html>

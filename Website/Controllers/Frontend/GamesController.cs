@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Assets;
 using Games;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -42,17 +43,20 @@ namespace RobloxWebserver.Controllers
         private readonly IThumbnailService _thumbnailService;
         private readonly GamesCacheService _cacheService;
         private readonly ILogger<GamesController> _logger;
+        private readonly TokenService _tokenService;
 
         public GamesController(
             IConfiguration configuration, 
             IThumbnailService thumbnailService,
             GamesCacheService cacheService,
-            ILogger<GamesController> logger)
+            ILogger<GamesController> logger,
+            TokenService tokenService)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _thumbnailService = thumbnailService ?? throw new ArgumentNullException(nameof(thumbnailService));
             _cacheService = cacheService ?? throw new ArgumentNullException(nameof(cacheService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
         /// <summary>
@@ -555,6 +559,7 @@ namespace RobloxWebserver.Controllers
                     VoteDownCount = game.DownVotes
                 }).Cast<dynamic>().ToList();
 
+                ViewBag.UniverseId = universeId.Value;
                 ViewBag.Id = id;
                 ViewBag.Name = universe.Name;
                 ViewBag.Description = description ?? string.Empty;
@@ -698,6 +703,33 @@ namespace RobloxWebserver.Controllers
                 _logger.LogError(ex, "Error loading voting service for place ID {PlaceId}", id);
                 return StatusCode(500);
             }
+        }
+
+        /// <summary>
+        /// GET /game/logout.aspx - Logs out the current user
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("logout.aspx")]
+        public async Task<IActionResult> Logout()
+        {
+            var token = Request.Cookies[".ROBLOSECURITY"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                await _tokenService.RevokeSessionAsync(token);
+                var isHttps = Request.IsHttps;
+                var cookieDomain = _configuration["Auth:CookieDomain"];
+                Response.Cookies.Append(".ROBLOSECURITY", string.Empty, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = isHttps,
+                    SameSite = SameSiteMode.Unspecified,
+                    Expires = DateTimeOffset.UnixEpoch,
+                    MaxAge = TimeSpan.Zero,
+                    Path = "/",
+                    Domain = string.IsNullOrWhiteSpace(cookieDomain) ? null : cookieDomain
+                });
+            }
+            return Ok();
         }
 
         private string GenerateRandomString(int length)

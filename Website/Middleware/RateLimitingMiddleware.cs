@@ -13,7 +13,7 @@ public class RateLimitingMiddleware
     private readonly IMemoryCache _cache;
     private readonly ILogger<RateLimitingMiddleware> _logger;
     private readonly int _defaultTimeWindowSeconds;
-    private readonly int _maxRequestsPerWindow = 5; // Allow 5 requests per time window
+    private readonly int _maxRequestsPerWindow = 100;
 
     public RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, ILogger<RateLimitingMiddleware> logger, IConfiguration configuration)
     {
@@ -25,7 +25,6 @@ public class RateLimitingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Skip rate limiting for non-API routes
         if (!IsApiRoute(context.Request.Path))
         {
             await _next(context);
@@ -47,12 +46,10 @@ public class RateLimitingMiddleware
                 return;
             }
             
-            // Increment existing counter
             _cache.Set(cacheKey, requestCount + 1, TimeSpan.FromSeconds(_defaultTimeWindowSeconds));
         }
         else
         {
-            // Set initial counter
             _cache.Set(cacheKey, 1, TimeSpan.FromSeconds(_defaultTimeWindowSeconds));
         }
 
@@ -61,7 +58,6 @@ public class RateLimitingMiddleware
 
     private static bool IsApiRoute(string path)
     {
-        // Check if the path starts with common API prefixes
         return path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) ||
                path.StartsWith("/places/", StringComparison.OrdinalIgnoreCase) ||
                path.StartsWith("/thumbs/", StringComparison.OrdinalIgnoreCase) ||
@@ -78,14 +74,12 @@ public class RateLimitingMiddleware
 
     private static string GetClientIdentifier(HttpContext context)
     {
-        // Try to get user ID from claims for authenticated users
         var userIdClaim = context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
         if (userIdClaim != null && !string.IsNullOrWhiteSpace(userIdClaim.Value))
         {
             return $"user_{userIdClaim.Value}";
         }
 
-        // Fall back to IP address for anonymous users
         var ipAddress = context.Connection.RemoteIpAddress?.ToString();
         return $"ip_{ipAddress ?? "unknown"}";
     }

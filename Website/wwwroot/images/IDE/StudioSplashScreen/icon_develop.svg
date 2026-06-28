@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="develop" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="56px" height="112px" viewBox="0 0 56 112" style="enable-background:new 0 0 56 112;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#191919;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#B8B8B8;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+<g id="forum_1_">
+	<polyline class="st0" points="43,104 46,104 46,107 49.6,104 53,104 53,97 51,97 	"/>
+	<polygon class="st0" points="31,89 48,89 48,101 39,101 39,106 34,101 31,101 	"/>
+</g>
+<g id="forum">
+	<polyline class="st1" points="15,104 18,104 18,107 21.6,104 25,104 25,97 23,97 	"/>
+	<polygon class="st1" points="3,89 20,89 20,101 11,101 11,106 6,101 3,101 	"/>
+</g>
+<g id="blog-on">
+	<polygon class="st0" points="51,61 37,68 35,68 33,67 33,74 35,73 37,73 51,79 	"/>
+	<polyline class="st0" points="36,74 36,77 42,80 44,76 	"/>
+</g>
+<g id="blog">
+	<polygon class="st1" points="23,61 9,68 7,68 5,67 5,74 7,73 9,73 23,79 	"/>
+	<polyline class="st1" points="8,74 8,77 14,80 16,76 	"/>
+</g>
+<g id="info-on">
+	<g>
+		<polygon class="st0" points="34,31 34,53 50,53 50,37 44,31 		"/>
+		<polyline class="st0" points="44,31 44,37 50,37 		"/>
+	</g>
+	<line class="st0" x1="38" y1="42" x2="46" y2="42"/>
+	<line class="st0" x1="38" y1="45" x2="46" y2="45"/>
+	<line class="st0" x1="38" y1="48" x2="46" y2="48"/>
+</g>
+<g id="info">
+	<g>
+		<polygon class="st1" points="6,31 6,53 22,53 22,37 16,31 		"/>
+		<polyline class="st1" points="16,31 16,37 22,37 		"/>
+	</g>
+	<line class="st1" x1="10" y1="42" x2="18" y2="42"/>
+	<line class="st1" x1="10" y1="45" x2="18" y2="45"/>
+	<line class="st1" x1="10" y1="48" x2="18" y2="48"/>
+</g>
+<g id="play-on">
+	<circle class="st0" cx="41.9" cy="14.1" r="10"/>
+	<polygon class="st0" points="40,18 46,14.1 40,10 	"/>
+</g>
+<g id="play">
+	<circle class="st1" cx="13.9" cy="14.1" r="10"/>
+	<polygon class="st1" points="12,18 18,14.1 12,10 	"/>
+</g>
+</svg>

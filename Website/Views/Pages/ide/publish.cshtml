@@ -1,0 +1,176 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:fb="http://www.facebook.com/2008/fbml">
+<html lang="en">
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@removeTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+<head data-machine-id="WEB1262">
+    <!-- MachineID: WEB1262 -->
+    <title>Publish New Place</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta ng-csp="no-unsafe-eval">
+
+<link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+<link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
+<link rel="stylesheet" href="/CSS/Pages/IDE/IDE.css">
+<link rel="stylesheet" href="/CSS/Pages/Build/BuildPage.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Modals.css">
+<link rel="stylesheet" href="/CSS/Pages/Places/Configure.css">
+
+<link rel="stylesheet" href="/CSS/Pages/IDE/Update.css">
+<link rel="stylesheet" href="/CSS/Pages/IDE/IDE.css">
+
+
+
+    <script>
+        //Set if it browser's do not track flag is enabled
+        var Roblox = Roblox || {};
+        (function () {
+            var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+            if (typeof window.external !== "undefined" &&
+                typeof window.external.msTrackingProtectionEnabled !== "undefined") {
+                dnt = dnt || window.external.msTrackingProtectionEnabled();
+            }
+            Roblox.browserDoNotTrack = dnt == "1" || dnt == "yes" || dnt === true;
+        })();
+    </script>
+
+
+    <script type="text/javascript" src="/JS/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="/JS/roblox.js"></script>
+    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/JS/jquery/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/JS/common/forms.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+
+    <script type='text/javascript'>
+        Roblox.config.externalResources = [];
+        Roblox.config.paths['Pages.Catalog'] = '/JS/modules/Pages/Catalog.js';
+        Roblox.config.paths['Pages.CatalogShared'] = '/JS/modules/Pages/CatalogShared.js';
+        Roblox.config.paths['Widgets.AvatarImage'] = '/JS/modules/Widgets/AvatarImage.js';
+        Roblox.config.paths['Widgets.DropdownMenu'] = '/JS/modules/Widgets/DropdownMenu.js';
+        Roblox.config.paths['Widgets.HierarchicalDropdown'] =
+            '/JS/modules/Widgets/HierarchicalDropdown.js';
+        Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
+        Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
+    </script>
+    <script type="text/javascript" src="/JS/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="/JS/IDE/validator.js"></script>
+    <script type="text/javascript" src="/JS/IDE/create.js"></script>
+    <script type="text/javascript" src="/JS/Universes/Configure.js"></script>
+<style>
+.sell-access-tooltip,
+.place-access-tooltip,
+.private-server-tooltip,
+.builders-club-only-tooltip {
+    width: 12px;
+    height: 13px;
+    margin-bottom: 0;
+}
+</style>
+
+
+    <script type="text/javascript">
+        if (typeof (Roblox) === "undefined") {
+            Roblox = {};
+        }
+        Roblox.Endpoints = Roblox.Endpoints || {};
+        Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+    </script>
+</head>
+
+<body>
+
+    <div class="boxed-body">
+        <div id="navbar" class="nav-bar">
+            <div class="verticaltab selected" data-maindiv="Places">
+                <a href="#">Places</a>
+            </div>
+            <div class="verticaltab" data-maindiv="Sets">
+                <a href="#">Sets</a>
+            </div>
+        </div>
+        <div id="universe-configure" class="universe-content" style="width: 550px;">
+            <div id="Places" class="configure-tab">
+                <div class="headline">
+                    <h2>Places</h2>
+                </div>
+                <p>TODO: Go to /develop or ide/welcome for now.</p>
+            </div>
+            <div id="Sets" class="configure-tab" style="display:none;">
+                <div class="headline">
+                    <h2>Sets</h2>
+                </div>
+                <p>TODO: What do i even add here? "i" can implement sets but ehh.</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-button-container divider-top">
+            <a class="btn-medium btn-negative" id="cancelButton" style="margin-left: 3px;">Cancel</a>
+    </div>
+
+    <script type="text/javascript">
+        $(function () {
+            $('#cancelButton').off('click').on('click', function (e) {
+                e.preventDefault();
+                try {
+                    window.close();
+                } catch (ex) {
+                    console.error('Error closing window:', ex);
+                }
+                return false;
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        function urchinTracker() {}
+    </script>
+
+
+    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation"
+        style="display:none;">
+        <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+        <div class="Title"></div>
+        <div class="GenericModalBody">
+            <div class="TopBody">
+                <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays data-no-click>
+                    <img class="GenericModalImage" alt="generic image" />
+                </div>
+                <div class="Message"></div>
+            </div>
+            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+                <a href id="roblox-confirm-btn"><span></span></a>
+                <a href id="roblox-decline-btn"><span></span></a>
+            </div>
+            <div class="ConfirmationModalFooter">
+
+            </div>
+        </div>
+        <script type="text/javascript">
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+
+            Roblox.Resources.GenericConfirmation = {
+                yes: "Yes",
+                No: "No",
+                Confirm: "Confirm",
+                Cancel: "Cancel"
+            };
+        </script>
+    </div>
+
+
+</body>
+
+</html>

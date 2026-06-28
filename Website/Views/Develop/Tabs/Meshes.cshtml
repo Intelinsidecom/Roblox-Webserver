@@ -1,0 +1,5 @@
+@model Assemblies.Common.DevelopTabViewModel
+@{
+    Layout = null;
+}
+@await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", $"You have no {Model.ViewName.ToLowerInvariant()} yet.")

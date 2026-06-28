@@ -204,12 +204,6 @@ $(function() {
                 Roblox.SignupOrLoginModal.show(t)
             } else {
                 $("#iFrameLogin").toggleClass("show");
-                if ($("#iFrameLogin").hasClass("show")) {
-                    var leftOffset = $("#header-login").offset().left - $("#iFrameLogin").offset().left - 250;
-                    if (leftOffset > 0) {
-                        $("#iFrameLogin").css("left", leftOffset)
-                    }
-                }
             }
         }), $("#header-signup").click(function(evt) {
             var t = {
@@ -248,8 +242,6 @@ $(function() {
         }
         $("#head-login").click(function(evt) {
             if ($("#iFrameLogin").toggleClass("show"), $("#iFrameLogin").hasClass("show")) {
-                var t = $("#head-login").offset().left - $("#iFrameLogin").offset().left - 250;
-                t > 0 && $("#iFrameLogin").css("left", t);
                 // same-origin sizing fallback
                 adjustIframeHeight();
                 setTimeout(adjustIframeHeight, 50);

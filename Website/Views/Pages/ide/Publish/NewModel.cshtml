@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:fb="http://www.facebook.com/2008/fbml">
+
+<head data-machine-id="WEB1262">
+
+    <title>Publish New Model</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+<link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
+<link rel="stylesheet" href="/CSS/Pages/IDE/IDE.css">
+<link rel="stylesheet" href="/CSS/Pages/Build/BuildPage.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Modals.css">
+
+<link rel="stylesheet" href="/CSS/Pages/IDE/Update.css">
+<link rel="stylesheet" href="/CSS/Pages/IDE/IDE.css">
+
+
+    <script>
+        //Set if it browser's do not track flag is enabled
+        var Roblox = Roblox || {};
+        (function() {
+            var dnt = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+            if (typeof window.external !== "undefined" &&
+                typeof window.external.msTrackingProtectionEnabled !== "undefined") {
+                dnt = dnt || window.external.msTrackingProtectionEnabled();
+            }
+            Roblox.browserDoNotTrack = dnt == "1" || dnt == "yes" || dnt === true;
+        })();
+    </script>
+    <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='studio' type='text/javascript' src='http://www.reloxa.xyz/js/3719f3fb35135d05cf6b72d5b0f46333.js'>
+    </script>
+   <script type='text/javascript'>
+        Roblox.config.externalResources = [];
+        Roblox.config.paths['Pages.Catalog'] = '/JS/modules/Pages/Catalog.js';
+        Roblox.config.paths['Pages.CatalogShared'] = '/JS/modules/Pages/CatalogShared.js';
+        Roblox.config.paths['Widgets.AvatarImage'] = '/JS/modules/Widgets/AvatarImage.js';
+        Roblox.config.paths['Widgets.DropdownMenu'] = '/JS/modules/Widgets/DropdownMenu.js';
+        Roblox.config.paths['Widgets.HierarchicalDropdown'] = '/JS/modules/Widgets/HierarchicalDropdown.js';
+        Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
+        Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
+    </script>
+    <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='page' type='text/javascript' src='http://www.reloxa.xyz/js/a1ec30f16d5202192e1d89ed4aca2c58.js'>
+    </script>
+
+    <script type="text/javascript">
+        if (typeof(Roblox) === "undefined") {
+            Roblox = {};
+        }
+        Roblox.Endpoints = Roblox.Endpoints || {};
+        Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+    </script>
+</head>
+
+<body>
+    <div class="boxed-body" data-return-url="/UI/Save.aspx">
+        <div id="placeForm">
+            <div class="headline">
+                <h2>Basic Settings</h2>
+            </div>
+            <form id="basicSettingsForm" method="post" action="/IDE/Publish/Model">
+                <input data-val="true" data-val-number="The field GroupId must be a number." id="GroupId" name="GroupId" type="hidden" value="" />
+                <label class="form-label" for="Name">Name:</label>
+                <input class="text-box text-box-medium" data-val="true" data-val-required="Name is required" id="Name" name="Name" type="text" value="" /> <span id="nameRow"><span class="field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span></span>
+                <label class="form-label" for="Description">Description:</label>
+                <textarea class="text-box text-area-medium" cols="80" id="Description" name="Description" rows="6"></textarea> <span class="field-validation-valid" data-valmsg-for="Description" data-valmsg-replace="true"></span>
+                <label class="form-label" for="Genre">Genre:</label>
+                <select class="form-select" id="Genre" name="Genre">
+                    <option selected="selected">All</option>
+                    <option>Adventure</option>
+                    <option>Building</option>
+                    <option>Comedy</option>
+                    <option>Fighting</option>
+                    <option>FPS</option>
+                    <option>Horror</option>
+                    <option>Medieval</option>
+                    <option>Military</option>
+                    <option>Naval</option>
+                    <option>RPG</option>
+                    <option>Sci-Fi</option>
+                    <option>Sports</option>
+                    <option>Town and City</option>
+                    <option>Western</option>
+                </select>
+                <span class="field-validation-valid" data-valmsg-for="Genre" data-valmsg-replace="true"></span>
+
+                    <label class="form-label" for="ArePrivateServersAllowed">Comments:</label>
+                    <label id="BuildersClubOnlyLabel" class="checkboxListItem">
+                        <input data-val="true" data-val-required="The BuildersClubOnly field is required." id="BuildersClubOnlyCheckbox" name="BuildersClubOnly" type="checkbox" value="true" /><input name="BuildersClubOnly" type="hidden" value="false" />
+                        <span>
+                            Allow Comments
+                        </span>
+                    </label>
+            </form>
+        </div>
+    </div>
+    <div class="footer-button-container divider-top">
+        <a class="btn-medium btn-primary" id="finishButton">Finish</a><a class="btn-medium btn-negative" id="cancelButton" style="margin-left: 3px;">Cancel</a>
+    </div>
+    <script type="text/javascript">
+        function urchinTracker() {}
+    </script>
+    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
+        <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+        <div class="Title"></div>
+        <div class="GenericModalBody">
+            <div class="TopBody">
+                <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays data-no-click>
+                    <img class="GenericModalImage" alt="generic image" />
+                </div>
+                <div class="Message"></div>
+            </div>
+            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+                <a href id="roblox-confirm-btn"><span></span></a>
+                <a href id="roblox-decline-btn"><span></span></a>
+            </div>
+            <div class="ConfirmationModalFooter">
+            </div>
+        </div>
+        <script type="text/javascript">
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+            Roblox.Resources.GenericConfirmation = {
+                yes: "Yes",
+                No: "No",
+                Confirm: "Confirm",
+                Cancel: "Cancel"
+            };
+        </script>
+    </div>
+</body>
+
+</html>

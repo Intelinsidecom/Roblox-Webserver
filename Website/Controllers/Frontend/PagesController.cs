@@ -15,14 +15,19 @@ namespace RobloxWebserver.Controllers
 
         public IActionResult Route(string? path)
         {
-            // Normalize path: root -> index
             var pagePath = string.IsNullOrWhiteSpace(path) ? "index" : path.Trim().Trim('/');
             pagePath = pagePath.Replace('\\', '/');
-            // prevent traversal
             while (pagePath.Contains(".."))
                 pagePath = pagePath.Replace("..", string.Empty);
 
-            // If not explicitly a .cshtml, append it
+            if (pagePath.StartsWith("ide/", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(pagePath, "ide/welcome", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(pagePath, "ide/login", StringComparison.OrdinalIgnoreCase) &&
+                User?.Identity?.IsAuthenticated != true)
+            {
+                return Redirect("/ide/login?returnUrl=" + Uri.EscapeDataString("/" + pagePath));
+            }
+
             string viewPath = pagePath.EndsWith(".cshtml", System.StringComparison.OrdinalIgnoreCase)
                 ? $"~/Views/Pages/{pagePath}"
                 : $"~/Views/Pages/{pagePath}.cshtml";

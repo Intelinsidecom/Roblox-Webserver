@@ -77,6 +77,7 @@
     <link rel="stylesheet" href="~/CSS/2017/Games/Fonts/SourceSansPro.css">
 
     <link rel="stylesheet" href="~/CSS/Legacy/VisitButtons.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
     <link rel="stylesheet" href="~/CSS/Pages/Game/GameDetails.css">
     <link rel="stylesheet" href="~/CSS/Pages/PrivateServers/PrivateServers.css">
     <link rel="stylesheet" href="~/CSS/Base/CSS/VideoPreRoll.css">
@@ -421,6 +422,30 @@
                             </div>
                         </div>
                         <div class=game-calls-to-action>
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                                long currentUserId;
+                                long.TryParse(userIdClaim, out currentUserId);
+                                var isCreator = currentUserId > 0 && ViewBag.CreatorUserId == currentUserId;
+
+                                if (isCreator)
+                                {
+                                    <div id=item-context-menu class=item-context-menu>
+                                        <a class="rbx-menu-item" data-toggle=popover data-bind=popover-content> <span class=icon-more></span> </a>
+                                        <div class="rbx-popover-content popover-content" data-toggle=popover-content>
+                                            <ul class=dropdown-menu role=menu>
+                                                <li><a id=edit-game class=rbx-menu-item onclick="editGameInStudio(@ViewBag.Id, @ViewBag.UniverseId, true)"> Edit </a></li>
+                                                <li><a id=developer-stats href="/game/game-developer-stats?PlaceId=@ViewBag.Id"> Developer stats </a></li>
+<li><a id=configure-place href="/places/@ViewBag.Id/update"> Configure this place </a></li>
+                                                        <li><a id=configure-game href="/universes/configure?id=@ViewBag.UniverseId"> Configure this game </a></li>
+                                                <li><a id=remove-profile class=toggle-profile data-toggle=False> Remove from profile </a></li>
+                                                <li><a id=shutdown-servers href="#"> Shut down all servers </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                }
+                            }
                             <div class=game-title-container>
                                 <h2 class=game-name title="@ViewBag.Name">@ViewBag.Name</h2>
                                 <div class=game-creator><span class=text-label>By</span> <a class=text-name href=/users/@ViewBag.CreatorUserId/profile>@ViewBag.CreatorUserName</a></div>
@@ -1012,7 +1037,44 @@
     <script>
         function urchinTracker() {}
     </script>
-    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=@(ViewBag.IsMobile == true ? "Mobile" : "Windows") data-protocol-name-for-client="@(ViewBag.ProtocolName)" data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1 data-is-mobile=@((ViewBag.IsMobile == true).ToString().ToLower())>
+    <script>
+        if (typeof Roblox === "undefined") {
+            Roblox = {};
+        }
+        if (typeof Roblox.PlaceLauncher === "undefined") {
+            Roblox.PlaceLauncher = {};
+        }
+        Roblox.PlaceLauncher.Resources = {
+            RefactorEnabled: "True",
+            IsProtocolHandlerBaseUrlParamEnabled: "False",
+            ProtocolHandlerAreYouInstalled: {
+                play: {
+                    content: "<img src='https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>You&#39;re moments away from getting into the game!</p>",
+                    buttonText: "Download and Install Roblox",
+                    footerContent: "<a href='https://assetgame.roblox.com/game/help'class= 'text-name small' target='_blank' >Click here for help</a> "
+                },
+                studio: {
+                    content: "<img src='https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Get started creating your own games!</p>",
+                    buttonText: "Download Studio"
+                }
+            },
+            ProtocolHandlerStartingDialog: {
+                play: {
+                    content: "<img src='https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>Roblox is now loading. Get ready to play!</p>"
+                },
+                studio: {
+                    content: "<img src='https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Checking for Roblox Studio...</p>"
+                },
+                loader: "<span class='spinner spinner-default'></span>"
+            }
+        };
+    </script>
+    <script>
+        function editGameInStudio(placeId, universeId, allowUpload) {
+            Roblox.GameLauncher.editGameInStudio(placeId, universeId, allowUpload);
+        }
+    </script>
+    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=@(ViewBag.IsMobile == true ? "Mobile" : "Windows") data-protocol-name-for-client="@(ViewBag.ProtocolName)" data-protocol-name-for-studio=freblx-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1 data-is-mobile=@((ViewBag.IsMobile == true).ToString().ToLower())>
         <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
             <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
             <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
@@ -1025,10 +1087,11 @@
     </div>
     <div id=ProtocolHandlerStartingDialog style=display:none class=protocol-handler-container>
         <div class="modalPopup ph-modal-popup">
-            <div class=ph-modal-header></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-modal-header><span class="icon-close simplemodal-close"></span></div>
+            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=95 height=95 alt=R class="studio-logo-image hidden"></div>
             <div class=ph-areyouinstalleddialog-content>
-                <p class=larger-font-size>Roblox is now loading. Get ready to play!
+                <p class="larger-font-size play-text">Roblox is now loading. Get ready to play!</p>
+                <p class="larger-font-size studio-text" style=display:none>Checking for Roblox Studio...</p>
                 <div class=ph-startingdialog-spinner-row><img src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif width=82 height=24></div>
             </div>
         </div>
@@ -1037,13 +1100,23 @@
         <div class="modalPopup ph-modal-popup">
             <div class=ph-modal-header><span class="icon-close simplemodal-close"></span>
             </div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=95 height=95 alt=R class="studio-logo-image hidden"></div>
             <div class=ph-areyouinstalleddialog-content>
-                <p class=larger-font-size>You're moments away from getting into the game!
-                <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button></div>
-                <div class=small><a href=https://en.help.roblox.com/hc/en-us/articles/204473560 class=text-name target=_blank>Click here for help</a></div>
+                <p class="larger-font-size play-text">You're moments away from getting into the game!</p>
+                <p class="larger-font-size studio-text" style=display:none>Get started creating your own games!</p>
+                <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button>
+                <button type=button class="btn btn-primary-md" id=ProtocolHandlerDownloadStudioButton style=display:none> Download Studio </button></div>
+                <div class="small play-text"><a href=https://en.help.roblox.com/hc/en-us/articles/204473560 class=text-name target=_blank>Click here for help</a></div>
             </div>
         </div>
+    </div>
+    <div id=ProtocolHandlerClickAlwaysAllowed class=ph-clickalwaysallowed style=display:none>
+        <p class=larger-font-size>
+            <span class=icon-moreinfo></span>
+            Check <b>Remember my choice</b> and click
+            <img src=https://images.rbxcdn.com/7c8d7a39b4335931221857cca2b5430b.png alt="Launch Application">
+            in the dialog box above to join games faster in the future!
+        </p>
     </div>
     <div id=InstallationInstructions class=style2016 style=display:none>
         <div class=ph-installinstructions>
@@ -1480,6 +1553,26 @@
             if ("True" == "True") {
                 Roblox.Voting && Roblox.Voting.LoadVotingService($("#voting-container"), @ViewBag.Id);
             }
+
+            $(document).on("click", "#shutdown-servers", function(e) {
+                e.preventDefault();
+                var universeId = @ViewBag.UniverseId;
+                
+                Roblox.GenericConfirmation.open({
+                    titleText: "Shut Down All Servers",
+                    bodyContent: "Are you sure you want to shut down all servers for this game?",
+                    onAccept: function () {
+                        $.post("/universes/shutdown-all-games", {
+                            universeId: universeId,
+                            __RequestVerificationToken: $("[name=__RequestVerificationToken]").val()
+                        });
+                    },
+                    acceptColor: Roblox.GenericConfirmation.blue,
+                    acceptText: "Yes",
+                    declineText: "No",
+                    allowHtmlContentInBody: true
+                });
+            });
         });
     </script>
     <noscript><img src="http://b.scorecardresearch.com/p?c1=2&amp;c2=&amp;c3=&amp;c4=&amp;c5=&amp;c6=&amp;c15=&amp;cv=2.0&amp;cj=1"></noscript>

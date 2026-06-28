@@ -168,7 +168,7 @@
                 </div>
             </div>
             <form>
-            <input id="ReturnUrl" name="ReturnUrl" type="hidden" value="/games/189707/Natural-Disaster-Survival">
+            <input id="ReturnUrl" name="ReturnUrl" type="hidden" value="@(ViewBag.ReturnUrl ?? Context.Request.Query["returnUrl"].FirstOrDefault() ?? "/")">
         </form>
 
 </div>
@@ -201,7 +201,7 @@
 <div id="guestarea">
     <h2>You don't need an account to play ROBLOX</h2>
     <br>
-    <p class="text">You can start playing right now, in guest mode! <a href="https://web.archive.org/web/20160429214141/https://www.roblox.com/games" class="btn-small btn-neutral" id="guestButton">Play as Guest</a></p>
+    <p class="text">You can start playing right now, in guest mode! <a href="/games" class="btn-small btn-neutral" id="guestButton">Play as Guest</a></p>
     
 </div>
 

@@ -1,7 +1,5 @@
 @{
     Layout = "_Layout";
-    
-    // Initialize ViewBags for universe data
     var gameid = ViewBag.gameid ?? 0;
     var gamename = ViewBag.gamename ?? "Unknown Game";
     var gamedesc = ViewBag.gamedesc ?? "";
@@ -127,8 +125,6 @@
         }
     </script>
 
-    <script type='text/javascript' src='https://js.roblox.com/54b73269bcd426ec956755cb8cac7033.js'></script>
-
     <script type='text/javascript'>
         Roblox.config.externalResources = [];
         Roblox.config.paths['Pages.Catalog'] = 'https://js.roblox.com/109d883fe3988fca757e26e341ed0fe8.js';
@@ -140,10 +136,6 @@
         Roblox.config.paths['Widgets.ItemImage'] = 'https://js.roblox.com/61a0490ba23afa17f9ecca2a079a6a57.js';
         Roblox.config.paths['Widgets.PlaceImage'] = 'https://js.roblox.com/a6df74a754523e097cab747621643c98.js';
     </script>
-
-    <script type='text/javascript' src='https://js.roblox.com/f0a2acc861db87466c6ecf755ce236d0.js'></script>
-
-    <script type='text/javascript' src='https://js.roblox.com/c6b47ce9ee4cd0423d35c985917d2b4e.js'></script>
 
     <script type="text/javascript">
         Roblox.FixedUI.gutterAdsEnabled = false;
@@ -167,13 +159,6 @@
         Roblox.Endpoints = Roblox.Endpoints || {};
         Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
     </script>
-
-
-
-
-    <% if (theme == "dark") { %>
-        <link rel='stylesheet' class="dark-theme" href='/css/dark.css' />
-    <% } %>
 </head>
 
 <body id="rbx-body" class="" data-performance-relative-value="0.000" data-internal-page-name=""
@@ -194,8 +179,6 @@
 
 
     <div ng-modules="pageTemplateApp">
-        <!-- Template bundle: page -->
-
     </div>
 
 
@@ -413,7 +396,6 @@
                                                         title="This place will be the starting point for your Game." />
                                                 </div>
                                                 <div id="startplace-container" class="start-place">
-                                                    <!-- Start place content will be dynamically loaded -->
                                                     <div class="loading-start-place">
                                                         <img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Loading..." />
                                                     </div>
@@ -581,9 +563,9 @@
                                     </div>
 
                                 <div id="developerProducts" class="configure-tab" style="display:none">
-                                    <div id="DevProducts" 
-                                         data-universe-id="@gameid"
-                                         data-load-url="/universes/@gameid/developer-products">
+                                     <div id="DevProducts" 
+                                          data-universe-id="@(gameid)"
+                                          data-load-url="/universes/@(gameid)/developer-products">
                                         <div id="DeveloperProductsInnerContainer">
                                             <div class="developerProductsContainer" style="padding-right: -10px;">
                                                 @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
@@ -630,7 +612,10 @@
                             <script type="text/javascript">
 
                                 
+                                var _devProductsInitialized = false;
                                 function initializeDeveloperProducts() {
+                                    if (_devProductsInitialized) return;
+                                    _devProductsInitialized = true;
                                     var devProductsElement = $('#DevProducts');
                                     if (devProductsElement.length > 0) {
                                         if (typeof Roblox.DeveloperProductsListing !== 'undefined' && typeof Roblox.DeveloperProductsListing.init === 'function') {
@@ -639,7 +624,11 @@
                                             console.error('Developer Products: Roblox.DeveloperProductsListing.init not found');
                                         }
 
-                                        devProductsElement.trigger('onRefreshed');    
+                                        if (typeof Roblox.DeveloperProductsListing.loadContent === 'function') {
+                                            Roblox.DeveloperProductsListing.loadContent();
+                                        } else {
+                                            console.error('Developer Products: Roblox.DeveloperProductsListing.loadContent not found');
+                                        }
                                         if (typeof Roblox.DeveloperProductsForm !== 'undefined' && typeof Roblox.DeveloperProductsForm.init === 'function') {
                                             Roblox.DeveloperProductsForm.init();
                                         }
@@ -658,8 +647,12 @@
                                         mutations.forEach(function(mutation) {
                                             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                                                 var target = $(mutation.target);
-                                                if (target.attr('id') === 'developerProducts' && target.css('display') !== 'none') {
-                                                    initializeDeveloperProducts();
+                                                if (target.attr('id') === 'developerProducts') {
+                                                    if (target.css('display') !== 'none') {
+                                                        initializeDeveloperProducts();
+                                                    } else {
+                                                        _devProductsInitialized = false;
+                                                    }
                                                 }
                                             }
                                         });
@@ -671,6 +664,14 @@
                                             attributes: true,
                                             attributeFilter: ['style']
                                         });
+                                    }
+
+                                    if (!_devProductsInitialized) {
+                                        setTimeout(function() {
+                                            if ($('#developerProducts').css('display') !== 'none') {
+                                                initializeDeveloperProducts();
+                                            }
+                                        }, 0);
                                     }
                                 });
 

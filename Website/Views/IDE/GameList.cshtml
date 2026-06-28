@@ -1,0 +1,21 @@
+@using Games
+@model IReadOnlyList<UniverseListEntry>
+@{
+    Layout = null;
+    var fallbackThumb = "https://t7.rbxcdn.com/6bfa4d3e4d38a70d2f5b493987fe29c4";
+}
+@foreach (var item in Model)
+{
+    <div class="place" data-universeid="@item.UniverseId">
+        <a class="game-image">
+            <img class="placeThumbnail" src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="@item.UniverseName" />
+        </a>
+        <p>@item.UniverseName</p>
+    </div>
+}
+@if (ViewBag.HasMore == true)
+{
+    <div class="load-more-wrapper">
+        <div class="load-more-universes" data-next-page="@ViewBag.NextPage">Load more games</div>
+    </div>
+}

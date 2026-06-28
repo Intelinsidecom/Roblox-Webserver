@@ -71,7 +71,7 @@ public class DevelopTabController : Controller
         var nameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
         var vm = await _tabService.BuildAsync(userId, nameClaim, view, showPublicOnly, groupId: null, cancellationToken).ConfigureAwait(false);
 
-        return PartialView($"~/Views/Pages/Develop/Tabs/{view}.cshtml", vm);
+        return PartialView($"~/Views/Develop/Tabs/{view}.cshtml", vm);
     }
 
     [HttpGet("asset-list/{assetTypeId:int}")]

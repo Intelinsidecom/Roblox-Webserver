@@ -21,6 +21,7 @@ namespace Website.Controllers.Frontend
         }
 
         [HttpGet("game-auth/getauthticket")]
+        [HttpGet("/Game/GetAuthTicket")]
         public async Task<IActionResult> GetAuthTicket([FromQuery] long? placeId = null)
         {
             try
@@ -78,7 +79,7 @@ namespace Website.Controllers.Frontend
                     var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connString, placeId.Value);
                     if (universeId.HasValue)
                     {
-                        await VisitTracking.RecordVisitAsync(userId, universeId.Value, config);
+                        await VisitTracking.RecordVisitAsync(userId, universeId.Value, placeId.Value, config);
                     }
                 }
                 else if (status == "Disconnected")

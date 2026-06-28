@@ -21,10 +21,12 @@ Roblox.ProtocolHandlerImplementation=function() {
 
     function ut(n, t) {
         t==="edit" ?$(".protocol-handler-container").each(function() {
-                $(this).find(".play-logo-image").addClass("hidden"), $(this).find(".studio-logo-image").removeClass("hidden")
+                $(this).find(".play-logo-image").addClass("hidden"), $(this).find(".studio-logo-image").removeClass("hidden"),
+                $(this).find(".play-text").hide(), $(this).find(".studio-text").show()
 
             }):$(".protocol-handler-container").each(function() {
-                $(this).find(".play-logo-image").removeClass("hidden"), $(this).find(".studio-logo-image").addClass("hidden")
+                $(this).find(".play-logo-image").removeClass("hidden"), $(this).find(".studio-logo-image").addClass("hidden"),
+                $(this).find(".play-text").show(), $(this).find(".studio-text").hide()
 
             }),
         $("#ProtocolHandlerStartingDialog").modal({
@@ -49,13 +51,22 @@ function k() {
 }
 
 function o(n, t) {
+    t.launchMode==="edit" ?$(".protocol-handler-container").each(function() {
+        $(this).find(".play-logo-image").addClass("hidden"), $(this).find(".studio-logo-image").removeClass("hidden"),
+        $(this).find(".play-text").hide(), $(this).find(".studio-text").show(),
+        $("#ProtocolHandlerInstallButton").hide(), $("#ProtocolHandlerDownloadStudioButton").show()
+    }):$(".protocol-handler-container").each(function() {
+        $(this).find(".play-logo-image").removeClass("hidden"), $(this).find(".studio-logo-image").addClass("hidden"),
+        $(this).find(".play-text").show(), $(this).find(".studio-text").hide(),
+        $("#ProtocolHandlerInstallButton").show(), $("#ProtocolHandlerDownloadStudioButton").hide()
+    }),
     $("#ProtocolHandlerAreYouInstalled").modal({
         escClose: !0, opacity:80, overlayCss: {
             backgroundColor:"#000"
         }
 
         , onClose:function() {
-            n(), $("#ProtocolHandlerInstallButton").off("click"), $.modal.close()
+            n(), $("#ProtocolHandlerInstallButton").off("click"), $("#ProtocolHandlerDownloadStudioButton").off("click"), $.modal.close()
         }
 
         , zIndex:1031
@@ -72,6 +83,11 @@ $("#ProtocolHandlerInstallButton").click(function() {
         }
 
         , 5e3), h(t)
+}),
+$("#ProtocolHandlerDownloadStudioButton").click(function() {
+    $.modal.close();
+    var n=document.getElementById("downloadInstallerIFrame");
+    n&&(n.src="/install/setupStudio.ashx")
 })
 }
 
@@ -177,7 +193,7 @@ function e(t) {
 
         }),
     r+=i.join(e),
-    Roblox.GameLauncher.gameLaunchLogger.logToConsole("launchProtocolUrl: " +JSON.stringify({
+    Roblox.GameLauncher.gameLaunchLogger&&Roblox.GameLauncher.gameLaunchLogger.logToConsole("launchProtocolUrl: " +JSON.stringify({
             url:r, params:t
         })),
 n.setLocationHref(r),
@@ -413,7 +429,7 @@ function h(n) {
 u= !0,
 n.url=window.location.href,
 typeof t !="undefined" &&(n.gameInfo=t),
-r()
+r(n.launchMode==="edit"?"/install/setupStudio.ashx":"/install/setup.ashx")
 }
 
 function s() {
@@ -423,9 +439,9 @@ function s() {
 r()
 }
 
-function r() {
+function r(t) {
     var n=document.getElementById("downloadInstallerIFrame");
-    n.src="/install/setup.ashx"
+    n.src=t||"/install/setup.ashx"
 }
 
 var u= !1,

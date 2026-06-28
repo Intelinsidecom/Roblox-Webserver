@@ -28,6 +28,11 @@ $(function () {
         o(t);
         var i = t.data("maindiv");
         $("#" + i).show();
+        if (i === "gameUpdate") {
+            $("#universe-configure").hide();
+        } else {
+            $("#universe-configure").show();
+        }
         if (i === "places") {
             n() || Roblox.PlaceSelector.Init();
             loadStartPlaceData();

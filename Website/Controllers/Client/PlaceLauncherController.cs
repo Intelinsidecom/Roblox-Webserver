@@ -63,6 +63,7 @@ namespace Website.Controllers.Client
                 return request switch
                 {
                     "RequestGame" or "RequestGameJob" or "RequestFollowUser" => await HandleRequestGame(placeId.Value, request, jobid, serverPort, requestId),
+                    "CloudEdit" => await HandleCloudEdit(placeId.Value, requestId),
                     "AuthenticateTicket" => await HandleAuthenticateTicket(),
                     "LogJoinClick" => Ok(new { status = 1, message = "Logged" }),
                     _ => BadRequest(new { status = 0, message = "Invalid request type" })
@@ -242,6 +243,55 @@ namespace Website.Controllers.Client
             });
         }
 
+        private async Task<IActionResult> HandleCloudEdit(long placeId, string requestId)
+        {
+            long userId = await GetCurrentUserIdAsync();
+            if (userId == 0 || !await UserCanAccessPlaceAsync(userId, placeId))
+            {
+                return Ok(new PlaceLauncherResponse { status = 3, message = "Access denied" });
+            }
+
+            var connectionString = _configuration.GetConnectionString("Default");
+            int universeId = 0;
+            if (!string.IsNullOrEmpty(connectionString))
+            {
+                await using var conn = new NpgsqlConnection(connectionString);
+                await conn.OpenAsync();
+                await using var cmd = new NpgsqlCommand(@"
+                    select u.universe_id
+                    from universes u
+                    where @placeId = ANY(u.place_ids)
+                    limit 1", conn);
+                cmd.Parameters.AddWithValue("placeId", placeId);
+                var result = await cmd.ExecuteScalarAsync();
+                if (result != null)
+                    universeId = Convert.ToInt32(result);
+            }
+
+            var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
+            var sessionId = Guid.NewGuid().ToString("N");
+            var gameId = $"CloudEdit-{sessionId}";
+
+            var (userName, _) = await GetUserInfoAsync(userId);
+
+            return Ok(new
+            {
+                status = 2,
+                settings = new
+                {
+                    GameId = gameId,
+                    PlaceId = (int)placeId,
+                    UniverseId = universeId,
+                    SessionId = sessionId,
+                    MachineAddress = "127.0.0.1",
+                    ServerPort = 0,
+                    ClientTicket = "",
+                    UserName = userName,
+                    CharacterAppearance = ""
+                }
+            });
+        }
+
         [HttpGet("join.ashx")]
         [Produces("text/plain")]
         public async Task<IActionResult> Join([FromQuery] long gameid, [FromQuery] int serverPort, [FromQuery] string jobid, [FromQuery] bool? guest)
@@ -346,7 +396,7 @@ namespace Website.Controllers.Client
                     var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_configuration.GetConnectionString("Default"), gameid);
                     if (universeId.HasValue)
                     {
-                        await VisitTracking.RecordVisitAsync(userId, universeId.Value, _configuration);
+                        await VisitTracking.RecordVisitAsync(userId, universeId.Value, gameid, _configuration);
                     }
                     
                     // Create game presence for alternative ping tracking
@@ -451,6 +501,7 @@ namespace Website.Controllers.Client
                 cookieOptions.Domain = cookieDomain;
 
             Response.Cookies.Append(".ROBLOSECURITY", sessionToken, cookieOptions);
+            Response.Cookies.Append("RBXSessionTracker", sessionToken, cookieOptions);
 
             return Content(sessionToken, "text/plain");
         }

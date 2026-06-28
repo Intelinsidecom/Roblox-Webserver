@@ -24,7 +24,7 @@
 
     if (string.IsNullOrEmpty(viewParam) && string.IsNullOrEmpty(pageParam))
     {
-        viewParam = "2";
+        viewParam = string.Empty;
     }
 
     var viewName = "Games";
@@ -125,6 +125,26 @@
     <meta name=locale-data data-language-code=en_us data-language-name=English data-locale-api-url=https://locale.roblox.com>
     <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
     <meta name=page-meta data-internal-page-name=Create>
+
+<style>
+.icon-close {
+    background-image: url(/images/Shared/generic_09152017.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    background-position: 0 -588px;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.ph-modal-header .icon-close {
+    opacity: .2;
+    cursor: pointer;
+}
+.ph-modal-header .icon-close:hover {
+    opacity: .5;
+}
+</style>
 
 <script type="text/javascript" src="~/JS/Microsoft/MicrosoftAjax.js"></script>
 <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
@@ -329,7 +349,6 @@
 }
 
 
-<script type="text/javascript" src="~/JS/GameLauncher.js"></script>
 <script type="text/javascript">
     function editGameInStudio(placeId, universeId, allowUpload) {
         Roblox.GameLauncher.editGameInStudio(placeId, universeId, allowUpload);
@@ -491,14 +510,17 @@
                                                                 </table>
                                                             }
                                                             <div class=items-container>
-                                                                @await Html.PartialAsync($"~/Views/Pages/Develop/Tabs/{viewName}.cshtml", tabModel)
+                                                                @await Html.PartialAsync($"~/Views/Develop/Tabs/{viewName}.cshtml", tabModel)
                                                             </div>
 
                                                             <div class=build-loading-container style=display:none>
                                                                 <div class=buildpage-loading-container><img alt=^_^ src=/images/LoadingSpinner.gif></div>
                                                             </div>
                                                 </table>
+                                                @if (viewParam != "9")
+                                                {
                                                 <div id=build-dropdown-menu><a href=# data-href-reference=configure-url>Configure Game</a> <a href=# data-require-root-place=true data-configure-place-template=/places/0/update>Configure Start Place</a> <a href=# data-href-reference=configure-localization-url id=configure-localization-link>Configure Localization</a> <a href=# class=divider-top data-href-reference=create-badge-url data-require-root-place=true>Create Badge</a> <a href=# data-href-reference=create-gamepass-url data-require-root-place=true>Create Game Pass</a> <a href="https://web.roblox.com/catalog/browse.aspx?Category=5&amp;showInstructions=true" data-require-root-place=true>Add Gear</a> <a href=# data-href-reference=developerstats-url data-require-root-place=true>Developer Stats</a> <a href=# data-href-reference=advertise-url class=divider-top>Advertise</a> <a href=# class=sponsorGameLink data-href-template=https://web.roblox.com/sponsored-games/create/0 data-require-root-place=true>Sponsor</a> <a class="shutdown-all-servers-button divider-top" href=# data-require-root-place=true>Shut Down All Servers</a></div>
+                                                }
                                                 <div class="PlaceSelectorModal modalPopup unifiedModal" style=display:none>
                                                     <div class=Title>Select Place</div>
                                                     <div class="GenericModalBody text">
@@ -652,7 +674,10 @@
                                                                 <div class=buildpage-loading-container><img alt=^_^ src=/images/LoadingSpinner.gif></div>
                                                             </div>
                                                 </table>
+                                                @if (viewParam != "9")
+                                                {
                                                 <div id=build-dropdown-menu><a href=# data-href-reference=configure-url>Configure Game</a> <a href=# data-require-root-place=true data-configure-place-template=/places/0/update>Configure Start Place</a> <a href=# data-href-reference=configure-localization-url id=configure-localization-link>Configure Localization</a> <a href=# class=divider-top data-href-reference=create-badge-url data-require-root-place=true>Create Badge</a> <a href=# data-href-reference=create-gamepass-url data-require-root-place=true>Create Game Pass</a> <a href="https://web.roblox.com/catalog/browse.aspx?Category=5&amp;showInstructions=true" data-require-root-place=true>Add Gear</a> <a href=# data-href-reference=developerstats-url data-require-root-place=true>Developer Stats</a> <a href=# data-href-reference=advertise-url class=divider-top>Advertise</a> <a href=# class=sponsorGameLink data-href-template=https://web.roblox.com/sponsored-games/create/0 data-require-root-place=true>Sponsor</a> <a class="shutdown-all-servers-button divider-top" href=# data-require-root-place=true>Shut Down All Servers</a></div>
+                                                }
                                                 <div class="PlaceSelectorModal modalPopup unifiedModal" style=display:none>
                                                     <div class=Title>Select Place</div>
                                                     <div class="GenericModalBody text">
@@ -739,6 +764,40 @@
             <div class="ConfirmationModalButtonContainer GenericModalButtonContainer"><a href="" id=roblox-confirm-btn><span></span></a> <a href="" id=roblox-decline-btn><span></span></a></div>
             <div class=ConfirmationModalFooter></div>
         </div>
+
+    <script>
+        if (typeof Roblox === "undefined") {
+            Roblox = {};
+        }
+        if (typeof Roblox.PlaceLauncher === "undefined") {
+            Roblox.PlaceLauncher = {};
+        }
+        Roblox.PlaceLauncher.Resources = {
+            RefactorEnabled: "True",
+            IsProtocolHandlerBaseUrlParamEnabled: "False",
+            ProtocolHandlerAreYouInstalled: {
+                play: {
+                    content: "<img src='https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>You&#39;re moments away from getting into the game!</p>",
+                    buttonText: "Download and Install Roblox",
+                    footerContent: "<a href='https://assetgame.roblox.com/game/help'class= 'text-name small' target='_blank' >Click here for help</a> "
+                },
+                studio: {
+                    content: "<img src='https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Get started creating your own games!</p>",
+                    buttonText: "Download Studio"
+                }
+            },
+            ProtocolHandlerStartingDialog: {
+                play: {
+                    content: "<img src='https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>Roblox is now loading. Get ready to play!</p>"
+                },
+                studio: {
+                    content: "<img src='https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Checking for Roblox Studio...</p>"
+                },
+                loader: "<span class='spinner spinner-default'></span>"
+            }
+        };
+    </script>
+
         <script>
             Roblox = Roblox || {};
             Roblox.Resources = Roblox.Resources || {};
@@ -774,6 +833,122 @@
         $('#MyCreationsTab').addClass('tab-active').show();
         $('#GroupCreationsTabLink').removeClass('tab-active');
     });
+</script>
+
+
+<div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=freblx-player data-protocol-name-for-studio=freblx-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true>
+    <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
+        <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=/images/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
+        <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
+            <div id=Starting class="PlaceLauncherStatus MadStatusStarting" style=display:block>Starting Roblox...</div>
+            <div id=Waiting class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
+            <div id=StatusBackBuffer class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
+        </div>
+        <div style=text-align:center;margin-top:1em>
+            <input type=button class="Button CancelPlaceLauncherButton translate" value=Cancel>
+        </div>
+    </div>
+</div>
+<div id="ProtocolHandlerStartingDialog" style="display:none;">
+    <div class="modalPopup ph-modal-popup">
+        <div class="ph-modal-header">
+        </div>
+        <div class="protocol-handler-container">
+            <div class="ph-logo-row">
+                <img class="play-logo-image" data-delaysrc="/images/2102c93be4232dff678e4866267669ec.png" width="90" height="90" alt="R">
+                <img class="studio-logo-image hidden" data-delaysrc="/images/2102c93be4232dff678e4866267669ec.png" width="95" height="95" alt="R">
+            </div>
+            <div class="ph-areyouinstalleddialog-content">
+                <p class="larger-font-size play-text">ROBLOX is now loading. Get ready to play!</p>
+                <p class="larger-font-size studio-text" style="display:none">Checking for Roblox Studio...</p>
+                <div class="ph-startingdialog-spinner-row">
+                    <img data-delaysrc="/images/4bed93c91f909002b1f17f05c0ce13d1.gif" width="82" height="24">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ProtocolHandlerAreYouInstalled" style="display:none;">
+    <div class="modalPopup ph-modal-popup">
+        <div class="ph-modal-header">
+            <span class="icon-close simplemodal-close"></span>
+        </div>
+        <div class="protocol-handler-container">
+            <div class="ph-logo-row">
+                <img class="play-logo-image" data-delaysrc="/images/2102c93be4232dff678e4866267669ec.png" width="90" height="90" alt="R">
+                <img class="studio-logo-image hidden" data-delaysrc="/images/2102c93be4232dff678e4866267669ec.png" width="95" height="95" alt="R">
+            </div>
+            <div class="ph-areyouinstalleddialog-content">
+                <p class="larger-font-size play-text">You're moments away from getting into the game!</p>
+                <p class="larger-font-size studio-text" style="display:none">Get started creating your own games!</p>
+                <div>
+                    <button type="button" class="btn btn-primary-md" id="ProtocolHandlerInstallButton">Download and Install ROBLOX</button>
+                    <button type="button" class="btn btn-primary-md" id="ProtocolHandlerDownloadStudioButton" style="display:none">Download Studio</button>
+                </div>
+                <div class="small play-text">
+                    <a href="https://en.help.roblox.com/hc/en-us/articles/204473560" class="text-name" target="_blank">Click here for help</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ProtocolHandlerClickAlwaysAllowed" class="ph-clickalwaysallowed" style="display:none;">
+    <p class="larger-font-size">
+        <span class="icon-moreinfo"></span>
+        Check <b>Remember my choice</b> and click
+        <img data-delaysrc="/images/7c8d7a39b4335931221857cca2b5430b.png" alt="Launch Application">
+        in the dialog box above to join games faster in the future!
+    </p>
+</div>
+<div id=InstallationInstructions style=display:none>
+    <div class=ph-installinstructions>
+        <div class=ph-modal-header><span class="icon-close simplemodal-close"></span>
+            <h3 class=title>Thanks for playing Roblox</h3>
+        </div>
+        <div class=modal-content-container>
+            <div class=ph-installinstructions-body>
+                <ul class=modal-col-4>
+                    <li class=step1-of-4>
+                        <h2>1</h2>
+                        <p class=larger-font-size>Click <strong>RobloxPlayer.exe</strong> to run the Roblox installer, which just downloaded via your web browser.</p><img data-delaysrc=https://images.rbxcdn.com/28eaa93b899b93461399aebf21c5346f.png>
+                    <li class=step2-of-4>
+                        <h2>2</h2>
+                        <p class=larger-font-size>Click <strong>Run</strong> when prompted by your computer to begin the installation process.</p><img data-delaysrc=https://images.rbxcdn.com/51328932dedb5d8d61107272cc1a27db.png>
+                    <li class=step3-of-4>
+                        <h2>3</h2>
+                        <p class=larger-font-size>Click <strong>Ok</strong> once you've successfully installed Roblox.</p><img data-delaysrc=https://images.rbxcdn.com/3797745629baca2d1b9496b76bc9e6dc.png>
+                    <li class=step4-of-4>
+                        <h2>4</h2>
+                        <p class=larger-font-size>After installation, click <strong>Play</strong> below to join the action!
+                        <div class="VisitButton VisitButtonContinueGLI"><a class="btn btn-primary-lg disabled btn-full-width">Play</a></div>
+                </ul>
+            </div>
+        </div>
+        <div class=xsmall>The Roblox installer should download shortly. If it doesn't, start the <a href=# onclick="Roblox.ProtocolHandlerClientInterface.startDownload();return false" class=text-link>download now.</a>
+        </div>
+    </div>
+</div>
+<div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>
+<div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div>
+<iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
+<script>
+    Roblox.Client._skip = null;
+    Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
+    Roblox.Client._installHost = 'setup.roblox.com';
+    Roblox.Client.ImplementsProxy = true;
+    Roblox.Client._silentModeEnabled = true;
+    Roblox.Client._bringAppToFrontEnabled = false;
+    Roblox.Client._currentPluginVersion = '';
+    Roblox.Client._eventStreamLoggingEnabled = true;
+    Roblox.Client._installSuccess = function() {
+        if (GoogleAnalyticsEvents) {
+            GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
+            GoogleAnalyticsEvents.FireEvent(['Plugin', 'Install Success']);
+            if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
+                Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
+            }
+        }
+    }
 </script>
 
 </body>

@@ -96,6 +96,7 @@ $(function () {
         n.unbind("onRefreshed").bind("onRefreshed", function () {
             var t = $(this);
             var loadUrl = $("#DevProducts").data("load-url");
+            if (!loadUrl) return;
             Roblox.DeveloperProductsListing.onAjaxStart(), $.ajax({
                 cache: !1,
                 type: "GET",
@@ -111,12 +112,25 @@ $(function () {
             Roblox.DeveloperProductsListing.onDeveloperProductsReceived(t, $(this));
         });
     }, Roblox.DeveloperProductsListing.onAjaxStart = function () {
-        var n = $("#DeveloperProductsInnerContainer");
-        n.hide(), $("#DeveloperProductsLoading").height(n.height()), $("#DeveloperProductsLoading").show(), $("#DeveloperProductsError").hide()
+        var n = $("#DeveloperProductsLoading");
+        if (n.length > 0) {
+            n.show();
+        }
+        $("#DeveloperProductsContent, #DeveloperProductsTableContainer").hide();
+        $("#DeveloperProductsError").hide()
     }, Roblox.DeveloperProductsListing.onDeveloperProductsReceived = function (n, t) {
-        $("#DeveloperProductsLoading").hide(), t.html(n), Roblox.DeveloperProductsForm.init();
+        if (typeof n !== 'string' || n.length === 0) {
+            return;
+        }
 
-        // Re-initialize tipsy tooltips for newly loaded content
+        $("#DeveloperProductsLoading").hide();
+        t.html(n);
+
+        t.find("#DeveloperProductsContent, #DeveloperProductsTableContainer, #DeveloperProductsInnerContainer").show();
+        t.find(".developerProductsContainer").show();
+
+        Roblox.DeveloperProductsForm.init();
+
         t.find(".tooltip").tipsy();
         t.find(".tooltip-top").tipsy({ gravity: "s" });
         t.find(".tooltip-right").tipsy({ gravity: "w" });
@@ -127,5 +141,25 @@ $(function () {
         var domPage = parseInt($(".robloxDeveloperProductsPageNum").text()) || 1;
         Roblox.DeveloperProductsListing.currentPage = domPage;
         Roblox.DeveloperProductsListing.init();
+    },
+
+    Roblox.DeveloperProductsListing.loadContent = function () {
+        var devProductsEl = $("#DevProducts");
+        var loadUrl = devProductsEl.data("load-url");
+        if (!loadUrl || devProductsEl.length === 0) {
+            return;
+        }
+
+        Roblox.DeveloperProductsListing.onAjaxStart();
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: loadUrl
+        }).done(function (n) {
+            Roblox.DeveloperProductsListing.onDeveloperProductsReceived(n, devProductsEl)
+        }).fail(function (xhr, status, error) {
+            $("#DeveloperProductsLoading").hide();
+            $("#DeveloperProductsError").show()
+        });
     }
 });

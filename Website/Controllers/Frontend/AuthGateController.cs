@@ -13,23 +13,25 @@ namespace RobloxWebserver.Controllers
         }
 
         [HttpGet("login")]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl = null)
         {
             if (User?.Identity?.IsAuthenticated == true)
                 return Redirect("/home");
+            ViewBag.ReturnUrl = returnUrl;
             return View("~/Views/Pages/Login.cshtml");
         }
 
         [HttpPost("login")]
-        public IActionResult LoginPost()
+        public IActionResult LoginPost(string? returnUrl = null)
         {
             if (User?.Identity?.IsAuthenticated == true)
                 return Redirect("/home");
+            ViewBag.ReturnUrl = returnUrl;
             return View("~/Views/Pages/Login.cshtml");
         }
 
         [HttpGet("newlogin")]
-        public IActionResult NewLogin(int? failureReason)
+        public IActionResult NewLogin(int? failureReason, string? returnUrl = null)
         {
             if (User?.Identity?.IsAuthenticated == true)
                 return Redirect("/home");
@@ -50,14 +52,16 @@ namespace RobloxWebserver.Controllers
             }
             
             ViewBag.ErrorMessage = errorMessage;
+            ViewBag.ReturnUrl = returnUrl;
             return View("~/Views/Pages/Login.cshtml");
         }
 
         [HttpPost("newlogin")]
-        public IActionResult NewLoginPost()
+        public IActionResult NewLoginPost(string? returnUrl = null)
         {
             if (User?.Identity?.IsAuthenticated == true)
                 return Redirect("/home");
+            ViewBag.ReturnUrl = returnUrl;
             return View("~/Views/Pages/Login.cshtml");
         }
 
@@ -69,20 +73,31 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/Home.cshtml");
         }
 
-                [HttpGet("develop")]
-        public IActionResult Develop()
+        [HttpGet("develop")]
+        public IActionResult DevelopPage()
         {
             if (User?.Identity?.IsAuthenticated == false)
-                return Redirect("/");
+            {
+            return View("~/Views/Develop/Guest.cshtml");
+            }
+            else
+            {
             return View("~/Views/Pages/Develop.cshtml");
+            }
         }
 
+
         [HttpPost("develop")]
-        public IActionResult DevelopPost()
+        public IActionResult DevelopPagePost()
         {
             if (User?.Identity?.IsAuthenticated == false)
-                return Redirect("/");
+            {
+            return View("~/Views/Develop/Guest.cshtml");
+            }
+            else
+            {
             return View("~/Views/Pages/Develop.cshtml");
+            }
         }
     }
 }

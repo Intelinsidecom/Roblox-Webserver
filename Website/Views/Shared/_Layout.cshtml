@@ -11,9 +11,10 @@
     bool containsIPad = userAgent.Contains("iPad");
     bool containsIPod = userAgent.Contains("iPod");
     bool containsRobloxiOS = userAgent.Contains("ROBLOX iOS App");
-    bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || userAgent.Contains("WOW64") || userAgent.Contains("Edge/");
-    
-    bool isApp = containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
+    bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || /*userAgent.Contains("WOW64")  breaks ie  ||*/ userAgent.Contains("Edge/");
+    bool containsRobloxStudio = userAgent.Contains("RobloxStudio");
+
+    bool isApp = containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP || containsRobloxStudio;
     
     ViewBag.IsMobile = isApp;
     ViewBag.IsAndroid = containsAndroid || containsRobloxAndroid;
@@ -134,6 +135,7 @@
     <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
     <script type="text/javascript">
 
+
       window.Roblox = window.Roblox || {};
       Roblox.EnvironmentUrls = Roblox.EnvironmentUrls || {};
       
@@ -171,7 +173,7 @@
         <partial name="_Header" />
     }
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated && !isApp)
     {
         var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
 
@@ -299,8 +301,6 @@
     }
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
-
-    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

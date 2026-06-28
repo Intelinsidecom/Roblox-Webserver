@@ -30,6 +30,19 @@ namespace RobloxWebserver.Controllers
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
+        [HttpGet("develop")]
+        public IActionResult DevelopPage()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+            {
+            return View("~/Views/Develop/Guest.cshtml");
+            }
+            else
+            {
+            return View("~/Views/Pages/Develop.cshtml");
+            }
+        }
+
         [HttpPost("upload-tshirt")]
         public async Task<IActionResult> UploadTShirt([FromForm] string name, [FromForm] IFormFile file, CancellationToken cancellationToken)
         {

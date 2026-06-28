@@ -1125,7 +1125,7 @@
                                 </div>
 
                                 <div id="developerProducts" class="configure-tab" style="display: none">
-                                    <div id="DevProducts" data-load-url="/universes/@ViewBag.PlaceUniverseId/developer-products" data-universe-id="@ViewBag.PlaceUniverseId">
+                                    <div id="DevProducts" data-load-url="/universes/@(ViewBag.PlaceUniverseId)/developer-products" data-universe-id="@(ViewBag.PlaceUniverseId)">
                                         <div id="DeveloperProductsInnerContainer">
                                             <div class="developerProductsContainer" style="padding-right: -10px;">
                                                 @if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))

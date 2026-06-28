@@ -34,9 +34,7 @@
 <link rel="stylesheet" href="../CSS/Legacy/Modal.css">
 <link rel="stylesheet" href="../CSS/Base/CSS/Item.css">
 <script type="text/javascript" src="/JS/lib/jquery/jquery-1.11.1.min.js"></script>
-<script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/JS/lib/jquery/jquery-1.11.1.js'><\/script>")</script>
 <script type="text/javascript" src="/JS/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
-<script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/JS/lib/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
 </head>
 
 <div id="TwoStepVerificationApiPaths" data-request-code-unauthenticated="https://api.roblox.com/twostepverification/request-unauthenticated" data-request-code="https://api.roblox.com/twostepverification/request" data-verify-code-unauthenticated="https://api.roblox.com/twostepverification/verify-unauthenticated" data-verify-code="https://api.roblox.com/twostepverification/verify">
@@ -75,10 +73,8 @@ window.WebForm_PostBackOptions||document.write('<script type="text/javascript" s
     Roblox.iFrameLogin.Resources = Roblox.iFrameLogin.Resources || {};
     Roblox.iFrameLogin.Resources.useSignOnApi = true;
     Roblox.iFrameLogin.Resources.signOnApiPath = (window.location.origin || (window.location.protocol + "//" + window.location.host)) + "/login/v1";
-    // Two-step endpoints (not used unless server requests 2SV)
     Roblox.iFrameLogin.Resources.requestCodeUnauthenticatedPath = "/twostepverification/request-unauthenticated";
     Roblox.iFrameLogin.Resources.verifyCodeUnauthenticatedPath = "/twostepverification/verify-unauthenticated";
-    // Texts referenced by script
     Roblox.iFrameLogin.Resources.floodedTwoStepMessage = "Too many attempts. Try again later.";
     Roblox.iFrameLogin.Resources.verifyEmailMessage = "Please verify your email.";
     Roblox.iFrameLogin.Resources.unknownErrorText = "An unknown error occurred.";

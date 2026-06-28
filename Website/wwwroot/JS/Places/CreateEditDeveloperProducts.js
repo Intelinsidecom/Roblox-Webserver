@@ -4,10 +4,12 @@ $(function () {
         var n = $("#AddDeveloperProduct").parent(),
             t, i;
         n.trigger("onViewChange", ["createEdit"]), n.unbind("onRefreshed").bind("onRefreshed", function () {
+            var refreshUrl = n.data("load-url") || n.attr("src");
+            if (!refreshUrl) return;
             Roblox.DeveloperProductsForm.onAjaxStart(), $.ajax({
                 cache: !1,
                 type: "GET",
-                url: n.attr("src")
+                url: refreshUrl
             }).done(function (t) {
                 $("#DeveloperProductsLoading").hide(), n.trigger("onActionComplete", [t])
             }).fail(function () {
@@ -47,7 +49,7 @@ $(function () {
                                             Roblox.DeveloperProductsForm.init();
                                         }
                                     } else if ($("#developerProducts").length > 0) {
-                                        $("#developerProducts").html('<div id="DevProducts" src="/universes/' + universeId + '/developer-products">' + response + '</div>');
+                                        $("#developerProducts").html('<div id="DevProducts" data-load-url="/universes/' + universeId + '/developer-products" data-universe-id="' + universeId + '">' + response + '</div>');
                                         if (typeof Roblox.DeveloperProductsListing !== 'undefined' &&
                                             typeof Roblox.DeveloperProductsListing.init === 'function') {
                                             Roblox.DeveloperProductsListing.init();
@@ -137,7 +139,7 @@ $(function () {
                     if (devProductsElement.length > 0) {
                         devProductsElement.html(response);
                     } else if ($("#developerProducts").length > 0) {
-                        $("#developerProducts").html('<div id="DevProducts" src="/universes/' + $("#DeveloperProductUniverseID").val() + '/developer-products">' + response + '</div>');
+                        $("#developerProducts").html('<div id="DevProducts" data-load-url="/universes/' + $("#DeveloperProductUniverseID").val() + '/developer-products" data-universe-id="' + $("#DeveloperProductUniverseID").val() + '">' + response + '</div>');
                     } else {
                         $("#DeveloperProductsContent").html(response);
                     }

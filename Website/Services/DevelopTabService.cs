@@ -44,6 +44,9 @@ public sealed class DevelopTabService
             case "Games":
                 await PopulateGamesAsync(vm, showPublicOnly, cancellationToken).ConfigureAwait(false);
                 break;
+            case "Places":
+                await PopulatePlacesAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
             case "T-Shirts":
                 await PopulateTShirtsAsync(vm, cancellationToken).ConfigureAwait(false);
                 break;
@@ -113,6 +116,49 @@ public sealed class DevelopTabService
 
             vm.Items = items;
             vm.ActiveCount = items.Count(i => i.IsPublic);
+        }
+        catch
+        {
+            vm.Items = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulatePlacesAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 9;
+        vm.HeaderText = "Places";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var places = await GameListingService
+                .GetPlacesForUserAsync(connStr, vm.UserId, cancellationToken)
+                .ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>(places.Count);
+            foreach (var p in places)
+            {
+                var configureUrl = "/places/" + p.PlaceId + "/update";
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = p.PlaceId,
+                    RootPlaceId = p.PlaceId,
+                    Name = p.PlaceName,
+                    ThumbnailUrl = p.ThumbnailUrl,
+                    Type = "game",
+                    ConfigureUrl = configureUrl,
+                    DeveloperStatsUrl = "/places/" + p.PlaceId + "/stats",
+                    VisitCount = p.VisitCount,
+                });
+            }
+
+            vm.Items = items;
         }
         catch
         {

@@ -1,0 +1,42 @@
+/* ~/CSS/Pages/IDE/LatestArticles.css */
+#latest-articles {
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: 4px;
+}
+
+.item-box-image {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 160px;
+    height: 160px;
+    background-color: #ccc;
+}
+
+.item-box {
+    padding: 5px;
+    float: left;
+    width: 185px;
+    height: 320px;
+    display: inline-block;
+}
+
+.item-box-text {
+    padding-left: 12px;
+    padding-top: 10px;
+    padding-right: 12px;
+    padding-bottom: 12px;
+}
+
+.item-box .article-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.item-box .article-summary {
+    height: 95px;
+    overflow: hidden;
+}

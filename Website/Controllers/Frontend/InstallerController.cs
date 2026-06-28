@@ -16,9 +16,6 @@ namespace RobloxWebserver.Controllers
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        /// <summary>
-        /// Handles /install/setup.ashx requests and redirects to the RobloxPlayerLauncher.exe
-        /// </summary>
         [HttpGet("/install/setup.ashx")]
         public IActionResult Setup()
         {
@@ -27,14 +24,19 @@ namespace RobloxWebserver.Controllers
             return Redirect(redirectUrl);
         }
 
-        /// <summary>
-        /// Alternative endpoint for downloading the installer directly.
-        /// </summary>
         [HttpGet("/install/RobloxPlayerLauncher.exe")]
         public IActionResult DownloadLauncher()
         {
             var setupHost = _configuration["Setup:SetupServicePublicHost"] ?? "setup.freblx.xyz";
             var redirectUrl = $"https://{setupHost}/RobloxPlayerLauncher.exe";
+            return Redirect(redirectUrl);
+        }
+
+        [HttpGet("/install/setupStudio.ashx")]
+        public IActionResult SetupStudio()
+        {
+            var setupHost = _configuration["Setup:SetupServicePublicHost"] ?? "setup.freblx.xyz";
+            var redirectUrl = $"https://{setupHost}/RobloxStudioLauncher.exe";
             return Redirect(redirectUrl);
         }
     }

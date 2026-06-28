@@ -21,7 +21,7 @@ namespace RobloxWebserver.Controllers
         // GET/POST /authentication/logout
         [AcceptVerbs("GET", "POST")]
         [Route("authentication/logout")]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout(string? returnUrl = null)
         {
             var token = Request.Cookies[".ROBLOSECURITY"];
 
@@ -49,6 +49,10 @@ namespace RobloxWebserver.Controllers
             );
 
             // After logging out, send the user to the landing page
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
             return Redirect("/");
         }
     }

@@ -1,0 +1,90 @@
+@model Assemblies.Common.DevelopTabViewModel
+@{
+    Layout = null;
+    var items = Model?.Items ?? new List<Assemblies.Common.DevelopItem>();
+    var fallbackThumb = "/images/b35fdfe2c7856872c3695871e2efbe18.png";
+}
+<div class="items-container games-container" style="position: relative">
+    <script>
+    function editGameInStudio(play_placeId){
+        RobloxLaunch._GoogleAnalyticsCallback=function(){
+            var isInsideRobloxIDE='website';
+            if(Roblox&&Roblox.Client&&Roblox.Client.isIDE&&Roblox.Client.isIDE()){
+                isInsideRobloxIDE='Studio';
+            };
+            GoogleAnalyticsEvents.FireEvent(['Plugin Location','Launch Attempt',isInsideRobloxIDE]);
+            GoogleAnalyticsEvents.FireEvent(['Plugin','Launch Attempt','Edit']);
+            EventTracker.fireEvent('GameLaunchAttempt_Win32','GameLaunchAttempt_Win32_Plugin');
+            if(typeof Roblox.GamePlayEvents!='undefined'){
+                Roblox.GamePlayEvents.SendClientStartAttempt(null,play_placeId);
+            }
+        };
+        Roblox.Client.WaitForRoblox(function(){
+            if(Roblox.VideoPreRollDFP){
+                Roblox.VideoPreRollDFP.showVideoPreRoll=false;
+            }
+            RobloxLaunch.StartGame('https://assetgame.roblox.com/Game/edit.ashx?PlaceID='+play_placeId+'&upload='+play_placeId,'edit.ashx','https://web.roblox.com/Login/Negotiate.ashx','FETCH',true);
+        });
+    }
+    </script>
+    <span id=verifiedEmail style=display:none></span>
+    <span id=assetLinks style=display:none data-asset-links-enabled=True></span>
+    <table class=section-header>
+        <tr>
+            <td class=content-title>
+                <div>
+                    <h2 class=header-text>Places</h2>
+                </div>
+            </td>
+        <td>
+        <div class=creation-context-filters-and-sorts data-fetchplaceurl="/build/gamesbycontext?groupId=">
+            <div class=option><label class=sort-label>Created by:</label> <select class=place-creationcontext-drop-down size=1>
+                <option value=NonGameCreation> Me</option>
+                <option value=GameAuthorsCreation>My Games</option>
+                <option value=NonGameAuthorsCreation>Other Games</option>
+            </select></div>
+        </div>
+         </td>
+        </tr>
+            <tr class=creation-context-breadcrumb style=display:none>
+                <td style=height:21px>
+                    <div class="breadCrumb creation-context-breadcrumb"><a href="#breadcrumbs=gamecontext" class=breadCrumbContext>Context</a> <span class=context-game-separator style=display:none> » </span> <a href="#breadcrumbs=game" class="breadCrumbGame notranslate" style=display:none>Game</a></div>
+                </td>
+            </tr>
+    </table>
+    @if (items.Count == 0)
+    {
+        @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", $"You have no {Model.ViewName.ToLowerInvariant()} yet.")
+    }
+    else
+    {
+        foreach (var item in items)
+        {
+            <table class=item-table data-item-id="@item.RootPlaceId" data-type=game data-universeid="@item.ItemId" data-rootplace-id="@item.RootPlaceId">
+                <tr>
+                    <td class=image-col>
+                        <a href="@item.ConfigureUrl" class=game-image>
+                            <img src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="@item.Name">
+                        </a>
+                    </td>
+                    <td class=name-col>
+                        <a class="title notranslate" href="@item.ConfigureUrl">@item.Name</a>
+                        <table class=details-table>
+                            <tr>
+                                <td class=item-date><span>Updated:</span>@DateTime.Now.ToString("M/d/yyyy")</td>
+                            </tr>
+                        </table>
+                        <td class=stats-col-games>
+                            <div class=totals-label>Total Visitors:<span>@item.VisitCount.ToString("N0")</span></div>
+                            <div class=totals-label>Last 7 days:<span>0</span></div>
+                        </td>
+                    </td>
+                    <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href="javascript:editGameInStudio(@item.RootPlaceId)">Edit</a></td>
+                    <td class=menu-col><div class=gear-button-wrapper><a href=# class=gear-button></a></div></td>
+                </tr>
+            </table>
+            <div class=separator></div>
+        }
+    }
+    <div id=build-dropdown-menu style=display:none><a href=# data-href-template=/places/0/update>Configure Place</a> <a href=# data-gameonly-link=true data-href-template=/places/0/stats>Developer Stats</a> <a class=shutdown-all-servers-button href=#>Shut Down All Servers</a></div>
+</div>

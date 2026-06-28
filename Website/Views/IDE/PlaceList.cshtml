@@ -1,0 +1,21 @@
+@using RobloxWebserver.Controllers
+@model List<PlaceEntry>
+@{
+    Layout = null;
+    var fallbackThumb = "/images/6bfa4d3e4d38a70d2f5b493987fe29c4";
+}
+@foreach (var item in Model)
+{
+    <div class="place asset model" data-placeid="@item.PlaceId" data-name="@item.Name">
+        <a class="model-image">
+            <img class="modelThumbnail" src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="@item.Name" />
+        </a>
+        <p class="item-name-container ellipsis-overflow">@item.Name</p>
+    </div>
+}
+@if (ViewBag.HasMore == true)
+{
+    <div id="load-more-assets" class="load-more-wrapper">
+        <a class="btn-control btn-control-large">Load More</a>
+    </div>
+}

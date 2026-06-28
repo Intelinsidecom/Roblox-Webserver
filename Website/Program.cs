@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
-using Api.Controllers;
 using System.Security.Claims;
 using Npgsql;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -20,7 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services
     .AddControllersWithViews()
-    .AddApplicationPart(typeof(LoginController).Assembly)
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
+        options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+    })
     .AddApplicationPart(System.Reflection.Assembly.GetExecutingAssembly());
 
 // Add CORS service
@@ -66,6 +69,7 @@ builder.Services.AddHostedService<GamesCacheService>(sp => sp.GetRequiredService
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
 builder.Services.AddSingleton<Website.Services.DevelopTabService>();
+builder.Services.AddSingleton<ScriptTemplateService>();
 builder.Services.AddSingleton<AssetMetadataRepository>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
@@ -73,7 +77,7 @@ builder.Services.AddWebOptimizerPipeline();
 
 // Add Games services
 builder.Services.AddSingleton<AuthenticationTicketService>();
-builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<Games.TokenService>();
 builder.Services.AddHostedService<TokenCleanupService>();
 builder.Services.AddSingleton<GamePresenceService>();
 builder.Services.AddHostedService<GamePresenceCleanupService>();
@@ -105,6 +109,9 @@ if (enableRequestLogging)
     });
 }
 
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -117,8 +124,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseForwardedHeaders();
-
+ 
 // Commented out HTTPS redirection to allow HTTP for development
+
 // app.UseHttpsRedirection();
 
 app.UseWebOptimizer();
@@ -150,9 +158,9 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseMiddleware<LockdownMiddleware>();
-app.UseMiddleware<AntiCacheMiddleware>();
 
 app.UseRouting();
+
 
 app.UseSession();
 app.UseRateLimiting();
@@ -164,45 +172,18 @@ if (enableRequestLogging)
 
 app.Use(async (context, next) =>
 {
-    var originalResponseStream = context.Response.Body;
-    try
-    {
-        using var responseBodyStream = new MemoryStream();
-        context.Response.Body = responseBodyStream;
-        
-        await next();
-        
-        {
-            responseBodyStream.Seek(0, SeekOrigin.Begin);
-            await responseBodyStream.CopyToAsync(originalResponseStream);
-        }
-    }
-    finally
-    {
-        context.Response.Body = originalResponseStream;
-    }
-});
-
-app.Use(async (context, next) =>
-{
     var cookies = context.Request.Cookies;
-    if (cookies.TryGetValue(".ROBLOSECURITY", out var raw))
+    var tokenService = context.RequestServices.GetRequiredService<Games.TokenService>();
+
+    string? raw = null;
+    if (cookies.TryGetValue(".ROBLOSECURITY", out var roblox))
+        raw = roblox;
+
+    if (raw != null)
     {
-        var tokenService = context.RequestServices.GetRequiredService<TokenService>();
-        
         try
         {
-            long? userId = null;
-            
-            if (raw.StartsWith("sess_"))
-            {
-                userId = await tokenService.ValidateSessionAsync(raw);
-            }
-            else
-            {
-                userId = await tokenService.ValidateSessionAsync(raw);
-            }
-            
+            long? userId = await tokenService.ValidateSessionAsync(raw);
             if (userId.HasValue && userId.Value > 0)
             {
                 var claims = new[]
@@ -212,15 +193,6 @@ app.Use(async (context, next) =>
                 };
                 var identity = new ClaimsIdentity(claims, "Cookie");
                 context.User = new ClaimsPrincipal(identity);
-            }
-            else
-            {
-                context.Response.Cookies.Delete(".ROBLOSECURITY", new CookieOptions 
-                { 
-                    Path = "/",
-                    HttpOnly = true,
-                    SameSite = SameSiteMode.Lax
-                });
             }
         }
         catch (Exception ex) { Console.WriteLine($"[AUTH] Error during auth: {ex.Message}"); }
