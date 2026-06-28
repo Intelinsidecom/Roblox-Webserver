@@ -464,7 +464,7 @@ namespace ControlPanel.Functions
                     };
                 }
                 
-                var version = bootstrapperVersion;
+                var version = CalculateMD5Hash(exePath);
                 
                 var setupServiceLocation = GetSetupServiceLocation();
                 var wwwrootPath = Path.Combine(setupServiceLocation, "wwwroot");
@@ -861,13 +861,478 @@ namespace ControlPanel.Functions
         /// <summary>
         /// Uploads and packages Studio client files (not implemented)
         /// </summary>
-        public async Task<UploadResult> UploadStudioClientAsync(string folderPath, string bootstrapperVersion = null)
+        public async Task<UploadResult> UploadStudioClientAsync(string folderPath, string bootstrapperPath = null, string bootstrapperVersion = null)
         {
-            return new UploadResult
+            try
             {
-                Success = false,
-                Error = "Studio client upload not implemented yet"
-            };
+                if (!Directory.Exists(folderPath))
+                {
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = $"Folder not found: {folderPath}"
+                    };
+                }
+                
+                var exeName = "RobloxStudioBeta.exe";
+                var exePath = Path.Combine(folderPath, exeName);
+                
+                if (!File.Exists(exePath))
+                {
+                    throw new FileNotFoundException($"Required executable not found: {exeName} in {folderPath}");
+                }
+                
+                if (string.IsNullOrEmpty(bootstrapperVersion))
+                {
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = "Bootstrapper version is required."
+                    };
+                }
+                
+                var version = CalculateMD5Hash(exePath);
+                
+                var setupServiceLocation = GetSetupServiceLocation();
+                var wwwrootPath = Path.Combine(setupServiceLocation, "wwwroot");
+                Directory.CreateDirectory(wwwrootPath);
+                
+                var createdZipFiles = new List<string>();
+                
+                var packageFiles = new List<(string sourcePath, string entryName)>
+                {
+                    (exePath, exeName),
+                    (Path.Combine(folderPath, "AppSettings.xml"), "AppSettings.xml"),
+                    (Path.Combine(folderPath, "ReflectionMetadata.xml"), "ReflectionMetadata.xml"),
+                    (Path.Combine(folderPath, "RobloxStudioRibbon.xml"), "RobloxStudioRibbon.xml")
+                };
+                
+                var zipFileName = $"version-{version}-RobloxStudio.zip";
+                var zipFilePath = Path.Combine(wwwrootPath, zipFileName);
+                var packagedFiles = await CreateZipPackage(zipFilePath, packageFiles);
+                
+                if (string.IsNullOrEmpty(bootstrapperPath))
+                {
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = "Bootstrapper path is required."
+                    };
+                }
+                
+                if (!File.Exists(bootstrapperPath))
+                {
+                    return new UploadResult
+                    {
+                        Success = false,
+                        Error = $"Bootstrapper file not found: {bootstrapperPath}"
+                    };
+                }
+                
+                var bootstrapperFileName = $"version-{version}-Roblox.exe";
+                var bootstrapperDestPath = Path.Combine(wwwrootPath, bootstrapperFileName);
+                
+                File.Copy(bootstrapperPath, bootstrapperDestPath, true);
+                packagedFiles.Add(bootstrapperFileName);                
+                var launcherPath = Path.Combine(wwwrootPath, "RobloxStudioLauncher.exe");
+                File.Copy(bootstrapperPath, launcherPath, overwrite: true);
+                
+                createdZipFiles.Add("RobloxApp.zip");
+                
+                var shadersPath = Path.Combine(folderPath, "shaders");
+                if (Directory.Exists(shadersPath))
+                {
+                    var shaderFiles = new List<(string sourcePath, string entryName)>();
+                    var shaderFilePaths = Directory.GetFiles(shadersPath, "*", SearchOption.AllDirectories);
+                    
+                    foreach (var shaderFile in shaderFilePaths)
+                    {
+                        var relativePath = Path.GetRelativePath(shadersPath, shaderFile);
+                        shaderFiles.Add((shaderFile, relativePath));
+                    }
+                    
+                    if (shaderFiles.Count > 0)
+                    {
+                        var shadersZipFileName = $"version-{version}-shaders.zip";
+                        var shadersZipFilePath = Path.Combine(wwwrootPath, shadersZipFileName);
+                        var packagedShaderFiles = await CreateZipPackage(shadersZipFilePath, shaderFiles);
+                        packagedFiles.AddRange(packagedShaderFiles.Select(f => $"shaders/{f}"));
+                    }
+                }
+
+                var BuiltInPluginsPath = Path.Combine(folderPath, "BuiltInPlugins");
+                if (Directory.Exists(BuiltInPluginsPath))
+                {
+                    var BuiltInPluginsFiles = new List<(string sourcePath, string entryName)>();
+                    var BuiltInPluginsFilePaths = Directory.GetFiles(BuiltInPluginsPath, "*", SearchOption.AllDirectories);
+                    
+                    foreach (var BuiltInPluginsFile in BuiltInPluginsFilePaths)
+                    {
+                        var relativePath = Path.GetRelativePath(BuiltInPluginsPath, BuiltInPluginsFile);
+                        BuiltInPluginsFiles.Add((BuiltInPluginsFile, relativePath));
+                    }
+                    
+                    if (BuiltInPluginsFiles.Count > 0)
+                    {
+                        var BuiltInPluginsZipFileName = $"version-{version}-BuiltInPlugins.zip";
+                        var BuiltInPluginsZipFilePath = Path.Combine(wwwrootPath, BuiltInPluginsZipFileName);
+                        var packagedBuiltInPluginsFiles = await CreateZipPackage(BuiltInPluginsZipFilePath, BuiltInPluginsFiles);
+                        packagedFiles.AddRange(packagedBuiltInPluginsFiles.Select(f => $"BuiltInPlugins/{f}"));
+                    }
+                }
+
+                var imageformatsPath = Path.Combine(folderPath, "imageformats");
+                if (Directory.Exists(imageformatsPath))
+                {
+                    var imageformatsFiles = new List<(string sourcePath, string entryName)>();
+                    var imageformatsFilePaths = Directory.GetFiles(imageformatsPath, "*", SearchOption.AllDirectories);
+                    
+                    foreach (var imageformatsFile in imageformatsFilePaths)
+                    {
+                        var relativePath = Path.GetRelativePath(imageformatsPath, imageformatsFile);
+                        imageformatsFiles.Add((imageformatsFile, relativePath));
+                    }
+                    
+                    if (imageformatsFiles.Count > 0)
+                    {
+                        var imageformatsZipFileName = $"version-{version}-imageformats.zip";
+                        var imageformatsZipFilePath = Path.Combine(wwwrootPath, imageformatsZipFileName);
+                        var packagedimageformatsFiles = await CreateZipPackage(imageformatsZipFilePath, imageformatsFiles);
+                        packagedFiles.AddRange(packagedimageformatsFiles.Select(f => $"imageformats/{f}"));
+                    }
+                }
+                
+                
+                var platformContentPath = Path.Combine(folderPath, "PlatformContent");
+                if (Directory.Exists(platformContentPath))
+                {
+                    var pcContentPath = Path.Combine(platformContentPath, "pc");
+                    
+                    var pcTexturesPath = Path.Combine(pcContentPath, "textures");
+                    if (Directory.Exists(pcTexturesPath))
+                    {
+                        var pcTextureFiles = new List<(string sourcePath, string entryName)>();
+                        var pcTextureFilePaths = Directory.GetFiles(pcTexturesPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var pcTextureFile in pcTextureFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(pcTexturesPath, pcTextureFile);
+                            pcTextureFiles.Add((pcTextureFile, relativePath));
+                        }
+                        
+                        if (pcTextureFiles.Count > 0)
+                        {
+                            var pcTexturesZipFileName = $"version-{version}-content-textures3.zip";
+                            var pcTexturesZipFilePath = Path.Combine(wwwrootPath, pcTexturesZipFileName);
+                            var packagedPcTextureFiles = await CreateZipPackage(pcTexturesZipFilePath, pcTextureFiles);
+                            packagedFiles.AddRange(packagedPcTextureFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                    
+                    var pcTerrainPath = Path.Combine(pcContentPath, "terrain");
+                    if (Directory.Exists(pcTerrainPath))
+                    {
+                        var pcTerrainFiles = new List<(string sourcePath, string entryName)>();
+                        var pcTerrainFilePaths = Directory.GetFiles(pcTerrainPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var pcTerrainFile in pcTerrainFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(pcTerrainPath, pcTerrainFile);
+                            pcTerrainFiles.Add((pcTerrainFile, relativePath));
+                        }
+                        
+                        if (pcTerrainFiles.Count > 0)
+                        {
+                            var pcTerrainZipFileName = $"version-{version}-content-terrain.zip";
+                            var pcTerrainZipFilePath = Path.Combine(wwwrootPath, pcTerrainZipFileName);
+                            var packagedPcTerrainFiles = await CreateZipPackage(pcTerrainZipFilePath, pcTerrainFiles);
+                            packagedFiles.AddRange(packagedPcTerrainFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+
+                }
+                
+                var requiredDlls = new List<(string sourcePath, string entryName)>
+                {
+                    (Path.Combine(folderPath, "SDL2.dll"), "SDL2.dll"),
+                    (Path.Combine(folderPath, "VMProtectSDK32.dll"), "VMProtectSDK32.dll"),
+                    (Path.Combine(folderPath, "fmod.dll"), "fmod.dll"),
+                    (Path.Combine(folderPath, "d3dcompiler_47.dll"), "d3dcompiler_47.dll"),
+                    (Path.Combine(folderPath, "boost.dll"), "boost.dll"),
+                    (Path.Combine(folderPath, "openvr_api.dll"), "openvr_api.dll"),
+                    (Path.Combine(folderPath, "ssleay32.dll"), "ssleay32.dll"),
+                    (Path.Combine(folderPath, "sgCore.dll"), "sgCore.dll"),
+                    (Path.Combine(folderPath, "QtXml4.dll"), "QtXml4.dll"),
+                    (Path.Combine(folderPath, "QtWebKit4.dll"), "QtWebKit4.dll"),
+                    (Path.Combine(folderPath, "QtNetwork4.dll"), "QtNetwork4.dll"),
+                    (Path.Combine(folderPath, "QtGui4.dll"), "QtGui4.dll"),
+                    (Path.Combine(folderPath, "QtCore4.dll"), "QtCore4.dll"),
+                    (Path.Combine(folderPath, "phonon4.dll"), "phonon4.dll"),
+                    (Path.Combine(folderPath, "qtnribbon3.dll"), "qtnribbon3.dll"),
+                    (Path.Combine(folderPath, "libssl32.dll"), "libssl32.dll"),
+                    (Path.Combine(folderPath, "libfbxsdk.dll"), "libfbxsdk.dll"),
+                    (Path.Combine(folderPath, "libeay32.dll"), "libeay32.dll")
+
+                };
+                
+                var existingDlls = requiredDlls.Where(f => File.Exists(f.sourcePath)).ToList();
+                if (existingDlls.Count > 0)
+                {
+                    var dllZipFileName = $"version-{version}-Libraries.zip";
+                    var dllZipFilePath = Path.Combine(wwwrootPath, dllZipFileName);
+                    var packagedDllFiles = await CreateZipPackage(dllZipFilePath, existingDlls);
+                    packagedFiles.AddRange(packagedDllFiles.Select(f => $"libs/{f}"));
+                }
+                
+                var contentPath = Path.Combine(folderPath, "content");
+                if (Directory.Exists(contentPath))
+                {
+                    var fontsPath = Path.Combine(contentPath, "fonts");
+                    if (Directory.Exists(fontsPath))
+                    {
+                        var fontFiles = new List<(string sourcePath, string entryName)>();
+                        var fontFilePaths = Directory.GetFiles(fontsPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var fontFile in fontFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(fontsPath, fontFile);
+                            fontFiles.Add((fontFile, relativePath));
+                        }
+                        
+                        if (fontFiles.Count > 0)
+                        {
+                            var fontsZipFileName = $"version-{version}-content-fonts.zip";
+                            var fontsZipFilePath = Path.Combine(wwwrootPath, fontsZipFileName);
+                            var packagedFontFiles = await CreateZipPackage(fontsZipFilePath, fontFiles);
+                            packagedFiles.AddRange(packagedFontFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                    
+                    var ScriptsPath = Path.Combine(contentPath, "scripts");
+                    if (Directory.Exists(ScriptsPath))
+                    {
+                        var ScriptsFiles = new List<(string sourcePath, string entryName)>();
+                        var ScriptsFilePaths = Directory.GetFiles(ScriptsPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var ScriptsFile in ScriptsFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(ScriptsPath, ScriptsFile);
+                            ScriptsFiles.Add((ScriptsFile, relativePath));
+                        }
+                        
+                        if (ScriptsFiles.Count > 0)
+                        {
+                            var ScriptsZipFileName = $"version-{version}-content-scripts.zip";
+                            var ScriptsZipFilePath = Path.Combine(wwwrootPath, ScriptsZipFileName);
+                            var packagedScriptsFiles = await CreateZipPackage(ScriptsZipFilePath, ScriptsFiles);
+                            packagedFiles.AddRange(packagedScriptsFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+
+                    var musicPath = Path.Combine(contentPath, "music");
+                    if (Directory.Exists(musicPath))
+                    {
+                        var musicFiles = new List<(string sourcePath, string entryName)>();
+                        var musicFilePaths = Directory.GetFiles(musicPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var musicFile in musicFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(musicPath, musicFile);
+                            musicFiles.Add((musicFile, relativePath));
+                        }
+                        
+                        if (musicFiles.Count > 0)
+                        {
+                            var musicZipFileName = $"version-{version}-content-music.zip";
+                            var musicZipFilePath = Path.Combine(wwwrootPath, musicZipFileName);
+                            var packagedMusicFiles = await CreateZipPackage(musicZipFilePath, musicFiles);
+                            packagedFiles.AddRange(packagedMusicFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                    
+                    var particlesPath = Path.Combine(contentPath, "particles");
+                    if (Directory.Exists(particlesPath))
+                    {
+                        var particleFiles = new List<(string sourcePath, string entryName)>();
+                        var particleFilePaths = Directory.GetFiles(particlesPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var particleFile in particleFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(particlesPath, particleFile);
+                            particleFiles.Add((particleFile, relativePath));
+                        }
+                        
+                        if (particleFiles.Count > 0)
+                        {
+                            var particlesZipFileName = $"version-{version}-content-particles.zip";
+                            var particlesZipFilePath = Path.Combine(wwwrootPath, particlesZipFileName);
+                            var packagedParticleFiles = await CreateZipPackage(particlesZipFilePath, particleFiles);
+                            packagedFiles.AddRange(packagedParticleFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                    
+                    var skyPath = Path.Combine(contentPath, "sky");
+                    if (Directory.Exists(skyPath))
+                    {
+                        var skyFiles = new List<(string sourcePath, string entryName)>();
+                        var skyFilePaths = Directory.GetFiles(skyPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var skyFile in skyFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(skyPath, skyFile);
+                            skyFiles.Add((skyFile, relativePath));
+                        }
+                        
+                        if (skyFiles.Count > 0)
+                        {
+                            var skyZipFileName = $"version-{version}-content-sky.zip";
+                            var skyZipFilePath = Path.Combine(wwwrootPath, skyZipFileName);
+                            var packagedSkyFiles = await CreateZipPackage(skyZipFilePath, skyFiles);
+                            packagedFiles.AddRange(packagedSkyFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                    
+                    var soundsPath = Path.Combine(contentPath, "sounds");
+                    if (Directory.Exists(soundsPath))
+                    {
+                        var soundFiles = new List<(string sourcePath, string entryName)>();
+                        var soundFilePaths = Directory.GetFiles(soundsPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var soundFile in soundFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(soundsPath, soundFile);
+                            soundFiles.Add((soundFile, relativePath));
+                        }
+                        
+                        if (soundFiles.Count > 0)
+                        {
+                            var soundsZipFileName = $"version-{version}-content-sounds.zip";
+                            var soundsZipFilePath = Path.Combine(wwwrootPath, soundsZipFileName);
+                            var packagedSoundFiles = await CreateZipPackage(soundsZipFilePath, soundFiles);
+                            packagedFiles.AddRange(packagedSoundFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                
+                    var texturesPath = Path.Combine(contentPath, "textures");
+                    if (Directory.Exists(texturesPath))
+                    {
+                        var textureFiles = new List<(string sourcePath, string entryName)>();
+                        var textureFilePaths = Directory.GetFiles(texturesPath, "*", SearchOption.AllDirectories);
+                        
+                        foreach (var textureFile in textureFilePaths)
+                        {
+                            var relativePath = Path.GetRelativePath(texturesPath, textureFile);
+                            textureFiles.Add((textureFile, relativePath));
+                        }
+                        
+                        if (textureFiles.Count > 0)
+                        {
+                            var texturesZipFileName = $"version-{version}-content-textures.zip";
+                            var texturesZipFilePath = Path.Combine(wwwrootPath, texturesZipFileName);
+                            var packagedTextureFiles = await CreateZipPackage(texturesZipFilePath, textureFiles);
+                            packagedFiles.AddRange(packagedTextureFiles.Select(f => $"content/{f}"));
+                        }
+                    }
+                    
+                    var textures2Path = Path.Combine(contentPath, "textures");
+                    var wrenchPngPath = Path.Combine(textures2Path, "wrench.png");
+                    if (File.Exists(wrenchPngPath))
+                    {
+                        var texture2Files = new List<(string sourcePath, string entryName)>
+                        {
+                            (wrenchPngPath, "wrench.png")
+                        };
+                        
+                        var textures2ZipFileName = $"version-{version}-content-textures2.zip";
+                        var textures2ZipFilePath = Path.Combine(wwwrootPath, textures2ZipFileName);
+                        var packagedTexture2Files = await CreateZipPackage(textures2ZipFilePath, texture2Files);
+                        packagedFiles.AddRange(packagedTexture2Files.Select(f => $"content/{f}"));
+                    }
+                }
+                
+                var redistFiles = new List<(string sourcePath, string entryName)>();
+                var vc90CrtPath = Path.Combine(folderPath, "Microsoft.VC90.CRT");
+                if (Directory.Exists(vc90CrtPath))
+                {
+                    var vc90CrtFiles = Directory.GetFiles(vc90CrtPath, "*", SearchOption.AllDirectories);
+                    foreach (var file in vc90CrtFiles)
+                    {
+                        var relativePath = Path.Combine("Microsoft.VC90.CRT", Path.GetRelativePath(vc90CrtPath, file));
+                        redistFiles.Add((file, relativePath));
+                    }
+                }
+                
+                var vc90MfcPath = Path.Combine(folderPath, "Microsoft.VC90.MFC");
+                if (Directory.Exists(vc90MfcPath))
+                {
+                    var vc90MfcFiles = Directory.GetFiles(vc90MfcPath, "*", SearchOption.AllDirectories);
+                    foreach (var file in vc90MfcFiles)
+                    {
+                        var relativePath = Path.Combine("Microsoft.VC90.MFC", Path.GetRelativePath(vc90MfcPath, file));
+                        redistFiles.Add((file, relativePath));
+                    }
+                }
+                
+                var vc90OpenMpPath = Path.Combine(folderPath, "Microsoft.VC90.OPENMP");
+                if (Directory.Exists(vc90OpenMpPath))
+                {
+                    var vc90OpenMpFiles = Directory.GetFiles(vc90OpenMpPath, "*", SearchOption.AllDirectories);
+                    foreach (var file in vc90OpenMpFiles)
+                    {
+                        var relativePath = Path.Combine("Microsoft.VC90.OPENMP", Path.GetRelativePath(vc90OpenMpPath, file));
+                        redistFiles.Add((file, relativePath));
+                    }
+                }
+                
+                var msvcDlls = Directory.GetFiles(folderPath, "msvc*.dll", SearchOption.TopDirectoryOnly);
+                foreach (var dll in msvcDlls)
+                {
+                    redistFiles.Add((dll, Path.GetFileName(dll)));
+                }
+                
+                var legacyRedistPath = Path.Combine(folderPath, "redist");
+                if (Directory.Exists(legacyRedistPath))
+                {
+                    var legacyFiles = Directory.GetFiles(legacyRedistPath, "*", SearchOption.AllDirectories);
+                    foreach (var file in legacyFiles)
+                    {
+                        var relativePath = Path.Combine("redist", Path.GetRelativePath(legacyRedistPath, file));
+                        redistFiles.Add((file, relativePath));
+                    }
+                }
+                
+                if (redistFiles.Count > 0)
+                {
+                    var redistZipFileName = $"version-{version}-redist.zip";
+                    var redistZipFilePath = Path.Combine(wwwrootPath, redistZipFileName);
+                    var packagedRedistFiles = await CreateZipPackage(redistZipFilePath, redistFiles);
+                    packagedFiles.AddRange(packagedRedistFiles.Select(f => $"redist/{f}"));
+                }
+                await WriteSomeMoreStuffStudioBootstrapperNeeds(wwwrootPath, bootstrapperPath);
+                await GenAndOverWriteBootstrapperQTStudioVersion(wwwrootPath, bootstrapperPath, bootstrapperVersion, version);
+                await GenerateRbxManifestAsync(wwwrootPath, version, packagedFiles, folderPath);
+                await GenerateRobloxVersionAsync(wwwrootPath, version, bootstrapperVersion);
+                await UpdateClientVersionInDatabaseAsync("Studio", version);
+                var bootstrapperInfo = (!string.IsNullOrEmpty(bootstrapperPath) && File.Exists(bootstrapperPath)) ? $", file version: {bootstrapperVersion}" : "";
+                await WriteToDeploymentHistoryAsync($"New Studio version-{version} at {DateTime.Now:dd/MM/yyyy h:mm:ss tt}{bootstrapperInfo}");
+                
+                return new UploadResult
+                {
+                    Success = true,
+                    UploadId = version,
+                    Message = $"Studio packaged successfully: v{version} ({packagedFiles.Count} files)" + 
+                             (!string.IsNullOrEmpty(bootstrapperPath) && File.Exists(bootstrapperPath) ? " + bootstrapper" : ""),
+                    UploadedFiles = packagedFiles
+                };
+            }
+            catch (Exception ex)
+            {
+                return new UploadResult
+                {
+                    Success = false,
+                    Error = ex.Message
+                };
+            }
         }
         
         /// <summary>
@@ -1014,6 +1479,31 @@ namespace ControlPanel.Functions
             _dbConnection?.Dispose();
         }
         
+        private async Task WriteSomeMoreStuffStudioBootstrapperNeeds(string wwwrootPath, string bootstrapperDestPath)
+        {
+            try
+            {
+                File.Copy(bootstrapperDestPath, Path.Combine(wwwrootPath, "-Roblox.exe"), true);
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"Failed to Write several files the bootstrapper will need {ex.Message}");
+            }
+        }
+
+        private async Task GenAndOverWriteBootstrapperQTStudioVersion(string wwwrootPath, string bootstrapperPath, string bootstrapperVersion, string version)
+        {
+            try
+            {
+                //File.WriteAllText(Path.Combine(wwwrootPath, "BootstrapperQTStudioVersion.txt"), StudioBootstrapperHash);
+                File.WriteAllText(Path.Combine(wwwrootPath, $"version-{version}-BootstrapperQTStudioVersion.txt"), bootstrapperVersion);
+            }
+            catch (Exception ex)
+            {
+                LogWarning($"Failed to Generate BootstrapperQTStudioVersion.txt {bootstrapperPath}: {ex.Message}");
+            }
+        }
+
         /// <summary>
         /// Generates rbxManifest.txt with MD5 hashes for all deployed files
         /// </summary>
@@ -1051,14 +1541,18 @@ namespace ControlPanel.Functions
         /// <summary>
         /// Gets the bootstrapper version from settings or returns default
         /// </summary>
-        private async Task<string> GetBootstrapperVersion()
+        private async Task<string> GetBootstrapperVersion(string ClientType)
         {
             try
             {
                 var settings = await GetBootstrapperSettingsAsync();
-                
+                if (ClientType == "Studio") {
+                var studioVersion = await GetClientVersionAsync("Studio");
+                return string.IsNullOrEmpty(studioVersion) ? "1, 3, 6, 172" : studioVersion;
+                } else {
                 var playerVersion = await GetClientVersionAsync("WindowsPlayer");
                 return string.IsNullOrEmpty(playerVersion) ? "1, 3, 6, 172" : playerVersion;
+                }
             }
             catch (Exception ex)
             {

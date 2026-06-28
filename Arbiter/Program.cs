@@ -1259,6 +1259,33 @@ namespace RCCArbiter
                 }
             });
 
+            app.MapGet("/api/gameservers/{gameId}/kill", (string gameId) =>
+            {
+                try
+                {
+                    string urlToUse = rccUrl;
+                    IDisposable? lease = null;
+                    if (_renderMgr != null)
+                    {
+                        var acquired = _renderMgr.AcquireIfTriggered("gameserver-stop");
+                        if (acquired.HasValue)
+                        {
+                            urlToUse = acquired.Value.url;
+                            lease = acquired.Value.lease;
+                        }
+                    }
+                    using (lease)
+                    {
+                        gameServerManager.StopGameServer(gameId, keepRccAlive: false);
+                        return Results.Ok(new { gameId = gameId, status = "killed" });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
             app.MapPost("/api/gameservers/{gameId}/renew", async (string gameId, RenewLeaseRequest request) =>
             {
                 try

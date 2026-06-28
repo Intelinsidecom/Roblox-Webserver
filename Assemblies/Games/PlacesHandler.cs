@@ -1,10 +1,23 @@
+using System.IO;
 using Npgsql;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Games;
+
+/// <summary>
+/// Represents the settings/creator information for a place
+/// </summary>
+public class PlaceSettings
+{
+    public long OwnerId { get; set; }
+    public string OwnerName { get; set; } = "Unknown";
+    public int CreatorType { get; set; } // 0 = User, 1 = Group
+    public long CreatorTargetId { get; set; }
+}
 
 /// <summary>
 /// Handles universe place management operations including root place management
@@ -303,5 +316,77 @@ public static class PlacesHandler
             return null;
             
         return Convert.ToInt64(result);
+    }
+
+    /// <summary>
+    /// Gets the creator/settings information for a place
+    /// </summary>
+    public static async Task<PlaceSettings?> GetPlaceSettingsAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT a.owner_user_id, u.user_name
+                             FROM assets a
+                             LEFT JOIN users u ON a.owner_user_id = u.user_id
+                             WHERE a.asset_id = @placeId AND a.is_place = true
+                             LIMIT 1";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var ownerId = reader.IsDBNull(0) ? 0 : reader.GetInt64(0);
+            var ownerName = reader.IsDBNull(1) ? "Unknown" : reader.GetString(1);
+
+            return new PlaceSettings
+            {
+                OwnerId = ownerId,
+                OwnerName = ownerName,
+                CreatorType = 0,
+                CreatorTargetId = ownerId
+            };
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Resolves a template content hash from a template place ID, with fallback to .rbxl file processing.
+    /// First checks the database for an existing content hash, then falls back to processing the template file.
+    /// </summary>
+    /// <param name="connectionString">Database connection string</param>
+    /// <param name="templatePlaceId">Template place asset ID</param>
+    /// <param name="assetsRoot">CDN assets root directory</param>
+    /// <param name="templateFilePaths">Dictionary mapping template ID strings to full .rbxl file paths</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Content hash, or "pending-place-content" if unable to resolve</returns>
+    public static async Task<string> ResolveTemplateContentHashAsync(
+        string connectionString,
+        long templatePlaceId,
+        string assetsRoot,
+        IReadOnlyDictionary<string, string> templateFilePaths,
+        CancellationToken cancellationToken = default)
+    {
+        var hash = await GamesRepository.GetPlaceAssetHashAsync(connectionString, templatePlaceId, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(hash) && TemplateHelper.DoesTemplateExist(hash, assetsRoot))
+            return hash;
+
+        var templateIdStr = templatePlaceId.ToString();
+        if (templateFilePaths.TryGetValue(templateIdStr, out var templatePath) && File.Exists(templatePath))
+        {
+            var processedHash = TemplateHelper.ProcessAndSaveTemplateAsync(templatePath, assetsRoot, cancellationToken);
+            if (!string.IsNullOrWhiteSpace(processedHash))
+                return processedHash;
+        }
+
+        return "pending-place-content";
     }
 }

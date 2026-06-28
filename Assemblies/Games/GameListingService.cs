@@ -15,6 +15,15 @@ public sealed class UniverseListEntry
     public short PrivacyLevel { get; set; }
 }
 
+public sealed class PlaceListEntry
+{
+    public long PlaceId { get; set; }
+    public string PlaceName { get; set; } = string.Empty;
+    public string? ThumbnailUrl { get; set; }
+    public long? UniverseId { get; set; }
+    public int VisitCount { get; set; }
+}
+
 public static class GameListingService
 {
     /// <summary>
@@ -70,6 +79,62 @@ order by u.created_at desc, u.universe_id desc;";
                 PlaceName = placeName,
                 ThumbnailUrl = thumbUrl,
                 PrivacyLevel = privacyLevel,
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// Returns all places owned by the specified user, ordered by creation time (newest first).
+    /// </summary>
+    public static async Task<IReadOnlyList<PlaceListEntry>> GetPlacesForUserAsync(
+        string? connectionString,
+        long userId,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new System.ArgumentException("Connection string is required", nameof(connectionString));
+
+        if (userId <= 0)
+            throw new System.ArgumentOutOfRangeException(nameof(userId));
+
+        var results = new List<PlaceListEntry>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"select a.asset_id as place_id,
+       a.name as place_name,
+       a.thumbnail_url,
+       u.universe_id,
+       COALESCE(a.visit_count, 0) as visit_count
+from assets a
+left join universes u on u.root_place_id = a.asset_id
+where a.asset_type_id = 9
+  and a.owner_user_id = @uid
+order by a.created_at desc, a.asset_id desc;";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("uid", userId);
+
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var placeId = reader.GetInt64(0);
+            var placeName = reader.IsDBNull(1) ? "Unnamed Place" : reader.GetString(1);
+            var thumbUrl = reader.IsDBNull(2) ? null : reader.GetString(2);
+            var universeId = reader.IsDBNull(3) ? (long?)null : reader.GetInt64(3);
+            var visitCount = reader.IsDBNull(4) ? 0 : reader.GetInt32(4);
+
+            results.Add(new PlaceListEntry
+            {
+                PlaceId = placeId,
+                PlaceName = placeName,
+                ThumbnailUrl = thumbUrl,
+                UniverseId = universeId,
+                VisitCount = visitCount,
             });
         }
 

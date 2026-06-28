@@ -29,6 +29,26 @@ namespace Games
             _ticketCacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(15))
                 .SetPriority(CacheItemPriority.Normal);
+            _ = EnsureSessionsTable();
+        }
+
+        private async Task EnsureSessionsTable()
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+                using var cmd = new NpgsqlCommand(@"
+                    CREATE TABLE IF NOT EXISTS sessions (
+                        token       text            primary key,
+                        user_id     bigint          not null,
+                        created_at  timestamptz     not null default now(),
+                        expires_at  timestamptz     not null,
+                        last_ip     inet            null
+                    )", conn);
+                await cmd.ExecuteNonQueryAsync();
+            }
+            catch { }
         }
 
         /// <summary>
@@ -62,13 +82,26 @@ namespace Games
 
         /// <summary>
         /// Validates a session token and returns the user ID if valid.
-        /// Also extends the session expiration on successful validation.
+        /// Also extends the session expiration on successful validation (rate-limited to once per hour).
         /// </summary>
         public async Task<long?> ValidateSessionAsync(string token)
         {
-            if (string.IsNullOrEmpty(token) || !token.StartsWith("sess_"))
+            if (string.IsNullOrEmpty(token))
                 return null;
 
+            return await ValidateDbSessionAsync(token);
+        }
+
+        private async Task<long?> ValidateDbSessionAsync(string token)
+        {
+            var userId = await LookupSessionByTokenAsync(token);
+            if (userId.HasValue)
+                await TryExtendSessionAsync(token);
+            return userId;
+        }
+
+        private async Task<long?> LookupSessionByTokenAsync(string token)
+        {
             using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync();
 
@@ -77,17 +110,29 @@ namespace Games
                 WHERE token = @token 
                 AND (expires_at IS NULL OR expires_at > NOW() AT TIME ZONE 'utc')
                 LIMIT 1", conn);
-            
+
             cmd.Parameters.AddWithValue("token", token);
             var result = await cmd.ExecuteScalarAsync();
-            
+
             if (result is long userId)
-            {
-                await ExtendSessionAsync(token);
                 return userId;
-            }
+
+            if (result is int intId)
+                return (long)intId;
 
             return null;
+        }
+
+
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, DateTime> _lastExtended = new();
+
+        private async Task TryExtendSessionAsync(string token)
+        {
+            if (_lastExtended.TryGetValue(token, out var lastExtend) && lastExtend > DateTime.UtcNow.AddHours(-1))
+                return;
+
+            _lastExtended[token] = DateTime.UtcNow;
+            await ExtendSessionAsync(token);
         }
 
         /// <summary>
@@ -242,6 +287,10 @@ namespace Games
 
             await cmd.ExecuteNonQueryAsync();
         }
+
+
+
+
 
         private static string GenerateToken(string prefix)
         {

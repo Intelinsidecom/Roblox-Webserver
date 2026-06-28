@@ -4,75 +4,82 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Games;
 using Common;
+using Users;
+using Api.Services;
 
 namespace Api.Controllers
 {
-    /// <summary>
-    /// API endpoints for developer products - used by in-game MarketplaceService
-    /// </summary>
     [ApiController]
+    [Route("v1/developer-products")]
     [Route("developerproducts")]
     public class DeveloperProductsController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly CurrentUserService _currentUserService;
 
-        public DeveloperProductsController(IConfiguration configuration)
+        public DeveloperProductsController(IConfiguration configuration, CurrentUserService currentUserService)
         {
             _configuration = configuration;
+            _currentUserService = currentUserService;
         }
 
-        /// <summary>
-        /// GET /developerproducts/list?placeid={placeId}
-        /// Returns developer products for a place in the format expected by StandardPages
-        /// </summary>
+
         [HttpGet("list")]
-        public async Task<IActionResult> GetDeveloperProductsList([FromQuery] long placeid)
+        public async Task<IActionResult> GetDeveloperProductsList([FromQuery] long page = 1, [FromQuery] long? placeId = null, [FromQuery] long? universeId = null)
         {
             try
             {
-                if (placeid <= 0)
+                if (page < 1 || page > 5)
                 {
-                    return BadRequest(new { error = "Invalid place ID" });
+                    page = 1;
                 }
 
                 var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
-                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, placeid);
-                if (!universeId.HasValue)
+
+                if (universeId is null && placeId is not null)
                 {
-                    return Ok(new
+                    var resolved = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, placeId.Value);
+                    if (!resolved.HasValue)
                     {
-                        DeveloperProducts = new object[] { },
-                        TotalCount = 0,
-                        PlaceId = placeid
-                    });
+                        return Ok(new
+                        {
+                            FinalPage = true,
+                            DeveloperProducts = new object[] { },
+                            PageSize = 0
+                        });
+                    }
+                    universeId = resolved.Value;
+                }
+                else if (universeId is null)
+                {
+                    return BadRequest(new { error = "You must provide a valid placeId or universeId." });
                 }
 
-                var products = await GamesRepository.GetUniverseDeveloperProductsAsync(connectionString, universeId.Value);
+                var (products, totalCount) = await DevProductHandler.GetUniverseDeveloperProductsPaginatedAsync(connectionString, universeId.Value, (int)page, 5);
                 var productList = new System.Collections.Generic.List<object>();
-                
+
                 if (products != null)
                 {
                     foreach (var product in products)
                     {
                         try
                         {
-                            var productId = product.TryGetProperty("developerProductId", out var idElement) 
+                            var productId = product.TryGetProperty("developerProductId", out var idElement)
                                 ? idElement.GetInt64() : 0;
-                            var name = product.TryGetProperty("name", out var nameElement) 
+                            var name = product.TryGetProperty("name", out var nameElement)
                                 ? nameElement.GetString() : "";
-                            var description = product.TryGetProperty("description", out var descElement) 
+                            var description = product.TryGetProperty("description", out var descElement)
                                 ? descElement.GetString() : "";
-                            var priceInRobux = product.TryGetProperty("priceInRobux", out var robuxElement) 
-                                ? robuxElement.GetInt32() : 0;
-                            var priceInTix = product.TryGetProperty("priceInTix", out var tixElement) 
-                                ? tixElement.GetInt32() : 0;
-                            
-                            long? imageAssetId = null;
-                            if (product.TryGetProperty("imageAssetId", out var imgElement) && 
+
+                            long? iconImageAssetId = null;
+                            if (product.TryGetProperty("imageAssetId", out var imgElement) &&
                                 imgElement.ValueKind != JsonValueKind.Null)
                             {
-                                imageAssetId = imgElement.GetInt64();
+                                iconImageAssetId = imgElement.GetInt64();
                             }
+
+                            var priceInRobux = product.TryGetProperty("priceInRobux", out var robuxElement)
+                                ? robuxElement.GetInt32() : 0;
 
                             productList.Add(new
                             {
@@ -80,12 +87,11 @@ namespace Api.Controllers
                                 DeveloperProductId = productId,
                                 Name = name,
                                 Description = description,
+                                IconImageAssetId = iconImageAssetId ?? 0,
+                                displayName = name,
+                                displayDescription = description,
+                                displayIcon = (int?)null,
                                 PriceInRobux = priceInRobux,
-                                PriceInTix = priceInTix,
-                                ImageAssetId = imageAssetId,
-                                UniverseId = universeId.Value,
-                                PlaceId = placeid,
-                                IconImageAssetId = imageAssetId ?? 0
                             });
                         }
                         catch
@@ -96,30 +102,145 @@ namespace Api.Controllers
 
                 return Ok(new
                 {
-                    data = productList,
+                    FinalPage = productList.Count < 5 || page >= 5,
                     DeveloperProducts = productList,
-                    TotalCount = productList.Count,
-                    PlaceId = placeid,
-                    UniverseId = universeId.Value
+                    PageSize = productList.Count
                 });
             }
             catch (Exception ex)
             {
                 return Ok(new
                 {
-                    data = new object[] { },
+                    FinalPage = true,
                     DeveloperProducts = new object[] { },
-                    TotalCount = 0,
-                    PlaceId = placeid,
+                    PageSize = 0,
                     error = ex.Message
                 });
             }
         }
 
-        /// <summary>
-        /// GET /developerproducts/{productId}
-        /// Get a single developer product by ID
-        /// </summary>
+        [HttpPost("add")]
+        public async Task<IActionResult> AddDeveloperProduct([FromQuery] long universeId)
+        {
+            try
+            {
+                var userId = await _currentUserService.GetUserIdAsync();
+                if (userId <= 0)
+                    return Ok(new { success = false, message = "Authentication required" });
+
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var ownerId = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId);
+                if (ownerId == null || ownerId.Value != userId)
+                    return Ok(new { success = false, message = "You do not own this universe" });
+
+                using var reader = new System.IO.StreamReader(Request.Body);
+                var body = await reader.ReadToEndAsync();
+                var data = JsonSerializer.Deserialize<System.Text.Json.JsonElement>(body);
+
+                var name = StringUtilities.SanitizeString(data.TryGetProperty("Name", out var nameEl) ? nameEl.GetString() ?? "" : "", 100);
+                var description = StringUtilities.SanitizeString(data.TryGetProperty("Description", out var descEl) ? descEl.GetString() ?? "" : "", 1000);
+                var priceInRobuxStr = data.TryGetProperty("PriceInRobux", out var priceEl) ? priceEl.GetString() : "0";
+                if (!int.TryParse(priceInRobuxStr, out var priceInRobux) || priceInRobux < 1)
+                    return Ok(new { success = false, message = "PriceInRobux must be a positive integer" });
+                if (priceInRobux > 1000000)
+                    return Ok(new { success = false, message = "PriceInRobux cannot exceed 1,000,000" });
+                if (string.IsNullOrWhiteSpace(name))
+                    return Ok(new { success = false, message = "Product name is required" });
+
+                var productId = await GamesRepository.GenerateUniverseDeveloperProductIdAsync(connectionString);
+
+                var developerProduct = new
+                {
+                    developerProductId = productId,
+                    universeId = universeId,
+                    name = name,
+                    description = description,
+                    priceInRobux = priceInRobux,
+                    priceInTix = 0,
+                    imageAssetId = (long?)null,
+                    createdAt = DateTime.UtcNow
+                };
+
+                var developerProductJson = JsonSerializer.SerializeToElement(developerProduct);
+                var addedToUniverse = await GamesRepository.AddDeveloperProductToUniverseAsync(
+                    connectionString, universeId, developerProductJson);
+
+                if (!addedToUniverse)
+                    return Ok(new { success = false, message = "Failed to add developer product" });
+
+                try
+                {
+                    await DevProductHandler.CreateDeveloperProduct(
+                        connectionString, universeId, name, description, priceInRobux, 0, null);
+                }
+                catch { }
+
+                return Ok(new { success = true, productId = productId });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateDeveloperProduct([FromQuery] long universeId)
+        {
+            try
+            {
+                var userId = await _currentUserService.GetUserIdAsync();
+                if (userId <= 0)
+                    return Ok(new { success = false, message = "Authentication required" });
+
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var ownerId = await GamesRepository.GetUniverseOwnerAsync(connectionString, universeId);
+                if (ownerId == null || ownerId.Value != userId)
+                    return Ok(new { success = false, message = "You do not own this universe" });
+
+                using var reader = new System.IO.StreamReader(Request.Body);
+                var body = await reader.ReadToEndAsync();
+                var data = JsonSerializer.Deserialize<System.Text.Json.JsonElement>(body);
+
+                var productIdStr = data.TryGetProperty("ProductId", out var idEl) ? idEl.GetString() : "";
+                long.TryParse(productIdStr, out var productId);
+                if (productId <= 0)
+                    return Ok(new { success = false, message = "Invalid product ID" });
+
+                var name = StringUtilities.SanitizeString(data.TryGetProperty("Name", out var nameEl) ? nameEl.GetString() ?? "" : "", 100);
+                var description = StringUtilities.SanitizeString(data.TryGetProperty("Description", out var descEl) ? descEl.GetString() ?? "" : "", 1000);
+                var priceInRobuxStr = data.TryGetProperty("PriceInRobux", out var priceEl) ? priceEl.GetString() : "0";
+                if (!int.TryParse(priceInRobuxStr, out var priceInRobux) || priceInRobux < 1)
+                    return Ok(new { success = false, message = "PriceInRobux must be a positive integer" });
+                if (priceInRobux > 1000000)
+                    return Ok(new { success = false, message = "PriceInRobux cannot exceed 1,000,000" });
+                if (string.IsNullOrWhiteSpace(name))
+                    return Ok(new { success = false, message = "Product name is required" });
+                var iconStr = data.TryGetProperty("IconImageAssetId", out var iconEl) ? iconEl.GetString() : "";
+                long.TryParse(iconStr, out var iconId);
+
+                long? imageAssetId = iconId > 0 ? iconId : null;
+
+                var updatedInUniverse = await DevProductHandler.UpdateDeveloperProductInUniverseAsync(
+                    connectionString, universeId, productId, name, description, priceInRobux, 0, imageAssetId);
+
+                if (!updatedInUniverse)
+                    return Ok(new { success = false, message = "Failed to update developer product in universe" });
+
+                try
+                {
+                    await DevProductHandler.UpdateDeveloperProductInDatabaseAsync(
+                        connectionString, productId, name, description, priceInRobux, 0, imageAssetId);
+                }
+                catch { }
+
+                return Ok(new { success = true, productId = productId });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetDeveloperProduct(long productId)
         {
@@ -131,18 +252,18 @@ namespace Api.Controllers
                 }
 
                 var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
-                
+
                 using var conn = new Npgsql.NpgsqlConnection(connectionString);
                 await conn.OpenAsync();
-                
+
                 const string sql = @"
                     SELECT id, universe_id, name, description, price_in_robux, price_in_tix, image_asset_id 
                     FROM developer_products 
                     WHERE id = @productId";
-                
+
                 using var cmd = new Npgsql.NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("productId", productId);
-                
+
                 using var reader = await cmd.ExecuteReaderAsync();
                 if (await reader.ReadAsync())
                 {

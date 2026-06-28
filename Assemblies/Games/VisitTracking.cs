@@ -15,11 +15,11 @@ namespace Games
         private static readonly TimeSpan _cooldownPeriod = TimeSpan.FromSeconds(20);
         /// <summary>
         /// Records a user visit to a universe.
-        /// Increments the universe visit count and adds/moves the universe to the user's visited_universes array (at the front).
+        /// Increments the universe visit count and the place visit count, and adds/moves the universe to the user's visited_universes array (at the front).
         /// </summary>
-        public static async Task RecordVisitAsync(long userId, long universeId, IConfiguration configuration)
+        public static async Task RecordVisitAsync(long userId, long universeId, long placeId, IConfiguration configuration)
         {
-            if (userId <= 0 || universeId <= 0)
+            if (userId <= 0 || universeId <= 0 || placeId <= 0)
                 return;
 
             var now = DateTime.UtcNow;
@@ -50,6 +50,17 @@ namespace Games
                     using (var cmd = new NpgsqlCommand(incrementUniverseSql, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("universeId", universeId);
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+
+                    const string incrementPlaceSql = @"
+                        UPDATE assets 
+                        SET visit_count = visit_count + 1 
+                        WHERE asset_id = @placeId";
+                    
+                    using (var cmd = new NpgsqlCommand(incrementPlaceSql, conn, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("placeId", placeId);
                         await cmd.ExecuteNonQueryAsync();
                     }
 

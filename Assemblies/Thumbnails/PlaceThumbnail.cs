@@ -31,13 +31,11 @@ public static class PlaceThumbnail
             if (string.IsNullOrWhiteSpace(placeAssetHash))
                 throw new ArgumentException("Place asset hash is required", nameof(placeAssetHash));
             
-            // Use provided dimensions or fall back to defaults (256x256 for standard, 1024x1024 for high-res)
-            var targetWidth = width ?? 256;
-            var targetHeight = height ?? 256;
-            var highResWidth = 1024;
-            var highResHeight = 1024;
+            var targetWidth = width ?? 110;
+            var targetHeight = height ?? 110;
+            var highResWidth = 110;
+            var highResHeight = 110;
             
-            // If specific dimensions are requested (like 1280x720), use those for both renders
             if (width.HasValue && height.HasValue)
             {
                 targetWidth = width.Value;
@@ -45,23 +43,14 @@ public static class PlaceThumbnail
                 highResWidth = width.Value;
                 highResHeight = height.Value;
             }
-            
-            // Render thumbnail for place with caching
+        
             var renderedResult = await thumbnailService.RenderPlaceAsync(placeId, x: targetWidth, y: targetHeight, connectionString: connectionString, placeAssetHash: placeAssetHash);
-            
-            // Create high-resolution version
             var renderedResultHighRes = await thumbnailService.RenderPlaceAsync(placeId, x: highResWidth, y: highResHeight, connectionString: connectionString, placeAssetHash: placeAssetHash);
-            
-            // Save thumbnails to CDN directory
-            var cdnThumbnailsPath = CDNUtilities.GetCDNThumbnailsPath(); // For icons (256x256, 1024x1024)
-            
-            // Copy rendered thumbnails to CDN location
+            var cdnThumbnailsPath = CDNUtilities.GetCDNThumbnailsPath();
             var sourcePath = Path.Combine(renderedResult.FullPath);
             var sourcePathHighRes = Path.Combine(renderedResultHighRes.FullPath);
             var cdnThumbnailPath = Path.Combine(cdnThumbnailsPath, renderedResult.FileName);
             var cdnThumbnailPathHighRes = Path.Combine(cdnThumbnailsPath, renderedResultHighRes.FileName);
-            
-            // Skip copying if source and destination are the same file
             bool thumbnailCopied = string.Equals(Path.GetFullPath(sourcePath), Path.GetFullPath(cdnThumbnailPath), StringComparison.OrdinalIgnoreCase) 
                 ? true 
                 : CDNUtilities.SafeFileCopy(sourcePath, cdnThumbnailPath);
@@ -69,22 +58,14 @@ public static class PlaceThumbnail
                 ? true 
                 : CDNUtilities.SafeFileCopy(sourcePathHighRes, cdnThumbnailPathHighRes);
             
-            // Only update database if at least one thumbnail was successfully copied
             if (thumbnailCopied || highResThumbnailCopied)
             {
-                // Generate CDN URLs for thumbnails
                 var placeIconUrl = thumbnailCopied ? CDNUtilities.GenerateThumbnailUrl(baseUrl, renderedResult.FileName) : null;
                 var placeIconUrlHighRes = highResThumbnailCopied ? CDNUtilities.GenerateThumbnailUrl(baseUrl, renderedResultHighRes.FileName) : null;
-
-                // Update place asset with generated icon fields (for game icons)
                 if (placeIconUrl != null)
                 {
-                    // Update place asset with generated icon fields (for game icons)
-                    // Only update main thumbnail_url for 256x256 icons, not for gallery thumbnails
-                    var shouldUpdateMainThumbnailUrl = (targetWidth == 256 && targetHeight == 256);
-                    
-                    // For non-standard dimensions (like 1280x720), also set the generated thumbnail URL
-                    var shouldSetGeneratedThumbnailUrl = (targetWidth != 256 || targetHeight != 256) && (targetWidth != 1024 || targetHeight != 1024);
+                    var shouldUpdateMainThumbnailUrl = (targetWidth == 110 && targetHeight == 110);
+                    var shouldSetGeneratedThumbnailUrl = (targetWidth != 110 || targetHeight != 110);
                     
                     await SetPlaceGeneratedIconAsync(
                         connectionString,
@@ -95,10 +76,6 @@ public static class PlaceThumbnail
                         updateMainThumbnailUrl: shouldUpdateMainThumbnailUrl,
                         shouldSetGeneratedThumbnailUrl ? placeIconUrlHighRes : null,
                         cancellationToken);
-
-                    // Note: We do NOT add auto-generated thumbnails to the place_thumbnails table
-                    // The place_thumbnails table should only contain user-uploaded custom thumbnails
-                    // Auto-generated thumbnails are handled separately via the assets table fields
                 }
             }
             else
@@ -109,7 +86,7 @@ public static class PlaceThumbnail
         catch (Exception ex)
         {
             Console.WriteLine($"Error in background thumbnail generation: {ex.Message}");
-            throw; // Re-throw to let the controller handle the error
+            throw;
         }
     }
 
@@ -174,9 +151,6 @@ public static class PlaceThumbnail
                                place_generated_icon_high_res_url = @iconUrlHighRes,
                                place_generated_icon_hash = @iconHash" +
                                (updateMainThumbnailUrl ? ", thumbnail_url = @iconUrl" : "") +
-                               // If a generatedThumbnailUrl is provided, store it, but do not change
-                               // the place_*thumbnail mode flags here. Thumbnail mode selection is
-                               // controlled explicitly via ThumbnailQueries.*FlagAsync helpers.
                                (generatedThumbnailUrl != null ? ", place_generated_thumbnail_url = @generatedThumbnailUrl" : "") + @"
                            WHERE asset_id = @placeId AND is_place = true";
 
@@ -236,26 +210,15 @@ public static class PlaceThumbnail
         if (!contentType.StartsWith("image/"))
             throw new ArgumentException("Invalid file type. Please upload an image file.", nameof(contentType));
 
-        // Process the uploaded image
         using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream);
         var fileBytes = memoryStream.ToArray();
-
-        // Generate hash for the uploaded file
         var fileHash = HashingUtilities.GenerateFileHash(fileBytes);
-
-        // Resize to 256x256 and 1024x1024
-        var resized256 = ResizeImage(fileBytes, 256, 256);
-        var resized1024 = ResizeImage(fileBytes, 1024, 1024);
-
-        // Save files to CDN Assets directory
+        var resized110 = ResizeImage(fileBytes, 110, 110);
+        var resized110HighRes = ResizeImage(fileBytes, 110, 110);
         var cdnAssetsPath = CDNUtilities.GetCDNPlaceIconsPath();
-        
-        // Save both versions
-        CDNUtilities.SaveToCDN("place-icons", $"{fileHash}.png", resized256);
-        CDNUtilities.SaveToCDN("place-icons", $"{fileHash}.png", resized1024);
-
-        // Generate CDN URLs
+        CDNUtilities.SaveToCDN("place-icons", $"{fileHash}.png", resized110);
+        CDNUtilities.SaveToCDN("place-icons", $"{fileHash}.png", resized110HighRes);
         var iconUrl = CDNUtilities.GeneratePlaceIconUrl(baseUrl, $"{fileHash}.png");
         var iconUrlHighRes = CDNUtilities.GeneratePlaceIconUrl(baseUrl, $"{fileHash}.png");
 
@@ -278,21 +241,12 @@ public static class PlaceThumbnail
         if (!contentType.StartsWith("image/"))
             throw new ArgumentException("Invalid file type. Please upload an image file.", nameof(contentType));
 
-        // Process uploaded image
         using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream);
         var fileBytes = memoryStream.ToArray();
-
-        // Generate hash for uploaded file
         var fileHash = HashingUtilities.GenerateFileHash(fileBytes);
-
-        // Resize to 1280x720 for 16:9 aspect ratio gallery display
         var resized1280x720 = ResizeImage(fileBytes, 1280, 720);
-
-        // Save file to CDN place-thumbnails directory
         CDNUtilities.SaveToCDN("place-thumbnails", $"{fileHash}.png", resized1280x720);
-
-        // Generate CDN URL
         var thumbnailUrl = CDNUtilities.GeneratePlaceThumbnailUrl(baseUrl, $"{fileHash}.png");
 
         return (thumbnailUrl, fileHash);
@@ -402,13 +356,10 @@ public static class PlaceThumbnail
         if (string.IsNullOrWhiteSpace(fileHash))
             throw new ArgumentException("File hash is required", nameof(fileHash));
 
-        // Check for duplicate image hash for this place
         const string duplicateCheckSql = "SELECT id, sort_order FROM place_thumbnails WHERE place_id = @placeId AND thumbnail_type = 'image' AND file_hash = @fileHash LIMIT 1";
         
         await using var conn = new NpgsqlConnection(connectionString);
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-        
-        // Check for existing thumbnail with same file hash
         using var duplicateCmd = new NpgsqlCommand(duplicateCheckSql, conn);
         duplicateCmd.Parameters.AddWithValue("placeId", placeId);
         duplicateCmd.Parameters.AddWithValue("fileHash", fileHash);
@@ -423,12 +374,10 @@ public static class PlaceThumbnail
             existingSortOrder = reader.GetInt32(1);
         }
         
-        // Close the first reader before creating a second one
         await reader.CloseAsync();
         
         if (existingId > 0)
         {
-            // Get full details of existing thumbnail
             const string getExistingSql = "SELECT url, alt_text, file_hash, sort_order, created_at FROM place_thumbnails WHERE id = @id";
             using var getCmd = new NpgsqlCommand(getExistingSql, conn);
             getCmd.Parameters.AddWithValue("id", existingId);

@@ -1,5 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Api.Data;
 
 namespace Api.Controllers
 {
@@ -7,10 +9,12 @@ namespace Api.Controllers
     public class ClientSettingsController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;
+        private readonly AppDbContext _db;
 
-        public ClientSettingsController(IWebHostEnvironment env)
+        public ClientSettingsController(IWebHostEnvironment env, AppDbContext db)
         {
             _env = env;
+            _db = db;
         }
 
         [HttpGet]
@@ -49,6 +53,45 @@ namespace Api.Controllers
             catch
             {
                 return NotFound();
+            }
+        }
+
+        [HttpGet]
+        [Route("Setting/QuietGet/GetCurrentClientVersionUpload")]
+        public async Task<IActionResult> GetCurrentClientVersionUpload([FromQuery] string? apiKey, [FromQuery] string? binaryType)
+        {
+            if (string.IsNullOrEmpty(binaryType))
+                return BadRequest("binaryType parameter is required");
+
+            string? version = null;
+
+            try
+            {
+                var setupRecord = await _db.Setup.OrderByDescending(s => s.Id).FirstOrDefaultAsync();
+
+                if (setupRecord == null)
+                    return NotFound("No setup record found");
+
+                switch (binaryType.ToLower())
+                {
+                    case "windowsstudio":
+                        version = setupRecord.CurrentStudioVersion;
+                        break;
+                    case "windowsplayer":
+                        version = setupRecord.CurrentWindowsplayerVersion;
+                        break;
+                    default:
+                        return BadRequest($"Unknown binaryType: {binaryType}");
+                }
+
+                if (string.IsNullOrEmpty(version))
+                    return NotFound($"No version found for binaryType: {binaryType}");
+
+                return Content($"\"{version}\"", "application/json", Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving version: {ex.Message}");
             }
         }
     }

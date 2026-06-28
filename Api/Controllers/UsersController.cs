@@ -1,44 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Assets;
 using Npgsql;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Games;
+using Api.Services;
 
 namespace Api.Controllers
 {
     [ApiController]
     public class UsersController : ControllerBase
     {
-        // GET /users/account-info
+        private readonly CurrentUserService _currentUserService;
+
         [HttpGet("users/account-info")]
         public IActionResult GetAccountInfo([FromServices] IConfiguration config)
         {
-            // Prefer user id from claims (set by Website middleware from sessions)
-            long userId = 0;
-            var claimVal = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty(claimVal))
-                long.TryParse(claimVal, out userId);
-
-            // Fallback: if no claims (e.g., direct call bypassing middleware), try to map cookie -> user id via sessions
-            if (userId <= 0)
-            {
-                var cookie = Request.Cookies[".ROBLOSECURITY"];
-                if (!string.IsNullOrWhiteSpace(cookie))
-                {
-                    try
-                    {
-                        var connString = config.GetConnectionString("Default");
-                        using var conn = new NpgsqlConnection(connString);
-                        conn.Open();
-                        using var cmd = new NpgsqlCommand("select user_id from sessions where token = @t and (expires_at is null or expires_at > now() at time zone 'utc')", conn);
-                        cmd.Parameters.AddWithValue("t", cookie);
-                        var obj = cmd.ExecuteScalar();
-                        if (obj is long uid)
-                            userId = uid;
-                    }
-                    catch { }
-                }
-            }
+            long userId = _currentUserService.GetUserIdAsync().GetAwaiter().GetResult();
 
             if (userId <= 0)
                 return StatusCode(403);
@@ -78,6 +59,105 @@ namespace Api.Controllers
             };
 
             return Ok(payload);
+        }
+
+        [HttpGet("users/authenticated")]
+        public async Task<IActionResult> GetAuthenticatedUser([FromServices] IConfiguration config)
+        {
+            var userId = await _currentUserService.GetUserIdAsync();
+            if (userId <= 0)
+                return Unauthorized();
+
+            string username;
+            try
+            {
+                var connString = config.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connString))
+                    return StatusCode(500);
+
+                await using var conn = new NpgsqlConnection(connString);
+                await conn.OpenAsync();
+                await using var cmd = new NpgsqlCommand("select user_name from users where user_id = @id limit 1", conn);
+                cmd.Parameters.AddWithValue("id", userId);
+                var obj = await cmd.ExecuteScalarAsync();
+                if (obj is not string name || string.IsNullOrWhiteSpace(name))
+                    return Unauthorized();
+
+                username = name;
+            }
+            catch
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new
+            {
+                id = userId,
+                name = username,
+                displayName = username,
+                isStaff = false
+            });
+        }
+
+        [HttpGet("users/{userId:long}")]
+        public async Task<IActionResult> GetUserById([FromRoute] long userId, [FromServices] IConfiguration config)
+        {
+            if (userId <= 0)
+                return NotFound();
+
+            var connString = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connString))
+                return StatusCode(500);
+
+            string username = string.Empty;
+
+            try
+            {
+                await using var conn = new NpgsqlConnection(connString);
+                await conn.OpenAsync();
+                await using var cmd = new NpgsqlCommand(@"
+                    select user_name
+                    from users
+                    where user_id = @id
+                    limit 1", conn);
+                cmd.Parameters.AddWithValue("id", userId);
+
+                await using var reader = await cmd.ExecuteReaderAsync();
+                if (!await reader.ReadAsync())
+                    return NotFound();
+
+                username = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
+            return Ok(new
+            {
+                Id = userId,
+                Username = username
+            });
+        }
+
+        [HttpGet("users/{userId:long}/canmanage/{placeId:long}")]
+        public async Task<IActionResult> CanManage(long userId, long placeId, [FromServices] IConfiguration config)
+        {
+            if (userId <= 0 || placeId <= 0)
+                return Ok(new { Success = false, CanManage = false });
+
+            var connString = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connString))
+                return StatusCode(500);
+
+            var creatorId = await AssetsRepository.GetAssetCreatorIdAsync(connString, placeId);
+            var canManage = creatorId.HasValue && creatorId.Value == userId;
+
+            return Ok(new
+            {
+                Success = canManage,
+                CanManage = canManage
+            });
         }
 
         [HttpGet("users/get-studio-experiment-enrollments")]

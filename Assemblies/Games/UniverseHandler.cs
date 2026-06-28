@@ -643,5 +643,33 @@ namespace Games
 
             return string.Join("", placesHtml);
         }
+
+        /// <summary>
+        /// Gets all place IDs (root + additional) for a universe
+        /// </summary>
+        public static async Task<List<long>?> GetUniversePlaceIdsAsync(long universeId, string connectionString, CancellationToken cancellationToken = default)
+        {
+            const string sql = @"
+                SELECT COALESCE(root_place_id, 0), COALESCE(place_ids, ARRAY[]::bigint[])
+                FROM universes WHERE universe_id = @uid";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", universeId);
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return null;
+
+            var rootPlaceId = reader.IsDBNull(0) ? 0L : reader.GetInt64(0);
+            var raw = (long[])reader.GetValue(1);
+            var placeIds = raw.ToList();
+
+            if (rootPlaceId > 0 && !placeIds.Contains(rootPlaceId))
+                placeIds.Insert(0, rootPlaceId);
+
+            return placeIds;
+        }
     }
 }

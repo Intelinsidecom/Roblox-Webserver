@@ -1,4 +1,6 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 
 namespace Common
 {
@@ -10,8 +12,6 @@ namespace Common
         /// <summary>
         /// Generates a random hexadecimal string of specified length
         /// </summary>
-        /// <param name="length">The length of the random string to generate</param>
-        /// <returns>A random string containing hexadecimal characters</returns>
         public static string GenerateRandomString(int length)
         {
             const string chars = "abcdef0123456789";
@@ -22,6 +22,21 @@ namespace Common
                 result[i] = chars[random.Next(chars.Length)];
             }
             return new string(result);
+        }
+
+        public static string SanitizeString(string input, int maxLength)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            var result = new System.Text.StringBuilder(input.Length);
+            foreach (var c in input)
+            {
+                if (c >= 32 || c == '\t' || c == '\n' || c == '\r')
+                    result.Append(c);
+            }
+            string trimmed = result.ToString().Trim();
+            return trimmed.Length > maxLength
+                ? trimmed.Substring(0, maxLength)
+                : trimmed;
         }
     }
 }

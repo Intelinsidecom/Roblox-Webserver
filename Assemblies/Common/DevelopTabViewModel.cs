@@ -45,6 +45,7 @@ public sealed class DevelopItem
     public long StartPlaceId { get; set; }
     public string StatusText { get; set; } = "Public";
     public bool IsPublic { get; set; } = true;
+    public int VisitCount { get; set; }
 }
 
 public sealed class ClothingItem

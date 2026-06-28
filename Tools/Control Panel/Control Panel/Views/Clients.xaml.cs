@@ -44,7 +44,7 @@ namespace Control_Panel
             }
             catch
             {
-                ConsoleWindow.Instance?.WriteWarning("DatabaseConnectionString setting not found, using defaults");
+                ConsoleWindow.Instance?.WriteWarning("DatabaseConnectionString setting found, using defaults");
             }
             
             var dbConnection = new NpgsqlConnection(dbConnectionString);
@@ -308,7 +308,7 @@ namespace Control_Panel
                         }
                         else if (selectedClientType == "Studio")
                         {
-                            result = await _setupService.UploadStudioClientAsync(folderPath, capturedBootstrapperVersion);
+                            result = await _setupService.UploadStudioClientAsync(folderPath, bootstrapperPath, capturedBootstrapperVersion);
                         }
                         else if (selectedClientType == "RCC")
                         {

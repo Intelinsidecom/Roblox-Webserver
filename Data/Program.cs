@@ -4,6 +4,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<Games.TokenService>();
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = null; // unlimited
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10);
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(5);
+});
 
 var app = builder.Build();
 
@@ -15,6 +25,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 // Endpoint used by RCC crash uploader, e.g.:
 // https://data.freblx.xyz/Error/Grid.ashx?filename=...crashevent
@@ -109,6 +120,5 @@ app.MapPost("/Error/Dmp.ashx", async (HttpRequest request) =>
 
     return Results.Ok("Crash dump received successfully");
 });
-
 app.Run();
 

@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Games;
+using Common;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Games;
 
 /// <summary>
 /// Database query helpers for games and universe operations
-/// This class contains SQL helpers that were moved from PlacesController to better organize code
 /// </summary>
 public static class GamesQueries
 {
@@ -973,6 +976,7 @@ public static class GamesQueries
             PlaceBreakdown = placeBreakdown
         };
     }
+
 
     /// <summary>
     /// Result containing player info for a universe

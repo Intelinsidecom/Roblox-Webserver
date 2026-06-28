@@ -19,12 +19,9 @@ namespace Games
 
         public AuthenticationTicketService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("Default") 
-                ?? throw new ArgumentNullException("Database connection string not configured");
-            _baseUrl = configuration["BaseUrl"] 
-                ?? throw new ArgumentNullException("BaseUrl not configured");
-            _publicBaseUrl = configuration["PublicBaseUrl"] 
-                ?? throw new ArgumentNullException("PublicBaseUrl not configured");
+            _connectionString = configuration.GetConnectionString("Default") ?? string.Empty;
+            _baseUrl = configuration["BaseUrl"] ?? string.Empty;
+            _publicBaseUrl = configuration["PublicBaseUrl"] ?? string.Empty;
         }
 
         /// <summary>

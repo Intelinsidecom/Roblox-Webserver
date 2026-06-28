@@ -5,6 +5,12 @@ using Games;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
+using Assets;
+using System.IO;
+using System.Net.Http;
+using Website.Services;
+using Npgsql;
+using System.Security.Claims;
 
 namespace Website.Controllers.Client
 {
@@ -15,13 +21,19 @@ namespace Website.Controllers.Client
         private readonly GamePresenceService _gamePresenceService;
         private readonly AuthenticationTicketService _ticketService;
         private readonly IConfiguration _configuration;
+        private readonly AssetService _assetService;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ScriptTemplateService _scriptTemplateService;
 
-        public GameController(AppDbContext dbContext, GamePresenceService gamePresenceService, AuthenticationTicketService ticketService, IConfiguration configuration)
+        public GameController(AppDbContext dbContext, GamePresenceService gamePresenceService, AuthenticationTicketService ticketService, IConfiguration configuration, IHttpClientFactory httpClientFactory, ScriptTemplateService scriptTemplateService)
         {
             _dbContext = dbContext;
             _gamePresenceService = gamePresenceService;
             _ticketService = ticketService ?? throw new ArgumentNullException(nameof(ticketService));
             _configuration = configuration;
+            _assetService = new AssetService(configuration, httpClientFactory);
+            _httpClientFactory = httpClientFactory;
+            _scriptTemplateService = scriptTemplateService;
         }
 
         private bool ValidateArbiterToken(string token)
@@ -208,6 +220,35 @@ namespace Website.Controllers.Client
             }
         }
 
+        [HttpGet("/Game/GetCurrentUser.ashx")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+            {
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (long.TryParse(userIdClaim, out var userId) && userId > 0)
+                    return Content(userId.ToString(), "text/plain");
+            }
+
+            var token = Request.Cookies[".ROBLOSECURITY"];
+            if (string.IsNullOrEmpty(token))
+                token = Request.Query["suggest"];
+            if (string.IsNullOrEmpty(token))
+                token = Request.Query[".ROBLOSECURITY"];
+            if (string.IsNullOrEmpty(token))
+                token = Request.Headers["X-Roblox-Auth"];
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var tokenService = HttpContext.RequestServices.GetRequiredService<TokenService>();
+                var userId = await tokenService.ValidateSessionAsync(token);
+                if (userId.HasValue && userId.Value > 0)
+                    return Content(userId.Value.ToString(), "text/plain");
+            }
+
+            return Content("0", "text/plain");
+        }
+
         [HttpGet("/Game/ClientPresence.ashx")]
         public async Task<IActionResult> ClientPresence(long? userID, long? PlaceID, string? action, string? jobId)
         {
@@ -334,6 +375,167 @@ namespace Website.Controllers.Client
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        private async Task<long> GetCurrentUserIdAsync()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var claimVal = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (!string.IsNullOrEmpty(claimVal) && long.TryParse(claimVal, out var userId) && userId > 0)
+                {
+                    return userId;
+                }
+            }
+            return 0;
+        }
+
+        private async Task<bool> UserOwnsPlaceAsync(long userId, long placeId)
+        {
+            var connectionString = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrEmpty(connectionString))
+                return false;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            await using var cmd = new NpgsqlCommand(@"
+                select a.owner_user_id
+                from assets a
+                where a.asset_id = @placeId and a.is_place = true
+                limit 1", conn);
+
+            cmd.Parameters.AddWithValue("placeId", placeId);
+
+            var result = await cmd.ExecuteScalarAsync();
+            return result != null && (long)result == userId;
+        }
+
+        [HttpGet("/Game/edit.ashx")]
+        public async Task EditPlace([FromQuery] long placeId, [FromQuery] string? upload = null, [FromQuery] bool testmode = false, [FromQuery] long universeId = 0)
+        {
+            if (placeId < 0)
+            {
+                Response.StatusCode = 400;
+                return;
+            }
+
+            var userId = await GetCurrentUserIdAsync();
+            if (userId == 0 || !await UserOwnsPlaceAsync(userId, placeId))
+            {
+                Response.StatusCode = 403;
+                return;
+            }
+
+            var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
+            var placeIdStr = placeId > 0 ? placeId.ToString() : "0";
+
+            var roblosecurityCookie = Request.Cookies[".ROBLOSECURITY"] ?? Request.Cookies["RBXSessionTracker"] ?? "";
+            var luaSafeCookie = roblosecurityCookie.Replace("\\", "\\\\").Replace("\"", "\\\"");
+
+            var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl.Replace("://www.", "://data.").Replace("://assetgame.", "://data.");
+            var uploadUrl = $"{dataBaseUrl}/Data/Upload.ashx?assetid={placeId}";
+
+            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {uploadUrl}";
+            var script = _scriptTemplateService.Render("edit", replacement);
+
+            var data = "\r\n" + script;
+            await WriteSignedScript(data);
+        }
+
+        [HttpGet("/Game/visit.ashx")]
+        public async Task VisitPlace([FromQuery] long placeId, [FromQuery] long userId = 0, [FromQuery] long universeId = 0, [FromQuery] int isPlaySolo = 0)
+        {
+            if (placeId < 0)
+            {
+                Response.StatusCode = 400;
+                return;
+            }
+
+            var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
+
+            var roblosecurityCookie = Request.Cookies[".ROBLOSECURITY"] ?? Request.Cookies["RBXSessionTracker"] ?? "";
+            var luaSafeCookie = roblosecurityCookie.Replace("\\", "\\\\").Replace("\"", "\\\"");
+
+            var userName = $"Guest {userId}";
+            var isUnder13 = "False";
+            var membershipType = "None";
+            var accountAge = "0";
+
+            if (userId > 0)
+            {
+                try
+                {
+                    var connStr = _configuration.GetConnectionString("Default");
+                    if (!string.IsNullOrWhiteSpace(connStr))
+                    {
+                        await using var conn = new NpgsqlConnection(connStr);
+                        await conn.OpenAsync();
+                        await using var cmd = new NpgsqlCommand(
+                            "SELECT user_name, birthday, membership_status, account_age_days FROM users WHERE user_id = @uid", conn);
+                        cmd.Parameters.AddWithValue("uid", userId);
+                        await using var reader = await cmd.ExecuteReaderAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            userName = reader.IsDBNull(0) ? userName : reader.GetString(0);
+                            accountAge = reader.IsDBNull(3) ? "0" : reader.GetInt32(3).ToString();
+
+                            if (!reader.IsDBNull(1))
+                            {
+                                var birthday = reader.GetDateTime(1);
+                                isUnder13 = birthday.AddYears(13) > DateTime.UtcNow ? "True" : "False";
+                            }
+
+                            var membership = reader.IsDBNull(2) ? 0 : reader.GetInt16(2);
+                            membershipType = membership switch
+                            {
+                                1 => "BuildersClub",
+                                2 => "TurboBuildersClub",
+                                3 => "OutrageousBuildersClub",
+                                _ => "None"
+                            };
+                        }
+                    }
+                }
+                catch
+                {
+                    // fallback to guest defaults
+                }
+            }
+
+            var isPlaySoloStr = isPlaySolo != 0 ? "true" : "false";
+            var userAgent = Request.Headers["User-Agent"].FirstOrDefault() ?? "";
+            var isInStudio = userAgent.Contains("Roblox", StringComparison.OrdinalIgnoreCase) ? "true" : "false";
+
+            var placeIdStr = placeId > 0 ? placeId.ToString() : "0";
+            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {universeId}; %5% = {userId}; %6% = {userName}; %7% = {isUnder13}; %8% = {membershipType}; %9% = {accountAge}; %10% = {isPlaySoloStr}; %11% = {isInStudio}";
+            var script = _scriptTemplateService.Render("visit", replacement);
+
+            var data = "\r\n" + script;
+            await WriteSignedScript(data);
+        }
+
+        private async Task WriteSignedScript(string data)
+        {
+            var privateKeyPem = _configuration["RSA:PrivateKey"];
+            if (string.IsNullOrWhiteSpace(privateKeyPem))
+            {
+                Response.ContentType = "text/plain";
+                Response.Headers["X-Robots-Tag"] = "noindex";
+                await Response.WriteAsync(data);
+                return;
+            }
+
+            using (var rsa = System.Security.Cryptography.RSA.Create())
+            {
+                rsa.ImportFromPem(privateKeyPem);
+                var dataBytes = System.Text.Encoding.UTF8.GetBytes(data);
+                var sig = rsa.SignData(dataBytes, System.Security.Cryptography.HashAlgorithmName.SHA1, System.Security.Cryptography.RSASignaturePadding.Pkcs1);
+                var sigB64 = Convert.ToBase64String(sig);
+                Response.ContentType = "text/plain";
+                Response.Headers["X-Robots-Tag"] = "noindex";
+                await Response.WriteAsync("--rbxsig%" + sigB64 + "%" + data);
             }
         }
     }

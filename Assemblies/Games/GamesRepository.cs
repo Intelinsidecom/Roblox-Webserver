@@ -1,10 +1,12 @@
 using Npgsql;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets;
+using Common;
 
 namespace Games;
 
@@ -281,13 +283,137 @@ public static class GamesRepository
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         const string sql = @"SELECT description 
-                               FROM assets 
-                               WHERE asset_id = @placeId AND is_place = true";
+                                FROM assets 
+                                WHERE asset_id = @placeId AND is_place = true";
 
         using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("placeId", placeId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
         return result as string;
+    }
+
+    /// <summary>
+    /// Gets the owner user ID for an asset. Returns null if the asset doesn't exist.
+    /// </summary>
+    public static async Task<long?> GetAssetOwnerAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (assetId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(assetId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT owner_user_id FROM assets WHERE asset_id = @assetId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("assetId", assetId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        if (result == null || result == DBNull.Value)
+            return null;
+
+        return Convert.ToInt64(result);
+    }
+
+    /// <summary>
+    /// Replaces a place asset with new file content. Computes the hash, saves the file,
+    /// archives the old hash in version history, and updates the database.
+    /// Returns (true, null) on success, or (false, errorMessage) on failure.
+    /// </summary>
+    public static async Task<(bool Success, string? Error)> ReplacePlaceAssetAsync(
+        string connectionString,
+        string assetsDirectory,
+        long placeId,
+        byte[] fileBytes,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            return (false, "Connection string is required");
+        if (string.IsNullOrWhiteSpace(assetsDirectory))
+            return (false, "Assets directory not configured");
+        if (placeId <= 0)
+            return (false, "Invalid place ID");
+        if (fileBytes == null || fileBytes.Length == 0)
+            return (false, "Empty file body");
+
+        // Verify the asset exists and is a place
+        long? ownerId;
+        string? currentHash;
+        using (var conn = new NpgsqlConnection(connectionString))
+        {
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"SELECT asset_id, content_hash, owner_user_id FROM assets WHERE asset_id = @placeId AND is_place = true";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("placeId", placeId);
+
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return (false, $"Asset {placeId} not found or is not a place.");
+
+            currentHash = reader.IsDBNull(1) ? null : reader.GetString(1);
+            ownerId = reader.IsDBNull(2) ? (long?)null : reader.GetInt64(2);
+        }
+
+        var newHash = HashingUtilities.GenerateFileHash(fileBytes);
+
+        if (string.Equals(currentHash, newHash, StringComparison.OrdinalIgnoreCase))
+            return (true, null);
+
+        // Save the file to the assets directory
+        var assetFolder = Path.Combine(assetsDirectory, "asset");
+        Directory.CreateDirectory(assetFolder);
+        var fileName = newHash + ".rbxl";
+        var filePath = Path.Combine(assetFolder, fileName);
+
+        try
+        {
+            File.WriteAllBytes(filePath, fileBytes);
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Failed to save file: {ex.Message}");
+        }
+
+        // Archive the old hash in version history (if there was one)
+        if (!string.IsNullOrWhiteSpace(currentHash))
+        {
+            try
+            {
+                await VersionHistory.AddVersionEntryAsync(connectionString, placeId, currentHash, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Version history failure should not block the upload
+            }
+        }
+
+        // Update the asset record
+        using (var conn = new NpgsqlConnection(connectionString))
+        {
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string updateSql = @"
+                UPDATE assets 
+                SET content_hash = @newHash,
+                    file_extension = '.rbxl',
+                    content_type = 'application/octet-stream',
+                    last_updated = CURRENT_TIMESTAMP
+                WHERE asset_id = @placeId AND is_place = true";
+
+            using var cmd = new NpgsqlCommand(updateSql, conn);
+            cmd.Parameters.AddWithValue("newHash", newHash);
+            cmd.Parameters.AddWithValue("placeId", placeId);
+
+            var rowsAffected = await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            if (rowsAffected == 0)
+                return (false, $"Failed to update asset {placeId}.");
+        }
+
+        return (true, null);
     }
 }
