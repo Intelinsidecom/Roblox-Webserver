@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using RobloxSetupServer.Data;
-using Setup.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
