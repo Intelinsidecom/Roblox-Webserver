@@ -39,10 +39,12 @@ Documentation will be made in github Wiki Form.
 1. Download NET. SDK 8.1 on Windows
 2. Download Latest PostgresSQL on Windows
 3. Change the AppSettings.json files to match your needs.
-4. Dotnet run in cmd in each directory where the project is
-5. Profit
+4. In each project, open cmd window and run "dotnet run" (What each project does is in wiki)
+5. Compile Control Panel project (Windows Only) and from database section, update database with schemas. (Migrate button)
+6. Check manually if everything works by setting up fully using the documentation from wiki.
+7. Profit
 
-Note: If you dont have an domain but want to test it out, change the hosts file to redirect freblx.xyz or whatever url you want like and then make change client urls accordingly and also set the localhost mode to true in website project
+Note: If you dont have an domain but want to test it out, change the hosts file to redirect freblx.xyz or whatever url you want like and then make change client urls accordingly and also set the localhost mode to true in website project.
 
 # Project is not affiliated with Roblox in any way
-Roblox assets from Pre 2021 era are only used for the core aesthetic of the project. in production its recommended to remake or change the JS, CSS, image assets.
+Roblox assets from Pre 2021 era are only used for the core aesthetic of the project, project is mean for self hosting. in production its recommended to remake or change the JS, CSS, image assets to avoid any legal action from Roblox Corporation.
