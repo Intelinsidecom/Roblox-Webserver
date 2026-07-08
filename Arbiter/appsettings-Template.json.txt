@@ -12,18 +12,19 @@
       "Cores": 1.0
     },
     "SoapLogging": {
-      "Enabled": true
+      "Enabled": false
     },
-    "SeparateWindow": true,
-    "GameServerSeparateWindow": true,
-    "GameServerUseFixedPort": false,
-    "GameServerFixedPort": 64989
+    "Year": "2016",
+    "Port": 64989,
+    "Executable": "RCCService.exe",
+    "Arguments": "-console -DebugLocalRccServerConnection",
+    "SeparateWindow": true
   },
   "Rendering": {
     "Year": "2016",
     "Port": 64989,
     "Executable": "RCCService.exe",
-    "Arguments": "-console -start -SettingsKey 64989 -verbose",
+    "Arguments": "-console -start -SettingsKey 64989 -verbose -DebugLocalRccServerConnection",
     "AutoStart": false,
     "MaxPerInstance": 2,
     "IdleTimeoutMinutes": 5,
@@ -34,7 +35,13 @@
         "/thumbnails/render",
         "/renderheadshot",
         "/renderavatarasset",
-        "/rendergame"
+        "/rendergame",
+        "/gameserver/start",
+        "/gameserver/status",
+        "/gameserver/stop",
+        "/gameserver/renew",
+        "/gameservers",
+        "/gameservers/cleanup"
       ],
       "Functions": [
         "renderavatar",
@@ -50,6 +57,7 @@
   "Arbiter": {
     "BaseUrl": "http://localhost:5077",
     "UploadUrl": "http://localhost:5077/api/thumbnails/upload",
-    "AccessKey": "ChangeMe"
+    "AccessKey": "ChangeMe",
+    "WebsiteUrl": "http://localhost:5077"
   }
 }

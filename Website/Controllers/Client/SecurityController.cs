@@ -46,7 +46,7 @@ namespace Website.Controllers.Client
             {
                 data = new[]
                 {
-                    "580a89086b1238b1a695cdaeb5408c63",
+                    "f7a902918f28044b5a94f9c5d09e2e43",
                     "random"
                 }
             };

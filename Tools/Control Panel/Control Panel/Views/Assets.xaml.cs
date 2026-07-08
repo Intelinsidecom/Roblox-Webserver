@@ -256,12 +256,17 @@ namespace Control_Panel
             var selectedItem = AssetTypeComboBox.SelectedItem as ComboBoxItem;
             if (selectedItem?.Content?.ToString() is string assetTypeText)
             {
-                bool showItemOptions = assetTypeText == "T-Shirt (2)" || 
-                                     assetTypeText == "Shirt (11)" || 
-                                     assetTypeText == "Pants (12)";
-                PriceFieldsPanel.Visibility = showItemOptions ? Visibility.Visible : Visibility.Collapsed;
-                ItemOptionsPanel.Visibility = showItemOptions ? Visibility.Visible : Visibility.Collapsed;
-                LimitedFieldsPanel.Visibility = showItemOptions ? Visibility.Visible : Visibility.Collapsed;
+                bool isPlace = assetTypeText == "Place (9) (Wont be added for some time)";
+                bool isDecalAudioMeshModel = assetTypeText == "Decal (13)" ||
+                                             assetTypeText == "Audio (3)" ||
+                                             assetTypeText == "Mesh (4)" ||
+                                             assetTypeText == "Model (10)";
+                bool showSellOptions = !isPlace && !isDecalAudioMeshModel;
+
+                PriceFieldsPanel.Visibility = showSellOptions ? Visibility.Visible : Visibility.Collapsed;
+                ItemOptionsPanel.Visibility = showSellOptions ? Visibility.Visible : Visibility.Collapsed;
+                LimitedFieldsPanel.Visibility = showSellOptions ? Visibility.Visible : Visibility.Collapsed;
+                MakeFreePanel.Visibility = isDecalAudioMeshModel ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -283,12 +288,24 @@ namespace Control_Panel
             
             switch (assetTypeContent)
             {
-                case "Decal (1)":
+                case "Decal (13)":
                 case "T-Shirt (2)":
                 case "Shirt (11)":
                 case "Pants (12)":
                     filter = "Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp|All files (*.*)|*.*";
                     title = $"Select {assetTypeContent.Split('(')[0].Trim()} Image";
+                    break;
+                case "Audio (3)":
+                    filter = "Audio Files (*.mp3;*.ogg;*.wav)|*.mp3;*.ogg;*.wav|All files (*.*)|*.*";
+                    title = "Select Audio File";
+                    break;
+                case "Mesh (4)":
+                    filter = "Mesh Files (*.mesh)|*.mesh|All files (*.*)|*.*";
+                    title = "Select Mesh File";
+                    break;
+                case "Model (10)":
+                    filter = "Model Files (*.rbxm;*.rbxmx)|*.rbxm;*.rbxmx|All files (*.*)|*.*";
+                    title = "Select Model File";
                     break;
                 default:
                     title = "Select File";
@@ -333,6 +350,7 @@ namespace Control_Panel
                 _viewLoader?.UpdateStatus("Processing file...");
                 await System.Threading.Tasks.Task.Delay(100);
                 bool putOnSale = PutOnSaleCheckBox.IsChecked == true;
+                bool makeFree = MakeFreeCheckBox.IsChecked == true;
                 var result = await _assetService.UploadImageBasedAssetAsync(
                     _selectedFilePath,
                     AssetNameTextBox.Text?.Trim(),
@@ -340,7 +358,8 @@ namespace Control_Panel
                     RobuxPriceTextBox.Text?.Trim(),
                     TixPriceTextBox.Text?.Trim(),
                     assetTypeContent,
-                    putOnSale);
+                    putOnSale,
+                    makeFree: makeFree);
 
                 if (hasCustomAssetId)
                 {
@@ -376,6 +395,7 @@ namespace Control_Panel
             _selectedFilePath = null;
             IsLimitedCheckBox.IsChecked = false;
             PutOnSaleCheckBox.IsChecked = true;
+            MakeFreeCheckBox.IsChecked = true;
             LimitedFieldsGrid.IsEnabled = false;
             AssetTypeComboBox.SelectedIndex = -1;
             _viewLoader?.UpdateStatus("Click Save to apply configuration changes.");

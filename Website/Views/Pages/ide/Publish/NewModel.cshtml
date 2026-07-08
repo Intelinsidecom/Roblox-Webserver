@@ -30,7 +30,18 @@
             Roblox.browserDoNotTrack = dnt == "1" || dnt == "yes" || dnt === true;
         })();
     </script>
-    <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='studio' type='text/javascript' src='http://www.reloxa.xyz/js/3719f3fb35135d05cf6b72d5b0f46333.js'>
+
+    <script type="text/javascript" src="/JS/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="/JS/roblox.js"></script>
+    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/JS/common/forms.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="/JS/common/forms.js"></script>
     </script>
    <script type='text/javascript'>
         Roblox.config.externalResources = [];
@@ -42,7 +53,11 @@
         Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
         Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
     </script>
-    <script onerror='Roblox.BundleDetector && Roblox.BundleDetector.reportBundleError(this)' data-monitor='true' data-bundlename='page' type='text/javascript' src='http://www.reloxa.xyz/js/a1ec30f16d5202192e1d89ed4aca2c58.js'>
+    <script type="text/javascript" src="/JS/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/JS/IDE/validator.js"></script>
+    <script type="text/javascript" src="/JS/IDE/create.js"></script>
     </script>
 
     <script type="text/javascript">
@@ -86,9 +101,17 @@
                 </select>
                 <span class="field-validation-valid" data-valmsg-for="Genre" data-valmsg-replace="true"></span>
 
-                    <label class="form-label" for="ArePrivateServersAllowed">Comments:</label>
-                    <label id="BuildersClubOnlyLabel" class="checkboxListItem">
-                        <input data-val="true" data-val-required="The BuildersClubOnly field is required." id="BuildersClubOnlyCheckbox" name="BuildersClubOnly" type="checkbox" value="true" /><input name="BuildersClubOnly" type="hidden" value="false" />
+
+                    <label class="form-label" for="CopyLockCheckbox">Copy-Lock:</label>
+                    <label id="copyLock" class="checkboxListItem">
+                        <input data-val="true" data-val-required="The Allow Copying field is required." id="IsCopyingAllowed" name="IsCopyingAllowed" type="checkbox" value="true" />
+                        <span>
+                            Locked
+                        </span>
+                    </label>
+                    <label class="form-label" for="AllowCommentsCheckbox">Comments:</label>
+                    <label id="AllowCommentsLabel" class="checkboxListItem">
+                        <input data-val="true" data-val-required="The AllowComments field is required." id="AllowCommentsCheckbox" name="AllowComments" type="checkbox" value="true" />
                         <span>
                             Allow Comments
                         </span>

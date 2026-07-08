@@ -15,6 +15,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Assemblies\Common\Common.csproj" />
     <ProjectReference Include="..\Assemblies\Games\Games.csproj" />
+    <ProjectReference Include="..\Assemblies\Assets\Assets.csproj" />
+    <ProjectReference Include="..\Assemblies\Thumbnails\Thumbnails.csproj" />
   </ItemGroup>
 
 </Project>

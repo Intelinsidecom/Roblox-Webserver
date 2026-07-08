@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
-using Npgsql;
 using System;
 using System.IO;
 using System.Text;
@@ -10,6 +9,7 @@ using System.Security.Claims;
 using System.Net.Http;
 using Assets;
 using Users;
+using Website.Services;
 
 namespace Website.Controllers
 {
@@ -20,20 +20,61 @@ namespace Website.Controllers
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AssetService _assetService;
+        private readonly XMLTemplateService _templateService;
 
-        public AssetController(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public AssetController(IConfiguration configuration, IHttpClientFactory httpClientFactory, XMLTemplateService templateService)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
             _assetService = new AssetService(configuration, httpClientFactory);
+            _templateService = templateService;
         }
 
-        // GET /Asset?id={assetId}
-        // Looks up the asset record and streams the underlying file from the CDN Assets directory.
         [HttpGet]
-        // Accept optional serverplaceid param (ignored) so /asset/?id=123&serverplaceid=X works
-        public async Task<IActionResult> GetAsset([FromQuery] long? id, [FromQuery(Name = "serverplaceid")] long? serverPlaceId = null)
+        public async Task<IActionResult> GetAsset(
+            [FromQuery] long? id,
+            [FromQuery] long? universeId,
+            [FromQuery] string? assetName,
+            [FromQuery(Name = "serverplaceid")] long? serverPlaceId = null,
+            [FromQuery(Name = "ApiKey")] string? apiKey = null,
+            [FromQuery(Name = "skipSigningScripts")] string? skipSigningScripts = null)
         {
+            if (universeId.HasValue && !string.IsNullOrWhiteSpace(assetName))
+            {
+                long actualUniverseId = universeId.Value;
+                if (actualUniverseId == 0)
+                {
+                    long? placeId = null;
+                    string[] placeIdHeaders = { "Roblox-Place-Id", "X-Roblox-Place-Id", "Place-Id" };
+                    foreach (var headerName in placeIdHeaders)
+                    {
+                        var placeIdHeader = Request.Headers[headerName].FirstOrDefault();
+                        if (!string.IsNullOrWhiteSpace(placeIdHeader) && long.TryParse(placeIdHeader, out var headerPlaceId))
+                        {
+                            placeId = headerPlaceId;
+                            break;
+                        }
+                    }
+
+                    if (!placeId.HasValue && serverPlaceId.HasValue && serverPlaceId.Value > 0)
+                    {
+                        placeId = serverPlaceId.Value;
+                    }
+
+                    if (placeId.HasValue)
+                    {
+                        actualUniverseId = await GetUniverseIdFromPlaceId(placeId.Value);
+                    }
+                }
+
+                if (actualUniverseId > 0)
+                {
+                    return await GetAssetByUniverseAlias(actualUniverseId, assetName);
+                }
+
+                return BadRequest(new { error = "Could not determine universe ID" });
+            }
+
             if (!id.HasValue || id.Value <= 0)
                 return BadRequest(new { error = "id is required" });
 
@@ -41,13 +82,47 @@ namespace Website.Controllers
             if (string.IsNullOrWhiteSpace(connStr))
                 return StatusCode(500, "Database connection string is not configured.");
 
-            string? hash = null;
-            string? ext = null;
-            string? contentType = null;
-            var metadata = await _assetService.GetAssetMetadataAsync(id.Value);
-            hash = metadata.Hash;
-            ext = metadata.Extension;
-            contentType = metadata.ContentType;
+            var metadataRepo = new AssetMetadataRepository();
+            var asset = await metadataRepo.GetAssetByIdAsync(connStr, id.Value);
+
+            var accessKeyHeader = Request.Headers["Accesskey"].FirstOrDefault();
+            bool bypassAccessCheck = (!string.IsNullOrWhiteSpace(apiKey) &&
+                string.Equals(apiKey, _configuration["Arbiter:AccessKey"], StringComparison.Ordinal)) ||
+                (!string.IsNullOrWhiteSpace(accessKeyHeader) &&
+                string.Equals(accessKeyHeader, _configuration["Arbiter:AccessKey"], StringComparison.Ordinal));
+
+            var debugUserIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            bool isPlaceType = asset != null && (asset.IsPlace || asset.AssetTypeId == 9 || asset.AssetTypeId == 3);
+            if (!bypassAccessCheck && isPlaceType && !asset.IsCopyingAllowed)
+            {
+                long? currentUserId = null;
+                var userIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var parsedId))
+                    currentUserId = parsedId;
+
+                if (!currentUserId.HasValue || currentUserId.Value != asset.OwnerUserId)
+                    return StatusCode(403, new { error = "This asset is copylocked and cannot be accessed." });
+            }
+
+            string? hash = asset?.ContentHash;
+            string? ext = asset?.FileExtension;
+            string? contentType = asset?.ContentType;
+            int? assetTypeId = asset?.AssetTypeId;
+
+            if (assetTypeId == 13 && !string.Equals(ext, ".rbxm", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(hash))
+            {
+                var scheme = Request.Scheme ?? "http";
+                var host = Request.Host.HasValue ? Request.Host.Value : "localhost";
+                var imageUrl = $"{scheme}://{host}/asset/decal-image/{id.Value}";
+
+                var xml = _templateService.Render("decal.xml", new Dictionary<string, string>
+                {
+                    ["ImageUrl"] = System.Security.SecurityElement.Escape(imageUrl),
+                    ["Name"] = System.Security.SecurityElement.Escape(asset?.Name ?? "Decal")
+                });
+                return Content(xml, "application/xml", Encoding.UTF8);
+            }
 
             if (!string.IsNullOrWhiteSpace(hash))
             {
@@ -57,7 +132,7 @@ namespace Website.Controllers
                     var fullPath = _assetService.GetAssetFilePath(hash, ext);
                     if (!string.IsNullOrEmpty(fullPath) && System.IO.File.Exists(fullPath))
                     {
-                        var ct = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType;
+                        var ct = !string.IsNullOrWhiteSpace(contentType) && contentType.Contains('/') ? contentType : "application/octet-stream";
                         var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
                         return File(stream, ct);
                     }
@@ -79,6 +154,107 @@ namespace Website.Controllers
             if (string.IsNullOrWhiteSpace(hash))
                 return NotFound(new { error = "Asset not found" });
             return NotFound(new { error = "Asset file not found" });
+        }
+
+        private async Task<IActionResult> GetAssetByUniverseAlias(long universeId, string assetName)
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, "Database connection string is not configured.");
+
+            try
+            {
+                var aliasesJson = await Games.GamesRepository.GetUniverseAliasesAsync(connStr, universeId);
+                if (aliasesJson == null)
+                    return NotFound(new { error = "Universe not found" });
+                if (string.IsNullOrWhiteSpace(aliasesJson) || aliasesJson == "[]")
+                    return NotFound(new { error = "No aliases found" });
+
+                using var doc = System.Text.Json.JsonDocument.Parse(aliasesJson);
+                var aliases = doc.RootElement;
+
+                long? targetAssetId = null;
+                foreach (var alias in aliases.EnumerateArray())
+                {
+                    if (alias.TryGetProperty("Name", out var nameProp) &&
+                        nameProp.GetString() == assetName)
+                    {
+                        if (alias.TryGetProperty("TargetId", out var targetIdProp) &&
+                            long.TryParse(targetIdProp.GetString(), out var targetId))
+                        {
+                            targetAssetId = targetId;
+                            break;
+                        }
+                    }
+                }
+
+                if (!targetAssetId.HasValue)
+                    return NotFound(new { error = "Alias not found" });
+
+                var metadataRepo = new AssetMetadataRepository();
+                var asset = await metadataRepo.GetAssetByIdAsync(connStr, targetAssetId.Value);
+
+                if (asset == null)
+                    return NotFound(new { error = "Asset not found for alias" });
+
+                var hash = asset.ContentHash;
+                var ext = asset.FileExtension;
+                var contentType = asset.ContentType;
+
+                if (!string.IsNullOrWhiteSpace(hash))
+                {
+                    var assetsRoot = _configuration["Assets:Directory"];
+                    if (!string.IsNullOrWhiteSpace(assetsRoot))
+                    {
+                        var fullPath = _assetService.GetAssetFilePath(hash, ext);
+                        if (!string.IsNullOrEmpty(fullPath) && System.IO.File.Exists(fullPath))
+                        {
+                        var ct = !string.IsNullOrWhiteSpace(contentType) && contentType.Contains('/') ? contentType : "application/octet-stream";
+                            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+                            return File(stream, ct);
+                        }
+                    }
+                }
+
+                if (_assetService.IsRobloxAssetDeliveryEnabled())
+                {
+                    var result2 = await _assetService.TryFetchFromRobloxAssetDeliveryAsync(targetAssetId.Value, contentType);
+                    if (result2.Stream != null)
+                    {
+                        return File(result2.Stream, result2.ContentType);
+                    }
+                    if (string.IsNullOrWhiteSpace(hash))
+                        return NotFound(new { error = "Asset not found" });
+                    return NotFound(new { error = result2.Error });
+                }
+
+                if (string.IsNullOrWhiteSpace(hash))
+                    return NotFound(new { error = "Asset not found" });
+                return NotFound(new { error = "Asset file not found" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        private async Task<long> GetUniverseIdFromPlaceId(long placeId)
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return 0;
+
+            try
+            {
+                var universeId = await Games.GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, placeId);
+                return universeId ?? 0;
+            }
+            catch
+            {
+                // Ignore errors
+            }
+
+            return 0;
         }
 
         // GET /Asset/characterfetch.ashx?player={id}
@@ -116,50 +292,31 @@ namespace Website.Controllers
                 var repo = new Users.BodyColorsRepository();
                 var bodyColors = await repo.GetBodyColorsAsync(connStr, uid);
 
-                var xml = $"""
-<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-    <External>null</External>
-    <External>nil</External>
-    <Item class="BodyColors"> 
-        <Properties>
-            <int name="HeadColor">{bodyColors.HeadColorId}</int>
-            <int name="LeftArmColor">{bodyColors.LeftArmColorId}</int>
-            <int name="LeftLegColor">{bodyColors.LeftLegColorId}</int>
-            <string name="Name">Body Colors</string>
-            <int name="RightArmColor">{bodyColors.RightArmColorId}</int>
-            <int name="RightLegColor">{bodyColors.RightLegColorId}</int>
-            <int name="TorsoColor">{bodyColors.TorsoColorId}</int>
-            <bool name="archivable">true</bool>
-        </Properties>
-    </Item>
-</roblox>
-""";
+                var xml = _templateService.Render("bodycolors.xml", new Dictionary<string, string>
+                {
+                    ["HeadColorId"] = bodyColors.HeadColorId.ToString(),
+                    ["LeftArmColorId"] = bodyColors.LeftArmColorId.ToString(),
+                    ["LeftLegColorId"] = bodyColors.LeftLegColorId.ToString(),
+                    ["RightArmColorId"] = bodyColors.RightArmColorId.ToString(),
+                    ["RightLegColorId"] = bodyColors.RightLegColorId.ToString(),
+                    ["TorsoColorId"] = bodyColors.TorsoColorId.ToString()
+                });
 
                 return Content(xml, "application/xml", Encoding.UTF8);
             }
             catch (Exception ex)
             {
-                // Return default body colors on any error
-                var defaultXml = $"""
-<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-    <External>null</External>
-    <External>nil</External>
-    <Item class="BodyColors"> 
-        <Properties>
-            <int name="HeadColor">1</int>
-            <int name="LeftArmColor">1</int>
-            <int name="LeftLegColor">1</int>
-            <string name="Name">Body Colors</string>
-            <int name="RightArmColor">1</int>
-            <int name="RightLegColor">1</int>
-            <int name="TorsoColor">1</int>
-            <bool name="archivable">true</bool>
-        </Properties>
-    </Item>
-</roblox>
-""";
+                var xml = _templateService.Render("bodycolors.xml", new Dictionary<string, string>
+                {
+                    ["HeadColorId"] = "1",
+                    ["LeftArmColorId"] = "1",
+                    ["LeftLegColorId"] = "1",
+                    ["RightArmColorId"] = "1",
+                    ["RightLegColorId"] = "1",
+                    ["TorsoColorId"] = "1"
+                });
 
-                return Content(defaultXml, "application/xml", Encoding.UTF8);
+                return Content(xml, "application/xml", Encoding.UTF8);
             }
         }
 
@@ -167,6 +324,32 @@ namespace Website.Controllers
         public IActionResult AssetById()
         {
             return Content(string.Empty, "text/plain");
+        }
+
+        // GET /Asset/decal-image/{id}
+        // Serves the raw image bytes for old-style decals (used by on-the-fly Decal XML wrapper)
+        [HttpGet("decal-image/{id}")]
+        public async Task<IActionResult> GetDecalImage(long id)
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, "Database connection string is not configured.");
+
+            var metadataRepo = new AssetMetadataRepository();
+            var asset = await metadataRepo.GetAssetByIdAsync(connStr, id);
+
+            if (asset == null || asset.AssetTypeId != 13)
+                return NotFound(new { error = "Asset not found" });
+
+            var hash = asset.ContentHash;
+            var ext = asset.FileExtension;
+
+            var fullPath = _assetService.GetAssetFilePath(hash, ext);
+            if (string.IsNullOrEmpty(fullPath) || !System.IO.File.Exists(fullPath))
+                return NotFound(new { error = "Asset file not found" });
+
+            var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
+            return File(stream, "image/png");
         }
 
         [Authorize]
@@ -186,22 +369,7 @@ namespace Website.Controllers
 
             try
             {
-                // First, ensure the asset exists and check if the current user is the creator.
-                long? ownerUserId = null;
-                await using (var conn = new NpgsqlConnection(connStr))
-                {
-                    await conn.OpenAsync().ConfigureAwait(false);
-
-                    const string getOwnerSql = @"select owner_user_id from assets where asset_id = @asset_id";
-                    await using var ownerCmd = new NpgsqlCommand(getOwnerSql, conn);
-                    ownerCmd.Parameters.AddWithValue("asset_id", assetId);
-
-                    var result = await ownerCmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (result != null && result != DBNull.Value)
-                    {
-                        ownerUserId = (long)result;
-                    }
-                }
+                var ownerUserId = await AssetsRepository.GetAssetCreatorIdAsync(connStr, assetId);
 
                 if (!ownerUserId.HasValue)
                 {

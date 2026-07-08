@@ -1,0 +1,99 @@
+<Window x:Class="Control_Panel.CreateDeveloperProductWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Control_Panel"
+        mc:Ignorable="d"
+        Title="Create Developer Product" Height="550" Width="500"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Background}"
+        FontFamily="Segoe UI"
+        ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Create Developer Product" Style="{StaticResource DashboardTitle}"
+                   Foreground="{StaticResource AccentPrimary}"
+                   Margin="0,0,0,20"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="Name:" Style="{StaticResource LabelText}"
+                           Margin="0,0,0,5"/>
+                <TextBox x:Name="ProductNameTextBox"
+                         Style="{StaticResource ModernTextBox}"
+                         MaxLength="50"
+                         Margin="0,0,0,15"/>
+                <TextBlock Text="Description:" Style="{StaticResource LabelText}"
+                           Margin="0,0,0,5"/>
+                <TextBox x:Name="ProductDescriptionTextBox"
+                         Style="{StaticResource ModernTextBox}"
+                         MaxLength="1000"
+                         TextWrapping="Wrap"
+                         AcceptsReturn="True"
+                         MinHeight="80"
+                         Margin="0,0,0,15"/>
+                <TextBlock Text="Price In Robux:" Style="{StaticResource LabelText}"
+                           Margin="0,0,0,5"/>
+                <TextBox x:Name="ProductPriceRobuxTextBox"
+                         Style="{StaticResource ModernTextBox}"
+                         Width="120" HorizontalAlignment="Left"
+                         Margin="0,0,0,15"/>
+                <TextBlock Text="Price In Tickets:" Style="{StaticResource LabelText}"
+                           Margin="0,0,0,5"/>
+                <TextBox x:Name="ProductPriceTixTextBox"
+                         Style="{StaticResource ModernTextBox}"
+                         Width="120" HorizontalAlignment="Left"
+                         Margin="0,0,0,15"/>
+                <TextBlock Text="Select image:" Style="{StaticResource LabelText}"
+                           Margin="0,0,0,5"/>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="SelectImageButton"
+                            Content="Select Image"
+                            Style="{StaticResource ModernButton}"
+                            Width="120" Height="30"
+                            Click="SelectImageButton_Click"/>
+                    <TextBlock Grid.Column="1" x:Name="SelectedImageIndicator"
+                               VerticalAlignment="Center"
+                               Margin="10,0,0,0"
+                               Style="{StaticResource DescriptionText}"/>
+                </Grid>
+                <Border x:Name="ImagePreviewBorder"
+                        BorderBrush="{StaticResource SubtleText}"
+                        BorderThickness="1"
+                        Width="256" Height="256"
+                        HorizontalAlignment="Left"
+                        Visibility="Collapsed"
+                        Margin="0,0,0,10">
+                    <Image x:Name="ProductImagePreview"
+                           Width="256" Height="256"
+                           Stretch="Uniform"/>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+        <Border Grid.Row="2" BorderBrush="{StaticResource SubtleText}" BorderThickness="0,1,0,0"
+                Background="{StaticResource Background}" Padding="0,10,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button x:Name="CreateButton"
+                        Content="Create"
+                        Style="{StaticResource ModernButton}"
+                        Width="100" Height="35"
+                        Margin="0,0,10,0"
+                        Click="CreateButton_Click"/>
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        Style="{StaticResource ModernButton}"
+                        Background="{StaticResource SubtleText}"
+                        Width="100" Height="35"
+                        Click="CancelButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -11,6 +11,15 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/home");
             return View("~/Views/Pages/Index.cshtml");
         }
+        
+
+        [HttpGet("0")]
+        public IActionResult RootAlt()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+                return Redirect("/home");
+            return View("~/Views/Pages/Games.cshtml");
+        }
 
         [HttpGet("login")]
         public IActionResult Login(string? returnUrl = null)
@@ -28,6 +37,24 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/home");
             ViewBag.ReturnUrl = returnUrl;
             return View("~/Views/Pages/Login.cshtml");
+        }
+
+        [HttpGet("ide/login")]
+        public IActionResult IDELogin(string? returnUrl = null)
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+                return Redirect("/ide/welcome");
+            ViewBag.ReturnUrl = returnUrl;
+            return View("~/Views/Pages/ide/login.cshtml");
+        }
+
+        [HttpPost("ide/login")]
+        public IActionResult IDELoginPost(string? returnUrl = null)
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+                return Redirect("/ide/welcome");
+            ViewBag.ReturnUrl = returnUrl;
+            return View("~/Views/Pages/ide/login.cshtml");
         }
 
         [HttpGet("newlogin")]
@@ -89,6 +116,19 @@ namespace RobloxWebserver.Controllers
 
         [HttpPost("develop")]
         public IActionResult DevelopPagePost()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+            {
+            return View("~/Views/Develop/Guest.cshtml");
+            }
+            else
+            {
+            return View("~/Views/Pages/Develop.cshtml");
+            }
+        }
+
+        [HttpGet("develop/library")]
+        public IActionResult DevelopLibraryPage()
         {
             if (User?.Identity?.IsAuthenticated == false)
             {

@@ -70,8 +70,12 @@ builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
 builder.Services.AddSingleton<Website.Services.DevelopTabService>();
 builder.Services.AddSingleton<ScriptTemplateService>();
+builder.Services.AddSingleton<XMLTemplateService>();
 builder.Services.AddSingleton<AssetMetadataRepository>();
+builder.Services.AddSingleton<ToolboxService>();
+builder.Services.AddHostedService<ToolboxService>(sp => sp.GetRequiredService<ToolboxService>());
 builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<Assets.AssetService>();
 builder.Services.AddHttpClient();
 builder.Services.AddWebOptimizerPipeline();
 

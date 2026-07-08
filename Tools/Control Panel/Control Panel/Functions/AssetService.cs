@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets;
 using Common;
+using Games;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Microsoft.Extensions.Configuration;
 
@@ -40,18 +44,29 @@ namespace Control_Panel.Functions
         private readonly TShirtAssetService _tShirtService;
         private readonly ShirtAssetService _shirtService;
         private readonly PantsAssetService _pantsService;
+        private readonly DecalAssetService _decalService;
+        private readonly AudioAssetService _audioService;
+        private readonly MeshAssetService _meshService;
+        private readonly ModelAssetService _modelService;
         private readonly AssetsRepository _repository;
         private readonly AssetManagementService _managementService;
+        private readonly string _votingConnectionString;
+        private readonly Assets.AssetService _serverAssetService;
 
         public AssetService()
         {
             _tShirtService = new TShirtAssetService();
             _shirtService = new ShirtAssetService();
             _pantsService = new PantsAssetService();
+            _decalService = new DecalAssetService();
+            _audioService = new AudioAssetService();
+            _meshService = new MeshAssetService();
+            _modelService = new ModelAssetService();
             _repository = new AssetsRepository();
             
             // Create configuration from Properties.Settings for AssetManagementService
             var controlPanelConfig = GetConfigurationValues();
+            _votingConnectionString = controlPanelConfig.ConnectionString;
             var universalConfig = new AssetUploadConfiguration
             {
                 ConnectionString = controlPanelConfig.ConnectionString,
@@ -71,6 +86,10 @@ namespace Control_Panel.Functions
                     ["ConnectionStrings:Default"] = universalConfig.ConnectionString,
                     ["Assets:Directory"] = universalConfig.AssetsDirectory,
                     ["Thumbnails:Url"] = universalConfig.ThumbnailUrl,
+                    ["Thumbnails:OutputDirectory"] = universalConfig.ThumbnailsOutputDirectory,
+                    ["Thumbnails:ThumbnailUrl"] = universalConfig.ThumbnailUrl,
+                    ["Thumbnails:ArbiterUrl"] = $"http://{Properties.Settings.Default.ArbiterHost}:{Properties.Settings.Default.ArbiterPort}",
+                    ["Thumbnails:WebsiteBaseUrl"] = universalConfig.BaseUrl,
                     ["Templates:TShirt"] = universalConfig.TshirtTemplatePath,
                     ["Templates:TShirtHighRes"] = universalConfig.TshirtTemplateHighResPath,
                     ["Website:PublicBaseUrl"] = universalConfig.PublicBaseUrl,
@@ -79,6 +98,10 @@ namespace Control_Panel.Functions
                 .Build();
             
             _managementService = new AssetManagementService(configuration, universalConfig);
+
+            var services = new ServiceCollection();
+            services.AddHttpClient();
+            _serverAssetService = new Assets.AssetService(configuration, services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>());
         }
 
         /// <summary>
@@ -163,6 +186,19 @@ namespace Control_Panel.Functions
                         thumbnailsRoot,
                         thumbnailBaseUrl,
                         baseUrl,
+                        publicAssetBaseUrl);
+                    break;
+                case 13: // Decal
+                    newAssetId = await UploadDecal(
+                        connectionString,
+                        ownerUserId,
+                        assetName,
+                        fileName,
+                        contentType,
+                        fileBytes,
+                        cdnAssetsRoot,
+                        thumbnailsRoot,
+                        thumbnailBaseUrl,
                         publicAssetBaseUrl);
                     break;
                 default:
@@ -280,6 +316,62 @@ namespace Control_Panel.Functions
         }
 
         /// <summary>
+        /// Uploads a Decal asset
+        /// </summary>
+        private async Task<long> UploadDecal(
+            string connectionString,
+            long ownerUserId,
+            string assetName,
+            string fileName,
+            string contentType,
+            byte[] fileBytes,
+            string cdnAssetsRoot,
+            string thumbnailsRoot,
+            string thumbnailBaseUrl,
+            string publicAssetBaseUrl)
+        {
+            return await _decalService.CreateDecalAsync(
+                connectionString,
+                ownerUserId,
+                assetName,
+                fileName,
+                contentType,
+                fileBytes,
+                cdnAssetsRoot,
+                thumbnailsRoot ?? string.Empty,
+                thumbnailBaseUrl ?? string.Empty,
+                publicAssetBaseUrl,
+                CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Uploads a non-image asset (Audio, Mesh, Model)
+        /// </summary>
+        public async Task<long> UploadNonImageAssetAsync(
+            string connectionString,
+            long ownerUserId,
+            string assetName,
+            byte[] fileBytes,
+            int assetTypeId,
+            string cdnAssetsRoot)
+        {
+            switch (assetTypeId)
+            {
+                case 3: // Audio
+                    return await _audioService.CreateAudioAsync(
+                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);
+                case 4: // Mesh
+                    return await _meshService.CreateMeshAsync(
+                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);
+                case 10: // Model
+                    return await _modelService.CreateModelAsync(
+                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);
+                default:
+                    throw new NotSupportedException($"Unsupported non-image asset type: {assetTypeId}");
+            }
+        }
+
+        /// <summary>
         /// Gets asset type ID from text representation
         /// </summary>
         public int GetAssetTypeIdFromText(string assetTypeText)
@@ -353,7 +445,8 @@ namespace Control_Panel.Functions
         }
 
         /// <summary>
-        /// Uploads an image-based asset with UI feedback and optional custom asset ID assignment
+        /// Uploads an asset with UI feedback and optional custom asset ID assignment.
+        /// Handles image-based (T-Shirt, Shirt, Pants, Decal) and file-based (Audio, Mesh, Model) types.
         /// </summary>
         public async Task<ImageBasedAssetUploadResult> UploadImageBasedAssetAsync(
             string selectedFilePath,
@@ -363,17 +456,70 @@ namespace Control_Panel.Functions
             string tixPriceText,
             string assetTypeText,
             bool putOnSale = false,
-            long? ownerUserId = null)
+            long? ownerUserId = null,
+            bool makeFree = false)
         {
+            var assetTypeId = _managementService.GetAssetTypeIdFromText(assetTypeText);
+            if (assetTypeId == 3 || assetTypeId == 4 || assetTypeId == 10 || assetTypeId == 13)
+            {
+                var validation = _managementService.ValidateAssetUpload(
+                    selectedFilePath, assetName, assetIdText, robuxPriceText, tixPriceText, assetTypeText);
+                if (!validation.IsValid)
+                    throw new ArgumentException(validation.ErrorMessage);
+
+                var config = GetConfigurationValues();
+                var finalOwnerUserId = ownerUserId ?? config.DefaultOwnerUserId;
+                var fileBytes = await Task.Run(() => File.ReadAllBytes(selectedFilePath));
+
+                long newAssetId;
+
+                if (assetTypeId == 13)
+                {
+                    newAssetId = await UploadDecal(
+                        config.ConnectionString, finalOwnerUserId, validation.AssetName,
+                        Path.GetFileName(selectedFilePath),
+                        _managementService.GetContentType(selectedFilePath),
+                        fileBytes,
+                        config.AssetsDirectory,
+                        config.ThumbnailsOutputDirectory,
+                        config.ThumbnailUrl,
+                        config.PublicBaseUrl);
+                }
+                else
+                {
+                    newAssetId = await UploadNonImageAssetAsync(
+                        config.ConnectionString, finalOwnerUserId, validation.AssetName, fileBytes,
+                        assetTypeId, config.AssetsDirectory);
+                }
+
+                if (makeFree)
+                {
+                    await _repository.UpdateAssetPricesAsync(config.ConnectionString, newAssetId, 0, 0);
+                }
+
+                if (validation.AssetId.HasValue && validation.AssetId.Value != newAssetId)
+                {
+                    try
+                    {
+                        newAssetId = await ChangeAssetIdAsync(config.ConnectionString, newAssetId, validation.AssetId.Value);
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        throw new InvalidOperationException($"Failed to assign custom asset ID {validation.AssetId.Value}: {ex.Message}", ex);
+                    }
+                }
+
+                return new ImageBasedAssetUploadResult
+                {
+                    AssetId = newAssetId,
+                    AssetName = validation.AssetName,
+                    AssetType = assetTypeText
+                };
+            }
+
             return await _managementService.UploadImageBasedAssetAsync(
-                selectedFilePath,
-                assetName,
-                assetIdText,
-                robuxPriceText,
-                tixPriceText,
-                assetTypeText,
-                putOnSale,
-                ownerUserId);
+                selectedFilePath, assetName, assetIdText, robuxPriceText, tixPriceText,
+                assetTypeText, putOnSale, ownerUserId);
         }
 
         /// <summary>
@@ -532,6 +678,76 @@ namespace Control_Panel.Functions
         public async Task<bool> ReplaceAssetAsync(long assetId, string newFilePath, string? assetName = null)
         {
             return await _managementService.ReplaceAssetAsync(assetId, newFilePath, assetName);
+        }
+
+        /// <summary>
+        /// Gets version history for an asset
+        /// </summary>
+        public async Task<List<PlaceVersionEntry>> GetAssetVersionHistoryAsync(string connectionString, long assetId)
+        {
+            return await VersionHistory.GetAssetVersionHistoryAsync(connectionString, assetId);
+        }
+
+        /// <summary>
+        /// Reverts an asset to a specific version
+        /// </summary>
+        public async Task<bool> RevertAssetToVersionAsync(string connectionString, long assetId, int version)
+        {
+            return await VersionHistory.RevertToVersionAsync(connectionString, assetId, version, _serverAssetService);
+        }
+
+        /// <summary>
+        /// Gets vote counts for an asset
+        /// </summary>
+        public async Task<(long upvotes, long downvotes)> GetAssetVotesAsync(long assetId)
+        {
+            var votingService = new VotingService(_votingConnectionString);
+            return await votingService.GetAssetVotesAsync(assetId);
+        }
+
+        /// <summary>
+        /// Gets favorite count for an asset
+        /// </summary>
+        public async Task<int> GetFavoriteCountAsync(string connectionString, long assetId)
+        {
+            return await _repository.GetFavoriteCountAsync(connectionString, assetId);
+        }
+
+        /// <summary>
+        /// Updates the allow comments setting for an asset
+        /// </summary>
+        public async Task UpdateAssetAllowCommentsAsync(string connectionString, long assetId, bool allowComments)
+        {
+            await _repository.UpdateAssetAllowCommentsAsync(connectionString, assetId, allowComments);
+        }
+
+        /// <summary>
+        /// Updates the allow copying setting for an asset
+        /// </summary>
+        public async Task UpdateAssetCopyingAllowedAsync(string connectionString, long assetId, bool isCopyingAllowed)
+        {
+            await _repository.UpdateAssetCopyingAllowedAsync(connectionString, assetId, isCopyingAllowed);
+        }
+
+        /// <summary>
+        /// Updates the genre for an asset
+        /// </summary>
+        public async Task UpdateAssetGenreAsync(string connectionString, long assetId, int genre)
+        {
+            await _repository.UpdateAssetGenreAsync(connectionString, assetId, genre);
+        }
+
+        /// <summary>
+        /// Gets asset settings (allow comments, allow copying, genre) for an asset
+        /// </summary>
+        public async Task<(bool allowComments, bool isCopyingAllowed, int genre)> GetAssetSettingsAsync(string connectionString, long assetId)
+        {
+            var metadataRepo = new AssetMetadataRepository();
+            var record = await metadataRepo.GetAssetByIdAsync(connectionString, assetId);
+            if (record == null)
+                throw new InvalidOperationException($"Asset {assetId} not found.");
+
+            return (record.AllowComments, record.IsCopyingAllowed, record.Genre);
         }
     }
 }

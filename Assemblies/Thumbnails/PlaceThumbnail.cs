@@ -33,24 +33,18 @@ public static class PlaceThumbnail
             
             var targetWidth = width ?? 110;
             var targetHeight = height ?? 110;
-            var highResWidth = 110;
-            var highResHeight = 110;
-            
-            if (width.HasValue && height.HasValue)
-            {
-                targetWidth = width.Value;
-                targetHeight = height.Value;
-                highResWidth = width.Value;
-                highResHeight = height.Value;
-            }
-        
+            var highResWidth = 420;
+            var highResHeight = 420;
+
             var renderedResult = await thumbnailService.RenderPlaceAsync(placeId, x: targetWidth, y: targetHeight, connectionString: connectionString, placeAssetHash: placeAssetHash);
             var renderedResultHighRes = await thumbnailService.RenderPlaceAsync(placeId, x: highResWidth, y: highResHeight, connectionString: connectionString, placeAssetHash: placeAssetHash);
+
             var cdnThumbnailsPath = CDNUtilities.GetCDNThumbnailsPath();
             var sourcePath = Path.Combine(renderedResult.FullPath);
             var sourcePathHighRes = Path.Combine(renderedResultHighRes.FullPath);
             var cdnThumbnailPath = Path.Combine(cdnThumbnailsPath, renderedResult.FileName);
             var cdnThumbnailPathHighRes = Path.Combine(cdnThumbnailsPath, renderedResultHighRes.FileName);
+
             bool thumbnailCopied = string.Equals(Path.GetFullPath(sourcePath), Path.GetFullPath(cdnThumbnailPath), StringComparison.OrdinalIgnoreCase) 
                 ? true 
                 : CDNUtilities.SafeFileCopy(sourcePath, cdnThumbnailPath);
@@ -85,7 +79,7 @@ public static class PlaceThumbnail
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error in background thumbnail generation: {ex.Message}");
+            Console.WriteLine($"[GeneratePlaceThumbnail ERROR] Place {placeId}: {ex.GetType().Name}: {ex.Message}");
             throw;
         }
     }
@@ -172,23 +166,44 @@ public static class PlaceThumbnail
     }
 
     /// <summary>
-    /// Resizes an image to the specified dimensions with high quality
+    /// Resizes an image to the specified dimensions preserving aspect ratio (cover/crop mode)
     /// </summary>
-    private static byte[] ResizeImage(byte[] imageBytes, int width, int height)
+    public static byte[] ResizeImage(byte[] imageBytes, int width, int height)
     {
         using var originalStream = new MemoryStream(imageBytes);
         using var originalImage = Image.FromStream(originalStream);
-        
+
+        float srcRatio = (float)originalImage.Width / originalImage.Height;
+        float targetRatio = (float)width / height;
+
+        int srcX, srcY, srcW, srcH;
+        if (srcRatio > targetRatio)
+        {
+            srcH = originalImage.Height;
+            srcW = (int)(originalImage.Height * targetRatio);
+            srcX = (originalImage.Width - srcW) / 2;
+            srcY = 0;
+        }
+        else
+        {
+            srcW = originalImage.Width;
+            srcH = (int)(originalImage.Width / targetRatio);
+            srcX = 0;
+            srcY = (originalImage.Height - srcH) / 2;
+        }
+
         var resizedImage = new Bitmap(width, height);
         using var graphics = Graphics.FromImage(resizedImage);
-        
+
         graphics.CompositingQuality = CompositingQuality.HighQuality;
         graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
         graphics.SmoothingMode = SmoothingMode.HighQuality;
         graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-        
-        graphics.DrawImage(originalImage, 0, 0, width, height);
-        
+
+        var srcRect = new Rectangle(srcX, srcY, srcW, srcH);
+        var destRect = new Rectangle(0, 0, width, height);
+        graphics.DrawImage(originalImage, destRect, srcRect, GraphicsUnit.Pixel);
+
         using var resizedStream = new MemoryStream();
         resizedImage.Save(resizedStream, ImageFormat.Png);
         return resizedStream.ToArray();
@@ -723,9 +738,7 @@ public static class PlaceThumbnail
             }
 
             transaction.Commit();
-            
-            await UpdateMainThumbnailFromFirstSortedAsync(connectionString, placeId, cancellationToken);
-            
+
             return true;
         }
         catch
@@ -873,6 +886,7 @@ public static class PlaceThumbnail
                 connectionString: connectionString, 
                 placeAssetHash: placeAssetHash, 
                 cancellationToken: cancellationToken);
+
             var cdnPlaceThumbnailsPath = CDNUtilities.GetCDNAssetsPath("place-thumbnails");
             var sourcePath = Path.Combine(renderedResult.FullPath);
             var cdnThumbnailPath = Path.Combine(cdnPlaceThumbnailsPath, renderedResult.FileName);
@@ -884,13 +898,15 @@ public static class PlaceThumbnail
             if (thumbnailCopied)
             {
                 var thumbnailUrl = CDNUtilities.GeneratePlaceThumbnailUrl(baseUrl, renderedResult.FileName);
+
+                await DeleteAutoGeneratedThumbnailEntriesAsync(connectionString, placeId, cancellationToken);
+
                 await SetPlaceAutoGeneratedThumbnailUrlAsync(
                     connectionString,
                     placeId,
                     thumbnailUrl,
                     renderedResult.Hash,
                     cancellationToken);
-                
             }
             else
             {
@@ -899,7 +915,7 @@ public static class PlaceThumbnail
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error generating auto-generated thumbnail for place {placeId}: {ex.Message}");
+            Console.WriteLine($"[AutoThumbnail ERROR] Place {placeId}: {ex.GetType().Name}: {ex.Message}");
             throw;
         }
     }
@@ -938,6 +954,24 @@ public static class PlaceThumbnail
     /// <summary>
     /// Updates the auto-generated thumbnail URL and hash for a place
     /// </summary>
+    /// <summary>
+    /// Deletes any auto-generated thumbnail entries from place_thumbnails for the given place
+    /// </summary>
+    public static async Task DeleteAutoGeneratedThumbnailEntriesAsync(
+        string connectionString,
+        long placeId,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = @"DELETE FROM place_thumbnails 
+                             WHERE place_id = @placeId AND alt_text = 'Auto-generated'";
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+        await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     public static async Task SetPlaceAutoGeneratedThumbnailUrlAsync(
         string connectionString,
         long placeId,
@@ -1000,9 +1034,9 @@ public static class PlaceThumbnail
     }
 
     /// <summary>
-    /// Updates the main thumbnail URL for a place to point to the first thumbnail in sort order
+    /// Gets image thumbnail entries for a place, excluding auto-generated entries
     /// </summary>
-    public static async Task UpdateMainThumbnailFromFirstSortedAsync(
+    public static async Task<List<PlaceThumbnailEntry>> GetPlaceImageThumbnailsAsync(
         string connectionString,
         long placeId,
         CancellationToken cancellationToken = default)
@@ -1012,27 +1046,34 @@ public static class PlaceThumbnail
         if (placeId <= 0)
             throw new ArgumentOutOfRangeException(nameof(placeId));
 
-        const string sql = @"
-            UPDATE assets 
-            SET thumbnail_url = (
-                SELECT CASE 
-                    WHEN pt.thumbnail_type = 'image' THEN pt.url
-                    WHEN pt.thumbnail_type = 'video' THEN pt.video_url
-                    ELSE pt.url
-                END
-                FROM place_thumbnails pt
-                WHERE pt.place_id = assets.asset_id 
-                ORDER BY pt.sort_order ASC, pt.created_at ASC
-                LIMIT 1
-            )
-            WHERE asset_id = @placeId AND is_place = true";
+        const string sql = @"SELECT id, url FROM place_thumbnails
+                             WHERE place_id = @placeId AND thumbnail_type = 'image' AND alt_text != 'Auto-generated'
+                             ORDER BY sort_order ASC, created_at ASC";
 
-        await using var connection = new NpgsqlConnection(connectionString);
-        await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-        
-        using var cmd = new NpgsqlCommand(sql, connection);
-        cmd.Parameters.AddWithValue("@placeId", placeId);
-        
-        await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        var results = new List<PlaceThumbnailEntry>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            results.Add(new PlaceThumbnailEntry
+            {
+                Id = reader.GetInt64(0),
+                Url = reader.GetString(1)
+            });
+        }
+
+        return results;
     }
+}
+
+public sealed class PlaceThumbnailEntry
+{
+    public long Id { get; set; }
+    public string Url { get; set; } = string.Empty;
 }

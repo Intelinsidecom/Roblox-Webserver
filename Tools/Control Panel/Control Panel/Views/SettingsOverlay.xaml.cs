@@ -2,7 +2,6 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Control_Panel.Properties;
 using ControlPanel.Functions;
 
 namespace Control_Panel

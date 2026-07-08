@@ -1,5 +1,104 @@
 @model Assemblies.Common.DevelopTabViewModel
 @{
     Layout = null;
+    var items = Model?.Audios ?? new List<Assemblies.Common.DevelopItem>();
+    var fallbackThumb = "/images/audio.png";
 }
-@await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", $"You have no {Model.ViewName.ToLowerInvariant()} yet.")
+<style>
+    .MediaPlayerControls {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        cursor: pointer;
+    }
+    .MediaPlayerIcon.icon-play,
+    .MediaPlayerIcon.icon-pause {
+        background-image: url(/images/Shared/generic_09152017.svg);
+        background-repeat: no-repeat;
+        background-size: auto auto;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .MediaPlayerIcon.icon-play {
+        background-position: 0 -308px;
+    }
+    .MediaPlayerIcon.icon-pause {
+        background-position: 0 -336px;
+    }
+</style>
+<div class="items-container-inner">
+    <h1 class="title" style="margin-top:0 !important;margin-bottom:15px">Create Audio</h1>
+    <h3 class="title" style="margin-left:15px">Don't know how? <a href="/images/Template-Audio.png">Click here</a></h3>
+    <form id="audio-upload-form" method="post" enctype="multipart/form-data" action="/develop/audio-upload" style="margin-left:15px">
+        <div style="margin-bottom:10px"><span class="title">Audio Uploads must be less than 2 minutes and smaller than 8.0 MB.</span></div>
+        <div class="form-outer" style="margin-bottom:10px">
+            <div class="form-inner label-column"><span class="title">Find your audio:</span></div>
+            <div class="form-inner input-column"><input type="file" id="audio-file" name="file" accept=".mp3, .ogg, .wav" required /></div>
+        </div>
+        <div class="form-outer" style="margin-bottom:10px">
+            <div class="form-inner label-column"><span class="title">Audio Name:</span></div>
+            <div class="form-inner input-column"><input type="text" id="audio-name" name="name" class="text-box" required style="margin-left:25px;width:85%" /></div>
+        </div>
+        <div class="form-outer">
+            <div class="form-inner label-column"></div>
+            <div class="form-inner input-column">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="submit" class="btn-medium btn-primary">Upload</button>
+                    <div id="audio-upload-error" class="text-error"></div>
+                    @if (TempData["AudioUploadError"] != null && !string.IsNullOrEmpty(TempData["AudioUploadError"].ToString()))
+                    {
+                        <div class="error-message" style="margin-bottom: 0;">@TempData["AudioUploadError"]</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="models-inventory-list">
+        <h1 class="header-text">Audios</h1>
+        <div class="items-container">
+            @if (items.Count == 0)
+            {
+                @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", "You have no Audios yet. Upload one to see it here!")
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    var displayId = item.ItemId;
+                    <table class="item-table" data-item-id="@item.ItemId" data-type="models" data-dropdown="#audio-dropdown-menu">
+                        <tr>
+                            <td class="image-col universe-image-col" style="text-align:center; position: relative;">
+                                <a href="@item.CatalogUrl" class="game-image">
+                                    <img src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="Audio">
+                                </a>
+                                <div class="MediaPlayerControls">
+                                    <div class="MediaPlayerIcon icon-play" data-mediathumb-url="/asset/?id=@item.ItemId" data-jplayer-version="2.9.2"></div>
+                                </div>
+                            </td>
+                            <td class="universe-name-col" style="padding-left:3px">
+                                <a class="title notranslate" href="@item.CatalogUrl">@item.Name</a>
+                                <table class="details-table">
+                                    <tr>
+                                        <td class="item-universe"><span>Created:</span> @item.CreatedAt.ToString("M/d/yyyy") (ID: <a href="/asset/?id=@displayId">@displayId</a>)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="edit-col" style="white-space:nowrap;padding-right:105px"><span style="color:gray">Total sales:</span> <span style="color:black">0</span><br /><span style="color:gray">Last 7 days:</span> <span style="color:black">0</span></td>
+                            <td class="menu-col">
+                                <div class="gear-button-wrapper"><a href="#" class="gear-button"></a></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="separator"></div>
+                }
+            }
+        </div>
+        <div id="audio-dropdown-menu" class="item-dropdown-menu" style="display:none;">
+            <a href="#" data-action="configure">Configure</a>
+            <a href="#" data-action="advertise" class="divider-top">Advertise</a>
+        </div>
+    </div>
+</div>

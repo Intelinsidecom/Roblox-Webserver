@@ -18,12 +18,10 @@ namespace Website.Middleware
     public async Task Invoke(HttpContext context)
     {
         var sw = Stopwatch.StartNew();
-        // Ensure buffering is enabled with a generous limit (10 MB)
         context.Request.EnableBuffering(bufferThreshold: 1024 * 30, bufferLimit: 1024 * 1024 * 10);
 
         var requestInfo = await BuildRequestInfo(context.Request);
-
-        // Capture the response by swapping the body stream
+            
         var originalBody = context.Response.Body;
         await using var responseBuffer = new MemoryStream();
         context.Response.Body = responseBuffer;
@@ -35,15 +33,10 @@ namespace Website.Middleware
         }
         finally
         {
-            // Read response body
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var responseText = await new StreamReader(context.Response.Body, Encoding.UTF8, leaveOpen: true).ReadToEndAsync();
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-
-            // Print logs
             PrintLog(requestInfo, context, responseText, sw.Elapsed);
-
-            // Copy the response back to the original body stream
             await responseBuffer.CopyToAsync(originalBody);
             context.Response.Body = originalBody;
         }
@@ -68,67 +61,55 @@ namespace Website.Middleware
         sb.AppendLine($"      Host: {request.Host}");
         sb.AppendLine($"      ClientCert: {request.HttpContext.Connection.ClientCertificate != null}");
 
-        // Headers
-        foreach (var header in request.Headers)
-        {
-            if (IsClientIpHeader(header.Key))
-            {
-                sb.AppendLine($"      {header.Key}: [Redacted]");
-            }
-            else
-            {
-                sb.AppendLine($"      {header.Key}: {Sanitize(header.Value)}");
-            }
-        }
-
-        // Body
+            
         string bodyText = string.Empty;
-        try
+        var isMultipart = request.ContentType?.StartsWith("multipart/form-data", StringComparison.OrdinalIgnoreCase) == true;
+        if (!isMultipart)
         {
-            // Regardless of Content-Length, attempt to read the buffered body (covers chunked/proxy cases)
-            if (request.Body.CanSeek)
+            try
             {
-                request.Body.Seek(0, SeekOrigin.Begin);
-            }
-            using var reader = new StreamReader(request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
-            bodyText = await reader.ReadToEndAsync();
-            if (request.Body.CanSeek)
-            {
-                request.Body.Seek(0, SeekOrigin.Begin);
-            }
-        }
-        catch
-        {
-            // Ignore body read errors; continue logging other parts
-        }
-
-        if (!string.IsNullOrWhiteSpace(bodyText))
-        {
-            sb.AppendLine("      Body:");
-            // Truncate huge bodies to 1MB equivalent to the HttpLogging limits
-            var display = bodyText.Length > 1_000_000 ? bodyText.Substring(0, 1_000_000) + "... [truncated]" : bodyText;
-            sb.AppendLine("      " + display.Replace("\n", "\n      "));
-        }
-
-        // Form fields (if applicable)
-        try
-        {
-            if (request.HasFormContentType)
-            {
-                var form = await request.ReadFormAsync();
-                if (form.Count > 0)
+                if (request.Body.CanSeek)
                 {
-                    sb.AppendLine("      Form:");
-                    foreach (var kv in form)
+                    request.Body.Seek(0, SeekOrigin.Begin);
+                }
+                using var reader = new StreamReader(request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
+                bodyText = await reader.ReadToEndAsync();
+                if (request.Body.CanSeek)
+                {
+                    request.Body.Seek(0, SeekOrigin.Begin);
+                }
+            }
+            catch
+            {
+                // Ignore body read errors; continue logging other parts
+            }
+
+            if (!string.IsNullOrWhiteSpace(bodyText))
+            {
+                sb.AppendLine("      Body:");
+                var display = bodyText.Length > 1_000_000 ? bodyText.Substring(0, 1_000_000) + "... [truncated]" : bodyText;
+                sb.AppendLine("      " + display.Replace("\n", "\n      "));
+            }
+            
+            try
+            {
+                if (request.HasFormContentType)
+                {
+                    var form = await request.ReadFormAsync();
+                    if (form.Count > 0)
                     {
-                        sb.AppendLine($"      {kv.Key}: {Sanitize(kv.Value)}");
+                        sb.AppendLine("      Form:");
+                        foreach (var kv in form)
+                        {
+                            sb.AppendLine($"      {kv.Key}: {Sanitize(kv.Value)}");
+                        }
                     }
                 }
             }
-        }
-        catch
-        {
-            // Ignore form parsing errors
+            catch
+            {
+                // Ignore form parsing errors
+            }
         }
 
         return sb.ToString();
@@ -169,7 +150,6 @@ namespace Website.Middleware
 
     private static string Sanitize(StringValues value)
     {
-        // Keep as-is but allow easy redaction extension in future
         return value.ToString();
     }
 

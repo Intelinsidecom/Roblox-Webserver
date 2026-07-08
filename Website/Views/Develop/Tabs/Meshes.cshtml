@@ -1,5 +1,50 @@
 @model Assemblies.Common.DevelopTabViewModel
 @{
     Layout = null;
+    var items = Model?.Meshes ?? new List<Assemblies.Common.DevelopItem>();
+    var fallbackThumb = "/images/b35fdfe2c7856872c3695871e2efbe18.png";
 }
-@await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", $"You have no {Model.ViewName.ToLowerInvariant()} yet.")
+<div class="items-container-inner">
+    <div class="Meshes-inventory-list">
+        <h1 class="header-text">Meshes</h1>
+        <div class="items-container">
+            @if (items.Count == 0)
+            {
+                @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", "You have no Meshes yet. Upload one to see it here!")
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    var displayId = item.ItemId;
+                    <table class="item-table" data-item-id="@item.ItemId" data-type="Meshes" data-dropdown="#model-dropdown-menu">
+                        <tr>
+                            <td class="image-col universe-image-col" style="text-align:center">
+                                <a href="@item.CatalogUrl" class="game-image">
+                                    <img src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="Model">
+                                </a>
+                            </td>
+                            <td class="universe-name-col" style="padding-left:3px">
+                                <a class="title notranslate" href="@item.CatalogUrl">@item.Name</a>
+                                <table class="details-table">
+                                    <tr>
+                                        <td class="item-universe"><span>Created:</span> @item.CreatedAt.ToString("M/d/yyyy") (ID: <a href="/asset/?id=@displayId">@displayId</a>)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="edit-col" style="white-space:nowrap;padding-right:105px"><span style="color:gray">Total sales:</span> <span style="color:black">0</span><br /><span style="color:gray">Last 7 days:</span> <span style="color:black">0</span></td>
+                            <td class="menu-col">
+                                <div class="gear-button-wrapper"><a href="#" class="gear-button"></a></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="separator"></div>
+                }
+            }
+        </div>
+        <div id="model-dropdown-menu" class="item-dropdown-menu" style="display:none;">
+            <a href="#" data-action="configure">Configure</a>
+            <a href="#" data-action="advertise" class="divider-top">Advertise</a>
+        </div>
+    </div>
+</div>

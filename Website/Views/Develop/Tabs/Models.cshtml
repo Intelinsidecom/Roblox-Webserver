@@ -1,5 +1,71 @@
 @model Assemblies.Common.DevelopTabViewModel
 @{
     Layout = null;
+    var items = Model?.Models ?? new List<Assemblies.Common.DevelopItem>();
+    var fallbackThumb = "/images/b35fdfe2c7856872c3695871e2efbe18.png";
 }
-@await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", $"You have no {Model.ViewName.ToLowerInvariant()} yet.")
+<div class="items-container-inner">
+    <h1 class="title" style="margin-top:0 !important;margin-bottom:15px">Create Decal</h1>
+    <h3 class="title" style="margin-left:15px">Don't know how? <a href="/images/Template-Decal.png">Click here</a></h3>
+    <form id="model-upload-form" method="post" enctype="multipart/form-data" action="/develop/upload-model" style="margin-left:15px">
+        <div style="margin-bottom:10px"><span class="title">Did you use the template? If not. <a href="/images/model_template.png">download it here.</a></span></div>
+        <div class="form-outer" style="margin-bottom:10px">
+            <div class="form-inner label-column"><span class="title">Find your model:</span></div>
+            <div class="form-inner input-column"><input type="file" id="model-file" name="file" accept=".rbxm" required /></div>
+        </div>
+        <div class="form-outer" style="margin-bottom:10px">
+            <div class="form-inner label-column"><span class="title">Decal Name:</span></div>
+            <div class="form-inner input-column"><input type="text" id="model-name" name="name" class="text-box" required style="margin-left:25px;width:85%" /></div>
+        </div>
+        <div class="form-outer">
+            <div class="form-inner label-column"></div>
+            <div class="form-inner input-column">
+                <button type="submit" class="btn-medium btn-primary">Upload</button>
+                <div id="model-upload-error" class="text-error"></div>
+            </div>
+        </div>
+    </form>
+
+    <div class="models-inventory-list">
+        <h1 class="header-text">Models</h1>
+        <div class="items-container">
+            @if (items.Count == 0)
+            {
+                @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", "You have no Models yet. Upload one to see it here!")
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    var displayId = item.ItemId;
+                    <table class="item-table" data-item-id="@item.ItemId" data-type="models" data-dropdown="#model-dropdown-menu">
+                        <tr>
+                            <td class="image-col universe-image-col" style="text-align:center">
+                                <a href="@item.CatalogUrl" class="game-image">
+                                    <img src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="Decal">
+                                </a>
+                            </td>
+                            <td class="universe-name-col" style="padding-left:3px">
+                                <a class="title notranslate" href="@item.CatalogUrl">@item.Name</a>
+                                <table class="details-table">
+                                    <tr>
+                                        <td class="item-universe"><span>Created:</span> @item.CreatedAt.ToString("M/d/yyyy") (ID: <a href="/asset/?id=@displayId">@displayId</a>)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="edit-col" style="white-space:nowrap;padding-right:105px"><span style="color:gray">Total sales:</span> <span style="color:black">0</span><br /><span style="color:gray">Last 7 days:</span> <span style="color:black">0</span></td>
+                            <td class="menu-col">
+                                <div class="gear-button-wrapper"><a href="#" class="gear-button"></a></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="separator"></div>
+                }
+            }
+        </div>
+        <div id="model-dropdown-menu" class="item-dropdown-menu" style="display:none;">
+            <a href="#" data-action="configure">Configure</a>
+            <a href="#" data-action="advertise" class="divider-top">Advertise</a>
+        </div>
+    </div>
+</div>

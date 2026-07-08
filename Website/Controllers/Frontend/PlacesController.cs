@@ -7,6 +7,7 @@ using Thumbnails;
 using Npgsql;
 using Common;
 using System.Linq;
+using System.Text;
 using Games;
 using System.Text.Json;
 using Webserver.Common;
@@ -27,13 +28,15 @@ namespace RobloxWebserver.Controllers
         private readonly AssetMetadataRepository _assetRepository;
         private readonly IThumbnailService _thumbnailService;
         private readonly PlaceTemplateMapping _templateMapping;
+        private readonly AssetService _assetService;
 
-        public PlacesController(AppDbContext context, IConfiguration configuration, AssetMetadataRepository assetRepository, IThumbnailService thumbnailService)
+        public PlacesController(AppDbContext context, IConfiguration configuration, AssetMetadataRepository assetRepository, IThumbnailService thumbnailService, AssetService assetService)
         {
             _context = context;
             _configuration = configuration;
             _assetRepository = assetRepository;
             _thumbnailService = thumbnailService;
+            _assetService = assetService;
             _templateMapping = new PlaceTemplateMapping();
             var templatesSection = configuration.GetSection("PlaceTemplates");
             templatesSection.Bind(_templateMapping.Templates);
@@ -1770,40 +1773,86 @@ namespace RobloxWebserver.Controllers
 
                 var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, assetID);
-                
+
                 if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
                 {
                     return Content("<tbody><tr><td colspan='4'>Access denied</td></tr></tbody>", "text/html");
                 }
 
-                var randomDate = DateTime.Now.AddDays(-new Random().Next(0, 365)).ToString("M/d/yyyy h:mm:ss tt");
-                var html = $@"<thead>
-                                                        <tr>
-                                                            <th>Version number</th>
-                                                            <th>Created</th>
-                                                            <th></th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>1</td>
-                                                            <td>{randomDate}</td>
-                                                            <td><span class=""icon-checkmark-16x16""></span></td>
-                                                            <td><span data-asset-version-id=""1""
-                                                                    class=""btn-control btn-control-medium revertLink"">Revert
-                                                                    to this version</span></td>
-                                                        </tr>
-                                                    </tbody>";
+                var entries = await Games.VersionHistory.GetAssetVersionHistoryAsync(connectionString, assetID);
 
-                return Content(html, "text/html");
+                if (entries == null || entries.Count == 0)
+                {
+                    return Json(new { html = "<thead><tr><th>Version number</th><th>Created</th><th></th><th></th></tr></thead><tbody><tr><td colspan='4'>No version history found</td></tr></tbody>", page = 1, totalPages = 1 });
+                }
+
+                entries = entries.OrderByDescending(e => e.Version).ToList();
+                const int pageSize = 10;
+                var totalPages = (int)Math.Ceiling((double)entries.Count / pageSize);
+                if (page < 1) page = 1;
+                if (page > totalPages) page = totalPages;
+                var paged = entries.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                var latestVersion = entries.Max(e => e.Version);
+
+                var sb = new StringBuilder();
+                sb.Append("<thead><tr><th>Version number</th><th>Created</th><th></th><th></th></tr></thead><tbody>");
+
+                foreach (var entry in paged)
+                {
+                    sb.Append("<tr>");
+                    sb.Append("<td>").Append(entry.Version).Append("</td>");
+                    sb.Append("<td>").Append(entry.Date).Append("</td>");
+                    if (entry.Version == latestVersion)
+                    {
+                        sb.Append("<td><span class=\"icon-checkmark-16x16\"></span></td>");
+                    }
+                    else
+                    {
+                        sb.Append("<td></td>");
+                    }
+                    sb.Append("<td><span data-asset-version-id=\"").Append(entry.Version).Append("\" class=\"btn-control btn-control-medium revertLink\">Revert to this version</span></td>");
+                    sb.Append("</tr>");
+                }
+
+                sb.Append("</tbody>");
+
+                return Json(new { html = sb.ToString(), page, totalPages });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Content("<tbody><tr><td colspan='4'>An error occurred while loading version history</td></tr></tbody>", "text/html");
+                return Json(new { html = "<thead><tr><th>Version number</th><th>Created</th><th></th><th></th></tr></thead><tbody><tr><td colspan='4'>An error occurred while loading version history</td></tr></tbody>", page = 1, totalPages = 1 });
             }
         }
 
-       
+        /// <summary>
+        /// POST /places/revert - Revert an asset to a previous version
+        /// </summary>
+        [HttpPost("places/revert")]
+        public async Task<IActionResult> RevertToVersion([FromForm] long assetVersionID, [FromForm] long assetID)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var currentUserId))
+                    return Unauthorized();
+
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var placeAsset = await _assetRepository.GetAssetByIdAsync(connectionString, assetID);
+
+                if (placeAsset == null || placeAsset.OwnerUserId != currentUserId)
+                    return Forbid();
+
+                var success = await Games.VersionHistory.RevertToVersionAsync(connectionString, assetID, (int)assetVersionID, _assetService);
+
+                if (!success)
+                    return BadRequest("Version not found or invalid.");
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }

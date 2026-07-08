@@ -290,6 +290,61 @@ public class VotingController : ControllerBase
         }
     }
 
+    [HttpPost("studio/vote")]
+    public async Task<IActionResult> StudioVote()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null)
+                return Ok(new { status = false, ModalType = "GuestUser" });
+
+            var assetId = GetFormOrQuery<long>("assetId");
+            if (assetId <= 0)
+                return BadRequest(new { status = false, error = "Invalid request" });
+
+            var vote = GetFormOrQuery<bool?>("vote") ?? false;
+            await _votingService.VoteAsync(userId.Value, assetId, vote);
+            return Ok(new { status = true });
+        }
+        catch
+        {
+            return Ok(new { status = false });
+        }
+    }
+
+    [HttpPost("studio/unvote")]
+    public async Task<IActionResult> StudioUnvote()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (userId == null)
+                return Ok(new { status = false, ModalType = "GuestUser" });
+
+            var assetId = GetFormOrQuery<long>("assetId");
+            if (assetId <= 0)
+                return BadRequest(new { status = false, error = "Invalid request" });
+
+            await _votingService.RemoveVoteAsync(userId.Value, assetId);
+            return Ok(new { status = true });
+        }
+        catch
+        {
+            return Ok(new { status = false });
+        }
+    }
+
+    private T GetFormOrQuery<T>(string key)
+    {
+        var value = Request.HasFormContentType
+            ? Request.Form[key].FirstOrDefault()
+            : Request.Query[key].FirstOrDefault();
+        if (value == null) return default;
+        try { return (T)Convert.ChangeType(value, typeof(T)); }
+        catch { return default; }
+    }
+
     private long? GetCurrentUserId()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -309,13 +364,13 @@ public class VotingController : ControllerBase
     }
 }
 
-/// <summary>
-/// Request model for voting
-/// </summary>
 public class VoteRequest
 {
-    /// <summary>
-    /// True for upvote, false for downvote
-    /// </summary>
     public bool Vote { get; set; }
+}
+
+public class StudioVoteRequest
+{
+    public long assetId { get; set; }
+    public bool vote { get; set; }
 }

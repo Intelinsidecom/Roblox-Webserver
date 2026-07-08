@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
@@ -199,6 +200,14 @@ namespace Assets
                 {
                     p.Description = "T-shirt";
                 }
+                else if (p.AssetTypeId == 10)
+                {
+                    p.Description = "Model";
+                }
+                else if (p.AssetTypeId == 4)
+                {
+                    p.Description = "Mesh";
+                }
                 else
                 {
                     var label = AssetTypeNames.GetConfigureLabel(p.AssetTypeId);
@@ -233,7 +242,8 @@ namespace Assets
     place_generated_icon_url,
     place_generated_icon_hash,
     is_place,
-    in_universe
+    in_universe,
+    is_copying_allowed
 ) values (
     @name,
     @asset_type_id,
@@ -257,7 +267,8 @@ namespace Assets
     @place_generated_icon_url,
     @place_generated_icon_hash,
     @is_place,
-    @in_universe
+    @in_universe,
+    @is_copying_allowed
 ) returning asset_id;";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -284,12 +295,20 @@ namespace Assets
             cmd.Parameters.AddWithValue("place_generated_icon_hash", (object?)p.PlaceGeneratedIconHash ?? DBNull.Value);
             cmd.Parameters.AddWithValue("is_place", p.IsPlace);
             cmd.Parameters.AddWithValue("in_universe", p.InUniverse);
+            cmd.Parameters.AddWithValue("is_copying_allowed", p.IsCopyingAllowed);
 
             var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             if (result == null || result == DBNull.Value)
                 throw new InvalidOperationException("Failed to insert asset record.");
 
-            return Convert.ToInt64(result);
+            var assetId = Convert.ToInt64(result);
+
+            if (!string.IsNullOrWhiteSpace(p.ContentHash))
+            {
+                await AppendVersionHistoryAsync(connectionString, assetId, p.ContentHash, cancellationToken).ConfigureAwait(false);
+            }
+
+            return assetId;
         }
 
         public async Task UpdateAssetImageLinkAsync(string connectionString, long assetId, bool assetImage, long? assetLink, CancellationToken cancellationToken = default)
@@ -414,6 +433,142 @@ where asset_id = @asset_id;";
             cmd.Parameters.AddWithValue("asset_id", assetId);
             cmd.Parameters.AddWithValue("allow_comments", allowComments);
 
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task UpdateAssetCopyingAllowedAsync(string connectionString, long assetId, bool isCopyingAllowed, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set is_copying_allowed = @is_copying_allowed,
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("is_copying_allowed", isCopyingAllowed);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task UpdateAssetContentHashAsync(string connectionString, long assetId, string contentHash, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+            if (string.IsNullOrWhiteSpace(contentHash))
+                throw new ArgumentException("contentHash is required", nameof(contentHash));
+
+            var oldHash = await GetContentHashAsync(connectionString, assetId, cancellationToken).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(oldHash))
+            {
+                await AppendVersionHistoryAsync(connectionString, assetId, oldHash, cancellationToken).ConfigureAwait(false);
+            }
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set content_hash = @content_hash,
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("content_hash", contentHash);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task UpdateAssetModelContentAsync(string connectionString, long assetId, string newHash, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+            if (string.IsNullOrWhiteSpace(newHash))
+                throw new ArgumentException("newHash is required", nameof(newHash));
+
+            var oldHash = await GetContentHashAsync(connectionString, assetId, cancellationToken).ConfigureAwait(false);
+            if (!string.IsNullOrWhiteSpace(oldHash))
+            {
+                await AppendVersionHistoryAsync(connectionString, assetId, oldHash, cancellationToken).ConfigureAwait(false);
+            }
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"UPDATE assets
+                                 SET content_hash = @hash,
+                                     file_extension = '.rbxm',
+                                     content_type = 'application/octet-stream',
+                                     last_updated = CURRENT_TIMESTAMP
+                                 WHERE asset_id = @id";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("hash", newHash);
+            cmd.Parameters.AddWithValue("id", assetId);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<string?> GetContentHashAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"SELECT content_hash FROM assets WHERE asset_id = @asset_id";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            if (result == null || result == DBNull.Value)
+                return null;
+
+            return Convert.ToString(result);
+        }
+
+        public async Task AppendVersionHistoryAsync(string connectionString, long assetId, string fileHash, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(fileHash))
+                return;
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            var now = DateTime.Now.ToString("M/d/yyyy h:mm:ss tt");
+
+            const string sql = @"
+UPDATE assets
+SET place_version_history = COALESCE(place_version_history, '[]'::jsonb) ||
+    jsonb_build_object(
+        'Version', (SELECT COALESCE(MAX((elem->>'Version')::int), 0) + 1 FROM jsonb_array_elements(COALESCE(place_version_history, '[]'::jsonb)) elem),
+        'Date', @date,
+        'File_Hash', @fileHash
+    )
+WHERE asset_id = @asset_id";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("date", now);
+            cmd.Parameters.AddWithValue("fileHash", fileHash);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
 

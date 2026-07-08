@@ -397,6 +397,18 @@ namespace RCCArbiter
                 {
                     urlToUse = dedicatedRccUrl;
                 }
+
+                try
+                {
+                    using var healthClient = new RCCClient(urlToUse);
+                    healthClient.GetVersion();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[RCC Health] RCC unreachable for game server {gameId} at {urlToUse}: {ex.Message}");
+                    gameServerManager.RecordFailedReport(gameId);
+                    return null;
+                }
                 
                 var (token, completionTask) = callbackManager.CreateCallback(gameId);
                 var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");

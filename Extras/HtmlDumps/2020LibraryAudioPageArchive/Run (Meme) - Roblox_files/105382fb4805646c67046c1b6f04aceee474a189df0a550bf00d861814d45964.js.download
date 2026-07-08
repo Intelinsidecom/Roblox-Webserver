@@ -1,0 +1,31 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+var Roblox = Roblox || {};
+Roblox.LangDynamicDefault = Roblox.LangDynamicDefault || {};
+Roblox.LangDynamicDefault["Feature.ShopDialog"] = {"Heading.LeavingRoblox":"You are leaving Roblox","Action.ContinueToShop":"Continue to Shop","Action.Cancel":"Cancel","Description.AgeWarning":"Please note that you need to be over 18 to purchase products online. The Amazon store is not part of Roblox.com and is governed by a separate privacy policy.","Description.AmazonRedirect":"Your are about to visit our amazon store. You will be redirected to Roblox merchandise store on {shopLink}.","Description.RetailWebsiteRedirect":"Heads up, Robloxian – by clicking “continue,” you will be redirected to a retail website that is not owned or operated by Roblox. They may have different terms and privacy policies.","Description.PurchaseAgeWarning":"Please note that you need to be over 18 to purchase products online. We hope to see you again soon!","Action.Continue":"Continue"};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Feature.ShopDialog");
+
+}
+
+/*
+     FILE ARCHIVED ON 16:06:13 Nov 04, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 05:48:01 Jul 03, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.573
+  load_resource: 153.292 (2)
+  PetaboxLoader3.resolve: 96.15 (2)
+  PetaboxLoader3.datanode: 52.903 (2)
+*/

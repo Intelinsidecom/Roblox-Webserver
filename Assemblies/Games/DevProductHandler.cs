@@ -45,7 +45,7 @@ namespace Games
             CDNUtilities.SaveToCDN("dev-product-icons", imageFileName, resized256);
 
             // Generate CDN URL
-            var imageUrl = $"{baseUrl.TrimEnd('/')}/dev-product-icons/{imageFileName}";
+            var imageUrl = $"{baseUrl.TrimEnd('/')}/{imageFileName}";
 
             return (imageUrl, fileHash);
         }

@@ -9,12 +9,19 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using Control_Panel.Properties;
+using Npgsql;
 
 namespace ControlPanel.Functions
 {
     /// <summary>
     /// Service for communicating with the Arbiter game server management API
     /// </summary>
+    public class WideThumbnailItem
+    {
+        public string Url { get; set; } = string.Empty;
+        public long PlaceId { get; set; }
+    }
+
     public class GamesService
     {
         private readonly HttpClient _httpClient;
@@ -696,6 +703,39 @@ namespace ControlPanel.Functions
 
             [JsonPropertyName("message")]
             public string? message { get; set; }
+        }
+
+        #endregion
+
+        #region Thumbnail Methods
+
+        public async Task<List<WideThumbnailItem>> FetchWideThumbnailsAsync(List<long> placeIds, string connectionString)
+        {
+            var results = new List<WideThumbnailItem>();
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            const string sql = @"
+                SELECT pt.url, pt.place_id
+                FROM place_thumbnails pt
+                WHERE pt.place_id = ANY(@placeIds) AND pt.thumbnail_type = 'image'
+                ORDER BY array_position(@placeIds, pt.place_id), pt.sort_order ASC, pt.created_at ASC";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("placeIds", placeIds.ToArray());
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                results.Add(new WideThumbnailItem
+                {
+                    Url = reader.GetString(0),
+                    PlaceId = reader.GetInt64(1)
+                });
+            }
+
+            return results;
         }
 
         #endregion

@@ -65,6 +65,7 @@ builder.Services.AddSingleton<Games.AuthenticationTicketService>();
 builder.Services.AddSingleton<Games.TokenService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<CurrentUserService>();
+builder.Services.AddScoped<Games.GamePresenceService>();
 
 var app = builder.Build();
  
@@ -81,6 +82,45 @@ app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
 
 app.UseForwardedHeaders();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.HasValue)
+    {
+        var path = context.Request.Path.Value;
+        if (path != null)
+        {
+            var normalized = path;
+            if (path.Contains("//"))
+            {
+                var sb = new System.Text.StringBuilder(path.Length);
+                bool prevWasSlash = false;
+                for (int i = 0; i < path.Length; i++)
+                {
+                    if (path[i] == '/')
+                    {
+                        if (!prevWasSlash)
+                            sb.Append('/');
+                        prevWasSlash = true;
+                    }
+                    else
+                    {
+                        sb.Append(path[i]);
+                        prevWasSlash = false;
+                    }
+                }
+                normalized = sb.ToString();
+            }
+            if (normalized != path)
+                context.Request.Path = new PathString(normalized);
+        }
+    }
+    await next();
+});
+
+app.UseRouting();
+
+
 app.UseCors("AuthCors");
 app.UseAuthorization();
 app.Use(async (context, next) =>

@@ -48,7 +48,7 @@ namespace Website.Middleware
             else if (statusCode == 400)
             {
                 // Don't redirect if already at 404 page to prevent infinite loop
-                if (!path.StartsWith("/404"))
+                if (!path.StartsWith("/404") && !path.StartsWith("/develop/"))
                 {
                     context.Response.StatusCode = 302;
                     context.Response.Headers["Location"] = "/404";

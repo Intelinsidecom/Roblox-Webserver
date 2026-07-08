@@ -373,7 +373,7 @@ namespace RobloxWebserver.Controllers
                 }
 
                 var baseUrl = _configuration["Thumbnails:ThumbnailUrl"] ?? $"{Request.Scheme}://{Request.Host}";
-                var cdnUrl = $"{baseUrl.TrimEnd('/')}/dev-product-icons/{contentHash}.png";
+                var cdnUrl = $"{baseUrl.TrimEnd('/')}/{contentHash}.png";
 
                 return Json(new { 
                     success = true, 

@@ -1,26 +1,43 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Net.Http;
-using System.Text.Json;
-using System.Text;
 using Control_Panel.Properties;
 using ControlPanel.Functions;
+using Games;
 
 namespace Control_Panel
 {
     /// <summary>
     /// Interaction logic for Games.xaml
     /// </summary>
+    /// <summary>
+    /// Represents a game card item for display in the Games tab
+    /// </summary>
+    public class GameCardItem
+    {
+        public long UniverseId { get; set; }
+        public long PlaceId { get; set; }
+        public string Name { get; set; }
+        public string SecondaryText { get; set; }
+        public string Creator { get; set; }
+        public long CreatorUserId { get; set; }
+        public string ThumbnailUrl { get; set; }
+        public int PlayerCount { get; set; }
+        public double UpVotePercent { get; set; }
+        public int VisitCount { get; set; }
+
+        public double UpVoteBarWidth => Math.Max(0, Math.Min(149, 149 * (UpVotePercent / 100.0)));
+    }
+
     public partial class GamesView : UserControl
     {
         private readonly GamesService _gamesService;
@@ -28,11 +45,29 @@ namespace Control_Panel
         private bool _isInitialized = false;
         private DispatcherTimer _autoRefreshTimer;
         private GamesService.AuthenticationTicketInfo? _currentTicket;
+        private readonly string _connectionString;
+        private readonly ObservableCollection<GameCardItem> _gameItems;
+        private int _sortFilter = 1;
+        private int _timeFilter = 0;
+        private int _genreFilter = 1;
+        private string _searchKeyword = string.Empty;
+        private CancellationTokenSource _searchCancellationTokenSource;
+        private System.Timers.Timer _searchDebounceTimer;
+        private const int SearchDebounceMs = 300;
+        private const int GamePageSize = 20;
+        private int _gameOffset = 0;
+        private bool _hasMoreGames = true;
+        private bool _isLoadingMore = false;
 
         public GamesView()
         {
             InitializeComponent();
-            
+
+            _connectionString = GetConnectionString();
+            _gameItems = new ObservableCollection<GameCardItem>();
+            _searchCancellationTokenSource = new CancellationTokenSource();
+            GameCardsItemsControl.ItemsSource = _gameItems;
+
             _gamesService = new GamesService();
             _servers = new ObservableCollection<GamesService.GameServerInfo>();
             ServersDataGrid.ItemsSource = _servers;
@@ -42,10 +77,251 @@ namespace Control_Panel
             TimingInfoPanel.Visibility = Visibility.Collapsed;
             AuthenticationPanel.Visibility = Visibility.Collapsed;
             ServerActionButtons.Visibility = Visibility.Collapsed;
+            _ = LoadGamesAsync();
             _ = LoadServersAsync();
             InitializeAutoRefreshTimer();
             ServersDataGrid.SelectedItem = null;
             this.Unloaded += GamesView_Unloaded;
+            InitializePlaceholders();
+        }
+
+        private string GetConnectionString()
+        {
+            var connectionString = Properties.Settings.Default.DatabaseConnectionString;
+            if (string.IsNullOrEmpty(connectionString))
+                throw new InvalidOperationException("Database connection string is not configured in application settings.");
+            return connectionString;
+        }
+
+        private async Task LoadGamesAsync(bool reset = true)
+        {
+            if (_isLoadingMore) return;
+
+            try
+            {
+                _isLoadingMore = true;
+
+                if (reset)
+                {
+                    _searchCancellationTokenSource?.Cancel();
+                    _searchCancellationTokenSource = new CancellationTokenSource();
+                    _gameOffset = 0;
+                    _hasMoreGames = true;
+                }
+                var token = _searchCancellationTokenSource.Token;
+
+                List<GamesQueries.GameEntry> results;
+                if (!string.IsNullOrWhiteSpace(_searchKeyword))
+                {
+                    results = await GamesQueries.SearchPublicGamesAsync(
+                        _searchKeyword, _gameOffset, GamePageSize + 1, _connectionString, token);
+                }
+                else
+                {
+                    results = await GamesQueries.GetPublicGamesAsync(
+                        _sortFilter, _timeFilter, _genreFilter, 183, _gameOffset, GamePageSize + 1, _connectionString, token);
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    if (reset)
+                        _gameItems.Clear();
+
+                    var count = 0;
+                    foreach (var game in results)
+                    {
+                        count++;
+                        if (count > GamePageSize)
+                        {
+                            _hasMoreGames = true;
+                            continue;
+                        }
+                        _gameItems.Add(new GameCardItem
+                        {
+                            UniverseId = game.UniverseId,
+                            PlaceId = game.PlaceId,
+                            Name = game.Name,
+                            SecondaryText = $"{game.VisitCount:N0} visits",
+                            Creator = game.CreatorName,
+                            CreatorUserId = game.CreatorUserId,
+                            ThumbnailUrl = game.ThumbnailUrl,
+                            PlayerCount = game.Playing,
+                            UpVotePercent = game.VotePercentage,
+                            VisitCount = game.VisitCount
+                        });
+                    }
+                    _hasMoreGames = count > GamePageSize;
+                    _gameOffset = _gameItems.Count;
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                // Search was cancelled, ignore
+            }
+            catch (Exception ex)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    UpdateStatus($"Failed to load games: {ex.Message}", "error");
+                });
+            }
+            finally
+            {
+                _isLoadingMore = false;
+            }
+        }
+
+        private void GameCard_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is GameCardItem game)
+            {
+                var placeWindow = new PlaceSelectWindow(game.UniverseId, game.Name);
+                placeWindow.Owner = Window.GetWindow(this);
+                placeWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                placeWindow.Show();
+            }
+        }
+
+        private void CreatorLink_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.Tag is long userId)
+            {
+                if (userId > 0)
+                {
+                    Views.UserManagementWindow.OpenUserManagement((int)userId);
+                }
+            }
+        }
+
+        private async void GameSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_searchDebounceTimer != null)
+            {
+                _searchDebounceTimer.Stop();
+                _searchDebounceTimer.Dispose();
+            }
+
+            if (sender is TextBox textBox)
+            {
+                if (textBox.Text == textBox.Tag as string)
+                {
+                    _searchKeyword = string.Empty;
+                    await LoadGamesAsync();
+                    return;
+                }
+
+                _searchDebounceTimer = new System.Timers.Timer(SearchDebounceMs);
+                _searchDebounceTimer.AutoReset = false;
+                _searchDebounceTimer.Elapsed += async (s, args) =>
+                {
+                    Dispatcher.Invoke(async () =>
+                    {
+                        _searchKeyword = textBox.Text;
+                        await LoadGamesAsync();
+                    });
+                };
+                _searchDebounceTimer.Start();
+            }
+        }
+
+        private void GameIdSearchTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                string gameIdText = GameIdSearchTextBox.Text.Trim();
+                if (!string.IsNullOrWhiteSpace(gameIdText) && long.TryParse(gameIdText, out long universeId) && universeId > 0)
+                {
+                    try
+                    {
+                        var placeWindow = new PlaceSelectWindow(universeId, $"Universe {universeId}");
+                        placeWindow.Owner = Window.GetWindow(this);
+                        placeWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        placeWindow.Show();
+                        GameIdSearchTextBox.Clear();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to open universe {universeId}: {ex.Message}", "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        private async void GameTypeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                _genreFilter = selectedItem.Content.ToString() switch
+                {
+                    "Town & City" => 2,
+                    "Fantasy" => 3,
+                    "Sci-Fi" => 4,
+                    "Ninja" => 5,
+                    "Scary" => 6,
+                    "Pirate" => 7,
+                    "Adventure" => 8,
+                    "Sports" => 9,
+                    "Funny" => 10,
+                    "Wild West" => 11,
+                    "War" => 12,
+                    "Skate Park" => 13,
+                    "Tutorial" => 14,
+                    "RPG" => 15,
+                    "FPS" => 16,
+                    "Fighting" => 17,
+                    "Building" => 18,
+                    "Military" => 19,
+                    "Naval" => 20,
+                    "Medieval" => 21,
+                    _ => 1
+                };
+                await LoadGamesAsync();
+            }
+        }
+
+        private async void GameDateFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                _timeFilter = selectedItem.Content.ToString() switch
+                {
+                    "Today" => 1,
+                    "This Week" => 2,
+                    "This Month" => 3,
+                    "This Year" => 4,
+                    _ => 0
+                };
+                await LoadGamesAsync();
+            }
+        }
+
+        private async void GameSortFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                _sortFilter = selectedItem.Content.ToString() switch
+                {
+                    "The Oldest" => 16,
+                    "Name A-Z" => 3,
+                    "Name Z-A" => 9,
+                    "Most Players" => 11,
+                    _ => 1
+                };
+                await LoadGamesAsync();
+            }
+        }
+
+        private void GamesScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            if (GamesTab.Visibility != Visibility.Visible) return;
+            if (_isLoadingMore || !_hasMoreGames) return;
+
+            var scrollViewer = (ScrollViewer)sender;
+            if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 200)
+            {
+                _ = LoadGamesAsync(false);
+            }
         }
 
         /// <summary>
@@ -275,11 +551,12 @@ namespace Control_Panel
             try
             {
                 await LoadServersAsync();
-                UpdateStatus("Server list refreshed successfully", "success");
+                await LoadGamesAsync();
+                UpdateStatus("Refreshed successfully", "success");
             }
             catch (Exception ex)
             {
-                UpdateStatus($"Failed to refresh servers: {ex.Message}", "error");
+                UpdateStatus($"Failed to refresh: {ex.Message}", "error");
             }
         }
 
@@ -451,6 +728,71 @@ namespace Control_Panel
         private void CloseServerDetailsButton_Click(object sender, RoutedEventArgs e)
         {
             ServersDataGrid.SelectedItem = null;
+        }
+
+        private void GameServersTabButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameServersTab.Visibility = Visibility.Visible;
+            GamesTab.Visibility = Visibility.Collapsed;
+            GameServersTabButton.Background = (System.Windows.Media.Brush)Application.Current.Resources["AccentPrimary"];
+            GameServersTabButton.Foreground = System.Windows.Media.Brushes.White;
+            GamesTabButton.Background = System.Windows.Media.Brushes.Transparent;
+            GamesTabButton.Foreground = (System.Windows.Media.Brush)Application.Current.Resources["Foreground"];
+        }
+
+        private void GamesTabButton_Click(object sender, RoutedEventArgs e)
+        {
+            GameServersTab.Visibility = Visibility.Collapsed;
+            GamesTab.Visibility = Visibility.Visible;
+            GamesTabButton.Background = (System.Windows.Media.Brush)Application.Current.Resources["AccentPrimary"];
+            GamesTabButton.Foreground = System.Windows.Media.Brushes.White;
+            GameServersTabButton.Background = System.Windows.Media.Brushes.Transparent;
+            GameServersTabButton.Foreground = (System.Windows.Media.Brush)Application.Current.Resources["Foreground"];
+        }
+
+        private void InitializePlaceholders()
+        {
+            SetPlaceholder(GameSearchTextBox);
+            SetPlaceholder(GameIdSearchTextBox);
+        }
+
+        private void SetPlaceholder(TextBox textBox)
+        {
+            if (string.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = textBox.Tag as string;
+                textBox.Foreground = (Brush)FindResource("SubtleText");
+            }
+        }
+
+        private void ClearPlaceholder(TextBox textBox)
+        {
+            if (textBox.Text == textBox.Tag as string)
+            {
+                textBox.Text = "";
+                textBox.Foreground = (Brush)FindResource("Foreground");
+            }
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                ClearPlaceholder(textBox);
+            }
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                if (string.IsNullOrEmpty(textBox.Text))
+                {
+                    SetPlaceholder(textBox);
+                }
+            }
         }
 
         #region Authentication Ticket Methods

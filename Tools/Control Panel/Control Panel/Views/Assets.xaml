@@ -263,11 +263,14 @@
                                           Style="{StaticResource ModernComboBox}"
                                           Height="30" Margin="0,0,0,15"
                                           SelectionChanged="AssetTypeComboBox_SelectionChanged">
-                                    <ComboBoxItem Content="Decal (1)"/>
-                                    <ComboBoxItem Content="T-Shirt (2)"/>
-                                    <ComboBoxItem Content="Place (9) (Wont be added for some time)" IsEnabled="False" Foreground="Gray"/>
-                                    <ComboBoxItem Content="Shirt (11)"/>
-                                    <ComboBoxItem Content="Pants (12)"/>
+                                 <ComboBoxItem Content="Decal (13)"/>
+                                     <ComboBoxItem Content="T-Shirt (2)"/>
+                                     <ComboBoxItem Content="Audio (3)"/>
+                                     <ComboBoxItem Content="Mesh (4)"/>
+                                     <ComboBoxItem Content="Place (9) (Wont be added for some time)" IsEnabled="False" Foreground="Gray"/>
+                                     <ComboBoxItem Content="Model (10)"/>
+                                     <ComboBoxItem Content="Shirt (11)"/>
+                                     <ComboBoxItem Content="Pants (12)"/>
                                 </ComboBox>
                                 <StackPanel x:Name="PriceFieldsPanel" Margin="0,0,0,15" Visibility="Collapsed">
                                     <TextBlock Text="Price:" Style="{StaticResource LabelText}" 
@@ -315,6 +318,11 @@
                                                   Grid.Column="2"
                                                   IsChecked="True"/>
                                     </Grid>
+                                </StackPanel>
+                                <StackPanel x:Name="MakeFreePanel" Margin="0,0,0,15" Visibility="Collapsed">
+                                    <CheckBox x:Name="MakeFreeCheckBox" Content="Make free"
+                                              Style="{StaticResource ModernCheckBox}"
+                                              IsChecked="True"/>
                                 </StackPanel>
                                 <StackPanel x:Name="LimitedFieldsPanel" Margin="0,0,0,15" Visibility="Collapsed">
                                     <Grid x:Name="LimitedFieldsGrid" IsEnabled="False">
@@ -525,6 +533,9 @@
                                         <ComboBoxItem Content="All Types" IsSelected="True"/>
                                         <ComboBoxItem Content="Decal"/>
                                         <ComboBoxItem Content="T-Shirt"/>
+                                        <ComboBoxItem Content="Audio"/>
+                                        <ComboBoxItem Content="Mesh"/>
+                                        <ComboBoxItem Content="Model"/>
                                         <ComboBoxItem Content="Shirt"/>
                                         <ComboBoxItem Content="Pants"/>
                                     </ComboBox>

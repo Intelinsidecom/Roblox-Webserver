@@ -1,0 +1,31 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+!function(t){var i={};function r(e){if(i[e])return i[e].exports;var n=i[e]={i:e,l:!1,exports:{}};return t[e].call(n.exports,n,n.exports,r),n.l=!0,n.exports}r.m=t,r.c=i,r.d=function(e,n,t){r.o(e,n)||Object.defineProperty(e,n,{enumerable:!0,get:t})},r.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.t=function(n,e){if(1&e&&(n=r(n)),8&e)return n;if(4&e&&"object"==typeof n&&n&&n.__esModule)return n;var t=Object.create(null);if(r.r(t),Object.defineProperty(t,"default",{enumerable:!0,value:n}),2&e&&"string"!=typeof n)for(var i in n)r.d(t,i,function(e){return n[e]}.bind(null,i));return t},r.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(n,"a",n),n},r.o=function(e,n){return Object.prototype.hasOwnProperty.call(e,n)},r.p="",r(r.s=478)}({478:function(e,n,t){"use strict";t.r(n);function i(){var e,n;return null!=(n=null===(e=document.querySelector('meta[name="user-data"]'))||void 0===e?void 0:e.dataset)?n:null}var r,o,l,u,d,a,s,v,c,f,p,m,y,b,g,w={isIos13Ipad:!!window.navigator&&"MacIntel"===navigator.platform&&1<navigator.maxTouchPoints,isMac:-1<(null===(o=window)||void 0===o?void 0:o.navigator.platform.toUpperCase().indexOf("MAC")),isWindows:-1<(null===(r=window)||void 0===r?void 0:r.navigator.platform.toUpperCase().indexOf("WIN"))},S={isAuthenticated:!!i(),isUnder13:"true"===(null===(m=i())||void 0===m?void 0:m.isunder13),name:null!=(p=null===(f=i())||void 0===f?void 0:f.name)?p:null,id:(null===(v=i())||void 0===v?void 0:v.userid)?Number.parseInt(null===(c=i())||void 0===c?void 0:c.userid,10):-1,isPremiumUser:"true"===(null===(s=i())||void 0===s?void 0:s.ispremiumuser),created:null!=(a=null===(d=i())||void 0===d?void 0:d.created)?a:null,displayName:null!=(u=null===(l=i())||void 0===l?void 0:l.displayname)?u:null},x={isTestSite:"true"===(null===(g=null!=(b=null===(y=document.querySelector('meta[name="environment-meta"]'))||void 0===y?void 0:y.dataset)?b:null)||void 0===g?void 0:g.isTestingSite)};window.Roblox.JsClientDeviceIdentifier=w,window.HeaderScripts={jsClientDeviceIdentifier:w,authenticatedUser:S,environmentSites:x}}});
+//# sourceMappingURL=https://js.rbxcdn.com/ad5b21a54da3a31f6230-headerScripts.js.map
+
+/* Bundle detector */
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("HeaderScripts");
+}
+
+/*
+     FILE ARCHIVED ON 16:06:12 Nov 04, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 05:47:55 Jul 03, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.516
+  load_resource: 214.735 (2)
+  PetaboxLoader3.resolve: 136.901 (2)
+  PetaboxLoader3.datanode: 60.914 (2)
+*/

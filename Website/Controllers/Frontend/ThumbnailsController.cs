@@ -613,9 +613,12 @@ public class ThumbnailsController : ControllerBase
             }
         }
 
+        var isFinal = true;
         if (string.IsNullOrWhiteSpace(thumbnailUrl))
         {
             thumbnailUrl = "/images/RobloxLogo.png";
+            if (!asset.IsPlace)
+                isFinal = false;
         }
         else if (!thumbnailUrl.StartsWith("http://") && !thumbnailUrl.StartsWith("https://") && !thumbnailUrl.StartsWith("/"))
         {
@@ -625,7 +628,7 @@ public class ThumbnailsController : ControllerBase
         var response = new GameThumbnailJsonResponse
         {
             Url = thumbnailUrl,
-            Final = true
+            Final = isFinal
         };
         
         var jsonOptions = new JsonSerializerOptions

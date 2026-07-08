@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using Website.Services;
 
 namespace RobloxWebserver.Controllers;
 
@@ -23,11 +24,13 @@ namespace RobloxWebserver.Controllers;
 public class IDEController : Controller
 {
     private readonly IConfiguration _configuration;
+    private readonly ToolboxService _toolboxService;
     private const int PageSize = 50;
 
-    public IDEController(IConfiguration configuration)
+    public IDEController(IConfiguration configuration, ToolboxService toolboxService)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _toolboxService = toolboxService ?? throw new ArgumentNullException(nameof(toolboxService));
     }
 
     private string? ConnectionString => _configuration.GetConnectionString("Default");
@@ -181,8 +184,8 @@ public class IDEController : Controller
         return Content("", "text/html");
     }
 
-    [HttpGet("PublishAs/upload/{placeId:long}")]
-    public async Task<IActionResult> Publish(long placeId, CancellationToken cancellationToken = default)
+    [HttpGet("PublishAs/upload/{assetId:long}")]
+    public async Task<IActionResult> Publish(long assetId, CancellationToken cancellationToken = default)
     {
         var userId = GetUserId();
         if (userId <= 0) return Unauthorized();
@@ -194,25 +197,33 @@ public class IDEController : Controller
         await using var conn = new NpgsqlConnection(connStr);
         await conn.OpenAsync(cancellationToken);
 
-        const string sql = "SELECT name FROM assets WHERE asset_id = @pid AND owner_user_id = @uid AND is_place = true";
+        const string sql = "SELECT name, asset_type_id FROM assets WHERE asset_id = @pid AND owner_user_id = @uid";
         await using var cmd = new NpgsqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("pid", placeId);
+        cmd.Parameters.AddWithValue("pid", assetId);
         cmd.Parameters.AddWithValue("uid", userId);
-        var result = await cmd.ExecuteScalarAsync(cancellationToken);
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
 
-        if (result == null || result == DBNull.Value)
+        if (!await reader.ReadAsync(cancellationToken))
             return Redirect("/404");
+
+        var name = reader.IsDBNull(0) ? "Unnamed" : reader.GetString(0);
+        var assetTypeId = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
+
+        var isPlace = assetTypeId == 9;
+        var typeName = isPlace ? "Place" : "Model";
 
         var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
         var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl.Replace("://www.", "://data.").Replace("://assetgame.", "://data.");
-        var uploadUrl = $"{dataBaseUrl}/Data/Upload.ashx?assetid={placeId}&type=Place&ispublic=False&groupId=";
+        var uploadUrl = $"{dataBaseUrl}/Data/Upload.ashx?assetid={assetId}&type={typeName}&ispublic=False&groupId=";
         var previousUrl = baseUrl + "/ide/Upload.ashx";
 
-        ViewBag.gameid = placeId;
-        ViewBag.gamename = (string)result;
+        ViewBag.gameid = assetId;
+        ViewBag.gamename = name;
         ViewBag.uploadUrl = uploadUrl;
         ViewBag.previousUrl = previousUrl;
         ViewBag.newUpload = "False";
+        ViewBag.isplace = isPlace ? "True" : "False";
+        ViewBag.ispackage = "False";
 
         return View("~/Views/Pages/ide/PublishAs/upload.cshtml");
     }
@@ -452,6 +463,99 @@ public class IDEController : Controller
         }
     }
 
+    [HttpGet("publish/listmodels")]
+    public async Task<IActionResult> ListModels(CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+        if (userId <= 0) return Unauthorized();
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr))
+            return StatusCode(500, new { error = "Service unavailable" });
+
+        var models = new List<ModelEntry>();
+
+        try
+        {
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken);
+
+            const string sql = @"SELECT asset_id, name, description, thumbnail_url, created_at
+FROM assets
+WHERE owner_user_id = @uid AND asset_type_id = 10
+ORDER BY created_at DESC";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                models.Add(new ModelEntry
+                {
+                    AssetId = reader.GetInt64(0),
+                    Name = reader.IsDBNull(1) ? "Unnamed Model" : reader.GetString(1),
+                    Description = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    ThumbnailUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
+                    CreatedAt = reader.GetDateTime(4)
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+
+        return PartialView("~/Views/IDE/ModelList.cshtml", models);
+    }
+
+    [HttpPost("Publish/Model")]
+    public async Task<IActionResult> PublishNewModel(CancellationToken cancellationToken = default)
+    {
+        var userId = GetUserId();
+        if (userId <= 0) return Unauthorized();
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr))
+            return StatusCode(500, new { error = "Service unavailable" });
+
+        var name = Request.Form["Name"].FirstOrDefault() ?? "";
+        if (string.IsNullOrWhiteSpace(name))
+            return BadRequest("Name is required.");
+
+        var description = Request.Form["Description"].FirstOrDefault() ?? "";
+        var genreStr = Request.Form["Genre"].FirstOrDefault() ?? "All";
+        var allowComments = Request.Form["AllowComments"].Contains("true");
+        var isCopyingAllowed = Request.Form["IsCopyingAllowed"].Contains("true");
+        var genreTypeId = AssetGenreNames.GetGenreIdFromString(genreStr);
+
+        var repo = new AssetsRepository();
+
+        var createParams = new AssetCreateParams
+        {
+            Name = name,
+            AssetTypeId = 10,
+            OwnerUserId = userId,
+            Description = description,
+            ContentHash = "pending",
+            FileExtension = ".rbxm",
+            ContentType = "application/octet-stream",
+            IsCopyingAllowed = isCopyingAllowed
+        };
+
+        var assetId = await repo.CreateAssetAsync(connStr, createParams, cancellationToken);
+
+        var userAssetsRepo = new UserAssetsRepository();
+        await userAssetsRepo.AddUserAssetAsync(connStr, userId, assetId, cancellationToken);
+
+        if (genreTypeId is >= 0 and <= 20)
+            await repo.UpdateAssetGenreAsync(connStr, assetId, genreTypeId, cancellationToken);
+
+        await repo.UpdateAssetAllowCommentsAsync(connStr, assetId, allowComments, cancellationToken);
+
+        return Redirect($"/ide/PublishAs/upload/{assetId}");
+    }
+
     [HttpGet("places/defaultsettings")]
     public IActionResult DefaultSettings()
     {
@@ -598,6 +702,115 @@ public class IDEController : Controller
         }
     }
 
+    [HttpPost("insertasset")]
+    public async Task<IActionResult> InsertAsset([FromBody] InsertAssetRequest request)
+    {
+        try
+        {
+            if (request == null || request.assetId <= 0)
+                return BadRequest(new { error = "Invalid request" });
+
+            var userId = GetUserId();
+            if (userId <= 0)
+                return Unauthorized(new { error = "Not authenticated" });
+
+            var connStr = ConnectionString;
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, new { error = "Database not configured" });
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync();
+
+            const string sql = @"INSERT INTO user_assets (user_id, asset_id, created_at)
+                                 VALUES (@uid, @aid, now())
+                                 ON CONFLICT (user_id, asset_id) DO NOTHING";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+            cmd.Parameters.AddWithValue("aid", request.assetId);
+            await cmd.ExecuteNonQueryAsync();
+
+            return Ok(new { success = true });
+        }
+        catch
+        {
+            return Ok(new { success = false });
+        }
+    }
+
+    [HttpGet("toolbox/items")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetToolboxItems(
+        [FromQuery] string? category = null,
+        [FromQuery] string? keyword = null,
+        [FromQuery] int num = 30,
+        [FromQuery] int page = 1,
+        [FromQuery] string? sort = null,
+        [FromQuery] long? creatorId = null,
+        [FromQuery] string? creatorType = null,
+        [FromQuery] long? userId = null,
+        [FromQuery] long? groupId = null)
+    {
+        try
+        {
+            var typeId = category?.ToLowerInvariant() switch
+            {
+                "freemodels" or "mymodels" or "recentmodels" => 10,
+                "freedecals" or "mydecals" or "recentdecals" => 13,
+                "freemeshes" or "mymeshes" or "recentmeshes" => 4,
+                "freeaudio" or "myaudio" or "recentaudio" => 3,
+                _ => (int?)null
+            };
+
+            var filterUserId = userId ?? creatorId;
+            var currentUserId = GetUserId();
+
+            var (results, totalCount) = await _toolboxService.SearchToolboxAsync(
+                typeId, keyword, sort, page, num, filterUserId, groupId, currentUserId);
+
+            var responseResults = results.Select(r => new
+            {
+                Asset = new
+                {
+                    Id = r.AssetId,
+                    Name = r.Name,
+                    TypeId = r.AssetTypeId,
+                    IsEndorsed = false
+                },
+                Creator = new
+                {
+                    Id = r.OwnerUserId,
+                    Name = r.OwnerName,
+                    Type = 1
+                },
+                Thumbnail = new
+                {
+                    Final = true,
+                    Url = r.ThumbnailUrl,
+                    RetryUrl = (string?)null,
+                    UserId = 0L,
+                    EndpointType = "Avatar"
+                },
+                Voting = new
+                {
+                    ShowVotes = true,
+                    UpVotes = r.Upvotes,
+                    DownVotes = r.Downvotes,
+                    CanVote = r.IsOwnedByCurrentUser,
+                    UserVote = (bool?)null,
+                    HasVoted = false,
+                    ReasonForNotVoteable = r.IsOwnedByCurrentUser ? "" : "InvalidAssetOrUser"
+                }
+            }).ToList();
+
+            return Ok(new { Results = responseResults, TotalResults = totalCount });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
     private static string SanitizeString(string input, int maxLength)
     {
         if (string.IsNullOrEmpty(input)) return "";
@@ -650,4 +863,18 @@ public sealed class PlaceEntry
     public long PlaceId { get; set; }
     public string Name { get; set; } = "Unnamed Place";
     public string? ThumbnailUrl { get; set; }
+}
+
+public sealed class ModelEntry
+{
+    public long AssetId { get; set; }
+    public string Name { get; set; } = "Unnamed Model";
+    public string? Description { get; set; }
+    public string? ThumbnailUrl { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+
+public sealed class InsertAssetRequest
+{
+    public long assetId { get; set; }
 }

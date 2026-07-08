@@ -13,24 +13,27 @@ namespace RCCArbiter
 
         private const int GameServerMinPort = 54000;
         private const int GameServerMaxPort = 55000;
+        private const int RccMinPort = 50000;
+        private const int RccMaxPort = 51000;
 
         public static int FindFreePort()
         {
             lock (_lock)
             {
-                while (true)
-                {
-                    var listener = new TcpListener(IPAddress.Loopback, 0);
-                    listener.Start();
-                    int port = ((IPEndPoint)listener.LocalEndpoint).Port;
-                    listener.Stop();
+                var random = new Random();
+                var availablePorts = Enumerable.Range(RccMinPort, RccMaxPort - RccMinPort + 1)
+                    .Where(port => !_reservedPorts.Contains(port) && IsPortAvailable(port))
+                    .ToList();
 
-                    if (!_reservedPorts.Contains(port))
-                    {
-                        _reservedPorts.Add(port);
-                        return port;
-                    }
+                if (availablePorts.Any())
+                {
+                    var selectedPort = availablePorts[random.Next(availablePorts.Count)];
+                    _reservedPorts.Add(selectedPort);
+                    return selectedPort;
                 }
+
+                Console.WriteLine("No available ports found for RCC allocation");
+                return 0;
             }
         }
 
@@ -50,7 +53,8 @@ namespace RCCArbiter
                     return selectedPort;
                 }
 
-                throw new InvalidOperationException("No available ports found for game server allocation");
+                Console.WriteLine("No available ports found for game server allocation");
+                return 0;
             }
         }
 

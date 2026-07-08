@@ -21,7 +21,7 @@ namespace RCCArbiter
         private readonly Timer _cleanupTimer;
         private readonly Timer _inactivityTimer;
         private readonly Timer _zeroPlayerKillTimer;
-        private readonly TimeSpan _rccKeepAliveDuration = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _rccKeepAliveDuration = TimeSpan.FromSeconds(10);
 
         public class GameServerInfo
         {
@@ -47,6 +47,7 @@ namespace RCCArbiter
             public List<PlayerInfo> GuestPlayers { get; set; } = new();
             public List<string> PlayerEvents { get; set; } = new();
             public string? ShutdownReason { get; set; }
+            public int FailedReportCount { get; set; } = 0;
         }
 
         public class PlayerInfo
@@ -422,6 +423,7 @@ namespace RCCArbiter
 
                 server.LastStatus = data;
                 server.LastActivityTime = DateTime.UtcNow;
+                server.FailedReportCount = 0;
 
                 if (data.TryGetValue("players", out var playersObj) && playersObj is Dictionary<string, object> players)
                 {
@@ -509,6 +511,35 @@ namespace RCCArbiter
                 {
                     _ = Task.Run(() => KillZeroPlayerServer(gameId));
                 }
+            }
+        }
+
+        /// <summary>
+        /// Records a failed report attempt for a game server.
+        /// Destroys the session after 3 consecutive failures (RCC is likely dead).
+        /// </summary>
+        public void RecordFailedReport(string gameId)
+        {
+            bool shouldStop = false;
+            lock (_serversLock)
+            {
+                if (_activeServers.TryGetValue(gameId, out var server))
+                {
+                    server.FailedReportCount++;
+                    Console.WriteLine($"[RCC Health] Game server {gameId} failed report {server.FailedReportCount}/3");
+
+                    if (server.FailedReportCount >= 3)
+                    {
+                        Console.WriteLine($"[RCC Health] RCC unreachable for game server {gameId}, destroying session");
+                        server.ShutdownReason = "RCC unreachable";
+                        shouldStop = true;
+                    }
+                }
+            }
+
+            if (shouldStop)
+            {
+                StopGameServer(gameId);
             }
         }
 

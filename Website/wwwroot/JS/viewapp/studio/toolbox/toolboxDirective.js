@@ -22,7 +22,11 @@ clientToolbox.directive("robloxToolboxHeader", ["ClientToolboxService", "GAEServ
             i.$watch(function() {
                 return n.allSets
             }, function(n, t) {
-                n != t && (i.options = n)
+                if (n != t) {
+                    i.options = n;
+                    i.optionArray = [];
+                    for (var key in n) n.hasOwnProperty(key) && i.optionArray.push(n[key])
+                }
             }, !0), i.$watch("option", function(t, r) {
                 n.searchText = "", t && t != r && !n.disableUIUpdate && (t.hasChildren && t.children[0] ? i.childOption = t.children[0] : (i.childOption && (i.childOption = null), n.updateAssets(t.category, t.id)))
             }), i.$watch("childOption", function(t, i) {
@@ -107,11 +111,13 @@ clientToolbox.directive("robloxToolboxHeader", ["ClientToolboxService", "GAEServ
             }, i.handleVote = function(i) {
                 var r = this.asset;
                 this.asset.Voting.UserVote == i ? n.updateVoting(r.Asset.Id).then(function() {
-                    r.Voting.UserVote = null, r.HasVoted = !1
+                    r.Voting.UserVote = null, r.HasVoted = !1;
+                    i ? r.Voting.UpVotes-- : r.Voting.DownVotes--
                 }, function(i, r) {
                     return t.debug(n.HTTPCALLFAILS + r), !1
                 }) : n.updateVoting(r.Asset.Id, i).then(function() {
-                    r.Voting.UserVote = i, r.Voting.HasVoted = !0
+                    r.Voting.UserVote = i, r.Voting.HasVoted = !0;
+                    i ? r.Voting.UpVotes++ : r.Voting.DownVotes++
                 }, function(i, r) {
                     return t.debug(n.HTTPCALLFAILS + r), !1
                 })

@@ -31,14 +31,14 @@
         <div class="items-container">
             @if (items.Count == 0)
             {
-                @await Html.PartialAsync("~/Views/Pages/Develop/Tabs/_NoItems.cshtml", "You have no Shirts yet. Upload one to see it here!")
+                @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", "You have no Shirts yet. Upload one to see it here!")
             }
             else
             {
                 foreach (var item in items)
                 {
                     var displayId = item.ImageAssetId ?? item.AssetId;
-                    <table class="item-table" data-item-id="@item.AssetId" data-type="shirts">
+                    <table class="item-table" data-item-id="@item.AssetId" data-type="shirts" data-dropdown="#tshirt-dropdown-menu">
                         <tr>
                             <td class="image-col universe-image-col" style="text-align:center">
                                 <a href="@item.CatalogUrl" class="game-image">
@@ -63,7 +63,7 @@
                 }
             }
         </div>
-        <div id="tshirt-dropdown-menu" style="display:none;">
+        <div id="tshirt-dropdown-menu" class="item-dropdown-menu" style="display:none;">
             <a href="#" data-action="configure">Configure</a>
             <a href="#" data-action="advertise" class="divider-top">Advertise</a>
         </div>

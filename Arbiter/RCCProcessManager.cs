@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using Microsoft.Extensions.Configuration;
 
 namespace RCCArbiter
@@ -114,6 +116,12 @@ namespace RCCArbiter
                     throw new Exception($"RCC process exited immediately with code: {_process.ExitCode}");
                 }
                 
+                if (!WaitForPort(_port, TimeSpan.FromSeconds(10)))
+                {
+                    Stop();
+                    throw new Exception($"RCC ({_year}) started but is not listening on port {_port} after verification timeout");
+                }
+                
                 Console.WriteLine($"RCC ({_year}) is running on port {_port}");
                 Console.WriteLine();
             }
@@ -215,6 +223,29 @@ namespace RCCArbiter
                 }
                 catch { }
             }
+        }
+
+        private static bool WaitForPort(int port, TimeSpan timeout)
+        {
+            var sw = Stopwatch.StartNew();
+            while (sw.Elapsed < timeout)
+            {
+                try
+                {
+                    using var client = new TcpClient();
+                    var result = client.BeginConnect(IPAddress.Loopback, port, null, null);
+                    if (result.AsyncWaitHandle.WaitOne(500))
+                    {
+                        client.EndConnect(result);
+                        if (client.Connected)
+                            return true;
+                    }
+                }
+                catch
+                {
+                }
+            }
+            return false;
         }
 
         public void Dispose()

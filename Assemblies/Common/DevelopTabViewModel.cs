@@ -23,11 +23,24 @@ public sealed class DevelopTabViewModel
     public IReadOnlyList<ClothingItem> TShirts { get; set; } = new List<ClothingItem>();
     public IReadOnlyList<ClothingItem> Shirts { get; set; } = new List<ClothingItem>();
     public IReadOnlyList<ClothingItem> Pants { get; set; } = new List<ClothingItem>();
+    public IReadOnlyList<DevelopItem> Models { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> Meshes { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> Decals { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> Audios { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> LibraryItems { get; set; } = new List<DevelopItem>();
+
+    public int SelectedCategory { get; set; }
+    public int SelectedSortType { get; set; }
+    public List<int> SelectedGenres { get; set; } = new();
+    public int TotalItems { get; set; }
+    public int PageNumber { get; set; } = 1;
+    public int TotalPages { get; set; } = 1;
 }
 
 public sealed class DevelopItem
 {
     public long ItemId { get; set; }
+    public long AssetId { get; set; }
     public long RootPlaceId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? ThumbnailUrl { get; set; }
@@ -46,6 +59,11 @@ public sealed class DevelopItem
     public string StatusText { get; set; } = "Public";
     public bool IsPublic { get; set; } = true;
     public int VisitCount { get; set; }
+    public string CatalogUrl { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public int? PriceRobux { get; set; }
+    public int? PriceTickets { get; set; }
+    public bool IsOnSale { get; set; }
 }
 
 public sealed class ClothingItem

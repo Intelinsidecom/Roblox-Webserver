@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Api.Data;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Games;
 using Common;
@@ -12,13 +12,15 @@ namespace Api.Controllers
     [Route("universes")]
     public class UniversesController : ControllerBase
     {
-        private readonly AppDbContext _dbContext;
+        private readonly IConfiguration _configuration;
         private readonly CurrentUserService _currentUserService;
+        private readonly GamePresenceService _gamePresenceService;
 
-        public UniversesController(AppDbContext dbContext, CurrentUserService currentUserService)
+        public UniversesController(IConfiguration configuration, CurrentUserService currentUserService, GamePresenceService gamePresenceService)
         {
-            _dbContext = dbContext;
+            _configuration = configuration;
             _currentUserService = currentUserService;
+            _gamePresenceService = gamePresenceService;
         }
 
         [HttpGet("get-universe-containing-place")]
@@ -31,32 +33,9 @@ namespace Api.Controllers
 
             try
             {
-                var connection = _dbContext.Database.GetDbConnection();
-                await connection.OpenAsync();
-
-                using var command = connection.CreateCommand();
-                command.CommandText = @"
-                    SELECT u.universe_id
-                    FROM universes u
-                    WHERE @placeId = ANY(u.place_ids)
-                    LIMIT 1";
-
-                var parameter = command.CreateParameter();
-                parameter.ParameterName = "@placeId";
-                parameter.Value = placeId;
-                command.Parameters.Add(parameter);
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
-                {
-                    var universeId = reader.GetInt64(0);
-                    return Ok(new { UniverseId = universeId });
-                }
-                else
-                {
-                    return Ok(new { UniverseId = 0 });
-                }
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, placeId);
+                return Ok(new { UniverseId = universeId ?? 0 });
             }
             catch (Exception ex)
             {
@@ -68,170 +47,180 @@ namespace Api.Controllers
         [HttpGet("{universeId}/cloudeditenabled")]
         public async Task<IActionResult> CloudEditEnabled(long universeId)
         {
-            // Just not yet
-            return Ok(new { enabled = false });
-        }
-
-        [HttpGet("get-info")]
-        public async Task GetUniverseInfo([FromQuery] long? universeId, [FromQuery] long? placeId)
-        {
-            if ((universeId == null || universeId <= 0) && (placeId == null || placeId <= 0))
+            if (universeId <= 0)
             {
-                Response.StatusCode = 400;
-                await Response.WriteAsync("{\"error\":\"Invalid universe ID\"}");
-                return;
+                return BadRequest(new { error = "Invalid universe ID" });
             }
 
             try
             {
-                var connection = _dbContext.Database.GetDbConnection();
-                await connection.OpenAsync();
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId);
+                return Ok(new { enabled = false /*universe != null*/ });
+            }
+            catch
+            {
+                return Ok(new { enabled = false });
+            }
+        }
+
+        [HttpPost("{universeId}/enablecloudedit")]
+        public async Task<IActionResult> EnableCloudEdit(long universeId)
+        {
+            return Ok(new { success = true });
+        }
+
+        [HttpPost("{universeId}/disablecloudedit")]
+        public async Task<IActionResult> DisableCloudEdit(long universeId)
+        {
+            return Ok(new { success = true });
+        }
+
+        [HttpGet("get-info")]
+        public async Task<IActionResult> GetUniverseInfo([FromQuery] long? universeId, [FromQuery] long? placeId)
+        {
+            if ((universeId == null || universeId <= 0) && (placeId == null || placeId <= 0))
+            {
+                return BadRequest(new { error = "Invalid universe ID" });
+            }
+
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
 
                 if (placeId > 0 && (universeId == null || universeId <= 0))
                 {
-                    using var resolveCmd = connection.CreateCommand();
-                    resolveCmd.CommandText = @"
-                        SELECT u.universe_id
-                        FROM universes u
-                        WHERE @placeId = ANY(u.place_ids)
-                        LIMIT 1";
-                    var p = resolveCmd.CreateParameter();
-                    p.ParameterName = "@placeId";
-                    p.Value = placeId;
-                    resolveCmd.Parameters.Add(p);
-
-                    var result = await resolveCmd.ExecuteScalarAsync();
-                    if (result == null || result == DBNull.Value)
+                    var resolved = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, placeId.Value);
+                    if (resolved == null)
                     {
-                        Response.StatusCode = 404;
-                        await Response.WriteAsync("{\"error\":\"Universe not found\"}");
-                        return;
+                        return NotFound(new { error = "Universe not found" });
                     }
-                    universeId = (long)result;
+                    universeId = resolved.Value;
                 }
 
-                using var command = connection.CreateCommand();
-                command.CommandText = @"
-                    SELECT 
-                        u.name,
-                        COALESCE(u.root_place_id, 0) as root_place_id,
-                        u.creator_user_id,
-                        u.created_at,
-                        u.Studio_Access_To_APIs
-                    FROM universes u
-                    WHERE u.universe_id = @universeId";
-
-                var param = command.CreateParameter();
-                param.ParameterName = "@universeId";
-                param.Value = universeId;
-                command.Parameters.Add(param);
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
+                var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId!.Value);
+                if (universe == null)
                 {
-                    var name = reader.IsDBNull(0) ? "" : reader.GetString(0);
-                    var rootPlace = reader.IsDBNull(1) ? 0L : reader.GetInt64(1);
-                    var creatorId = reader.IsDBNull(2) ? 0L : reader.GetInt64(2);
-                    var studioAccess = !reader.IsDBNull(4) && reader.GetBoolean(4);
-
-                    var json = $"{{\"Name\":{System.Text.Json.JsonSerializer.Serialize(name)},\"Description\":\"\",\"RootPlace\":{rootPlace},\"StudioAccessToApisAllowed\":{(studioAccess ? "true" : "false")},\"CurrentUserHasEditPermissions\":true,\"UniverseAvatarType\":1}}";
-                    Response.ContentType = "application/json; charset=utf-8";
-                    await Response.WriteAsync(json);
-                    return;
+                    return NotFound(new { error = "Universe not found" });
                 }
 
-                Response.StatusCode = 404;
-                await Response.WriteAsync("{\"error\":\"Universe not found\"}");
+                return Ok(new
+                {
+                    Name = universe.Name,
+                    Description = "",
+                    RootPlace = universe.RootPlaceId,
+                    StudioAccessToApisAllowed = universe.Studio_Access_To_APIs,
+                    CurrentUserHasEditPermissions = true,
+                    UniverseAvatarType = 1
+                });
             }
             catch (Exception ex)
             {
-                Response.StatusCode = 500;
-                await Response.WriteAsync($"{{\"error\":\"Internal server error: {System.Text.Json.JsonSerializer.Serialize(ex.Message)}\"}}");
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
+        [HttpPost("create-alias-v2")]
+        public async Task<IActionResult> CreateAliasV2(
+            [FromQuery] long universeId,
+            [FromBody] CreateAliasV2Request body)
+        {
+            if (universeId <= 0)
+            {
+                return BadRequest(new { Success = false, Message = "Invalid universe ID" });
+            }
+
+            if (body == null || string.IsNullOrWhiteSpace(body.Name) || string.IsNullOrWhiteSpace(body.Type) || string.IsNullOrWhiteSpace(body.TargetId))
+            {
+                return BadRequest(new { Success = false, Message = "Missing required fields: Name, Type, TargetId" });
+            }
+
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+
+                var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId);
+                if (universe == null)
+                {
+                    return NotFound(new { Success = false, Message = "Universe not found" });
+                }
+
+                var aliasJson = JsonSerializer.Serialize(new
+                {
+                    body.Name,
+                    body.Type,
+                    body.TargetId
+                });
+
+                await AliasHandler.AppendAliasAsync(connectionString, universeId, aliasJson);
+
+                return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Success = false, Message = $"Internal server error: {ex.Message}" });
             }
         }
 
         [HttpGet("get-aliases")]
-        public async Task GetAliases([FromQuery] long universeId, [FromQuery] int page = 1)
-        {
-            Response.ContentType = "application/json; charset=utf-8";
-            await Response.WriteAsync("{\"FinalPage\":true,\"Aliases\":[],\"PageSize\":50}");
-        }
-
-        [HttpGet("get-universe-places")]
-        public async Task GetUniversePlaces([FromQuery] long universeId, [FromQuery] int page = 1)
+        public async Task<IActionResult> GetAliases([FromQuery] long universeId, [FromQuery] int page = 1)
         {
             if (universeId <= 0)
             {
-                Response.StatusCode = 400;
-                await Response.WriteAsync("{\"error\":\"Invalid universe ID\"}");
-                return;
+                return BadRequest(new { error = "Invalid universe ID" });
             }
 
             try
             {
-                var connection = _dbContext.Database.GetDbConnection();
-                await connection.OpenAsync();
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var aliasesJson = await GamesRepository.GetUniverseAliasesAsync(connectionString, universeId);
+                var aliases = string.IsNullOrEmpty(aliasesJson) ? new object[] { } : JsonSerializer.Deserialize<object>(aliasesJson)!;
 
-                long rootPlaceId;
-                List<long> placeIds;
-
-                using (var cmd = connection.CreateCommand())
+                return Ok(new
                 {
-                    cmd.CommandText = @"
-                        SELECT COALESCE(root_place_id, 0), COALESCE(place_ids, ARRAY[]::bigint[])
-                        FROM universes WHERE universe_id = @uid";
-                    var p = cmd.CreateParameter();
-                    p.ParameterName = "@uid";
-                    p.Value = universeId;
-                    cmd.Parameters.Add(p);
-
-                    using var reader = await cmd.ExecuteReaderAsync();
-                    if (!await reader.ReadAsync())
-                    {
-                        Response.StatusCode = 404;
-                        await Response.WriteAsync("{\"error\":\"Universe not found\"}");
-                        return;
-                    }
-
-                    rootPlaceId = reader.IsDBNull(0) ? 0L : reader.GetInt64(0);
-                    placeIds = ((long[])reader.GetValue(1)).ToList();
-                }
-
-                if (rootPlaceId > 0 && !placeIds.Contains(rootPlaceId))
-                    placeIds.Insert(0, rootPlaceId);
-
-                var places = new List<string>();
-                if (placeIds.Count > 0)
-                {
-                    using var cmd2 = connection.CreateCommand();
-                    var inParams = string.Join(",", placeIds.Select((_, i) => "@p" + i));
-                    cmd2.CommandText = $"SELECT asset_id, name FROM assets WHERE asset_id IN ({inParams})";
-                    for (int i = 0; i < placeIds.Count; i++)
-                    {
-                        var pp = cmd2.CreateParameter();
-                        pp.ParameterName = "@p" + i;
-                        pp.Value = placeIds[i];
-                        cmd2.Parameters.Add(pp);
-                    }
-
-                    using var r2 = await cmd2.ExecuteReaderAsync();
-                    while (await r2.ReadAsync())
-                    {
-                        var pid = r2.GetInt64(0);
-                        var pname = r2.IsDBNull(1) ? "" : r2.GetString(1);
-                        places.Add($"{{\"PlaceId\":{pid},\"Name\":{System.Text.Json.JsonSerializer.Serialize(pname)}}}");
-                    }
-                }
-
-                var json = $"{{\"FinalPage\":true,\"RootPlace\":{rootPlaceId},\"Places\":[{string.Join(",", places)}],\"PageSize\":{places.Count}}}";
-                Response.ContentType = "application/json; charset=utf-8";
-                await Response.WriteAsync(json);
+                    FinalPage = true,
+                    Aliases = aliases,
+                    PageSize = 50
+                });
             }
             catch (Exception ex)
             {
-                Response.StatusCode = 500;
-                await Response.WriteAsync($"{{\"error\":\"Internal server error: {System.Text.Json.JsonSerializer.Serialize(ex.Message)}\"}}");
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            }
+        }
+
+        [HttpGet("get-universe-places")]
+        public async Task<IActionResult> GetUniversePlaces([FromQuery] long universeId, [FromQuery] int page = 1)
+        {
+            if (universeId <= 0)
+            {
+                return BadRequest(new { error = "Invalid universe ID" });
+            }
+
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+
+                var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId);
+                if (universe == null)
+                {
+                    return NotFound(new { error = "Universe not found" });
+                }
+
+                var placeIds = await GamesQueries.GetUniversePlaceIdsAsync(universeId, connectionString);
+                var places = await GamesQueries.GetPlacesByIdsAsync(placeIds, connectionString);
+
+                return Ok(new
+                {
+                    FinalPage = true,
+                    RootPlace = universe.RootPlaceId,
+                    Places = places.Select(p => new { PlaceId = p.PlaceId, Name = p.Name }),
+                    PageSize = places.Count
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
         }
 
@@ -249,35 +238,9 @@ namespace Api.Controllers
 
             try
             {
-                var connection = _dbContext.Database.GetDbConnection();
-                await connection.OpenAsync();
-
-                using var command = connection.CreateCommand();
-                command.CommandText = @"
-                    SELECT a.asset_id, a.asset_type_id
-                    FROM assets a
-                    WHERE a.asset_id = @placeId
-                    LIMIT 1";
-
-                var parameter = command.CreateParameter();
-                parameter.ParameterName = "@placeId";
-                parameter.Value = placeId;
-                command.Parameters.Add(parameter);
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                if (!await reader.ReadAsync())
-                {
-                    return "false";
-                }
-
-                var assetId = reader.GetInt64(0);
-                var assetTypeId = reader.GetInt32(1);
-                if (assetTypeId != 9)
-                {
-                    return "false";
-                }
-                return "true";
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var isValid = await GamesRepository.ValidatePlaceJoinAsync(connectionString, placeId.Value);
+                return isValid ? "true" : "false";
             }
             catch (Exception)
             {
@@ -303,40 +266,18 @@ namespace Api.Controllers
                     return Unauthorized(new { error = "You can only query your own session" });
                 }
 
-                var connection = _dbContext.Database.GetDbConnection();
-                await connection.OpenAsync();
-
-                using var command = connection.CreateCommand();
-                command.CommandText = @"
-                    SELECT gp.placeid, gp.jobid, gp.updated_at
-                    FROM game_presence gp
-                    WHERE gp.userid = @userId
-                    LIMIT 1";
-
-                var parameter = command.CreateParameter();
-                parameter.ParameterName = "@userId";
-                parameter.Value = userId;
-                command.Parameters.Add(parameter);
-
-                using var reader = await command.ExecuteReaderAsync();
-
-                if (await reader.ReadAsync())
-                {
-                    var placeId = reader.GetInt64(0);
-                    var jobId = reader.IsDBNull(1) ? "" : reader.GetString(1);
-                    var updatedAt = reader.GetDateTime(2);
-
-                    return Ok(new
-                    {
-                        placeId = placeId,
-                        jobId = jobId,
-                        updatedAt = updatedAt
-                    });
-                }
-                else
+                var presence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
+                if (presence == null)
                 {
                     return Ok(new { });
                 }
+
+                return Ok(new
+                {
+                    placeId = presence.PlaceId,
+                    jobId = presence.JobId,
+                    updatedAt = presence.UpdatedAt
+                });
             }
             catch (Exception ex)
             {
@@ -345,5 +286,11 @@ namespace Api.Controllers
         }
 
     }
-}
 
+    public class CreateAliasV2Request
+    {
+        public string Name { get; set; } = "";
+        public string Type { get; set; } = "";
+        public string TargetId { get; set; } = "";
+    }
+}

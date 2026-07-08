@@ -57,10 +57,12 @@ namespace RobloxWebserver.Controllers
             public bool IsOwned { get; set; }
             public bool IsFavorited { get; set; }
             public bool IsWorn { get; set; }
+            public bool IsOnSale { get; set; }
         }
 
+        [HttpGet("{id:long}")]
         [HttpGet("{id:long}/{itemName}")]
-        public async Task<IActionResult> Item(long id, string itemName)
+        public async Task<IActionResult> Item(long id, string? itemName)
         {
             if (id <= 0)
             {
@@ -79,6 +81,12 @@ namespace RobloxWebserver.Controllers
                 return NotFound();
             }
 
+            var expectedSlug = ToSlug(asset.Name);
+            if (!string.Equals(itemName ?? "", expectedSlug, StringComparison.OrdinalIgnoreCase))
+            {
+                return RedirectPermanentPreserveMethod("/catalog/" + id + "/" + expectedSlug);
+            }
+
             int? favoritedCount = null;
             try
             {
@@ -88,12 +96,6 @@ namespace RobloxWebserver.Controllers
             catch
             {
                 favoritedCount = null;
-            }
-
-            var expectedSlug = ToSlug(asset.Name);
-            if (!string.Equals(itemName, expectedSlug, StringComparison.OrdinalIgnoreCase))
-            {
-                return NotFound();
             }
 
             var creatorName = string.Empty;
@@ -161,7 +163,8 @@ namespace RobloxWebserver.Controllers
                 AllowComments = asset.AllowComments,
                 IsOwned = isOwned,
                 IsFavorited = isFavorited,
-                IsWorn = isWorn
+                IsWorn = isWorn,
+                IsOnSale = asset.OnSale
             };
 
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);

@@ -9,11 +9,21 @@ namespace Common;
 public static class CDNUtilities
 {
     /// <summary>
-    /// Gets the solution directory path
+    /// Gets the solution directory path by walking up from the current directory
+    /// until a directory containing CDN/Assets (production) or Webserver.sln (development) is found.
     /// </summary>
     public static string GetSolutionDirectory()
     {
-        return Directory.GetParent(Directory.GetCurrentDirectory())?.FullName ?? Directory.GetCurrentDirectory();
+        var current = Directory.GetCurrentDirectory();
+        var directory = new DirectoryInfo(current);
+        while (directory != null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, "CDN", "Assets")) ||
+                File.Exists(Path.Combine(directory.FullName, "Webserver.sln")))
+                return directory.FullName;
+            directory = directory.Parent;
+        }
+        return current;
     }
 
     /// <summary>

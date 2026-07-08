@@ -1,0 +1,332 @@
+@model Assemblies.Common.DevelopTabViewModel
+@{ Layout = null; }
+<div id="catalog" data-empty-search-enabled="true" style="font-size:12px">
+    <div class="header" style="height:60px">
+        <div class="CatalogSearchBar">
+            <input id="keywordTextbox" name="name" type="text" class="translate text-box text-box-small">
+            <div style="height:23px;border:1px solid #a7a7a7;padding:2px;margin-right:6px;float:left;position:relative">
+                <select id="categoriesForKeyword">
+                    <option value="6">Models</option>
+                    <option value="8">Decals</option>
+                    <option value="9">Audio</option>
+                    <option value="10">Meshes</option>
+                    <option value="7">Plugins</option>
+                </select>
+            </div>
+            <a id="submitSearchButton" href="#" class="btn-control btn-control-large top-level">Search</a>
+        </div>
+    </div>
+    <div class="left-nav-menu divider-right">
+        <div id="dropdown" class="splashdropdown">
+            <ul id="dropdownUl" class="clearfix">
+                <li><a href="#" class="assetTypeFilter  @(Model.SelectedCategory == 6 ? "selectedAssetTypeFilter" : "")" data-category="6" data-keepfilters="true">Models</a></li>
+                <li><a href="#" class="assetTypeFilter  @(Model.SelectedCategory == 8 ? "selectedAssetTypeFilter" : "")" data-category="8" data-keepfilters="true">Decals</a></li>
+                <li><a href="#" class="assetTypeFilter  @(Model.SelectedCategory == 9 ? "selectedAssetTypeFilter" : "")" data-category="9" data-keepfilters="true">Audio</a></li>
+                <li><a href="#" class="assetTypeFilter  @(Model.SelectedCategory == 10 ? "selectedAssetTypeFilter" : "")" data-category="10" data-keepfilters="true">Meshes</a></li>
+                <li><a href="#" class="assetTypeFilter  @(Model.SelectedCategory == 7 ? "selectedAssetTypeFilter" : "")" data-category="7" data-keepfilters="true">Plugins</a></li>
+            </ul>
+        </div>
+        <div style="padding-top:20px">
+            <h2>Filters</h2>
+        </div>
+        <div style="margin-left:5px">
+            <div class="filter-title">Genre</div>
+            <ul id="genresUl">
+                <li><a href="#" id="AllGenresLink" class="selected">All Genres</a></li>
+                <li>
+                    <input type="checkbox" id="genre-13" class="genreFilter" data-genreid="13" @(Model.SelectedGenres.Contains(13) ? "checked=\"checked\"" : "")>
+                    <label for="genre-13">Building</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-5" class="genreFilter" data-genreid="5" @(Model.SelectedGenres.Contains(5) ? "checked=\"checked\"" : "")>
+                    <label for="genre-5">Horror</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-1" class="genreFilter" data-genreid="1" @(Model.SelectedGenres.Contains(1) ? "checked=\"checked\"" : "")>
+                    <label for="genre-1">Town and City</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-11" class="genreFilter" data-genreid="11" @(Model.SelectedGenres.Contains(11) ? "checked=\"checked\"" : "")>
+                    <label for="genre-11">Military</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-9" class="genreFilter" data-genreid="9" @(Model.SelectedGenres.Contains(9) ? "checked=\"checked\"" : "")>
+                    <label for="genre-9">Comedy</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-2" class="genreFilter" data-genreid="2" @(Model.SelectedGenres.Contains(2) ? "checked=\"checked\"" : "")>
+                    <label for="genre-2">Medieval</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-7" class="genreFilter" data-genreid="7" @(Model.SelectedGenres.Contains(7) ? "checked=\"checked\"" : "")>
+                    <label for="genre-7">Adventure</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-3" class="genreFilter" data-genreid="3" @(Model.SelectedGenres.Contains(3) ? "checked=\"checked\"" : "")>
+                    <label for="genre-3">Sci-Fi</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-6" class="genreFilter" data-genreid="6" @(Model.SelectedGenres.Contains(6) ? "checked=\"checked\"" : "")>
+                    <label for="genre-6">Naval</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-14" class="genreFilter" data-genreid="14" @(Model.SelectedGenres.Contains(14) ? "checked=\"checked\"" : "")>
+                    <label for="genre-14">FPS</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-15" class="genreFilter" data-genreid="15" @(Model.SelectedGenres.Contains(15) ? "checked=\"checked\"" : "")>
+                    <label for="genre-15">RPG</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-8" class="genreFilter" data-genreid="8" @(Model.SelectedGenres.Contains(8) ? "checked=\"checked\"" : "")>
+                    <label for="genre-8">Sports</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-4" class="genreFilter" data-genreid="4" @(Model.SelectedGenres.Contains(4) ? "checked=\"checked\"" : "")>
+                    <label for="genre-4">Fighting</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="genre-10" class="genreFilter" data-genreid="10" @(Model.SelectedGenres.Contains(10) ? "checked=\"checked\"" : "")>
+                    <label for="genre-10">Western</label>
+                </li>
+            </ul>
+            <div class="filter-title">Price</div>
+            <ul class="separatorForLegend" style="border:0">
+                <li><a href="#" class="priceFilter" data-currencytype="1">ROBUX</a></li>
+                <li><a href="#" class="priceFilter" data-currencytype="5">Free</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="right-content divider-left">
+@{
+    var catName = Model?.SelectedCategory switch
+    {
+        6 => "Models",
+        7 => "Plugins",
+        8 => "Decals",
+        9 => "Audio",
+        10 => "Meshes",
+        _ => "All Items",
+    };
+}
+        <div class="breadCrumbFilter bolded selected" data-filter="category">@catName</div>
+        <div id="secondRow">
+            <div style="float:left;padding-top:5px">
+@{ 
+    var totalItems = Model?.TotalItems ?? 0;
+    var pageSize = 50;
+    var pageNum = Model?.PageNumber ?? 1;
+    var firstIndex = totalItems == 0 ? 0 : (pageNum - 1) * pageSize + 1;
+    var lastIndex = totalItems == 0 ? 0 : Math.Min(pageNum * pageSize, totalItems);
+}
+                <span>Showing <span class="notranslate">@firstIndex</span> - <span class="notranslate">@lastIndex</span> of <span class="notranslate">@totalItems</span> results</span>
+            </div>
+            <div id="SortOptions">
+                Sort by:
+                <select id="SortMain">
+                    @if (Model?.SelectedSortType == 0)
+                    {
+                        <option value="0" selected="selected">Relevance</option>
+                    }
+                    else
+                    {
+                        <option value="0">Relevance</option>
+                    }
+                    @if (Model?.SelectedSortType == 1)
+                    {
+                        <option value="1" selected="selected">Most Favorited</option>
+                    }
+                    else
+                    {
+                        <option value="1">Most Favorited</option>
+                    }
+                    @if (Model?.SelectedSortType == 2)
+                    {
+                        <option value="2" selected="selected">Bestselling</option>
+                    }
+                    else
+                    {
+                        <option value="2">Bestselling</option>
+                    }
+                    @if (Model?.SelectedSortType == 3)
+                    {
+                        <option value="3" selected="selected">Recently updated</option>
+                    }
+                    else
+                    {
+                        <option value="3">Recently updated</option>
+                    }
+                    @if (Model?.SelectedSortType == 5)
+                    {
+                        <option value="5" selected="selected">Price (High to Low)</option>
+                    }
+                    else
+                    {
+                        <option value="5">Price (High to Low)</option>
+                    }
+                    @if (Model?.SelectedSortType == 4)
+                    {
+                        <option value="4" selected="selected">Price (Low to High)</option>
+                    }
+                    else
+                    {
+                        <option value="4">Price (Low to High)</option>
+                    }
+                </select>
+                <select id="SortAggregation" style="display:none">
+                    <option value="5">All Time</option>
+                    <option value="3">Past week</option>
+                    <option value="1">Past day</option>
+                </select>
+                <select id="SortCurrency" style="display:none">
+                    <option value="0">in Robux</option>
+                </select>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+@if (Model?.LibraryItems != null && Model.LibraryItems.Count > 0)
+{
+    foreach (var item in Model.LibraryItems)
+    {
+        <div class="CatalogItemOuter SmallOuter">
+            <div class="SmallCatalogItemView SmallView">
+                <div class="CatalogItemInner SmallInner">
+                    <div class="roblox-item-image image-small" data-item-id="@item.ItemId" data-image-size="small">
+                        <div class="item-image-wrapper">
+                            <a href="@item.CatalogUrl">
+                                <img title="@item.Name" alt="@item.Name" class="original-image" src="@(item.ThumbnailUrl ?? "/images/RobloxLogo.png")" />
+                            </a>
+                        </div>
+                    </div>
+                    <div id="textDisplay">
+                        <div class="CatalogItemName notranslate">
+                            <a class="name notranslate" href="@item.CatalogUrl" title="@item.Name">@item.Name</a>
+                        </div>
+                        @if (item.PriceRobux.HasValue)
+                        {
+                            if (item.PriceRobux.Value == 0)
+                            {
+                                <div class="robux-price" style="color:#999"><span>Free</span></div>
+                            }
+                            else
+                            {
+                                <div class="robux-price"><span class="robux notranslate">@item.PriceRobux</span></div>
+                            }
+                        }
+                        else if (item.PriceTickets.HasValue)
+                        {
+                            if (item.PriceTickets.Value == 0)
+                            {
+                                <div class="tickets-price" style="color:#999"><span>Free</span></div>
+                            }
+                            else
+                            {
+                                <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="NoResults">No items found in the library.</div>
+}
+        <div class="PagingContainerDivTop">
+            <span class="pager previous" id="pagingprevious"></span>
+            <span class="page text">
+                Page <input class="Paging_Input translate" type="text" value="@(Model?.PageNumber ?? 1)"> of @(Model?.TotalPages ?? 1)
+                <span class="paging_pagenums_container"></span>
+            </span>
+            <span class="pager next" id="pagingnext"></span>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <div style="clear:both;padding-top:20px"></div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        function buildUrl() {
+            var sel = $("#dropdownUl .selectedAssetTypeFilter");
+            var category = sel.length > 0 ? (sel.first().data("category") || 0) : 0;
+            var sortType = $("#SortMain").val() || 0;
+            var parts = ["sortType=" + encodeURIComponent(sortType)];
+            if (category > 0) parts.push("category=" + encodeURIComponent(category));
+            $("input.genreFilter:checked").each(function () {
+                parts.push("genres=" + encodeURIComponent($(this).data("genreid")));
+            });
+            return "/develop/tab/Library?" + parts.join("&");
+        }
+
+        function reloadLibrary() {
+            $("#LibraryTab").load(buildUrl());
+        }
+
+        $("#dropdownUl").on("click", "a.assetTypeFilter", function (e) {
+            e.preventDefault();
+            $("#dropdownUl a.assetTypeFilter").removeClass("selectedAssetTypeFilter");
+            $(this).addClass("selectedAssetTypeFilter");
+            reloadLibrary();
+        });
+
+        $("#SortMain").on("change", function () {
+            reloadLibrary();
+        });
+
+        $("input.genreFilter").on("change", function () {
+            reloadLibrary();
+        });
+
+        $("#AllGenresLink").on("click", function (e) {
+            e.preventDefault();
+            $("input.genreFilter").prop("checked", false);
+            reloadLibrary();
+        });
+
+        $(".priceFilter").on("click", function (e) {
+            e.preventDefault();
+        });
+
+        $("#submitSearchButton").on("click", function (e) {
+            e.preventDefault();
+            var keyword = $.trim($("#keywordTextbox").val() || "");
+            if (!keyword) {
+                reloadLibrary();
+                return;
+            }
+            window.location = "/catalog/browse.aspx?Category=" + ($("#categoriesForKeyword").val() || 0) + "&Keyword=" + encodeURIComponent(keyword);
+        });
+
+        $("#keywordTextbox").on("keypress", function (e) {
+            if (e.which == 13) {
+                $("#submitSearchButton").click();
+            }
+        });
+
+        $("#pagingprevious").on("click", function () {
+            if ($(this).hasClass("disabled")) return;
+            var pageNum = (parseInt($("input.Paging_Input").val()) || 1) - 1;
+            if (pageNum >= 1) $("#LibraryTab").load(buildUrl() + "&pageNumber=" + pageNum);
+        });
+
+        $("#pagingnext").on("click", function () {
+            if ($(this).hasClass("disabled")) return;
+            var pageNum = (parseInt($("input.Paging_Input").val()) || 1) + 1;
+            if (pageNum <= @(Model?.TotalPages ?? 1)) $("#LibraryTab").load(buildUrl() + "&pageNumber=" + pageNum);
+        });
+
+        $(".Paging_Input").on("keypress", function (e) {
+            if (e.which == 13) {
+                var pageNum = parseInt($(this).val()) || 1;
+                if (pageNum >= 1) $("#LibraryTab").load(buildUrl() + "&pageNumber=" + pageNum);
+            }
+        });
+
+        var pageNum = @(Model?.PageNumber ?? 1);
+        var totalPages = @(Model?.TotalPages ?? 1);
+        if (pageNum == 1) $("#pagingprevious").addClass("disabled");
+        if (pageNum >= totalPages) $("#pagingnext").addClass("disabled");
+    });
+</script>

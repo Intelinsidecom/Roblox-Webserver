@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Assets;
 using Games;
 using Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,6 +53,30 @@ public static class GamesQueries
             throw new ArgumentOutOfRangeException(nameof(placeId));
         if (string.IsNullOrWhiteSpace(contentHash))
             throw new ArgumentException("Content hash is required", nameof(contentHash));
+
+        string? currentHash;
+        using (var selectConn = new NpgsqlConnection(connectionString))
+        {
+            await selectConn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            const string selectSql = "SELECT content_hash FROM assets WHERE asset_id = @placeId";
+            using var selectCmd = new NpgsqlCommand(selectSql, selectConn);
+            selectCmd.Parameters.AddWithValue("placeId", placeId);
+            var selectResult = await selectCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            currentHash = selectResult == null || selectResult == DBNull.Value ? null : Convert.ToString(selectResult);
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentHash))
+        {
+            try
+            {
+                var repo = new AssetsRepository();
+                await repo.AppendVersionHistoryAsync(connectionString, placeId, currentHash, cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Version history failure should not block the update
+            }
+        }
 
         const string updateSql = @"UPDATE assets SET content_hash = @contentHash WHERE asset_id = @placeId";
 
@@ -164,14 +189,14 @@ public static class GamesQueries
 
         var orderBy = sortFilter switch
         {
-            1 => "ORDER BY u.created_at DESC", // Popular (by newest for now since no playing data)
-            2 => "ORDER BY u.created_at DESC", // Top Favorite (by newest for now since no vote data)
-            3 => "ORDER BY u.created_at DESC", // Featured (by newest)
-            8 => "ORDER BY u.created_at DESC", // Top Earning (by newest for now)
-            9 => "ORDER BY u.created_at DESC", // Top Paid (by newest for now)
-            11 => "ORDER BY u.created_at DESC", // Top Rated (by newest for now since no vote data)
-            16 => "ORDER BY u.created_at DESC", // Top Retaining (by newest for now)
-            _ => "ORDER BY u.created_at DESC" // Default to newest
+            1 => "ORDER BY u.created_at DESC",
+            2 => "ORDER BY u.created_at DESC",
+            3 => "ORDER BY LOWER(u.name) ASC",
+            8 => "ORDER BY u.created_at DESC",
+            9 => "ORDER BY LOWER(u.name) DESC",
+            11 => "ORDER BY u.visit_count DESC",
+            16 => "ORDER BY u.created_at ASC",
+            _ => "ORDER BY u.created_at DESC"
         };
 
         if (timeFilter > 0)
@@ -905,6 +930,63 @@ public static class GamesQueries
         }
 
         return placeIds.Distinct().ToList();
+    }
+
+    /// <summary>
+    /// Represents a place entry with basic display data
+    /// </summary>
+    public class PlaceEntry
+    {
+        public long PlaceId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Gets place display data (name, thumbnail) for the given ordered place IDs
+    /// Results are returned in the same order as the input list
+    /// </summary>
+    public static async Task<List<PlaceEntry>> GetPlacesByIdsAsync(List<long> placeIds, string connectionString, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        if (placeIds == null || placeIds.Count == 0)
+            return new List<PlaceEntry>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = @"SELECT asset_id, name, COALESCE(thumbnail_url, '/images/blocked.png') as thumbnail_url
+                    FROM assets
+                    WHERE asset_id = ANY(@ids)
+                    AND is_place = true";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("ids", placeIds.ToArray());
+
+        var fetched = new Dictionary<long, (string Name, string Thumbnail)>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var id = reader.GetInt64(0);
+            fetched[id] = (reader.GetString(1), reader.GetString(2));
+        }
+
+        var results = new List<PlaceEntry>(placeIds.Count);
+        foreach (var id in placeIds)
+        {
+            if (fetched.TryGetValue(id, out var data))
+            {
+                results.Add(new PlaceEntry
+                {
+                    PlaceId = id,
+                    Name = data.Name,
+                    ThumbnailUrl = data.Thumbnail
+                });
+            }
+        }
+
+        return results;
     }
 
     /// <summary>

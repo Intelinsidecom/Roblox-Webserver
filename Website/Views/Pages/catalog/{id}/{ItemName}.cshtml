@@ -35,6 +35,7 @@
  <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
  <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
  <script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
+ <script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
  <script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
  <script type="text/javascript" src="/JS/Linkify.js"></script>
  <script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
@@ -90,6 +91,7 @@
  <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellController.js"></script>
  <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellModalController.js"></script>
  <script type="text/javascript" src="/JS/2017CatalogItem.js"></script>
+ <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
 
 <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
@@ -205,6 +207,8 @@
                                     {
                                         <div class=item-first-line>This item is available in your inventory.</div>
                                     }
+                                    @if (Model.IsOnSale)
+                                    {
                                     <div class="text-label field-label price-label">Price</div>
                                     <div class=price-info>
                                         <div class="icon-text-wrapper clearfix icon-robux-price-container">
@@ -221,6 +225,11 @@
                                             </span>
                                         </div>
                                     </div>
+                                    }
+                                    else if (!Model.IsOwned)
+                                    {
+                                    <div class="field-content">This item is not currently for sale.</div>
+                                    }
 
                                 </div>
                                 <div class=action-button>
@@ -228,13 +237,14 @@
                                     {
                                         <a id=edit-avatar-button href="/my/character" class="btn-fixed-width-lg btn-control-md" data-button-action=avatar> Edit Avatar </a>
                                     }
-                                    else
+                                    else if (Model.IsOnSale)
                                     {
                                         <button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux data-item-name="@Model.Name" data-seller-name="@Model.CreatorName" data-item-id="@Model.Id" data-expected-price="@(Model.PriceRobux ?? 0)" data-expected-currency="1" data-asset-type="Package" data-expected-seller-id="@Model.CreatorId"> Buy </button>
                                     }
-                                    @* <div id=sale-clock class="sale-clock desktop-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM">
-                                        <div class=text></div>
-                                    </div> *@
+                                    else
+                                    {
+                                        <button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" disabled style="opacity:0.5;cursor:not-allowed"> Buy </button>
+                                    }
                                 </div>
                             </div>
                             <div class="clearfix item-mobile-description item-field-container">

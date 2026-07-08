@@ -1,0 +1,30 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+var Roblox = Roblox || {};
+Roblox.LangDynamicDefault = Roblox.LangDynamicDefault || {};
+Roblox.LangDynamicDefault["Feature.GameLaunchGuestMode"] = {"Description.Dialog.SignUpOrLogin":"To play games, chat with friends, or customize your avatar, you'll need an account. Sign up for a free account or log in to play now.","Action.Dialog.SignUp":"Sign Up","Action.Dialog.Login":"Log In","Heading.Dialog.SignUpToday":"Sign Up Today!","Description.Dialog.SignUpTodayOneDayRemaining":"You are playing in guest mode. To use all features available on Roblox, you will need to create an account. You have less than a day left before we require free sign up.","Description.Dialog.SignUpTodaySomeDaysRemaining":"You are playing in guest mode. To use all features available on Roblox, you will need to create an account. You have less than {numDays} days left before we require free sign up.","Description.Dialog.YouArePlayingOneDayRemaining":"You are playing in guest mode. To use all features available on Roblox, you will need to create an account. You have 1 gameplay left before we require free sign up.","Description.Dialog.YouArePlayingSomeDaysRemaining":"You are playing in guest mode. To use all features available on Roblox, you will need to create an account. You have {numDays} gameplays left before we require free sign up.","Description.Dialog.TrialOver":"Your trial period has ended. Please sign up to play games - it's free!","Action.Dialog.SignUpNow":"Sign up now!","Action.Dialog.Ok":"OK","Action.Dialog.Close":"Close","Heading.Dialog.SignUpOrLogin":"Sign up for a free account or log in!","Heading.ChooseAvatar":"Choose Your Avatar","Label.HaveAccount":"I have an account"};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Feature.GameLaunchGuestMode");
+
+}
+
+/*
+     FILE ARCHIVED ON 16:06:14 Nov 04, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 05:48:02 Jul 03, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 5.434
+  load_resource: 32.355 (2)
+  PetaboxLoader3.datanode: 26.157 (2)
+*/

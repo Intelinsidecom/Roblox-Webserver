@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValidationApp", "ValidationApp\ValidationApp.csproj", "{45CCBA1E-BCC6-4F97-8C40-5E54FAA44550}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobloxAssetValidation", "RobloxAssetValidation.csproj", "{64ECD755-9A6B-4A99-BC1A-A80A41A28051}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45CCBA1E-BCC6-4F97-8C40-5E54FAA44550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45CCBA1E-BCC6-4F97-8C40-5E54FAA44550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45CCBA1E-BCC6-4F97-8C40-5E54FAA44550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45CCBA1E-BCC6-4F97-8C40-5E54FAA44550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64ECD755-9A6B-4A99-BC1A-A80A41A28051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64ECD755-9A6B-4A99-BC1A-A80A41A28051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64ECD755-9A6B-4A99-BC1A-A80A41A28051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64ECD755-9A6B-4A99-BC1A-A80A41A28051}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

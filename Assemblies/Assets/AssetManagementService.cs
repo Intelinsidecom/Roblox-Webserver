@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
@@ -113,6 +115,7 @@ namespace Assets
         private readonly TShirtAssetService _tShirtService;
         private readonly ShirtAssetService _shirtService;
         private readonly PantsAssetService _pantsService;
+        private readonly DecalAssetService _decalService;
         private readonly AssetUploadConfiguration _config;
         private readonly IConfiguration _configuration;
 
@@ -124,6 +127,7 @@ namespace Assets
             _tShirtService = new TShirtAssetService();
             _shirtService = new ShirtAssetService();
             _pantsService = new PantsAssetService();
+            _decalService = new DecalAssetService();
         }
 
         /// <summary>
@@ -311,16 +315,22 @@ namespace Assets
         {
             switch (assetTypeText)
             {
-                case "Decal (1)":
-                    return 1;
+                case "Decal (13)":
+                    return 13;
                 case "T-Shirt (2)":
                     return 2;
+                case "Model (10)":
+                    return 10;
+                case "Mesh (4)":
+                    return 4;
                 case "Place (9)":
                     return 9;
                 case "Shirt (11)":
                     return 11;
                 case "Pants (12)":
                     return 12;
+                case "Audio (3)":
+                    return 3;
                 default:
                     return 0;
             }
@@ -362,9 +372,21 @@ namespace Assets
                 case 12: // Pants
                     return FileUtilities.IsValidImageFile(filePath);
                 
+                case 10:  // Model
+                    var modelExt = Path.GetExtension(filePath).ToLowerInvariant();
+                    return modelExt == ".rbxm" || modelExt == ".rbxmx";
+                
+                case 4:  // Mesh
+                    var meshExt = Path.GetExtension(filePath).ToLowerInvariant();
+                    return meshExt == ".mesh";
+                
+                case 3:  // Audio
+                    var audioExt = Path.GetExtension(filePath).ToLowerInvariant();
+                    return audioExt == ".mp3" || audioExt == ".ogg" || audioExt == ".wav";
+                
                 case 9:  // Place
-                    var extension = Path.GetExtension(filePath).ToLowerInvariant();
-                    return extension == ".rbxl";
+                    var placeExt = Path.GetExtension(filePath).ToLowerInvariant();
+                    return placeExt == ".rbxl";
                 
                 default:
                     return false;
@@ -591,6 +613,10 @@ namespace Assets
                         replacementSuccess = await ReplaceDecalAsset(
                             connection, assetId, fileBytes, contentType, fileName, _config);
                         break;
+                    case 10: // Model
+                        replacementSuccess = await ReplaceModelAsset(
+                            connection, assetId, fileBytes, contentType, fileName, _config);
+                        break;
                     default:
                         throw new NotSupportedException($"Asset replacement not supported for type {assetTypeId}");
                 }
@@ -682,6 +708,20 @@ namespace Assets
                         config.ThumbnailUrl,
                         config.PublicBaseUrl,
                         null); // arbiterBaseUrl
+                    break;
+                case 13: // Decal
+                    newAssetId = await _decalService.CreateDecalAsync(
+                        connectionString,
+                        ownerUserId,
+                        assetName,
+                        fileName,
+                        contentType,
+                        fileBytes,
+                        config.AssetsDirectory,
+                        config.ThumbnailsOutputDirectory,
+                        config.ThumbnailUrl,
+                        config.PublicBaseUrl,
+                        CancellationToken.None);
                     break;
                 default:
                     throw new NotSupportedException($"Unsupported asset type for image-based upload: {assetTypeId}");
@@ -812,8 +852,11 @@ namespace Assets
             {
                 "Decal" => 1,
                 "T-Shirt" => 2,
+                "Model" => 10,
+                "Mesh" => 4,
                 "Shirt" => 11,
                 "Pants" => 12,
+                "Audio" => 3,
                 _ => 0
             };
         }
@@ -858,6 +901,9 @@ namespace Assets
             {
                 1 => "Decal",
                 2 => "T-Shirt",
+                3 => "Audio",
+                10 => "Model",
+                4 => "Mesh",
                 9 => "Place",
                 11 => "Shirt",
                 12 => "Pants",
@@ -905,6 +951,10 @@ namespace Assets
                 case 11:
                 case 12:
                     return "PNG, JPG, JPEG, BMP, GIF, TIFF, ICO";
+                case 3:
+                    return ".rbxm, .rbxmx";
+                case 4:
+                    return ".mesh";
                 case 9:
                     return ".rbxl";
                 default:
@@ -1023,6 +1073,79 @@ namespace Assets
             }
         }
 
+        private async Task<bool> ReplaceModelAsset(NpgsqlConnection connection, long assetId, byte[] fileBytes, string contentType, string fileName, AssetUploadConfiguration config)
+        {
+            try
+            {
+                var (isValid, errorMessage) = AssetValidationHelper.ValidateModelContent(fileBytes);
+                if (!isValid)
+                    throw new InvalidOperationException(errorMessage ?? "Model validation failed.");
+
+                string contentHash;
+                using (var sha = SHA256.Create())
+                {
+                    var hashBytes = sha.ComputeHash(fileBytes);
+                    var sb = new StringBuilder(hashBytes.Length * 2);
+                    foreach (var b in hashBytes)
+                        sb.Append(b.ToString("x2"));
+                    contentHash = sb.ToString();
+                }
+
+                var ext = ".rbxm";
+                var assetFilePath = Path.Combine(config.AssetsDirectory, "asset", contentHash + ext);
+
+                var dir = Path.GetDirectoryName(assetFilePath);
+                if (!string.IsNullOrWhiteSpace(dir))
+                    Directory.CreateDirectory(dir);
+
+                await Task.Run(() => File.WriteAllBytes(assetFilePath, fileBytes));
+
+                string? oldHash = null;
+                const string getHashSql = "SELECT content_hash FROM assets WHERE asset_id = @assetId";
+                using (var getHashCmd = new NpgsqlCommand(getHashSql, connection))
+                {
+                    getHashCmd.Parameters.AddWithValue("@assetId", assetId);
+                    var hashResult = await getHashCmd.ExecuteScalarAsync();
+                    oldHash = hashResult == null || hashResult == DBNull.Value ? null : Convert.ToString(hashResult);
+                }
+
+                if (!string.IsNullOrWhiteSpace(oldHash))
+                {
+                    try
+                    {
+                        var repo = new AssetsRepository();
+                        await repo.AppendVersionHistoryAsync(config.ConnectionString, assetId, oldHash);
+                    }
+                    catch
+                    {
+                        // Version history failure should not block upload
+                    }
+                }
+
+                const string sql = @"
+                    UPDATE assets 
+                    SET content_hash = @contentHash,
+                        file_extension = @fileExtension,
+                        content_type = @contentType,
+                        last_updated = CURRENT_TIMESTAMP
+                    WHERE asset_id = @assetId";
+
+                using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@contentHash", contentHash);
+                cmd.Parameters.AddWithValue("@fileExtension", ext);
+                cmd.Parameters.AddWithValue("@contentType", contentType);
+                cmd.Parameters.AddWithValue("@assetId", assetId);
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error replacing Model asset: {ex.Message}");
+                return false;
+            }
+        }
+
         private async Task<bool> ReplaceDecalAsset(NpgsqlConnection connection, long assetId, byte[] fileBytes, string contentType, string fileName, AssetUploadConfiguration config)
         {
             try
@@ -1073,6 +1196,9 @@ namespace Assets
             {
                 1 => $"{thumbnailUrl}/asset/decal.png",
                 2 => $"{thumbnailUrl}/asset/tshirt.png",
+                3 => _configuration["AudioThumbnailUrl"] ?? "/images/audio.png",
+                10 => $"{thumbnailUrl}/asset/model.png",
+                4 => $"{thumbnailUrl}/asset/mesh.png",
                 11 => $"{thumbnailUrl}/asset/shirt.png",
                 12 => $"{thumbnailUrl}/asset/pants.png",
                 _ => $"{thumbnailUrl}/asset/default.png"

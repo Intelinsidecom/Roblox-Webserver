@@ -1,0 +1,31 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+var Roblox = Roblox || {};
+Roblox.LangDynamicDefault = Roblox.LangDynamicDefault || {};
+Roblox.LangDynamicDefault["Feature.Recommendations"] = {"Heading.Recommended":"Recommended {recommendedItem}","Label.ByCreator":"{styleBegin}By{styleEnd}{creator}","Heading.RecommendedItems":"Recommended items","Heading.RecommendedTitle":"Recommended","Action.Buy":"Buy","Action.Get":"Get","Action.SeeAll":"See All","Heading.RecommendationsTitle":"Recommendations","Label.Free":"Free","Label.NoReSellers":"No Resellers","Label.OffSale":"Off sale","Label.ByCreatorLink":"By {linkStart}{creator}{linkEnd}","Heading.MoreByUsers":"More By {username}","Action.SeeMore":"See More"};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Feature.Recommendations");
+
+}
+
+/*
+     FILE ARCHIVED ON 15:49:09 Nov 04, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 05:48:01 Jul 03, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.544
+  load_resource: 51.694
+  PetaboxLoader3.resolve: 35.005
+  PetaboxLoader3.datanode: 14.731
+*/

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assets", "..\..\Assemblies\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\..\Assemblies\Common\Common.csproj", "{A6FF2DEA-6920-5134-EC3C-B28174EF6A29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Games", "..\..\Assemblies\Games\Games.csproj", "{B87446ED-454C-EBE3-1696-837A8E3D3F46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{A6FF2DEA-6920-5134-EC3C-B28174EF6A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6FF2DEA-6920-5134-EC3C-B28174EF6A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6FF2DEA-6920-5134-EC3C-B28174EF6A29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B87446ED-454C-EBE3-1696-837A8E3D3F46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87446ED-454C-EBE3-1696-837A8E3D3F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87446ED-454C-EBE3-1696-837A8E3D3F46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87446ED-454C-EBE3-1696-837A8E3D3F46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -97,7 +97,7 @@
             <div id="uploadProgressBar"
                 data-upload-url="@ViewBag.uploadUrl"
                 data-previous-url="@ViewBag.previousUrl" data-newupload="@ViewBag.newUpload" data-assetid="@ViewBag.gameid"
-                data-isplace="True" data-ispackage="False">
+                data-isplace="@(ViewBag.isplace ?? "True")" data-ispackage="@(ViewBag.ispackage ?? "False")">
                 <div id="progressAmount" class="progress-blue-bar" style="width:0%;">
                 </div>
             </div>

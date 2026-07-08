@@ -1,1 +1,0 @@
-// type UseState<T> = [T, React.Dispatch<T>];

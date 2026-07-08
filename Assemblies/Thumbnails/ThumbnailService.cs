@@ -553,12 +553,9 @@ public sealed class ThumbnailService : IThumbnailService
                             AlreadyExisted = true
                         };
                     }
-                    else
-                    {
-                    }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // Continue with normal rendering if cache check fails
             }
@@ -654,7 +651,7 @@ public sealed class ThumbnailService : IThumbnailService
                     y, 
                     cancellationToken);
             }
-            catch (Exception ex)
+            catch
             {
                 // Don't fail the whole operation if caching fails
             }

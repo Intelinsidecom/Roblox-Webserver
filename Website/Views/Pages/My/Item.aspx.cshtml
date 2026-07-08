@@ -1,6 +1,7 @@
 @using Assets
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
+@inject AssetService AssetService
 @{ Layout = "_Layout"; }
 @{
     var idRaw = Context.Request.Query["id"].ToString();
@@ -44,7 +45,6 @@
         return;
     }
 
-    // Prevent places (AssetType 9) from loading in ASPX edit page
     if (record.AssetTypeId == 9)
     {
         Context.Response.Redirect($"/places/{itemId}/update");
@@ -55,8 +55,6 @@
     var action = isPost ? Context.Request.Form["Action"].ToString() : string.Empty;
     var updateSucceeded = false;
     DateTime? updateTime = null;
-
-    // Declare variables before POST handling to avoid CS0841 errors
     var assetName = record.Name ?? string.Empty;
     var assetTypeLabel = AssetTypeNames.GetConfigureLabel(record.AssetTypeId);
     var assetDescription = record.Description ?? string.Empty;
@@ -70,7 +68,56 @@
     var assetPrice = record.Price;
     var allowComments = record.AllowComments;
     var assetGenre = record.Genre;
-    var minPrice = 2;
+    var isCopyingAllowed = record.IsCopyingAllowed;
+    var minPrice = 0;
+
+    var vhPageSize = 5;
+    var vhPageRaw = Context.Request.Query["vhpage"].ToString();
+    var vhPage = 1;
+    int.TryParse(vhPageRaw, out vhPage);
+    if (vhPage < 1) vhPage = 1;
+
+    List<Games.PlaceVersionEntry>? vhEntries = null;
+    var vhTotalPages = 1;
+    if (record.AssetTypeId == 10)
+    {
+        try
+        {
+            vhEntries = Games.VersionHistory.GetAssetVersionHistoryAsync(connStr, resolvedId)
+                .GetAwaiter().GetResult();
+        }
+        catch
+        {
+        }
+    }
+
+    if (vhEntries != null && vhEntries.Count > 0)
+    {
+        vhTotalPages = (int)Math.Ceiling((double)vhEntries.Count / vhPageSize);
+        if (vhPage > vhTotalPages) vhPage = vhTotalPages;
+    }
+
+    var vhPagerHtml = "";
+    if (vhTotalPages > 1)
+    {
+        var isFirst = vhPage == 1;
+        var isLast = vhPage == vhTotalPages;
+        var vhUrl = $"/my/item.aspx?id={itemId}&vhpage=";
+        vhPagerHtml = isFirst ? "<a disabled=\"disabled\">First</a>" : $"<a href=\"{vhUrl}1\">First</a>";
+        vhPagerHtml += "&nbsp;";
+        vhPagerHtml += isFirst ? "<a disabled=\"disabled\">Previous</a>" : $"<a href=\"{vhUrl}{vhPage - 1}\">Previous</a>";
+        vhPagerHtml += "&nbsp;";
+        vhPagerHtml += $"<span>{vhPage}</span>";
+        vhPagerHtml += "&nbsp;";
+        vhPagerHtml += isLast ? "<a disabled=\"disabled\">Next</a>" : $"<a href=\"{vhUrl}{vhPage + 1}\">Next</a>";
+        vhPagerHtml += "&nbsp;";
+        vhPagerHtml += isLast ? "<a disabled=\"disabled\">Last</a>" : $"<a href=\"{vhUrl}{vhTotalPages}\">Last</a>";
+        vhPagerHtml += "&nbsp;";
+    }
+    else
+    {
+        vhPagerHtml = "<a disabled=\"disabled\">First</a>&nbsp;<a disabled=\"disabled\">Previous</a>&nbsp;<span>1</span>&nbsp;<a disabled=\"disabled\">Next</a>&nbsp;<a disabled=\"disabled\">Last</a>&nbsp;";
+    }
 
     if (isPost && string.Equals(action, "Cancel", StringComparison.OrdinalIgnoreCase))
     {
@@ -155,14 +202,27 @@
                     .GetAwaiter().GetResult();
             }
 
-            assetsRepo.UpdateAssetSaleAsync(connStr, resolvedId, onSalePosted, parsedPrice)
-                .GetAwaiter().GetResult();
+            var isNotSellable = record.AssetTypeId == 10 || record.AssetTypeId == 1;
+            if (!isNotSellable)
+            {
+                assetsRepo.UpdateAssetSaleAsync(connStr, resolvedId, onSalePosted, parsedPrice)
+                    .GetAwaiter().GetResult();
+            }
 
             assetsRepo.UpdateAssetAllowCommentsAsync(connStr, resolvedId, allowCommentsPosted)
                 .GetAwaiter().GetResult();
 
             assetsRepo.UpdateAssetGenreAsync(connStr, resolvedId, parsedGenre)
                 .GetAwaiter().GetResult();
+
+            if (record.AssetTypeId == 10)
+            {
+                var freeCheckboxRaw = Context.Request.Form["ctl00$cphRoblox$EnableFreelyAvailableCheckBox"].ToString();
+                var isCopyingAllowedPosted = !string.IsNullOrWhiteSpace(freeCheckboxRaw);
+                assetsRepo.UpdateAssetCopyingAllowedAsync(connStr, resolvedId, isCopyingAllowedPosted)
+                    .GetAwaiter().GetResult();
+                isCopyingAllowed = isCopyingAllowedPosted;
+            }
 
             updateSucceeded = true;
             updateTime = DateTime.Now;
@@ -185,16 +245,58 @@
         {
         }
     }
+
+    if (isPost && string.Equals(action, "Revert", StringComparison.OrdinalIgnoreCase) && record.AssetTypeId == 10)
+    {
+        var versionRaw = Context.Request.Form["ctl00$cphRoblox$VersionToRevert"].ToString();
+        if (int.TryParse(versionRaw, out var targetVersion) && targetVersion > 0)
+        {
+            try
+            {
+                updateSucceeded = Games.VersionHistory.RevertToVersionAsync(connStr, resolvedId, targetVersion, AssetService)
+                    .GetAwaiter().GetResult();
+                if (updateSucceeded)
+                    updateTime = DateTime.Now;
+            }
+            catch
+            {
+            }
+        }
+    }
 }
 
 <!DOCTYPE html>
 <html>
 <head>
 <title>
-	Roblox: Configure T-Shirt
+	Configure @assetTypeLabel
 </title>
 
-<link rel="stylesheet" href="~/CSS/Pages/Item/Edit.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Roblox.css">
+<link rel="stylesheet" href="/CSS/RBXCommon.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Abp.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Flyouts.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Footer.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Header.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/MediaThumb.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Modals.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Place.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/PlaceLauncher.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/RevisedCharacterSelectModal.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/tipsy.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Trade.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Upgrades.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/User.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Utility.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/VideoPreRoll.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+<link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
+<link rel="stylesheet" href="/CSS/Legacy/Navigation.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+<link rel="stylesheet" href="/CSS/Legacy/iFrameLogin.css">
+
+<link rel="stylesheet" href="/CSS/Pages/Item/Edit.css">
 
 
 
@@ -229,6 +331,7 @@
 <script type='text/javascript' src='/JS/3D/OBJMTLLoader.js'></script>
 <script type='text/javascript' src='/JS/3D/tween.js'></script>
 <script type='text/javascript' src='/JS/3D/RobloxOrbitControls.js'></script>
+<script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
 <script type='text/javascript' src='/JS/Thumbnails/ThumbnailView.js'></script>
 <script type='text/javascript' src='/JS/Thumbnails/ThumbnailSpinner.js'></script>
 <script type='text/javascript' src='/JS/Linkify.js'></script>
@@ -391,6 +494,9 @@
 <script type='text/javascript' src='/JS/GenericConfirmation.js'></script>
 <script type='text/javascript' src='/JS/YouTube/RobloxYouTube.js'></script>
 
+
+<script type="text/javascript" src="/JS/iFrameLogin.js"></script>
+
 <script type="text/javascript">
     if (Roblox && Roblox.PageHeartbeatEvent) {
         Roblox.PageHeartbeatEvent.Init([2,8,20,60]);
@@ -420,6 +526,7 @@
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
 <input type="hidden" name="Action" id="Action" value="" />
+<input type="hidden" name="ctl00$cphRoblox$VersionToRevert" id="ctl00_cphRoblox_VersionToRevert" value="" />
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
 </div>
 
@@ -525,6 +632,8 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
                         Cancel
                     </a>
                 </div>
+                @if (record.AssetTypeId != 10 && record.AssetTypeId != 4 && record.AssetTypeId != 13 && record.AssetTypeId != 3) 
+                {
                 <div id="ctl00_cphRoblox_SellThisItemPanel">
 	
                     <div id="SellThisItem">
@@ -596,6 +705,7 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
                     </div>
                 
 </div>
+                }
                 <div id="Comments">
                     <fieldset title="Turn comments on/off">
                         <legend>Turn comments on/off</legend>
@@ -794,11 +904,68 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager', 'aspnetForm',
                                     <input type="hidden" name="ctl00$cphRoblox$actualGenreSelection" id="ctl00_cphRoblox_actualGenreSelection" value="@assetGenre" />
                                 </div>
                             
-	</div>                 
+	                        </div>          
                         </fieldset>
                     </div>
-                
-</div>
+                </div>
+                @if (record.AssetTypeId == 10 || record.AssetTypeId == 4 || record.AssetTypeId == 13 || record.AssetTypeId == 3)
+                {
+                    <div id="FreelyAvailable">
+                    <fieldset title="Make Free">
+                        <legend>Make Free</legend>
+                        <div class="Suggestion">
+                            Choose whether or not this item is freely available.
+                        </div>
+                        <div class="CopyProtectionRow">
+                            <input id="ctl00_cphRoblox_EnableFreelyAvailableCheckBox" type="checkbox" name="ctl00$cphRoblox$EnableFreelyAvailableCheckBox" @(isCopyingAllowed ? "checked=\"checked\"" : string.Empty) /><label for="ctl00_cphRoblox_EnableFreelyAvailableCheckBox">Free Item</label>
+                        </div>
+                        <br>
+                    </fieldset>
+                    </div>
+
+                    <div id="ctl00_cphRoblox_VersionHistoryPanel">
+                        <div id="VersionHistory" style="clear: both;">
+                            <fieldset title="VersionHistory">
+                                <legend>Version History</legend>
+                                <div class="Suggestion">
+                                    Click one of the buttons below to revert to a previous version of this item.
+                                </div>
+                                <div class="PublicDomainRow">
+                                    <table cellspacing="10">
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td align="center"><strong>Version</strong></td>
+                                            <td align="center"><strong>Created</strong></td>
+                                        </tr>
+@if (vhEntries != null && vhEntries.Count > 0)
+{
+    var pageEntries = vhEntries.Skip((vhPage - 1) * vhPageSize).Take(vhPageSize);
+    foreach (var entry in pageEntries)
+    {
+                                        <tr>
+                                            <td><a id="ctl00_cphRoblox_VersionHistoryListView_ctrl0_ctl00_RollbackButton" title="click to make this the current version" href="javascript:void(0);" onclick="document.getElementById('Action').value='Revert'; document.getElementById('ctl00_cphRoblox_VersionToRevert').value='@entry.Version'; document.getElementById('aspnetForm').submit(); return false;">[ Make Current ]</a></td>
+                                            <td align="center">@entry.Version</td>
+                                            <td align="center">@entry.Date</td>
+                                        </tr>
+    }
+}
+else
+{
+                                        <tr>
+                                            <td colspan="3" align="center">No version history available.</td>
+                                        </tr>
+}
+                                    </table>
+                                    <div>
+                                        <span id="ctl00_cphRoblox_AttireDataPager_Footer">
+@Html.Raw(vhPagerHtml)
+                                        </span>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                }   
 
                 <div class="Buttons">
                     <a id="ctl00_cphRoblox_SubmitButtonBottom" tabindex="4" class="btn-small btn-neutral" href="javascript:void(0);" onclick="document.getElementById('Action').value='Save'; document.getElementById('aspnetForm').submit(); return false;">

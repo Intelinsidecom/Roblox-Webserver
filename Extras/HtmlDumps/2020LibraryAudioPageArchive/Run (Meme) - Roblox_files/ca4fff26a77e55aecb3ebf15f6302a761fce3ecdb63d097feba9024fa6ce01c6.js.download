@@ -1,0 +1,31 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+var Roblox = Roblox || {};
+Roblox.LangDynamic = Roblox.LangDynamic || {};
+Roblox.LangDynamic["CommonUI.Controls"] = {"Action.Accept":"Accept","Action.Cancel":"Cancel","Action.OK":"OK","Action.Submit":"Submit","Birthdaypicker.Label.Date":"Date","Label.April":"April","Label.August":"August","Label.December":"December","Label.February":"February","Label.January":"January","Label.July":"July","Label.June":"June","Label.March":"March","Label.May":"May","Label.November":"November","Label.October":"October","Label.September":"September","Label.Previous":"Previous","Label.Next":"Next","Action.Continue":"Continue","Label.Month":"Month","Label.Day":"Day","Label.Year":"Year","Action.Back":"Back","Action.No":"No","Action.Confirm":"Confirm","Action.Agree":"Agree","Action.Yes":"Yes","Label.CurrentPage":"Page {currentPage}","Action.Allow":"Allow","Action.Save":"Save","Action.Delete":"Delete","Action.Remove":"Remove","Action.Stop":"Stop","Action.Discard":"Discard","Label.UnsavedChanges":"Unsaved Changes","Description.UnsavedChange":"You have unsaved changes. Do you want to proceed?","Action.Disable":"Disable","Action.Enable":"Enable","Action.AcceptAll":"Accept All","Action.IgnoreAll":"Ignore All","Label.Week":"Week","Label.Summary":"Summary","Message.UnableToLoadRevenue":"  N/A","Label.Name":"Name","Action.Collapse":"Collapse","Action.Show":"Show","Action.Decline":"Decline","Action.DeclineAll":"Decline All","Action.Distribute":"Distribute","Label.JanuaryAbbreviated":"Jan","Label.FebruaryAbbreviated":"Feb","Label.MarchAbbreviated":"Mar","Label.AprilAbbreviated":"Apr","Label.AugustAbbreviated":"Aug","Label.SeptemberAbbreviated":"Sept","Label.OctoberAbbreviated":"Oct","Label.NovemberAbbreviated":"Nov","Label.DecemberAbbreviated":"Dec"};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_CommonUI.Controls");
+
+}
+
+/*
+     FILE ARCHIVED ON 15:37:51 Nov 04, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 05:48:01 Jul 03, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.668
+  load_resource: 499.591 (2)
+  PetaboxLoader3.resolve: 443.702 (2)
+  PetaboxLoader3.datanode: 27.992 (2)
+*/

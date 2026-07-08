@@ -10,6 +10,12 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/Robux.cshtml");
         }
 
+        [HttpGet("ide/clienttoolbox")]
+        public IActionResult Toolbox()
+        {
+            return View("~/Views/Pages/ide/ClientToolbox.aspx.cshtml");
+        }
+
         [HttpPost("upgrades/robux")]
         public IActionResult RobuxPost()
         {

@@ -46,6 +46,18 @@ namespace Website.Controllers
                 ? UserPurchaseService.CurrencyKind.Tix
                 : UserPurchaseService.CurrencyKind.Robux;
 
+            using (var checkConn = new NpgsqlConnection(connStr))
+            {
+                await checkConn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                using var checkCmd = new NpgsqlCommand("select on_sale from assets where asset_id = @aid", checkConn);
+                checkCmd.Parameters.AddWithValue("aid", productId);
+                var onSaleObj = await checkCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+                if (onSaleObj == null || !(bool)onSaleObj)
+                {
+                    return Ok(new { showDivID = "TransactionFailureView", title = "Error", errorMsg = "Asset is not for sale.", statusCode = 500 });
+                }
+            }
+
             var purchaseService = new UserPurchaseService();
             var (success, error) = await purchaseService
                 .PurchaseAssetAsync(connStr, userId, productId, currencyKind, cancellationToken)

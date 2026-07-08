@@ -38,108 +38,189 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
                 <StackPanel>
-                    <TextBlock Text="Asset Information" 
-                               Style="{StaticResource DashboardSubtitle}" 
-                               Foreground="{DynamicResource AccentPrimary}"
-                               Margin="0,0,0,20"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Asset ID:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Name="AssetIdText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" Name="AssetNameText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBox Grid.Row="2" Grid.Column="1" Name="AssetDescriptionTextBox" 
-                                 Foreground="{DynamicResource Foreground}"
-                                 Background="{DynamicResource Background}"
-                                 BorderBrush="{DynamicResource SubtleText}"
-                                 TextWrapping="Wrap"
-                                 IsReadOnly="True"
-                                 VerticalScrollBarVisibility="Auto"
-                                 MinHeight="60"
-                                 Margin="0,0,0,15"
-                                 Padding="5,2"/>
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Type:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" Name="AssetTypeText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Creator:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="4" Grid.Column="1" Name="CreatorText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Updated:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="5" Grid.Column="1" Name="UpdatedText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Robux Price:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="6" Grid.Column="1" Name="RobuxPriceText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Tix Price:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="7" Grid.Column="1" Name="TixPriceText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                        <TextBlock Grid.Row="8" Grid.Column="0" Text="On Sale:" 
-                                   Style="{StaticResource DashboardSubtitle}" 
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,10"/>
-                        <TextBlock Grid.Row="8" Grid.Column="1" Name="OnSaleText" 
-                                   Style="{StaticResource LabelText}"
-                                   Foreground="{DynamicResource Foreground}"
-                                   Margin="0,0,0,15"/>
-                    </Grid>
+                    <Border BorderBrush="{DynamicResource SubtleText}" BorderThickness="1" Padding="10" Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Asset Information" 
+                                       Style="{StaticResource DashboardSubtitle}" 
+                                       Foreground="{DynamicResource AccentPrimary}"
+                                       Margin="0,0,0,10"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Asset ID:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Name="AssetIdText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Name:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Name="AssetNameText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Description:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Name="AssetDescriptionTextBox" 
+                                         Foreground="{DynamicResource Foreground}"
+                                         Background="{DynamicResource Background}"
+                                         BorderBrush="{DynamicResource SubtleText}"
+                                         TextWrapping="Wrap"
+                                         IsReadOnly="True"
+                                         VerticalScrollBarVisibility="Auto"
+                                         MinHeight="50"
+                                         Margin="0,0,0,8"
+                                         Padding="5,2"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Type:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Name="AssetTypeText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Creator:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1" Name="CreatorText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Updated:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1" Name="UpdatedText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="6" Grid.Column="0" Text="Robux Price:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="6" Grid.Column="1" Name="RobuxPriceText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="7" Grid.Column="0" Text="Tix Price:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="7" Grid.Column="1" Name="TixPriceText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="8" Grid.Column="0" Text="On Sale:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="8" Grid.Column="1" Name="OnSaleText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="9" Grid.Column="0" Text="Allow Comments:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="9" Grid.Column="1" Name="AllowCommentsText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="10" Grid.Column="0" Text="Allow Copying:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="10" Grid.Column="1" Name="AllowCopyingText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="11" Grid.Column="0" Text="Genre:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="11" Grid.Column="1" Name="GenreText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="12" Grid.Column="0" Text="Favorites:" 
+                                           Style="{StaticResource DashboardSubtitle}" 
+                                           Foreground="{DynamicResource Foreground}"
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Grid.Row="12" Grid.Column="1" Name="FavoritesCountText" 
+                                           Style="{StaticResource LabelText}"
+                                           Foreground="{DynamicResource Foreground}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border BorderBrush="{DynamicResource SubtleText}" BorderThickness="1" Padding="10" Margin="0,0,0,15">
+                        <StackPanel>
+                            <TextBlock Text="Version History" 
+                                       Style="{StaticResource DashboardSubtitle}" 
+                                       Foreground="{DynamicResource AccentPrimary}"
+                                       Margin="0,0,0,10"/>
+                            <ListView Name="VersionHistoryListView" 
+                                      Height="120" 
+                                      SelectionMode="Single"
+                                      Margin="0,0,0,8"
+                                      Background="{DynamicResource Background}"
+                                      BorderBrush="{DynamicResource SubtleText}"
+                                      SelectionChanged="VersionHistoryListView_SelectionChanged">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Version" Width="60" DisplayMemberBinding="{Binding Version}"/>
+                                        <GridViewColumn Header="Date" Width="120" DisplayMemberBinding="{Binding Date}"/>
+                                        <GridViewColumn Header="Hash" Width="160" DisplayMemberBinding="{Binding File_Hash}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Name="VersionHistoryStatus" 
+                                           Text="No version history loaded"
+                                           Foreground="{DynamicResource SubtleText}"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"/>
+                                <Button Grid.Column="1" Name="RevertVersionButton" 
+                                        Content="Revert to Selected" 
+                                        Style="{StaticResource ModernButton}"
+                                        Background="{DynamicResource AccentPrimary}"
+                                        Foreground="White"
+                                        Height="35"
+                                        Padding="10,0"
+                                        Width="170"
+                                        IsEnabled="False"
+                                        Click="RevertVersionButton_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
                 </StackPanel>
             </ScrollViewer>
             <StackPanel Grid.Column="1">

@@ -16,6 +16,11 @@ namespace Api.Controllers
     {
         private readonly CurrentUserService _currentUserService;
 
+        public UsersController(CurrentUserService currentUserService)
+        {
+            _currentUserService = currentUserService;
+        }
+
         [HttpGet("users/account-info")]
         public IActionResult GetAccountInfo([FromServices] IConfiguration config)
         {

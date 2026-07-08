@@ -8,7 +8,11 @@
   },
   "AllowedHosts": "*",
   "BaseUrl": "http://localhost:5077",
-  "PublicBaseUrl": "http://www.freblx.xyz",
+  "PublicBaseUrl": "https://www.freblx.xyz",
+  "PublicAPIBaseUrl": "https://api.freblx.xyz",
+  "Auth": {
+    "CookieDomain": ".freblx.xyz"
+  },
   "Features": {
     "EnableRequestLogging": true
   },
@@ -21,11 +25,15 @@
     "ArbiterUrl": "http://localhost:5000",
     "TshirtTemplatePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png",
     "TshirtTemplateHighResPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png",
-    "PendingAvatarPlaceholderUrl": "/images/blocked.png"
+    "PendingAvatarPlaceholderUrl": "/images/blocked.png",
+    "Avatar3DDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\3DAvatar"
   },
   "Upload": {
     "AccessKey": "ChangeMe"
   },
+  "Arbiter": {
+    "AccessKey": "ChangeMe"
+},
   "Assets": {
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets",
     "PublicBaseUrl": "http://www.freblx.xyz"
@@ -44,7 +52,8 @@
     "95206881": "Baseplate.rbxl",
     "95206192": "FlatTerrain.rbxl", 
     "520390648": "Village.rbxl",
-    "203810088": "Castle.rbxl"
+    "203810088": "Castle.rbxl",
+    "DefaultTemplate": "95206881"
   },
   "Apis": {
     "DefaultApiRateLimitTimeInSeconds": 1
@@ -54,8 +63,11 @@
     "BaseUrl": "http://assetdelivery.roblox.com"
   },
   "RSA": {
-    "PrivateKey": "-----BEGIN RSA PRIVATE KEY-----MIIQxj8fw+NSzFEqlcgJfoMSCb-----END RSA PRIVATE KEY-----",
+    "PrivateKey": "-----BEGIN RSA PRIVATE KEY-----MIICfRcfmbx5arddZa5V8TcgJfoMSCb-----END RSA PRIVATE KEY-----",
     "PublicKey": "BgIAAACkAABSU0ExAAQAAAEAAQAdopkj6LZ9EJ8LJmIn19GwSMXQGpej1qcjymBjuwhjzEC0LRpK2HeUiJtuDsaWKlHMUuPDHz/GkDM/V1JjWv4iKVJVhPiWfnv/vZWP35brLL/CVmEDS367gNSrGOKYrNHK1ZcWy5yvZVKxVuFkxzlnuyNELQyE0ToMgKMByrqGrQ=="
+  },
+  "ScriptTemplates": {
+    "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Scripts"
   },
   "LocalhostMode": true,
   "MachineAddress": "127.0.0.1",
@@ -64,6 +76,9 @@
     "Port": "5000"
   },
   "Setup": {
-    "SetupServicePublicHost": "setup.freblx.xyz"
+    "SetupServicePublicHost": "http://setup.freblx.xyz"
+  },
+  "Social": {
+    "DiscordServerInviteURL": "https://discord.com/invite/9ypw3ytK4t"
   }
 }

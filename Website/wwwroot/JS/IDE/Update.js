@@ -125,10 +125,12 @@ Roblox.IDE = Roblox.IDE || {},
                             assetID: t,
                             page: n
                         },
-                        success: function(n) {
+                        success: function(d) {
                             $('#versionHistoryLoading').hide(),
-                                // Replace the entire table content to prevent header duplication
-                                $('#versionHistoryItems .versionHistoryTable').html(n)
+                                $('#versionHistoryItems .versionHistoryTable').html(d.html);
+                            $('.page.text').html('Page <span class="robloxVersionHistoryPageNum">' + d.page + '</span> of ' + d.totalPages);
+                            d.page <= 1 ? $('.pager.previous').addClass('disabled') : $('.pager.previous').removeClass('disabled');
+                            d.page >= d.totalPages ? $('.pager.next').addClass('disabled') : $('.pager.next').removeClass('disabled');
                         },
                         error: function() {
                             $('#versionHistoryLoading').hide(),
@@ -257,20 +259,21 @@ Roblox.IDE = Roblox.IDE || {},
                     '.revertLink',
                     function() {
                         var t = $(this).data('asset-version-id');
+                        var a = $('#versionHistoryItems').data('asset-id');
                         Roblox.Dialog.open({
                             titleText: Roblox.IDE.Resources.RevertTitleText,
                             bodyContent: Roblox.IDE.Resources.RevertBodyContent,
                             acceptText: Roblox.IDE.Resources.RevertAcceptText,
                             declineText: Roblox.IDE.Resources.CancelText,
                             onAccept: function() {
-                                $('#versionHistoryItems').html(''),
-                                    $('#versionHistoryLoading').show(),
+                                $('#versionHistoryLoading').show(),
                                     $.ajax({
                                         url: $('#versionHistoryItems').data('revert-url'),
                                         type: 'POST',
                                         cache: !1,
                                         data: {
-                                            assetVersionID: t
+                                            assetVersionID: t,
+                                            assetID: a
                                         },
                                         success: function() {
                                             s(1)

@@ -1,6 +1,8 @@
--- Mesh v1.0.1
-
-assetUrl, fileExtension, x, y, baseUrl = ...
+local fileExtension= "PNG"
+local x = %x%
+local y = %y%
+local baseUrl = "http://www.freblx.xyz"
+local assetUrl =%assetUrl%
 
 pcall(function() game:GetService("ContentProvider"):SetBaseUrl(baseUrl) end)
 

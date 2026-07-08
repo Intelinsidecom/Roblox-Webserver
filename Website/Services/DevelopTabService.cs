@@ -29,6 +29,10 @@ public sealed class DevelopTabService
         string viewName,
         bool showPublicOnly = false,
         long? groupId = null,
+        int? category = null,
+        int? sortType = null,
+        List<int>? genres = null,
+        int pageNumber = 1,
         CancellationToken cancellationToken = default)
     {
         var vm = new Assemblies.Common.DevelopTabViewModel
@@ -37,6 +41,10 @@ public sealed class DevelopTabService
             UserId = userId,
             UserName = userName,
             GroupId = groupId,
+            SelectedCategory = category ?? 0,
+            SelectedSortType = sortType ?? 0,
+            SelectedGenres = genres ?? new List<int>(),
+            PageNumber = pageNumber,
         };
 
         switch (viewName)
@@ -56,11 +64,39 @@ public sealed class DevelopTabService
             case "Pants":
                 await PopulatePantsAsync(vm, cancellationToken).ConfigureAwait(false);
                 break;
+            case "Models":
+                await PopulateModelsAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
+            case "Meshes":
+                await PopulateMeshesAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
+            case "Decals":
+                await PopulateDecalsAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
+            case "Audio":
+                await PopulateAudiosAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
+            case "Library":
+                await PopulateLibraryAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
             default:
                 break;
         }
 
         return vm;
+    }
+
+    private static List<int>? CategoryToAssetTypeIds(int category)
+    {
+        return category switch
+        {
+            6 => new List<int> { 10 },
+            7 => new List<int> { 38 },
+            8 => new List<int> { 13 },
+            9 => new List<int> { 3 },
+            10 => new List<int> { 4 },
+            _ => null,
+        };
     }
 
     private async Task PopulateGamesAsync(Assemblies.Common.DevelopTabViewModel vm, bool showPublicOnly, CancellationToken cancellationToken)
@@ -155,6 +191,7 @@ public sealed class DevelopTabService
                     ConfigureUrl = configureUrl,
                     DeveloperStatsUrl = "/places/" + p.PlaceId + "/stats",
                     VisitCount = p.VisitCount,
+                    CreatedAt = p.LastUpdated ?? DateTime.MinValue,
                 });
             }
 
@@ -298,6 +335,353 @@ limit 50;";
         catch
         {
             vm.Pants = new List<Assemblies.Common.ClothingItem>();
+        }
+    }
+
+    private async Task PopulateModelsAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 10;
+        vm.HeaderText = "Create Model";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+                from assets a
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 10
+                  and (a.is_place = false OR a.is_place IS NULL)
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetId = reader.GetInt64(0);
+                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                var createdAt = reader.GetDateTime(2);
+                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = assetId,
+                    AssetId = assetId,
+                    RootPlaceId = assetId,
+                    Name = name,
+                    ThumbnailUrl = thumb,
+                    Type = "models",
+                    ConfigureUrl = "/asset/" + assetId + "/configure",
+                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                    CreatedAt = createdAt,
+                });
+            }
+
+            vm.Models = items;
+        }
+        catch
+        {
+            vm.Models = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulateDecalsAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 13;
+        vm.HeaderText = "Create Decal";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+                from assets a
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 13
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetId = reader.GetInt64(0);
+                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                var createdAt = reader.GetDateTime(2);
+                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = assetId,
+                    AssetId = assetId,
+                    RootPlaceId = assetId,
+                    Name = name,
+                    ThumbnailUrl = thumb,
+                    Type = "decals",
+                    ConfigureUrl = "/asset/" + assetId + "/configure",
+                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                    CreatedAt = createdAt,
+                });
+            }
+
+            vm.Decals = items;
+        }
+        catch
+        {
+            vm.Decals = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulateMeshesAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 4;
+        vm.HeaderText = "Meshes";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+                from assets a
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 4
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetId = reader.GetInt64(0);
+                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                var createdAt = reader.GetDateTime(2);
+                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = assetId,
+                    AssetId = assetId,
+                    RootPlaceId = assetId,
+                    Name = name,
+                    ThumbnailUrl = thumb,
+                    Type = "meshes",
+                    ConfigureUrl = "/asset/" + assetId + "/configure",
+                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                    CreatedAt = createdAt,
+                });
+            }
+
+            vm.Meshes = items;
+        }
+        catch
+        {
+            vm.Meshes = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulateAudiosAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 3;
+        vm.HeaderText = "Audio";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+                from assets a
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 3
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var defaultThumb = _configuration["AudioThumbnailUrl"] ?? "/images/audio.png";
+            var items = new List<Assemblies.Common.DevelopItem>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetId = reader.GetInt64(0);
+                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                var createdAt = reader.GetDateTime(2);
+                var thumb = reader.IsDBNull(3) ? defaultThumb : reader.GetString(3);
+
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = assetId,
+                    AssetId = assetId,
+                    RootPlaceId = assetId,
+                    Name = name,
+                    ThumbnailUrl = thumb,
+                    Type = "audios",
+                    ConfigureUrl = "/asset/" + assetId + "/configure",
+                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                    CreatedAt = createdAt,
+                });
+            }
+
+            vm.Audios = items;
+        }
+        catch
+        {
+            vm.Audios = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulateLibraryAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 0;
+        vm.HeaderText = "Library";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr))
+        {
+            return;
+        }
+
+        try
+        {
+            var categoryTypeIds = CategoryToAssetTypeIds(vm.SelectedCategory);
+            var assetTypeFilter = categoryTypeIds != null
+                ? string.Join(",", categoryTypeIds)
+                : "3, 4, 10, 13, 38";
+
+            var whereClauses = new List<string>
+            {
+                $"a.asset_type_id in ({assetTypeFilter})",
+                "coalesce(a.asset_image, false) = false",
+            };
+
+            if (vm.SelectedGenres.Count > 0)
+            {
+                var genreList = string.Join(",", vm.SelectedGenres);
+                whereClauses.Add($"a.genre in ({genreList})");
+            }
+
+            var orderClause = vm.SelectedSortType switch
+            {
+                3 => "order by a.last_updated desc nulls last, a.asset_id desc",
+                4 => "order by a.price asc nulls last, a.asset_id desc",
+                5 => "order by a.price desc nulls last, a.asset_id desc",
+                _ => "order by a.asset_id desc",
+            };
+
+            var whereSql = string.Join(" and ", whereClauses);
+
+            var countSql = $"select count(*) from assets a where {whereSql};";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            await using var countCmd = new NpgsqlCommand(countSql, conn);
+            var totalCount = (long)(await countCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) ?? 0);
+
+            vm.TotalItems = (int)totalCount;
+            vm.TotalPages = Math.Max(1, (int)Math.Ceiling((double)totalCount / 50));
+
+            var offset = (vm.PageNumber - 1) * 50;
+            var sql = $@"select a.asset_id, a.name, a.thumbnail_url, a.asset_type_id, u.user_name, a.created_at,
+                   a.on_sale, a.price, a.price_in_tix
+                from assets a
+                join users u on u.user_id = a.owner_user_id
+                where {whereSql}
+                {orderClause}
+                limit 50 offset {offset};";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetId = reader.GetInt64(0);
+                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                var thumb = reader.IsDBNull(2) ? null : reader.GetString(2);
+                var assetTypeId = reader.GetInt32(3);
+                var creatorName = reader.IsDBNull(4) ? "ROBLOX" : reader.GetString(4);
+                var createdAt = reader.GetDateTime(5);
+                var onSale = !reader.IsDBNull(6) && reader.GetBoolean(6);
+                var price = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7);
+                var priceTix = reader.IsDBNull(8) ? (int?)null : reader.GetInt32(8);
+
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = assetId,
+                    AssetId = assetId,
+                    RootPlaceId = assetId,
+                    Name = name,
+                    ThumbnailUrl = thumb,
+                    Type = assetTypeId switch
+                    {
+                        3 => "audios",
+                        4 => "meshes",
+                        10 => "models",
+                        13 => "decals",
+                        38 => "plugins",
+                        _ => "models",
+                    },
+                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                    CreatedAt = createdAt,
+                    IsOnSale = onSale,
+                    PriceRobux = price,
+                    PriceTickets = priceTix,
+                });
+            }
+
+            vm.LibraryItems = items;
+        }
+        catch
+        {
+            vm.LibraryItems = new List<Assemblies.Common.DevelopItem>();
         }
     }
 }

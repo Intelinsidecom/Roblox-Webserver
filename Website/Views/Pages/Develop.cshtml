@@ -50,7 +50,7 @@
             case "24":
                 viewName = "Animations";
                 break;
-            case "40":
+            case "4":
                 viewName = "Meshes";
                 break;
             case "2":
@@ -101,7 +101,7 @@
         "Badges" => 21,
         "Audio" => 3,
         "Animations" => 24,
-        "Meshes" => 40,
+        "Meshes" => 4,
         "T-Shirts" => 2,
         "Shirts" => 11,
         "Pants" => 12,
@@ -345,6 +345,7 @@
 <link rel="stylesheet" href="~/CSS/Pages/Build/BuildPage.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/StudioWidget.css">
 <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
+<link rel="stylesheet" href="~/CSS/Pages/Catalog.css">
 
 }
 
@@ -450,8 +451,9 @@
                                     <div id=DevelopTabs class=tab-container>
                                         <div id=MyCreationsTabLink class=tab-active data-url=/develop>My Creations</div>
                                         <div id=GroupCreationsTabLink data-url=/develop/groups data-default-get-url=/build/buildview>Group Creations</div>
-                                        <div id=LibraryTabLink data-url=/develop/library data-library-get-url="/catalog/contents?CatalogContext=DevelopOnly&amp;Category=Models" style="display:none">Library</div>
+                                        <div id=LibraryTabLink data-url=/develop/library data-library-get-url="/develop/tab/Library">Library</div>
                                     </div>
+                                    <div>
                                         <div id=MyCreationsTab class=tab-active>
                                             <div class="BuildPageContent tab-active" data-groupid="">
                                                 <div class="creation-context-filters-and-sorts" data-fetchplaceurl="/develop/tab/@viewName" data-universeid="0" data-fetchuniverseplaces="false"></div>
@@ -467,9 +469,9 @@
                                                             <a href="/develop?view=13" class="tab-item @(viewParam == "13" ? "tab-item-selected" : string.Empty)">Decals</a>
                                                             <a href="/develop?view=21" class="tab-item tab-item-disabled @(viewParam == "21" ? "tab-item-selected" : string.Empty)">Badges</a>
                                                             <a href="/develop?Page=game-passes" class="tab-item tab-item-disabled">Game Passes</a>
-                                                            <a href="/develop?view=3" class="tab-item tab-item-disabled @(viewParam == "3" ? "tab-item-selected" : string.Empty)">Audio</a>
+                                                            <a href="/develop?view=3" class="tab-item @(viewParam == "3" ? "tab-item-selected" : string.Empty)">Audio</a>
                                                             <a href="/develop?view=24" class="tab-item tab-item-disabled @(viewParam == "24" ? "tab-item-selected" : string.Empty)">Animations</a>
-                                                            <a href="/develop?view=40" class="tab-item tab-item-disabled @(viewParam == "40" ? "tab-item-selected" : string.Empty)">Meshes</a>
+                                                            <a href="/develop?view=4" class="tab-item @(viewParam == "4" ? "tab-item-selected" : string.Empty)">Meshes</a>
                                                             <a href="/develop?Page=ads" class="tab-item tab-item-disabled">User Ads</a>
                                                             <a href="/develop?Page=sponsored-games" class="tab-item tab-item-disabled">Sponsored Games</a>
                                                             <a href="/develop?view=11" class="tab-item @(viewParam == "11" ? "tab-item-selected" : string.Empty)">Shirts</a>
@@ -487,7 +489,7 @@
                                                                     </div>
                                                                     <div id=RightColumn>
                                                                         <ul>
-                                                                            <li><a href=https://s3.amazonaws.com/setup.roblox.com/RobloxStudioLauncherBeta.exe class=studio-launch download>Studio</a>
+                                                                            <li><a href="@(Configuration["Setup:SetupServicePublicHost"])/RobloxStudioLauncher.exe" class=studio-launch download>Studio</a>
                                                                             <li><a href="https://www.robloxdev.com/">Docs</a>
                                                                             <li><a href="https://devforum.roblox.com/">Community</a>
                                                                         </ul>
@@ -725,8 +727,11 @@
                                             <div class=Ads_WideSkyscraper></div>
                                         </div>
                                         <div id=LibraryTab>
-                                            <div class=loading id=LibraryLoadingIndicatorContainer><img id=LibraryLoadingIndicator src=/images/LoadingSpinner.gif alt=Progress></div>
+                                            <div class=loading id=LibraryLoadingIndicatorContainer>
+                                                <img id=LibraryLoadingIndicator src="/images/ProgressIndicator4.gif" alt="Progress">
+                                            </div>
                                         </div>
+                                    </div>
                                     </div>
                                     <div id=AdPreviewModal class=simplemodal-data style=display:none>
                                         <div id=ConfirmationDialog style=overflow:hidden>
@@ -812,7 +817,6 @@
 <script>
     $(function () {
         $('#MyCreationsTab .build-loading-container').hide();
-        $('#LibraryLoadingIndicatorContainer').hide();
         $('#GroupCreationsTabLink').on('click', function () {
             var url = $(this).data('url') || '/develop/groups';
             window.location = url;
@@ -828,10 +832,6 @@
                 spinner.hide();
             });
         });
-
-        $('#MyCreationsTabLink').addClass('tab-active');
-        $('#MyCreationsTab').addClass('tab-active').show();
-        $('#GroupCreationsTabLink').removeClass('tab-active');
     });
 </script>
 

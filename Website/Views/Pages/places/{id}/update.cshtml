@@ -1106,7 +1106,10 @@
                                                         success: function(data) {
                                                             $('#versionHistoryLoading').hide();
                                                             $('#versionHistoryItems .versionHistoryTable').html('');
-                                                            $('#versionHistoryItems .versionHistoryTable').html(data);
+                                                            $('#versionHistoryItems .versionHistoryTable').html(data.html);
+                                                            $('.page.text').html('Page <span class="robloxVersionHistoryPageNum">' + data.page + '</span> of ' + data.totalPages);
+                                                            data.page <= 1 ? $('.pager.previous').addClass('disabled') : $('.pager.previous').removeClass('disabled');
+                                                            data.page >= data.totalPages ? $('.pager.next').addClass('disabled') : $('.pager.next').removeClass('disabled');
                                                         },
                                                         error: function() {
                                                             $('#versionHistoryLoading').hide();

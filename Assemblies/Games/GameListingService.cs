@@ -22,6 +22,7 @@ public sealed class PlaceListEntry
     public string? ThumbnailUrl { get; set; }
     public long? UniverseId { get; set; }
     public int VisitCount { get; set; }
+    public DateTime? LastUpdated { get; set; }
 }
 
 public static class GameListingService
@@ -108,7 +109,8 @@ order by u.created_at desc, u.universe_id desc;";
        a.name as place_name,
        a.thumbnail_url,
        u.universe_id,
-       COALESCE(a.visit_count, 0) as visit_count
+       COALESCE(a.visit_count, 0) as visit_count,
+       a.last_updated
 from assets a
 left join universes u on u.root_place_id = a.asset_id
 where a.asset_type_id = 9
@@ -127,6 +129,7 @@ order by a.created_at desc, a.asset_id desc;";
             var thumbUrl = reader.IsDBNull(2) ? null : reader.GetString(2);
             var universeId = reader.IsDBNull(3) ? (long?)null : reader.GetInt64(3);
             var visitCount = reader.IsDBNull(4) ? 0 : reader.GetInt32(4);
+            DateTime? lastUpdated = reader.IsDBNull(5) ? null : reader.GetDateTime(5);
 
             results.Add(new PlaceListEntry
             {
@@ -135,6 +138,7 @@ order by a.created_at desc, a.asset_id desc;";
                 ThumbnailUrl = thumbUrl,
                 UniverseId = universeId,
                 VisitCount = visitCount,
+                LastUpdated = lastUpdated,
             });
         }
 

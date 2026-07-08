@@ -109,6 +109,13 @@
                 }
             });
 
+            $('#assetList').on('click', '.place.asset', function() {
+                var placeId = $(this).data('placeid');
+                if (placeId) {
+                    document.location.href = '/ide/publishAs/upload/' + placeId;
+                }
+            });
+
             Roblox.PublishAs.Resources = {
                 accept: "Verify",
                 decline: "Cancel"

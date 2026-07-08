@@ -21,8 +21,8 @@
                 <StackPanel Margin="0,0,0,30">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Control Panel - Games" Style="{StaticResource DashboardTitle}" 
@@ -32,55 +32,88 @@
                                        Style="{StaticResource DashboardSubtitle}" 
                                        TextWrapping="Wrap"/>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="Refresh" Style="{StaticResource ModernButton}" 
-                                    Background="{DynamicResource AccentPrimary}"
-                                    Width="80" Height="35" Margin="0,0,10,0"
-                                    Click="RefreshButton_Click"/>
+                        <Button Grid.Column="1" Content="Refresh" 
+                                Style="{StaticResource ModernButton}"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Width="80" Height="35"
+                                VerticalAlignment="Bottom"
+                                Click="RefreshButton_Click"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto" 
+                          HorizontalScrollBarVisibility="Disabled"
+                          PanningMode="Both"
+                          CanContentScroll="False"
+                          ScrollChanged="GamesScrollViewer_ScrollChanged">
+                <StackPanel ClipToBounds="False">
+                    <StackPanel Margin="20,0,20,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button x:Name="GameServersTabButton" Content="Game Servers"
+                                Style="{StaticResource ModernButton}"
+                                Background="{DynamicResource AccentPrimary}"
+                                Foreground="White"
+                                Height="40" Width="140"
+                                Click="GameServersTabButton_Click"/>
+                        <Button x:Name="GamesTabButton" Content="Games"
+                                Style="{StaticResource ModernButton}"
+                                Height="40" Width="80" Margin="0"
+                                Background="Transparent"
+                                Foreground="{DynamicResource Foreground}"
+                                Click="GamesTabButton_Click"/>
+                    </StackPanel>
+                    <Line X1="20" Y1="0" X2="1" Y2="0" Stretch="Fill" 
+                          Stroke="{DynamicResource SubtleText}" StrokeThickness="1" 
+                          Margin="20,0,20,0"/>
+                    <Grid x:Name="GameServersTab" Margin="20,20,20,0" Visibility="Visible">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
                             <Button Content="Kill All" Style="{StaticResource ModernButton}" 
                             Background="#FF4444" Foreground="White"
                             Width="80" Height="35"
                             Click="KillAllButton_Click"/>
                         </StackPanel>
-                    </Grid>
-                    <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
-                            BorderThickness="1" Padding="15" Margin="0,10,0,0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="Total Servers" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
-                                <TextBlock x:Name="TotalServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <TextBlock Text="Active Players" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentGreen}" FontSize="14"/>
-                                <TextBlock x:Name="TotalPlayersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="2">
-                                <TextBlock Text="Running" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentGreen}" FontSize="14"/>
-                                <TextBlock x:Name="RunningServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
-                            </StackPanel>
-                            <StackPanel Grid.Column="3">
-                                <TextBlock Text="Starting" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
-                                <TextBlock x:Name="ExpiredServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
-                                           Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
-            <Grid Grid.Row="1">
+                        <Border Grid.Row="1" Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
+                                BorderThickness="1" Padding="15" Margin="0,0,0,0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Total Servers" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
+                                    <TextBlock x:Name="TotalServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="Active Players" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentGreen}" FontSize="14"/>
+                                    <TextBlock x:Name="TotalPlayersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Running" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentGreen}" FontSize="14"/>
+                                    <TextBlock x:Name="RunningServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="3">
+                                    <TextBlock Text="Starting" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentBlue}" FontSize="14"/>
+                                    <TextBlock x:Name="ExpiredServersText" Text="0" Style="{StaticResource DashboardSectionTitle}" 
+                                               Foreground="{DynamicResource AccentPrimary}" FontSize="18" FontWeight="Bold"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="5"/>
@@ -379,6 +412,222 @@
                     </Grid>
                 </Border>
             </Grid>
+                    </Grid>
+                    <Grid x:Name="GamesTab" Margin="20,20,20,0" Visibility="Collapsed">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,10" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Grid.Column="0" x:Name="GameTypeFilter" 
+                                          Height="30" Margin="0,0,5,0" Width="120"
+                                          Style="{StaticResource ModernComboBox}"
+                                          SelectionChanged="GameTypeFilter_SelectionChanged">
+                                    <ComboBoxItem Content="All" IsSelected="True"/>
+                                    <ComboBoxItem Content="Town &amp; City"/>
+                                    <ComboBoxItem Content="Fantasy"/>
+                                    <ComboBoxItem Content="Sci-Fi"/>
+                                    <ComboBoxItem Content="Ninja"/>
+                                    <ComboBoxItem Content="Scary"/>
+                                    <ComboBoxItem Content="Pirate"/>
+                                    <ComboBoxItem Content="Adventure"/>
+                                    <ComboBoxItem Content="Sports"/>
+                                    <ComboBoxItem Content="Funny"/>
+                                    <ComboBoxItem Content="Wild West"/>
+                                    <ComboBoxItem Content="War"/>
+                                    <ComboBoxItem Content="Skate Park"/>
+                                    <ComboBoxItem Content="Tutorial"/>
+                                    <ComboBoxItem Content="RPG"/>
+                                    <ComboBoxItem Content="FPS"/>
+                                    <ComboBoxItem Content="Fighting"/>
+                                    <ComboBoxItem Content="Building"/>
+                                    <ComboBoxItem Content="Military"/>
+                                    <ComboBoxItem Content="Naval"/>
+                                    <ComboBoxItem Content="Medieval"/>
+                                </ComboBox>
+                                <ComboBox Grid.Column="1" x:Name="GameDateFilter" 
+                                          Height="30" Margin="2.5,0" Width="100"
+                                          Style="{StaticResource ModernComboBox}"
+                                          SelectionChanged="GameDateFilter_SelectionChanged">
+                                    <ComboBoxItem Content="Any Time" IsSelected="True"/>
+                                    <ComboBoxItem Content="Today"/>
+                                    <ComboBoxItem Content="This Week"/>
+                                    <ComboBoxItem Content="This Month"/>
+                                    <ComboBoxItem Content="This Year"/>
+                                </ComboBox>
+                                <ComboBox Grid.Column="2" x:Name="GameSortFilter" 
+                                          Height="30" Margin="5,0,0,0" Width="120"
+                                          Style="{StaticResource ModernComboBox}"
+                                          SelectionChanged="GameSortFilter_SelectionChanged">
+                                    <ComboBoxItem Content="Most Recent" IsSelected="True"/>
+                                    <ComboBoxItem Content="The Oldest"/>
+                                    <ComboBoxItem Content="Name A-Z"/>
+                                    <ComboBoxItem Content="Name Z-A"/>
+                                    <ComboBoxItem Content="Most Players"/>
+                                </ComboBox>
+                            </Grid>
+                            <Grid Margin="0,0,0,10" HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="GameSearchTextBox" 
+                                         Style="{StaticResource ModernTextBox}" 
+                                         Height="30" Margin="0,0,5,0"
+                                         TextChanged="GameSearchTextBox_TextChanged"
+                                         Padding="4,1,8,0" ToolTip="Search by Game Name" FontSize="16"
+                                         HorizontalContentAlignment="Stretch" TextWrapping="NoWrap"
+                                         Tag="Search by Game Name"
+                                         GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
+                                <TextBox Grid.Column="1" x:Name="GameIdSearchTextBox" 
+                                         Style="{StaticResource ModernTextBox}" 
+                                         Height="30" Margin="0"
+                                         KeyDown="GameIdSearchTextBox_KeyDown"
+                                         Padding="4,1,8,0" ToolTip="Enter Game ID"
+                                         HorizontalContentAlignment="Stretch" TextWrapping="NoWrap"
+                                         Tag="Enter Game ID"
+                                         GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus"/>
+                            </Grid>
+                            <ItemsControl x:Name="GameCardsItemsControl" ClipToBounds="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" ClipToBounds="False" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Setter Property="Panel.ZIndex" Value="0"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Panel.ZIndex" Value="100"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button x:Name="GameCardRoot" Margin="0,0,11,12" Width="161" Height="223" Cursor="Hand" 
+                                                Background="Transparent" BorderThickness="0" Click="GameCard_Click" Tag="{Binding}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Grid Background="Transparent" ClipToBounds="False">
+                                                        <Border x:Name="GameCardBorder" Width="161" Height="223"
+                                                                Background="{DynamicResource Background}"
+                                                                BorderBrush="{DynamicResource BorderColor}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="3"
+                                                                ToolTip="{Binding Name}"
+                                                                VerticalAlignment="Top" ClipToBounds="False">
+                                                            <Grid>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto"/>
+                                                                    <RowDefinition Height="*"/>
+                                                                    <RowDefinition Height="Auto"/>
+                                                                </Grid.RowDefinitions>
+                                                                <Border Grid.Row="0" Width="150" Height="150" Margin="6,6,6,0"
+                                                                        CornerRadius="3,3,0,0" ClipToBounds="True"
+                                                                        HorizontalAlignment="Center">
+                                                                    <Border.Background>
+                                                                        <ImageBrush ImageSource="{Binding ThumbnailUrl}" Stretch="UniformToFill"/>
+                                                                    </Border.Background>
+                                                                </Border>
+                                                                <StackPanel Grid.Row="1" Margin="6,0,6,0">
+                                                                    <TextBlock Text="{Binding Name}" Foreground="{DynamicResource Foreground}"
+                                                                               FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                                    <TextBlock Text="{Binding SecondaryText}" Foreground="{DynamicResource SubtleText}"
+                                                                               FontSize="12" Margin="0,3,0,0" TextTrimming="CharacterEllipsis"/>
+                                                                </StackPanel>
+                                                                <Grid Grid.Row="2" Margin="0,6,0,0">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                    </Grid.RowDefinitions>
+                                                                    <TextBlock Grid.Row="0" FontSize="11" Foreground="{DynamicResource SubtleText}" Margin="6,0,0,5">
+                                                                        <Run Text="{Binding PlayerCount, Mode=OneWay, StringFormat=N0}"/>
+                                                                        <Run Text=" playing"/>
+                                                                    </TextBlock>
+                                                                    <Grid Grid.Row="1" Height="6" Background="#d86868" Margin="6,2,6,6">
+                                                                        <Border Background="#02B757" HorizontalAlignment="Left"
+                                                                            Width="{Binding UpVoteBarWidth}"/>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </Grid>
+                                                        </Border>
+                                                        <Border x:Name="GameCardHoverOverlay"
+                                                                Background="{DynamicResource Background}"
+                                                                BorderBrush="{DynamicResource BorderColor}"
+                                                                BorderThickness="1,0,1,1"
+                                                                CornerRadius="0,0,3,3"
+                                                                Width="161"
+                                                                VerticalAlignment="Top"
+                                                                Panel.ZIndex="9999">
+                                                            <Border.RenderTransform>
+                                                                <TranslateTransform Y="222"/>
+                                                            </Border.RenderTransform>
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsMouseOver, ElementName=GameCardRoot}" Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <StackPanel Margin="8,6,8,8">
+                                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                                                    <TextBlock Text="By " FontSize="12" Foreground="{DynamicResource SubtleText}"/>
+                                                                    <Button x:Name="CreatorLinkButton" 
+                                                                            Content="{Binding Creator}" 
+                                                                            FontSize="12" 
+                                                                            Foreground="{DynamicResource AccentPrimary}" 
+                                                                            Background="Transparent" 
+                                                                            BorderThickness="0" 
+                                                                            Padding="0" 
+                                                                            Cursor="Hand"
+                                                                            Click="CreatorLink_Click"
+                                                                            Tag="{Binding CreatorUserId}">
+                                                                        <Button.Style>
+                                                                            <Style TargetType="Button">
+                                                                                <Setter Property="Template">
+                                                                                    <Setter.Value>
+                                                                                        <ControlTemplate TargetType="Button">
+                                                                                            <TextBlock Text="{TemplateBinding Content}" 
+                                                                                                       TextDecorations="None"/>
+                                                                                        </ControlTemplate>
+                                                                                    </Setter.Value>
+                                                                                </Setter>
+                                                                                <Style.Triggers>
+                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                        <Setter Property="Template">
+                                                                                            <Setter.Value>
+                                                                                                <ControlTemplate TargetType="Button">
+                                                                                                    <TextBlock Text="{TemplateBinding Content}" 
+                                                                                                               TextDecorations="Underline"/>
+                                                                                                </ControlTemplate>
+                                                                                            </Setter.Value>
+                                                                                        </Setter>
+                                                                                    </Trigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Button.Style>
+                                                                    </Button>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </UserControl>

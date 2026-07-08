@@ -272,6 +272,42 @@ public static class GamesRepository
         return null;
     }
 
+    public static async Task<UniverseInfo?> GetUniverseStatsAsync(string connectionString, long universeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT u.visit_count, a.last_updated, a.created_at, COALESCE(a.upvotes, 0), COALESCE(a.downvotes, 0)
+                             FROM universes u
+                             INNER JOIN assets a ON u.root_place_id = a.asset_id
+                             WHERE u.universe_id = @universeId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+        if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            return new UniverseInfo
+            {
+                UniverseId = universeId,
+                VisitCount = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
+                LastUpdated = reader.IsDBNull(1) ? null : reader.GetDateTime(1),
+                CreatedAt = reader.IsDBNull(2) ? null : reader.GetDateTime(2),
+                Upvotes = reader.GetInt32(3),
+                Downvotes = reader.GetInt32(4)
+            };
+        }
+
+        return null;
+    }
+
     public static async Task<string?> GetPlaceDescriptionAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -328,7 +364,8 @@ public static class GamesRepository
         string assetsDirectory,
         long placeId,
         byte[] fileBytes,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        AssetService? assetService = null)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
             return (false, "Connection string is required");
@@ -338,6 +375,11 @@ public static class GamesRepository
             return (false, "Invalid place ID");
         if (fileBytes == null || fileBytes.Length == 0)
             return (false, "Empty file body");
+
+        // Validate the place file content
+        var (isValid, validationError) = AssetValidationHelper.ValidatePlaceContent(fileBytes);
+        if (!isValid)
+            return (false, validationError);
 
         // Verify the asset exists and is a place
         long? ownerId;
@@ -384,11 +426,11 @@ public static class GamesRepository
         {
             try
             {
-                await VersionHistory.AddVersionEntryAsync(connectionString, placeId, currentHash, cancellationToken).ConfigureAwait(false);
+                await VersionHistory.AddVersionEntryAsync(connectionString, placeId, currentHash, cancellationToken, assetService).ConfigureAwait(false);
             }
-            catch
+            catch (Exception ex)
             {
-                // Version history failure should not block the upload
+                Console.Error.WriteLine($"[ReplacePlaceAssetAsync] Failed to add version entry for asset {placeId}: {ex.Message}");
             }
         }
 
@@ -415,5 +457,45 @@ public static class GamesRepository
         }
 
         return (true, null);
+    }
+
+    public static async Task<string?> GetUniverseAliasesAsync(string connectionString, long universeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT aliases FROM universes WHERE universe_id = @universeId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        if (result == null || result == DBNull.Value)
+            return null;
+
+        return result.ToString();
+    }
+
+    public static async Task<bool> ValidatePlaceJoinAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        using var cmd = new NpgsqlCommand(
+            "SELECT asset_type_id FROM assets WHERE asset_id = @placeId LIMIT 1", conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result is int typeId && typeId == 9;
     }
 }

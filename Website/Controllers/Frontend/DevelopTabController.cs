@@ -57,7 +57,13 @@ public class DevelopTabController : Controller
     }
 
     [HttpGet("tab/{view}")]
-    public async Task<IActionResult> Tab(string view, [FromQuery] bool showPublicOnly = false, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Tab(string view,
+        [FromQuery] bool showPublicOnly = false,
+        [FromQuery] int? category = null,
+        [FromQuery] int? sortType = null,
+        [FromQuery] string[]? genres = null,
+        [FromQuery] int pageNumber = 1,
+        CancellationToken cancellationToken = default)
     {
         if (!string.IsNullOrEmpty(view) && char.IsLower(view[0]))
             view = char.ToUpperInvariant(view[0]) + view[1..];
@@ -69,7 +75,18 @@ public class DevelopTabController : Controller
         }
 
         var nameClaim = User.FindFirst(ClaimTypes.Name)?.Value;
-        var vm = await _tabService.BuildAsync(userId, nameClaim, view, showPublicOnly, groupId: null, cancellationToken).ConfigureAwait(false);
+
+        var genreList = genres?
+            .SelectMany(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            .Select(s => int.TryParse(s, out var id) ? id : (int?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+
+        var vm = await _tabService.BuildAsync(userId, nameClaim, view, showPublicOnly,
+            groupId: null, category: category, sortType: sortType,
+            genres: genreList, pageNumber: pageNumber, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return PartialView($"~/Views/Develop/Tabs/{view}.cshtml", vm);
     }

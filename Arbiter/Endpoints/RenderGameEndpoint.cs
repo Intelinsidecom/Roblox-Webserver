@@ -20,7 +20,8 @@ namespace RCCArbiter.Endpoints
         {
             var p = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            var placeId = req.Query.TryGetValue("placeId", out var pid) ? pid.ToString() : "15";
+            var placeId = req.Query.TryGetValue("assetId", out var aid) ? aid.ToString()
+                : (req.Query.TryGetValue("placeId", out var pid) ? pid.ToString() : "15");
             var x = req.Query.TryGetValue("x", out var xv) ? xv.ToString() : "1920";
             var y = req.Query.TryGetValue("y", out var yv) ? yv.ToString() : "1080";
 

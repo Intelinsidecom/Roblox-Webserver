@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\..\Assemblies\Common\Common.csproj" />
     <ProjectReference Include="..\..\..\Assemblies\Economy\Economy.csproj" />
     <ProjectReference Include="..\..\..\Assemblies\Thumbnails\Thumbnails.csproj" />
+    <ProjectReference Include="..\..\..\Assemblies\Games\Games.csproj" />
     <ProjectReference Include="..\..\..\Assemblies\Users\Users.csproj" />
     <!-- Add more assembly references as needed -->
   </ItemGroup>
@@ -70,6 +71,8 @@
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

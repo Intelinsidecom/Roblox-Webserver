@@ -1,0 +1,31 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+var Roblox = Roblox || {};
+Roblox.LangDynamicDefault = Roblox.LangDynamicDefault || {};
+Roblox.LangDynamicDefault["Authentication.Login"] = {"Action.Login":"Login","Label.Login":"Log in","Label.Username":"Username","Response.IncorrectUsernamePassword":"Incorrect username or password.","Response.TooManyAttemptsPleaseWait":"Too many attempts. Please wait a bit.","Response.UnknownError":"Unknown Error","Action.SignUp":"Sign up","Label.LoggingInSpinnerText":"Logging in…","Response.AccountIssueErrorContactSupport":"Account issue. Please contact Support.","Action.ForgotPasswordOrUsernameQuestion":"Forgot password or username?","Label.NoAccount":"Don't have an account?","Label.AccountNotNeeded":"You don't need an account to play Roblox","Label.StartPlaying":"You can start playing right now, in guest mode!","Action.PlayAsGuest":"Play as Guest","Label.Password":"Password","Message.UnknownErrorTryAgain":"An unknown error occurred. Please try again.","Response.AccountNotFound":"Account not found. Please try again.","Response.AccountLockedRequestReset":"Account has been locked. Please request a password reset.","Response.UseSocialSignOn":"Unable to login. Please use Social Network sign on.","Action.SignInWithFacebook":"Sign In with Facebook","Label.Or":"Or","Label.GreetingForNewAccount":"Nice to meet you, {username}. {linkStartSignup}Let's make an account! {linkEndSignup}","Action.SignIn":"Sign In","Action.Cancel":"Cancel","Label.FacebookCreatePasswordWarning":"If you have been signing in with Facebook, you must set a password.","Label.LearnMore":"Learn more","Label.NonAMemberQuestion":"Not a member?","Heading.SignUpMakeFriends":"Sign Up to Build & Make Friends","Response.UsernameNotProvided":"You must enter a username.","Response.PasswordNotProvided":"You must enter a password.","Heading.LoginRoblox":"Login to Roblox","Response.UnknownLoginError":"Unknown login failure.","Label.UsernameWithColumn":"Username:","Label.PasswordWithColumn":"Password:","Action.LogInCapitalized":"Log In","Label.ForgotUsernamePassword":"Forgot Username/Password?","Heading.Login":"Login","Action.ForgotPasswordOrUsernameQuestionCapitalized":"Forgot Password or Username?","Action.SignUpCapitalized":"Sign Up","Message.UsernameAndPasswordRequired":"Username and password required","Response.IncorrectEmailOrPassword":"Incorrect email or password.","Response.IncorrectPhoneOrPassword":"Incorrect phone or password.","Response.EmailLinkedToMultipleAccountsLoginWithUsername":"Your email is associated with more than 1 username. Please login with your username.","Response.UnverifiedEmailLoginWithUsername":"Your email is not verified. Please login with your username.","Response.UnverifiedPhoneLoginWithUsername":"Your phone is not verified. Please login with your username.","Response.LoginWithUsername":"Something went wrong. Please login with your username.","Label.UsernameEmail":"Username/Email","Label.UsernamePhone":"Username/Phone","Label.UsernameEmailPhone":"Username/Email/Phone","Label.EmailNeedsVerification":"Your email needs verification","Action.SendVerificationEmail":"Send Verification Email","Action.Resend":"Resend","Response.EmailSent":"Email sent!","Label.UnverifiedEmailInstructions":"To log in with your email, it must be verified. You can also log in with your username.","Action.ResendEmail":"Resend Email","Label.NotReceived":"Didn't receive it?","Label.VerificationEmailSent":"Verification Email Sent!","Action.Ok":"OK","Label.LoginWithYour":"login with your","Action.Facebook":"Facebook","Action.WeChatLogin":"WeChat Login","WeChat.AntiAddictionText":"Boycott bad games, refuse pirated games. Be aware of self-defense and being deceived. Playing games is good for your brain, but too much game play can harm your health. Manage your time well and enjoy a healthy lifestyle.","WeChat.RealNameNotVerified":"Your WeChat is not real-name verified. Please use a real-name verified WeChat account and try again. Please visit https://jiazhang.qq.com/zk/home.html","QQ.Login":"QQ Login","WeChat.Login":"WeChat Login","Label.WeChatAntiAddictionText":"Boycott bad games, refuse pirated games. Be aware of self-defense and being deceived. Playing games is good for your brain, but too much game play can harm your health. Manage your time well and enjoy a healthy lifestyle.","Response.WeChatRealNameNotVerified":"Your WeChat is not real-name verified. Please use a real-name verified WeChat account and try again. Please visit https://jiazhang.qq.com/zk/home.html","Response.WeChatNotRealNameVerified":"Your WeChat is not real-name verified. Please use a real-name verified WeChat account and try again. Please visit {url}","Response.TencentSignupDisabled":"Sign ups have been disabled. Please try again later.","Response.GlobalAppAccessError":"The account is unable to log in. Please log in to the LuoBu app."};
+window.Roblox && window.Roblox.BundleDetector && window.Roblox.BundleDetector.bundleDetected("DynamicLocalizationResourceScript_Authentication.Login");
+
+}
+
+/*
+     FILE ARCHIVED ON 16:06:14 Nov 04, 2020 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 05:48:03 Jul 03, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 1.078
+  load_resource: 265.34 (2)
+  PetaboxLoader3.datanode: 42.522 (2)
+  PetaboxLoader3.resolve: 219.856
+*/

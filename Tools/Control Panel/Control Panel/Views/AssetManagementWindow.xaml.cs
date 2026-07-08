@@ -7,6 +7,7 @@ using Control_Panel.Functions;
 using ControlPanel.Functions;
 using Assets;
 using Control_Panel.Properties;
+using Games;
 
 namespace Control_Panel
 {
@@ -18,54 +19,56 @@ namespace Control_Panel
         private AssetSearchResult _currentAsset;
         private readonly UserSearchService _userSearchService;
         private bool _isHighResThumbnail = false;
-        
+        private string _connectionString;
+
         public AssetManagementWindow()
         {
             InitializeComponent();
             ThemeManager.InitializeThemeForWindow(this);
             Settings.Default.PropertyChanged += Settings_PropertyChanged;
-            var connectionString = GetConnectionString();
+            _connectionString = GetConnectionString();
             _assetService = new Control_Panel.Functions.AssetService();
             _assetsRepository = new AssetsRepository();
-            _userSearchService = new UserSearchService(connectionString);
+            _userSearchService = new UserSearchService(_connectionString);
         }
-        
+
         public AssetManagementWindow(long assetId) : this()
         {
             _assetId = assetId;
             Loaded += async (sender, e) => await LoadAssetDataAsync();
             Closing += (sender, e) => ClearAssetData();
         }
-        
+
         private async Task LoadAssetDataAsync()
         {
             try
             {
                 SetLoadingState(true);
                 _currentAsset = await _assetService.GetAssetByIdAsync(_assetId);
-                
+
                 if (_currentAsset == null)
                 {
-                    MessageBox.Show($"Asset with ID {_assetId} not found.", "Asset Not Found", 
+                    MessageBox.Show($"Asset with ID {_assetId} not found.", "Asset Not Found",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     this.Close();
                     return;
                 }
-                
+
                 if (_currentAsset.AssetTypeId == 9)
                 {
-                    MessageBox.Show("Places cannot be opened in Asset Management.", 
+                    MessageBox.Show("Places cannot be opened in Asset Management.",
                         "Unsupported Asset Type", MessageBoxButton.OK, MessageBoxImage.Information);
                     this.Close();
                     return;
                 }
-                
+
                 UpdateUIWithAssetData();
                 await LoadThumbnailImageAsync();
+                await LoadAdditionalDataAsync();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading asset data: {ex.Message}", "Error", 
+                MessageBox.Show($"Error loading asset data: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
@@ -73,7 +76,65 @@ namespace Control_Panel
                 SetLoadingState(false);
             }
         }
-        
+
+        private async Task LoadAdditionalDataAsync()
+        {
+            await Task.WhenAll(
+                LoadVersionHistoryAsync(),
+                LoadAssetSettingsAsync()
+            );
+        }
+
+        private async Task LoadVersionHistoryAsync()
+        {
+            try
+            {
+                var versions = await _assetService.GetAssetVersionHistoryAsync(_connectionString, _assetId);
+                VersionHistoryListView.ItemsSource = versions;
+
+                if (versions == null || versions.Count == 0)
+                {
+                    VersionHistoryStatus.Text = "No version history available";
+                    RevertVersionButton.IsEnabled = false;
+                }
+                else
+                {
+                    VersionHistoryStatus.Text = $"{versions.Count} version(s) found";
+                    RevertVersionButton.IsEnabled = VersionHistoryListView.SelectedItem != null;
+                }
+            }
+            catch (Exception ex)
+            {
+                VersionHistoryStatus.Text = $"Error loading version history";
+                System.Diagnostics.Debug.WriteLine($"Error loading version history: {ex.Message}");
+            }
+        }
+
+        private async Task LoadAssetSettingsAsync()
+        {
+            try
+            {
+                var settingsTask = _assetService.GetAssetSettingsAsync(_connectionString, _assetId);
+                var favoritesTask = _assetService.GetFavoriteCountAsync(_connectionString, _assetId);
+
+                await Task.WhenAll(settingsTask, favoritesTask);
+
+                var settings = await settingsTask;
+                AllowCommentsText.Text = settings.allowComments ? "Yes" : "No";
+                AllowCopyingText.Text = settings.isCopyingAllowed ? "Yes" : "No";
+                GenreText.Text = AssetGenreNames.GetGenreLabel(settings.genre);
+                FavoritesCountText.Text = (await favoritesTask).ToString("N0");
+            }
+            catch (Exception ex)
+            {
+                AllowCommentsText.Text = "Error";
+                AllowCopyingText.Text = "Error";
+                GenreText.Text = "Error";
+                FavoritesCountText.Text = "Error";
+                System.Diagnostics.Debug.WriteLine($"Error loading asset settings: {ex.Message}");
+            }
+        }
+
         private void ClearAssetData()
         {
             _currentAsset = null;
@@ -87,12 +148,19 @@ namespace Control_Panel
             RobuxPriceText.Text = "";
             TixPriceText.Text = "";
             OnSaleText.Text = "";
+            AllowCommentsText.Text = "";
+            AllowCopyingText.Text = "";
+            GenreText.Text = "";
+            FavoritesCountText.Text = "-";
+            VersionHistoryListView.ItemsSource = null;
+            VersionHistoryStatus.Text = "No version history loaded";
+            RevertVersionButton.IsEnabled = false;
         }
-        
+
         private void UpdateUIWithAssetData()
         {
             if (_currentAsset == null) return;
-            
+
             AssetIdText.Text = _currentAsset.Id.ToString();
             AssetNameText.Text = _currentAsset.Name ?? "Unknown";
             AssetDescriptionTextBox.Text = _currentAsset.Description ?? "";
@@ -104,7 +172,7 @@ namespace Control_Panel
             OnSaleText.Text = _currentAsset.PutOnSale.ToString();
             Title = $"Asset Management - ID: {_currentAsset.Id}";
         }
-        
+
         private void SetLoadingState(bool isLoading)
         {
             if (isLoading)
@@ -118,15 +186,20 @@ namespace Control_Panel
                 RobuxPriceText.Text = "Loading...";
                 TixPriceText.Text = "Loading...";
                 OnSaleText.Text = "Loading...";
+                AllowCommentsText.Text = "Loading...";
+                AllowCopyingText.Text = "Loading...";
+                GenreText.Text = "Loading...";
+                FavoritesCountText.Text = "Loading...";
+                VersionHistoryStatus.Text = "Loading...";
             }
         }
-        
+
         private async Task LoadThumbnailImageAsync()
         {
             try
             {
                 string thumbnailUrl = "";
-                
+
                 if (_isHighResThumbnail)
                 {
                     if (_currentAsset?.HighResThumbnailUrl != null && !string.IsNullOrWhiteSpace(_currentAsset.HighResThumbnailUrl))
@@ -158,7 +231,7 @@ namespace Control_Panel
                         return;
                     }
                 }
-                
+
                 if (!string.IsNullOrEmpty(thumbnailUrl))
                 {
                     try
@@ -187,7 +260,7 @@ namespace Control_Panel
                 ShowWebsiteNotActiveMessage();
             }
         }
-        
+
         private void ShowCdnNotActiveMessage()
         {
             var textBlock = new TextBlock
@@ -199,11 +272,11 @@ namespace Control_Panel
                 FontSize = 14,
                 FontWeight = System.Windows.FontWeights.Medium
             };
-            
+
             var border = (System.Windows.Controls.Border)AssetThumbnailImage.Parent;
             border.Child = textBlock;
         }
-        
+
         private void ShowWebsiteNotActiveMessage()
         {
             var textBlock = new TextBlock
@@ -215,23 +288,24 @@ namespace Control_Panel
                 FontSize = 14,
                 FontWeight = System.Windows.FontWeights.Medium
             };
-            
+
             var border = (System.Windows.Controls.Border)AssetThumbnailImage.Parent;
             border.Child = textBlock;
         }
-        
+
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadAssetDataAsync();
         }
+
         private void EditAssetButton_Click(object sender, RoutedEventArgs e)
         {
             if (_currentAsset == null) return;
-            
+
             try
             {
                 bool wasSaved = AssetEditWindow.EditAsset(_currentAsset.Id);
-                
+
                 if (wasSaved)
                 {
                     _ = LoadAssetDataAsync();
@@ -239,33 +313,33 @@ namespace Control_Panel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error opening asset edit window: {ex.Message}", "Error", 
+                MessageBox.Show($"Error opening asset edit window: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        
+
         private void DeleteAssetButton_Click(object sender, RoutedEventArgs e)
         {
             if (_currentAsset == null) return;
-            
+
             var result = MessageBox.Show($"Are you sure you want to delete asset '{_currentAsset.Name}' (ID: {_currentAsset.Id})? " +
                 "This action cannot be undone.", "Confirm Asset Deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            
+
             if (result != MessageBoxResult.Yes)
                 return;
-                
-            MessageBox.Show("Asset deletion functionality to be implemented.", "Coming Soon", 
+
+            MessageBox.Show("Asset deletion functionality to be implemented.", "Coming Soon",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        
+
         private async void ViewCreatorButton_Click(object sender, RoutedEventArgs e)
         {
             if (_currentAsset == null) return;
-            
+
             try
             {
                 var searchResults = await _userSearchService.SearchUsersByUsernameAsync(_currentAsset.Creator, 1);
-                
+
                 if (searchResults.Count > 0)
                 {
                     var userId = (int)searchResults[0].Id;
@@ -281,26 +355,75 @@ namespace Control_Panel
                 MessageBox.Show($"Error opening user management: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        
+
         private void ThumbnailToggleButton_Click(object sender, RoutedEventArgs e)
         {
             _isHighResThumbnail = !_isHighResThumbnail;
             ThumbnailToggleButton.Content = _isHighResThumbnail ? "High-Res" : "Thumbnail";
             _ = LoadThumbnailImageAsync();
         }
-        
+
+        private async void RevertVersionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (VersionHistoryListView.SelectedItem is PlaceVersionEntry selectedVersion)
+            {
+                var result = MessageBox.Show(
+                    $"Revert asset to version {selectedVersion.Version} from {selectedVersion.Date}?\n\nHash: {selectedVersion.File_Hash}",
+                    "Confirm Version Revert", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                try
+                {
+                    RevertVersionButton.IsEnabled = false;
+                    VersionHistoryStatus.Text = "Reverting...";
+
+                    bool success = await _assetService.RevertAssetToVersionAsync(_connectionString, _assetId, selectedVersion.Version);
+
+                    if (success)
+                    {
+                        MessageBox.Show($"Asset reverted to version {selectedVersion.Version} successfully.", "Revert Successful",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+                        await LoadVersionHistoryAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to revert asset to selected version.", "Revert Failed",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error reverting asset: {ex.Message}", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    RevertVersionButton.IsEnabled = VersionHistoryListView.SelectedItem != null;
+                    if (VersionHistoryStatus.Text == "Reverting...")
+                        VersionHistoryStatus.Text = "Revert failed";
+                }
+            }
+        }
+
+        private void VersionHistoryListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            RevertVersionButton.IsEnabled = VersionHistoryListView.SelectedItem != null;
+        }
+
         private string GetConnectionString()
         {
             var connectionString = Properties.Settings.Default.DatabaseConnectionString;
-            
+
             if (string.IsNullOrEmpty(connectionString))
             {
                 throw new InvalidOperationException("Database connection string is not configured in application settings.");
             }
-            
+
             return connectionString;
         }
-        
+
         /// <summary>
         /// Loads a specific asset into the Asset Management view
         /// </summary>
@@ -310,7 +433,7 @@ namespace Control_Panel
             _assetId = assetId;
             _ = LoadAssetDataAsync();
         }
-        
+
         /// <summary>
         /// Handles settings property changes to apply theme immediately when settings are saved
         /// </summary>
