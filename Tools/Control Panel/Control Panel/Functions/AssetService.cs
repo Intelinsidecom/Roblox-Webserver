@@ -50,6 +50,7 @@ namespace Control_Panel.Functions
         private readonly ModelAssetService _modelService;
         private readonly AssetsRepository _repository;
         private readonly AssetManagementService _managementService;
+        private readonly IConfiguration _configuration;
         private readonly string _votingConnectionString;
         private readonly Assets.AssetService _serverAssetService;
 
@@ -93,9 +94,13 @@ namespace Control_Panel.Functions
                     ["Templates:TShirt"] = universalConfig.TshirtTemplatePath,
                     ["Templates:TShirtHighRes"] = universalConfig.TshirtTemplateHighResPath,
                     ["Website:PublicBaseUrl"] = universalConfig.PublicBaseUrl,
-                    ["Assets:DefaultOwnerUserId"] = universalConfig.DefaultOwnerUserId.ToString()
+                    ["Assets:DefaultOwnerUserId"] = universalConfig.DefaultOwnerUserId.ToString(),
+                    ["AudioThumbnailUrl"] = Properties.Settings.Default.AudioThumbnailUrl ?? "/images/audio.png",
+                    ["AudioHighResThumbnailUrl"] = Properties.Settings.Default.AudioHighResThumbnailUrl ?? "/images/audio.png"
                 })
                 .Build();
+
+            _configuration = configuration;
             
             _managementService = new AssetManagementService(configuration, universalConfig);
 
@@ -358,8 +363,12 @@ namespace Control_Panel.Functions
             switch (assetTypeId)
             {
                 case 3: // Audio
+                    var audioThumbUrl = _configuration["AudioThumbnailUrl"];
+                    var audioHighResThumbUrl = _configuration["AudioHighResThumbnailUrl"];
                     return await _audioService.CreateAudioAsync(
-                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);
+                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot,
+                        thumbnailUrl: audioThumbUrl, highResThumbnailUrl: audioHighResThumbUrl,
+                        CancellationToken.None);
                 case 4: // Mesh
                     return await _meshService.CreateMeshAsync(
                         connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);

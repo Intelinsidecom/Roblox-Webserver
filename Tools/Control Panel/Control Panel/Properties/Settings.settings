@@ -58,5 +58,11 @@
     <Setting Name="DefaultOwnerUserId" Type="System.Int64" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
+    <Setting Name="AudioThumbnailUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/images/audio.png</Value>
+    </Setting>
+    <Setting Name="AudioHighResThumbnailUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/images/audio.png</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

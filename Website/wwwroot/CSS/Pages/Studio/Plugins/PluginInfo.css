@@ -1,0 +1,20 @@
+/* ~/CSS/Pages/Studio/Plugins/PluginInfo.css */
+div.plugin-info {
+    padding-bottom: 15px;
+    display: inline-block;
+}
+
+div.plugin-info-image {
+    float: left;
+    margin-right: 15px;
+}
+
+div.plugin-info-text {
+    display: inline-block;
+    min-width: 400px;
+    width: 400px;
+}
+
+a.adjust {
+    display: none;
+}

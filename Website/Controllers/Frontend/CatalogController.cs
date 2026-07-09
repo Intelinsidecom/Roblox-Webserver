@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 using Assets;
 using RobloxWebserver.Assemblies.Catalog;
 using Users;
 using Avatar;
+using Website.Services;
 
 namespace RobloxWebserver.Controllers
 {
@@ -20,12 +24,14 @@ namespace RobloxWebserver.Controllers
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
         private readonly AssetsRepository _assetsRepository = new AssetsRepository();
         private readonly AvatarWornAssetsRepository _avatarWornAssetsRepository = new AvatarWornAssetsRepository();
+        private readonly DevelopTabService _developTabService;
 
-        public CatalogController(ICatalogService catalogService, IConfiguration configuration)
+        public CatalogController(ICatalogService catalogService, IConfiguration configuration, DevelopTabService developTabService)
         {
             _catalogService = catalogService;
             _configuration = configuration;
             _assetMetadataRepository = new AssetMetadataRepository();
+            _developTabService = developTabService ?? throw new ArgumentNullException(nameof(developTabService));
         }
 
         public class CatalogItemViewModel
@@ -58,6 +64,7 @@ namespace RobloxWebserver.Controllers
             public bool IsFavorited { get; set; }
             public bool IsWorn { get; set; }
             public bool IsOnSale { get; set; }
+            public long ItemVersionId { get; set; }
         }
 
         [HttpGet("{id:long}")]
@@ -139,6 +146,21 @@ namespace RobloxWebserver.Controllers
                 ? asset.ThumbnailUrl
                 : asset.HighResThumbnailUrl;
 
+            long itemVersionId = 0;
+            try
+            {
+                await using var conn = new NpgsqlConnection(connectionString);
+                await conn.OpenAsync().ConfigureAwait(false);
+                await using var cmd = new NpgsqlCommand("select extract(epoch from last_updated)::bigint from assets where asset_id = @id", conn);
+                cmd.Parameters.AddWithValue("id", id);
+                var result = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                itemVersionId = result is long l ? l : 0;
+            }
+            catch
+            {
+                itemVersionId = 0;
+            }
+
             var model = new CatalogItemViewModel
             {
                 Id = asset.AssetId,
@@ -164,7 +186,8 @@ namespace RobloxWebserver.Controllers
                 IsOwned = isOwned,
                 IsFavorited = isFavorited,
                 IsWorn = isWorn,
-                IsOnSale = asset.OnSale
+                IsOnSale = asset.OnSale,
+                ItemVersionId = itemVersionId
             };
 
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);
@@ -299,6 +322,41 @@ namespace RobloxWebserver.Controllers
             ViewBag.CatalogItemsHtml = allHtml;
 
             return View("~/Views/Pages/catalog/browse.aspx.cshtml");
+        }
+
+        [HttpGet("contents")]
+        [Authorize]
+        public async Task<IActionResult> Contents(
+            [FromQuery(Name = "SortType")] int sortType = 0,
+            [FromQuery(Name = "Category")] int category = 0,
+            [FromQuery(Name = "Genres")] string[]? genres = null,
+            [FromQuery(Name = "PageNumber")] int pageNumber = 1,
+            CancellationToken cancellationToken = default)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+            {
+                return Unauthorized();
+            }
+
+            var nameClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+
+            var genreList = genres?
+                .SelectMany(g => g.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                .Select(s => int.TryParse(s, out var id) ? id : (int?)null)
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .Distinct()
+                .ToList();
+
+            var vm = await _developTabService.BuildAsync(userId, nameClaim, "Library",
+                category: category > 0 ? category : null,
+                sortType: sortType,
+                genres: genreList,
+                pageNumber: pageNumber,
+                cancellationToken: cancellationToken).ConfigureAwait(false);
+
+            return PartialView("~/Views/Develop/Tabs/Library.cshtml", vm);
         }
     }
 }

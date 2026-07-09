@@ -144,6 +144,88 @@ public static class AssetValidationHelper
         }
     }
 
+    public static (bool IsValid, string? ErrorMessage) ValidatePluginContent(byte[] fileBytes)
+    {
+        if (fileBytes == null || fileBytes.Length == 0)
+            return (false, "File content is empty.");
+
+        var tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".rbxm");
+        try
+        {
+            File.WriteAllBytes(tempPath, fileBytes);
+            var file = RobloxFile.Open(tempPath);
+
+            foreach (var item in file.GetDescendants())
+            {
+                if (item.IsService)
+                    return (false, "Invalid plugin: file contains service instances.");
+            }
+
+            var childSet = new HashSet<Instance>();
+            foreach (var inst in file.GetDescendants())
+            {
+                foreach (var child in inst.Children)
+                {
+                    childSet.Add(child);
+                }
+            }
+
+            var rootInstances = new List<Instance>();
+            foreach (var inst in file.GetDescendants())
+            {
+                if (childSet.Contains(inst))
+                    continue;
+
+                if (!AllowedRootClasses.Contains(inst.ClassName))
+                    return (false, $"Invalid plugin: unsupported top-level instance class '{inst.ClassName}'.");
+
+                rootInstances.Add(inst);
+            }
+
+            if (rootInstances.Count == 0)
+                return (false, "Invalid plugin: no root instances found.");
+
+            var rootModels = rootInstances.Where(r => r.ClassName == "Model" || r.ClassName == "Tool" || r.ClassName == "Folder").ToList();
+            var rootScripts = rootInstances.Where(r => r.ClassName == "Script" || r.ClassName == "LocalScript" || r.ClassName == "ModuleScript").ToList();
+
+            if (rootScripts.Count == 1 && rootModels.Count == 0)
+                return (true, null);
+
+            if (rootModels.Count == 1 && rootScripts.Count == 0)
+            {
+                var root = rootModels[0];
+                if (root.Children.Count == 0)
+                    return (false, "Invalid plugin: root Model has no children.");
+
+                var hasScript = false;
+                foreach (var desc in root.GetDescendants())
+                {
+                    if (desc.ClassName == "Script" || desc.ClassName == "LocalScript" || desc.ClassName == "ModuleScript")
+                    {
+                        hasScript = true;
+                        break;
+                    }
+                }
+
+                if (!hasScript)
+                    return (false, "Invalid plugin: no Script, LocalScript, or ModuleScript found in the model.");
+
+                return (true, null);
+            }
+
+            return (false, "Invalid plugin: expected exactly 1 root Model or 1 root Script.");
+        }
+        catch (Exception ex)
+        {
+            return (false, $"Plugin validation failed: {ex.Message}");
+        }
+        finally
+        {
+            if (File.Exists(tempPath))
+                File.Delete(tempPath);
+        }
+    }
+
     public static (bool IsValid, string? ErrorMessage) ValidateMeshContent(byte[] fileBytes)
     {
         if (fileBytes == null || fileBytes.Length == 0)

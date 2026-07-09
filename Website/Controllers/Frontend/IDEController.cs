@@ -209,8 +209,13 @@ public class IDEController : Controller
         var name = reader.IsDBNull(0) ? "Unnamed" : reader.GetString(0);
         var assetTypeId = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
 
+        var typeName = assetTypeId switch
+        {
+            9 => "Place",
+            38 => "Plugin",
+            _ => "Model"
+        };
         var isPlace = assetTypeId == 9;
-        var typeName = isPlace ? "Place" : "Model";
 
         var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
         var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl.Replace("://www.", "://data.").Replace("://assetgame.", "://data.");

@@ -1,0 +1,18 @@
+/* ~/CSS/DesignLabs/Switch.css */
+a.switch {
+    padding-left: 18px;
+    background-image: url('/images/BuildPage/ico-game_status3.png');
+    background-repeat: no-repeat;
+    display: block;
+    height: 15px;
+    text-decoration: none;
+}
+
+a.switch.inactive {
+    color: #888;
+    background-position: 0 -30px;
+}
+
+a.switch.active {
+    color: #060;
+}

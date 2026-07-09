@@ -346,5 +346,29 @@ namespace Control_Panel.Properties {
                 this["SetupServiceLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("/images/audio.png")]
+        public string AudioThumbnailUrl {
+            get {
+                return ((string)(this["AudioThumbnailUrl"]));
+            }
+            set {
+                this["AudioThumbnailUrl"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("/images/audio.png")]
+        public string AudioHighResThumbnailUrl {
+            get {
+                return ((string)(this["AudioHighResThumbnailUrl"]));
+            }
+            set {
+                this["AudioHighResThumbnailUrl"] = value;
+            }
+        }
     }
 }

@@ -1,0 +1,8 @@
+label[for=description] {
+  vertical-align: top; }
+
+#description {
+  margin-left: 0; }
+
+#description-error {
+  vertical-align: top; }

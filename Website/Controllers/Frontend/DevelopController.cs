@@ -23,6 +23,7 @@ namespace RobloxWebserver.Controllers
         private readonly PantsAssetService _pantsService = new PantsAssetService();
         private readonly ShirtAssetService _shirtService = new ShirtAssetService();
         private readonly ModelAssetService _modelService;
+        private readonly PluginAssetService _pluginService;
         private readonly AudioAssetService _audioService = new AudioAssetService();
         private readonly ShirtAssetsRepository _shirtAssetsRepository = new ShirtAssetsRepository();
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
@@ -31,6 +32,7 @@ namespace RobloxWebserver.Controllers
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _modelService = new ModelAssetService(configuration);
+            _pluginService = new PluginAssetService(configuration);
         }
 
         [HttpGet("develop")]
@@ -94,6 +96,56 @@ namespace RobloxWebserver.Controllers
             }
 
             return Redirect("/develop?view=10");
+        }
+
+        [HttpPost("upload-plugin")]
+        public async Task<IActionResult> UploadPlugin([FromForm] string name, [FromForm] IFormFile file, CancellationToken cancellationToken)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is required.");
+
+            if (string.IsNullOrWhiteSpace(name))
+                return BadRequest("Name is required.");
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                return Unauthorized("User must be logged in to upload assets.");
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, "Database connection string is not configured.");
+
+            byte[] fileBytes;
+            await using (var ms = new MemoryStream())
+            {
+                await file.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
+                fileBytes = ms.ToArray();
+            }
+
+            var assetsDirectory = _configuration["Assets:Directory"];
+            if (string.IsNullOrWhiteSpace(assetsDirectory))
+                return StatusCode(500, "Assets directory is not configured.");
+
+            try
+            {
+                _ = await _pluginService.CreatePluginAsync(
+                    connStr,
+                    userId,
+                    name,
+                    fileBytes,
+                    assetsDirectory,
+                    cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Failed to save asset record.");
+            }
+
+            return Redirect("/develop?view=38");
         }
 
         [HttpPost("upload-tshirt")]
@@ -344,6 +396,9 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/develop?view=3");
             }
 
+            var audioThumbnailUrl = _configuration["AudioThumbnailUrl"];
+            var audioHighResThumbnailUrl = _configuration["AudioHighResThumbnailUrl"];
+
             try
             {
                 _ = await _audioService.CreateAudioAsync(
@@ -352,6 +407,8 @@ namespace RobloxWebserver.Controllers
                     name,
                     fileBytes,
                     assetsDirectory,
+                    thumbnailUrl: audioThumbnailUrl,
+                    highResThumbnailUrl: audioHighResThumbnailUrl,
                     cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             catch (ArgumentException ex)

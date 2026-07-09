@@ -27,6 +27,7 @@ public sealed class DevelopTabViewModel
     public IReadOnlyList<DevelopItem> Meshes { get; set; } = new List<DevelopItem>();
     public IReadOnlyList<DevelopItem> Decals { get; set; } = new List<DevelopItem>();
     public IReadOnlyList<DevelopItem> Audios { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> Plugins { get; set; } = new List<DevelopItem>();
     public IReadOnlyList<DevelopItem> LibraryItems { get; set; } = new List<DevelopItem>();
 
     public int SelectedCategory { get; set; }

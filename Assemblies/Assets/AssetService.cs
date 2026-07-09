@@ -231,6 +231,11 @@ order by awa.asset_id";
                 return await RenderDecalThumbnailAsync(assetId, connStr, thumbnailsRoot, thumbnailBaseUrl, cancellationToken).ConfigureAwait(false);
             }
 
+            if (assetTypeId == 38)
+            {
+                return await SetDefaultPluginThumbnailAsync(assetId, connStr, cancellationToken).ConfigureAwait(false);
+            }
+
             var arbiterUrl = _configuration["Thumbnails:ArbiterUrl"] ?? "http://localhost:5000";
 
             string arbiterEndpoint = GetArbiterEndpointForAssetType(assetTypeId);
@@ -457,6 +462,21 @@ order by awa.asset_id";
                 2 => "/renderavatarasset",      // T-Shirt
                 _ => "/renderavatarasset"       // Default
             };
+        }
+
+        private async Task<bool> SetDefaultPluginThumbnailAsync(long assetId, string connectionString, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var thumbUrl = _configuration["PluginThumbnailUrl"] ?? "/images/plugin.png";
+                var repo = new AssetsRepository();
+                await repo.UpdateAssetThumbnailsAsync(connectionString, assetId, thumbUrl, thumbUrl, cancellationToken).ConfigureAwait(false);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private string? ExtractThumbnailDataUri(string json)

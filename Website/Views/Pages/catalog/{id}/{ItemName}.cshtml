@@ -91,6 +91,7 @@
  <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellController.js"></script>
  <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellModalController.js"></script>
  <script type="text/javascript" src="/JS/2017CatalogItem.js"></script>
+<script type="text/javascript" src="/JS/Plugins/Plugin.js"></script>
  <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
 
 <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
@@ -233,7 +234,14 @@
 
                                 </div>
                                 <div class=action-button>
-                                    @if (Model.IsOwned)
+                                    @if (Model.IsOwned && Model.AssetTypeLabel == "Plugin")
+                                    {
+                                        <div data-install-url="/plugins/@Model.Id/install" data-expected-currency="1" data-asset-type="Plugin" data-item-version-id="@Model.ItemVersionId" class="InstallButton btn-fixed-width-lg btn-primary-lg btn-disabled-primary" data-item-name="@Model.Name" data-item-id="@Model.Id" data-expected-price="0" data-expected-seller-id="@Model.CreatorId" data-bc-requirement="0" data-seller-name="@Model.CreatorName" data-authenticateduser-isnull="@(User?.Identity?.IsAuthenticated != true ? "True" : "False")" original-title="To install this plugin, open this page in Roblox Studio." href="javascript: return false;">
+                                            Install
+                                            <span class="btn-text">Install</span>
+                                        </div>
+                                    }
+                                    else if (Model.IsOwned)
                                     {
                                         <a id=edit-avatar-button href="/my/character" class="btn-fixed-width-lg btn-control-md" data-button-action=avatar> Edit Avatar </a>
                                     }
@@ -525,27 +533,22 @@
         });
     </script>
     <script>
-        $(function () {
-            var $container = $("#item-container"),
-                $primaryButton = $(".PurchaseButton, .InstallButton").first(),
-                $purchaseButtons;
-
-            if ($primaryButton.length > 0 && $container.length > 0) {
-                $primaryButton.attr("data-expected-price", $container.attr("data-expected-price"));
-                $primaryButton.attr("data-bc-requirement", $container.attr("data-bc-requirement"));
-                $primaryButton.attr("data-product-id", $container.attr("data-product-id"));
-                $primaryButton.attr("data-item-id", $container.attr("data-item-id"));
-                $primaryButton.attr("data-item-name", $container.attr("data-item-name"));
-                $primaryButton.attr("data-asset-type", $container.attr("data-asset-type"));
-                $primaryButton.attr("data-expected-currency", $container.attr("data-expected-currency"));
-                $primaryButton.attr("data-expected-seller-id", $container.attr("data-expected-seller-id"));
-            }
-
-            $purchaseButtons = $(".PurchaseButton");
-            if ($purchaseButtons.length > 0 && $container.length > 0) {
-                $purchaseButtons.attr("data-seller-name", $container.attr("data-seller-name"));
-                $purchaseButtons.attr("data-userasset-id", $container.attr("data-lowest-private-sale-userasset-id"));
-            }
+        $(function() {
+            Roblox.Plugins.Resources = {
+                reinstall: "Reinstall",
+                updateText: "Update",
+                errorTitle: "Error",
+                errorBody: "There was a problem installing this plugin.",
+                updateErrorTitle: "Update Error",
+                updateErrorBody: "There was a problem updating this plugin.",
+                successTitle: "Success",
+                successBody: " was installed.",
+                updateSuccessTitle: "Update Successful",
+                updateSuccessBody: " was updated.",
+                alertImageUrl: "/images/AlertIcon.png",
+                ok: "OK"
+            };
+            Roblox.Plugins.Init.init();
         });
     </script>
 </div>

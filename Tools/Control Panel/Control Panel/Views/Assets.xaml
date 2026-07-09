@@ -484,6 +484,20 @@
                                                  Height="30" Margin="0,0,0,10"
                                                  Padding="4,2,8,0" FontSize="14"
                                                  ToolTip="Public Base URL (e.g., https://example.com). HTTP/HTTPS will be added automatically if missing."/>
+                                        <TextBlock Text="Audio Thumbnail URL:" Style="{StaticResource LabelText}" 
+                                                   Foreground="{DynamicResource Foreground}" Margin="0,0,0,5"/>
+                                        <TextBox x:Name="AudioThumbnailUrlTextBox" 
+                                                 Style="{StaticResource ModernTextBox}" 
+                                                 Height="30" Margin="0,0,0,10"
+                                                 Padding="4,2,8,0" FontSize="14"
+                                                 ToolTip="Default thumbnail URL for audio assets."/>
+                                        <TextBlock Text="Audio High-Res Thumbnail URL:" Style="{StaticResource LabelText}" 
+                                                   Foreground="{DynamicResource Foreground}" Margin="0,0,0,5"/>
+                                        <TextBox x:Name="AudioHighResThumbnailUrlTextBox" 
+                                                 Style="{StaticResource ModernTextBox}" 
+                                                 Height="30" Margin="0,0,0,10"
+                                                 Padding="4,2,8,0" FontSize="14"
+                                                 ToolTip="Default high-resolution thumbnail URL for audio assets."/>
                                     </StackPanel>
                                 </Border>
                                 <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 

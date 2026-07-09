@@ -23,6 +23,8 @@ namespace Assets
             string name,
             byte[] fileBytes,
             string cdnAssetsRoot,
+            string? thumbnailUrl = null,
+            string? highResThumbnailUrl = null,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -66,8 +68,8 @@ namespace Assets
                 ContentHash = contentHash,
                 FileExtension = extension,
                 ContentType = GetContentType(extension),
-                ThumbnailUrl = null,
-                HighResThumbnailUrl = null,
+                ThumbnailUrl = thumbnailUrl,
+                HighResThumbnailUrl = highResThumbnailUrl,
                 Description = "Audio"
             };
 

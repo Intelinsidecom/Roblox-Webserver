@@ -90,6 +90,46 @@ public class UploadController : ControllerBase
             return Content(assetid.ToString(), "text/plain");
         }
 
+        if (string.Equals(type, "Plugin", StringComparison.OrdinalIgnoreCase))
+        {
+            var (isValid, validationError) = AssetValidationHelper.ValidatePluginContent(fileBytes);
+            if (!isValid)
+                return BadRequest(validationError ?? "Invalid plugin file.");
+
+            var newHash = HashingUtilities.GenerateFileHash(fileBytes);
+
+            var assetFolder = Path.Combine(assetsDirectory, "asset");
+            Directory.CreateDirectory(assetFolder);
+            var fileName = newHash + ".rbxm";
+            var filePath = Path.Combine(assetFolder, fileName);
+
+            try
+            {
+                await System.IO.File.WriteAllBytesAsync(filePath, fileBytes);
+            }
+            catch (Exception ex)
+            {
+                return Problem($"Failed to save file: {ex.Message}");
+            }
+
+            var repo = new AssetsRepository();
+            await repo.UpdateAssetModelContentAsync(connStr, assetid, newHash);
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await assetService.RenderAssetThumbnailAsync(assetid).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ThumbnailGen ERROR] Plugin {assetid}: {ex.Message}");
+                }
+            });
+
+            return Content(assetid.ToString(), "text/plain");
+        }
+
         var (success, error) = await GamesRepository.ReplacePlaceAssetAsync(
             connStr, assetsDirectory, assetid, fileBytes, assetService: assetService);
 

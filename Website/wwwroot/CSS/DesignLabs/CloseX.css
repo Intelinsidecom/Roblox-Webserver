@@ -1,0 +1,22 @@
+/* ~/CSS/DesignLabs/CloseX.css */
+a.close-x {
+    background-color: #E73E33;
+    cursor: pointer;
+    text-decoration: none;
+    width: 27px;
+    height: 27px;
+    position: relative;
+}
+
+.close-x:after {
+    position: absolute;
+    top: -2px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: "\0078";
+    font-size: 27px;
+    color: #FFF;
+    line-height: 27px;
+    text-align: center;
+}

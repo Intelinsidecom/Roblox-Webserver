@@ -331,6 +331,8 @@ namespace Assets
                     return 12;
                 case "Audio (3)":
                     return 3;
+                case "Plugin (38)":
+                    return 38;
                 default:
                     return 0;
             }
@@ -373,6 +375,7 @@ namespace Assets
                     return FileUtilities.IsValidImageFile(filePath);
                 
                 case 10:  // Model
+                case 38:  // Plugin
                     var modelExt = Path.GetExtension(filePath).ToLowerInvariant();
                     return modelExt == ".rbxm" || modelExt == ".rbxmx";
                 
@@ -857,6 +860,7 @@ namespace Assets
                 "Shirt" => 11,
                 "Pants" => 12,
                 "Audio" => 3,
+                "Plugin" => 38,
                 _ => 0
             };
         }
@@ -907,6 +911,7 @@ namespace Assets
                 9 => "Place",
                 11 => "Shirt",
                 12 => "Pants",
+                38 => "Plugin",
                 _ => "Unknown"
             };
         }
@@ -952,6 +957,7 @@ namespace Assets
                 case 12:
                     return "PNG, JPG, JPEG, BMP, GIF, TIFF, ICO";
                 case 3:
+                case 38:
                     return ".rbxm, .rbxmx";
                 case 4:
                     return ".mesh";
@@ -1201,6 +1207,7 @@ namespace Assets
                 4 => $"{thumbnailUrl}/asset/mesh.png",
                 11 => $"{thumbnailUrl}/asset/shirt.png",
                 12 => $"{thumbnailUrl}/asset/pants.png",
+                38 => _configuration["PluginThumbnailUrl"] ?? "/images/plugin.png",
                 _ => $"{thumbnailUrl}/asset/default.png"
             };
         }

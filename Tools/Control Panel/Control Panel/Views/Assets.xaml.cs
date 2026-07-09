@@ -156,6 +156,8 @@ namespace Control_Panel
             TshirtTemplatePathTextBox.Text = settings.TshirtTemplatePath ?? string.Empty;
             TshirtTemplateHighResPathTextBox.Text = settings.TshirtTemplateHighResPath ?? string.Empty;
             PublicBaseUrlTextBox.Text = settings.PublicBaseUrl ?? string.Empty;
+            AudioThumbnailUrlTextBox.Text = settings.AudioThumbnailUrl ?? string.Empty;
+            AudioHighResThumbnailUrlTextBox.Text = settings.AudioHighResThumbnailUrl ?? string.Empty;
             DefaultOwnerUserIdTextBox.Text = settings.DefaultOwnerUserId ?? "1";
         }
 
@@ -189,11 +191,15 @@ namespace Control_Panel
                 settings.TshirtTemplatePath = TshirtTemplatePathTextBox.Text;
                 settings.TshirtTemplateHighResPath = TshirtTemplateHighResPathTextBox.Text;
                 settings.PublicBaseUrl = EnsureUrlProtocol(PublicBaseUrlTextBox.Text);
+                settings.AudioThumbnailUrl = AudioThumbnailUrlTextBox.Text;
+                settings.AudioHighResThumbnailUrl = AudioHighResThumbnailUrlTextBox.Text;
                 settings.DefaultOwnerUserId = DefaultOwnerUserIdTextBox.Text;
                 settings.Save();
                 settings.Reload();
                 CDNUrlTextBox.Text = settings.ThumbnailUrl ?? string.Empty;
                 PublicBaseUrlTextBox.Text = settings.PublicBaseUrl ?? string.Empty;
+                AudioThumbnailUrlTextBox.Text = settings.AudioThumbnailUrl ?? string.Empty;
+                AudioHighResThumbnailUrlTextBox.Text = settings.AudioHighResThumbnailUrl ?? string.Empty;
                 _viewLoader?.UpdateStatus("Configuration saved successfully!");
             }
             catch (Exception ex)

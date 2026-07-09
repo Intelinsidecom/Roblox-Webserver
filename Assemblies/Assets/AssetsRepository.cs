@@ -632,8 +632,7 @@ where asset_id = @asset_id;";
 
             const string sql = @"update assets
 set thumbnail_url = @thumbnail_url,
-    high_res_thumbnail_url = @high_res_thumbnail_url,
-    last_updated = now()
+    high_res_thumbnail_url = @high_res_thumbnail_url
 where asset_id = @asset_id;";
 
             using var cmd = new NpgsqlCommand(sql, conn);

@@ -27,6 +27,8 @@ namespace Assets
                     return "Pants";
                 case 13:
                     return "Decal";
+                case 38:
+                    return "Plugin";
                 default:
                     return string.Empty;
             }
@@ -55,6 +57,8 @@ namespace Assets
                     return "Decal";
                 case 32:
                     return "Package";
+                case 38:
+                    return "Plugin";
                 default:
                     return "Asset";
             }

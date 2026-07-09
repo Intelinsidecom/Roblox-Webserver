@@ -79,6 +79,9 @@ public sealed class DevelopTabService
             case "Library":
                 await PopulateLibraryAsync(vm, cancellationToken).ConfigureAwait(false);
                 break;
+            case "Plugins":
+                await PopulatePluginsAsync(vm, cancellationToken).ConfigureAwait(false);
+                break;
             default:
                 break;
         }
@@ -682,6 +685,65 @@ limit 50;";
         catch
         {
             vm.LibraryItems = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulatePluginsAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        vm.AssetTypeId = 38;
+        vm.HeaderText = "Plugins";
+        vm.MaxActiveCount = 0;
+
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+                from assets a
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 38
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetId = reader.GetInt64(0);
+                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                var createdAt = reader.GetDateTime(2);
+                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+
+                items.Add(new Assemblies.Common.DevelopItem
+                {
+                    ItemId = assetId,
+                    AssetId = assetId,
+                    RootPlaceId = assetId,
+                    Name = name,
+                    ThumbnailUrl = thumb,
+                    Type = "plugins",
+                    ConfigureUrl = "/asset/" + assetId + "/configure",
+                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                    CreatedAt = createdAt,
+                });
+            }
+
+            vm.Plugins = items;
+        }
+        catch
+        {
+            vm.Plugins = new List<Assemblies.Common.DevelopItem>();
         }
     }
 }

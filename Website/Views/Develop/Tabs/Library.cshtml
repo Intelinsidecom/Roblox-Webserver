@@ -1,5 +1,43 @@
 @model Assemblies.Common.DevelopTabViewModel
-@{ Layout = null; }
+@{
+    Layout = null;
+    var fallbackThumb = "/images/audio.png";
+}
+<style>
+    .MediaPlayerControls {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        cursor: pointer;
+    }
+    .MediaPlayerIcon.icon-play,
+    .MediaPlayerIcon.icon-pause {
+        background-image: url(/images/Shared/generic_09152017.svg);
+        background-repeat: no-repeat;
+        background-size: auto auto;
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .MediaPlayerIcon.icon-play {
+        background-position: 0 -308px;
+    }
+    .MediaPlayerIcon.icon-pause {
+        background-position: 0 -336px;
+    }
+    div#catalog .CatalogItemInner div.roblox-item-image div.item-image-wrapper .MediaPlayerControls {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        top: auto;
+        left: auto;
+    }
+    div#catalog .CatalogItemInner div.roblox-item-image div.item-image-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
 <div id="catalog" data-empty-search-enabled="true" style="font-size:12px">
     <div class="header" style="height:60px">
         <div class="CatalogSearchBar">
@@ -192,10 +230,16 @@
             <div class="SmallCatalogItemView SmallView">
                 <div class="CatalogItemInner SmallInner">
                     <div class="roblox-item-image image-small" data-item-id="@item.ItemId" data-image-size="small">
-                        <div class="item-image-wrapper">
+                        <div class="item-image-wrapper" style="position: relative;">
                             <a href="@item.CatalogUrl">
-                                <img title="@item.Name" alt="@item.Name" class="original-image" src="@(item.ThumbnailUrl ?? "/images/RobloxLogo.png")" />
+                                <img title="@item.Name" alt="@item.Name" class="original-image" src="@(item.ThumbnailUrl ?? (item.Type == "audios" ? fallbackThumb : "/images/RobloxLogo.png"))" />
                             </a>
+                            @if (item.Type == "audios")
+                            {
+                                <div class="MediaPlayerControls">
+                                    <div class="MediaPlayerIcon icon-play" data-mediathumb-url="/asset/?id=@item.ItemId" data-jplayer-version="2.9.2"></div>
+                                </div>
+                            }
                         </div>
                     </div>
                     <div id="textDisplay">
