@@ -56,8 +56,9 @@ namespace RobloxWebserver.Controllers
 
                 return Ok(new { success = true });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] Install plugin assetId={assetId}: {ex}");
                 return StatusCode(500, new { error = "Failed to process install request" });
             }
         }

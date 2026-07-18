@@ -1,0 +1,1377 @@
+@{ 
+    Layout = "_Layout";
+    var userIdStr = "0";
+    var userName = "Guest";
+    var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (!string.IsNullOrEmpty(idClaim))
+    {
+        userIdStr = idClaim;
+    }
+    var nameClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+    if (!string.IsNullOrEmpty(nameClaim))
+    {
+        userName = nameClaim;
+    }
+}
+
+<!DOCTYPE html>
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
+<!-- MachineID: WEB1540 -->
+<head id="ctl00_ctl00_Head1" data-machine-id="WEB1540">
+<title>
+	Trade - Roblox
+</title>
+
+<link rel="stylesheet" href="/CSS/Base/CSS/Roblox.css">
+<link rel="stylesheet" href="/CSS/RBXCommon.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Abp.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Flyouts.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Footer.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Header.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/MediaThumb.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Modals.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Place.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/PlaceLauncher.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/RevisedCharacterSelectModal.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/tipsy.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Trade.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Upgrades.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/User.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/Utility.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/VideoPreRoll.css">
+<link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+<link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
+<link rel="stylesheet" href="/CSS/Legacy/Navigation.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+<link rel="stylesheet" href="/CSS/Legacy/iFrameLogin.css">
+
+<link rel="stylesheet" href="/CSS/Pages/Trades/Trade.css">
+<link rel="stylesheet" href="/CSS/Pages/Money/Money.css">
+<link rel="stylesheet" href="/CSS/Pages/Graphs/Graphs.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/Notifications.css">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="user-data"
+          data-userid="@userIdStr"
+          data-name="@userName"
+          data-isunder13="true" />
+<script type='text/javascript' src='//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js'></script>
+<script type='text/javascript'>window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")</script>
+<script type='text/javascript' src='//ajax.aspnetcdn.com/ajax/jquery.migrate/jquery-migrate-1.2.1.min.js'></script>
+<script type='text/javascript'>window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
+
+
+<script type="text/javascript">
+    var _prum = [['id', ''],
+                 ['mark', 'firstbyte', (new Date()).getTime()]];
+    (function() {
+        var s = document.getElementsByTagName('script')[0]
+          , p = document.createElement('script');
+        p.async = 'async';
+        p.src = '//rum-static.pingdom.net/prum.min.js';
+        s.parentNode.insertBefore(p, s);
+    })();
+</script>
+    <script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.RealTimeSettings = Roblox.RealTimeSettings ||
+        {
+            NotificationsEndpoint: "https://realtime.roblox.com/",
+            NotificationsTestInterval: "5000",
+            MaxConnectionTime: "43200000",
+            IsStateTrackingEnabled: true,
+            IsEventPublishingEnabled: false,
+            IsDisconnectOnSlowConnectionDisabled: true,
+            IsSignalRClientTransportRestrictionEnabled: true,
+            IsLocalStorageInRealTimeEnabled: true,
+            UserId: "@userIdStr"
+        }
+    </script>
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.WebApps = Roblox.WebApps || {};
+
+    Roblox.WebApps.Domains = {
+        chat: "https://chatsite.roblox.com"
+    }
+</script>
+<script type='text/javascript' src='/JS/roblox.js'></script>
+<script type='text/javascript' src='/JS/jquery.tipsy.js'></script>
+<script type='text/javascript' src='/JS/AjaxAvatarThumbnail.js'></script>
+<script type='text/javascript' src='/JS/extensions/string.js'></script>
+<script type='text/javascript' src='/JS/StringTruncator.js'></script>
+<script type='text/javascript' src='/JS/json2.min.js'></script>
+<script type='text/javascript' src='/JS/GoogleAnalytics/GoogleAnalyticsEvents.js'></script>
+<script type='text/javascript' src='/JS/MasterPageUI.js'></script>
+<script type='text/javascript' src='/JS/jquery.cookie.js'></script>
+<script type='text/javascript' src='/JS/polyfill/ie7localStorage.js'></script>
+<script type='text/javascript' src='/JS/JSErrorTracker.js'></script>
+<script type='text/javascript' src='/JS/RobloxCookies.js'></script>
+<script type='text/javascript' src='/JS/RobloxEventManager.js'></script>
+<script type='text/javascript' src='/JS/GoogleEventListener.js'></script>
+<script type='text/javascript' src='/JS/MongoEventListener.js'></script>
+<script type='text/javascript' src='/JS/SiteTouchEvent.js'></script>
+<script type='text/javascript' src='/JS/jPlayer/2.9.2/jquery.jplayer.min.js'></script>
+<script type='text/javascript' src='/JS/extensions/Thumbnails.js'></script>
+<script type='text/javascript' src='/JS/extensions/ThreeDeeThumbnails.js'></script>
+<script type='text/javascript' src='/JS/extensions/AnimatedThumbnails.js'></script>
+<script type='text/javascript' src='/JS/3D/three.js'></script>
+<script type='text/javascript' src='/JS/3D/MTLLoader.js'></script>
+<script type='text/javascript' src='/JS/3D/OBJMTLLoader.js'></script>
+<script type='text/javascript' src='/JS/3D/tween.js'></script>
+<script type='text/javascript' src='/JS/3D/RobloxOrbitControls.js'></script>
+<script type='text/javascript' src='/JS/Thumbnails/ThumbnailView.js'></script>
+<script type='text/javascript' src='/JS/Thumbnails/ThumbnailSpinner.js'></script>
+<script type='text/javascript' src='/JS/Linkify.js'></script>
+<script type='text/javascript' src='/JS/CookieUpgrader.js'></script>
+<script type='text/javascript' src='/JS/utilities/stringFormat.js'></script>
+<script type='text/javascript' src='/JS/Tracking/SignupTrackingScript.js'></script>
+<script type='text/javascript' src='/JS/Tracking/AsyncGoogleOnScript.js'></script>
+<script type='text/javascript' src='/JS/DeveloperConsoleWarning.js'></script>
+<script type='text/javascript' src='/JS/JavaScriptEndpoints.js'></script>
+<script type='text/javascript' src='/JS/utilities/performance.js'></script>
+<script type='text/javascript' src='/JS/utilities/lazyLoad.js'></script>
+<script type='text/javascript' src='/JS/RobloxEventStream.js'></script>
+<script type='text/javascript' src='/JS/Game/GamePlayEvents.js'></script>
+<script type='text/javascript' src='/JS/Events/UserInteractionsEvent.js'></script>
+<script type='text/javascript' src='/JS/Events/PageHeartbeatEvent.js'></script>
+<script type='text/javascript' src='/JS/services/userService.js'></script>
+<script type='text/javascript' src='/JS/utilities/ExponentialBackoff.js'></script>
+<script type='text/javascript' src='/JS/utilities/ExponentialBackoffSpecification.js'></script>
+<script type='text/javascript' src='/JS/XsrfToken.js'></script>
+<script type='text/javascript' src='/JS/Interstitial.js'></script>
+<script type='text/javascript' src='/JS/jquery.ba-postmessage.min.js'></script>
+<script type='text/javascript' src='/JS/DropDownNav.js'></script>
+<script type='text/javascript' src='/JS/UpsellAdModal.js'></script>
+<script type='text/javascript' src='/JS/widgets/jquery.mCustomScrollbar.concat.min.js'></script>
+<script type='text/javascript' src='/JS/GPTAdScript.js'></script>
+<script type='text/javascript' src='/JS/VideoPreRollDFP.js'></script>
+<script type='text/javascript' src='/JS/CharacterSelect.js'></script>
+<script type='text/javascript' src='/JS/MadStatus.js'></script>
+<script type='text/javascript' src='/JS/PlaceLauncher.js'></script>
+<script type='text/javascript' src='/JS/leancore/libs/bootstrap.min.js'></script>
+<script type='text/javascript' src='/JS/leancore/libs/underscore-min.js'></script>
+<script type='text/javascript' src='/JS/leancore/BootstrapNamespacing.js'></script>
+<script type='text/javascript' src='/JS/leancore/Navigation.js'></script>
+<script type='text/javascript' src='/JS/Reference/widget.js'></script>
+<script type='text/javascript' src='/JS/jquery.simplemodal-1.3.5.js'></script>
+<script type='text/javascript' src='/JS/leancore/iesupport/jquery.placeholder.js'></script>
+<script type='text/javascript' src='/JS/GameLauncher.js'></script>
+<script type='text/javascript' src='/JS/GameLaunchLogger.js'></script>
+<script type='text/javascript' src='/JS/ProtocolHandlerClientInterface.js'></script>
+<script type='text/javascript' src='/JS/GameLaunchAdRefresher.js'></script>
+<script type='text/javascript' src='/JS/Navigation/ShopAmazon.js'></script>
+<script type='text/javascript' src='/JS/SignalR/jquery.signalr-2.2.0.js'></script>
+<script type='text/javascript' src='/JS/SignalR/SignalRAbortAsyncPatch-2.2.0.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/signalRConnectionWrapper.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/Sources/signalRSource.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/client.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/factory.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/stateTracker.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/Sources/hybridSource.js'></script>
+<script type='text/javascript' src='/JS/Notifications/RealTime/Sources/crossTabReplicatedSource.js'></script>
+<script type='text/javascript' src='/JS/utilities/CrossTabCommunication/Kingmaker.js'></script>
+<script type='text/javascript' src='/JS/utilities/CrossTabCommunication/PubSub.js'></script>
+<script type='text/javascript' src='/JS/Notifications/AuthenticationNotificationsHandler.js'></script>
+        <script type="text/javascript">
+            if (Roblox && Roblox.EventStream) {
+                Roblox.EventStream.Init("/www/e.png",
+                    "/www/e.png",
+                    "/pe?t=studio",
+                    "/pe?t=diagnostic");
+            }
+        </script>
+
+
+<script type="text/javascript">
+    if (Roblox && Roblox.PageHeartbeatEvent) {
+        Roblox.PageHeartbeatEvent.Init([2,8,20,60]);
+    }
+</script><script type='text/javascript'>Roblox.config.externalResources = [];Roblox.config.paths['Pages.Catalog'] = 'https://js.rbxcdn.com/8d6821a4eed971155a4829a1e43336f4.js.gzip';Roblox.config.paths['Pages.CatalogShared'] = 'https://js.rbxcdn.com/5c0ac85bd60f40a577bfff7e323e3690.js.gzip';Roblox.config.paths['Widgets.AvatarImage'] = 'https://js.rbxcdn.com/823c7d686e6b3d8321275740fe498f9d.js.gzip';Roblox.config.paths['Widgets.DropdownMenu'] = 'https://js.rbxcdn.com/5cf0eb71249768c86649bbf0c98591b0.js.gzip';Roblox.config.paths['Widgets.GroupImage'] = 'https://js.rbxcdn.com/556af22c86bce192fb12defcd4d2121c.js.gzip';Roblox.config.paths['Widgets.HierarchicalDropdown'] = 'https://js.rbxcdn.com/7689b2fd3f7467640cda2d19e5968409.js.gzip';Roblox.config.paths['Widgets.ItemImage'] = 'https://js.rbxcdn.com/c2aa2fcc2b1e8ec82e1bacfdb9dfffea.js.gzip';Roblox.config.paths['Widgets.PlaceImage'] = 'https://js.rbxcdn.com/52ff803e77bb661839e8b2c93bb5ba27.js.gzip';Roblox.config.paths['Widgets.SurveyModal'] = 'https://js.rbxcdn.com/56ad7af86ee4f8bc82af94269ed50148.js.gzip';</script>    <script type="text/javascript">
+        $(function () {
+            Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+        });
+    </script>
+<script type='text/javascript' src='/JS/angular/angular.min.js'></script>
+<script type='text/javascript' src='/JS/angular/angular-sanitize.min.js'></script>
+<script type='text/javascript' src='/JS/angular/angular-ui-router.min.js'></script>
+<script type='text/javascript' src='/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js'></script>
+<script type='text/javascript' src='/JS/angular/angular.ng-modules.js'></script>
+<script type='text/javascript' src='/JS/angular/angular.audio.js'></script>
+<script type='text/javascript' src='/JS/angular/angular-elastic.js'></script>
+<script type='text/javascript' src='/JS/viewapp/app.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/robloxService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/chatDispatchService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/eventStreamService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/googleAnalyticsEventsService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/httpService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/hybridService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/imagesService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/localStorageService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/numericCodeService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/realtimeService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/retryService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/urlService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/userService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/services/performanceService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/constants/keyCode.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/constants/callBackTypes.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/constants/deviceTypes.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/constants/performanceMarkLabels.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/helpers.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/abbreviate.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/capitalize.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/firstLetter.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/getPercentage.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/htmlToPlainText.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/isEmpty.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/orderList.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/parseTimeStamp.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/positive.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/reverse.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/filters/startsWith.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/autoResizeDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/blurDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/clickOutsideDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/enterEscapeShiftDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/focusDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/focusMeDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/formValidationDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/imageRetryWithLazyLoadDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/inputMaxLength.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/keyPressEnterDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/keyPressEscapeDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/numbersOnlyDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/onFinishRenderDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/phoneDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/common/directives/switcherDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/modal/modal.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/modal/constants/modalOptions.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/modal/services/modalService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/modal/controllers/modalController.js'></script>
+
+
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/notificationStream.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/constants/layoutLibrary.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/constants/signalR.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js'></script>
+<script type='text/javascript' src='/JS/viewapp/widgets/notificationStream/directives/testDirective.js'></script>
+
+<script type='text/javascript' src='/JS/jquery.filter_input.js'></script>
+<script type='text/javascript' src='/JS/modules/Widgets/AvatarImage.js'></script>
+<script type='text/javascript' src='/JS/modules/Widgets/GroupImage.js'></script>
+<script type='text/javascript' src='/JS/flot/excanvas.min.js'></script>
+<script type='text/javascript' src='/JS/flot/jquery.flot.js'></script>
+<script type='text/javascript' src='/JS/flot/jquery.flot.time.js'></script>
+<script type='text/javascript' src='/JS/flot/jquery.flot.categories.js'></script>
+<script type='text/javascript' src='/JS/flot/FlotChart.js'></script>
+<script type='text/javascript' src='/JS/flot/FlotGraphing.js'></script>
+<script type='text/javascript' src='/JS/MyMoney.js'></script>
+<script type='text/javascript' src='/JS/jquery/jquery.address-1.5.min.js'></script>
+<script type='text/javascript' src='/JS/utilities/dialog.js'></script>
+<script type='text/javascript' src='/JS/utilities/popover.js'></script>
+<script type='text/javascript' src='/JS/TosModalCheck.js'></script>
+<script type='text/javascript' src='/JS/Trade/InventoryItem.js'></script>
+<script type='text/javascript' src='/JS/Trade/TradeRequest.js'></script>
+<script type='text/javascript' src='/JS/GenericConfirmation.js'></script>
+
+
+        <link rel="canonical" href="/my/money.aspx" />
+
+<script type="text/javascript">
+if (typeof(Roblox) === "undefined") { Roblox = {}; }
+Roblox.Endpoints = Roblox.Endpoints || {};
+Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+</script>
+<script>
+    Roblox = Roblox || {};
+    Roblox.AbuseReportPVMeta = {
+        desktopEnabled: true,
+        phoneEnabled: false,
+        inAppEnabled: false,
+        inApp: false
+    };
+</script></head>
+<body id="rbx-body"
+    class=""
+    data-performance-relative-value="0.005"
+    data-internal-page-name=Profile
+    data-send-event-percentage="0.01">
+    <div id="roblox-linkify" data-enabled="true" data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags="gm" data-as-http-regex=""></div>
+<div id="image-retry-data"
+     data-image-retry-max-times="10"
+     data-image-retry-timer="1500"
+     data-ga-logging-percent="10">
+</div>
+<div id="http-retry-data"
+     data-http-retry-max-timeout="0"
+     data-http-retry-base-timeout="0"
+     data-http-retry-max-times="5">
+</div>
+
+<div id="modal-confirmation" class="modal-confirmation" data-modal-type="confirmation" style="display:none">
+    <div id="modal-dialog"  class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5 class="modal-title"></h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-top-body">
+                    <div class="modal-message"></div>
+                    <div class="modal-image-container roblox-item-image" data-image-size="medium" data-no-overlays data-no-click>
+                        <img class="modal-thumb" alt="generic image"/>
+                    </div>
+                    <div class="modal-checkbox checkbox">
+                        <input id="modal-checkbox-input" type="checkbox"/>
+                        <label for="modal-checkbox-input"></label>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <a href id="confirm-btn"><span></span></a>
+                    <a href id="decline-btn"><span></span></a>
+                </div>
+                <div class="loading modal-processing">
+                    <img class="loading-default" src='/images/4bed93c91f909002b1f17f05c0ce13d1.gif' alt="Processing..." />
+                </div>
+            </div>
+            <div class="modal-footer text-footer">
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+
+        //<sl:translate>
+        Roblox.Resources.Dialog = {
+            yes: "Yes",
+            No: "No",
+            OK: "OK",
+            Confirm: "Confirm",
+            Cancel: "Cancel",
+            Agree: "Agree"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+    <script type="text/javascript">Roblox.XsrfToken.setToken('3xRMDd1vFfW0');</script>
+ 
+    <script type="text/javascript">
+        if (top.location != self.location) {
+            top.location = self.location.href;
+        }
+    </script>
+  
+<style type="text/css">
+    
+</style>
+<form name="aspnetForm" method="post" action="/my/money.aspx" id="aspnetForm" class="nav-container no-gutter-ads">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="cJ+wZcaZ6fZcL/vLbYhA79mivNmvjjW6O3TzoSE3R37QVV6CCLKgQF8QWZJEH1OjOrUrb6aEipRm3Jdpwepr+F4j3caCQ8Rum91wJwrkywgyizrHyIeMYagjDQlJ4DWcxtfulav8RIry36Fx/u6chy8WNhoqtvvmBazpjYQXSBlFviuFM7awtBFPr6XSsDKuNi7lzAsHy5IW0VVgoC1DPHZC+h5ncSwHUPMi8vMdGRQSENjC90K5iVx441IsMCqIcoInjsNUGxhnmvAvAoWKjofbcBidF3/iwajhAMdmstAhatJqay5ZKn0urft8nqZGPDOzzX+rUdpUteP4meadvwHyfnPsWSKyVMuh8Xbe3mh/NlEZxMy+YBpnjPIa7I1f0JI0LhGbBIrZm3bMGi5RckQ8Ocb8jF8De92A4xpHP/MPIY59uckT4cMd5wfjX3iweAQ5ci2ml5PWlio8SrXGFAIng7+CJ3Ow8K0ShGZ7L2xlZmTj9XZQtD5BjLwBIOGTamLvojoxXfMuAllC22wIEyvvbGvr9PmB1wmgYlBvqJB2OYipqNw1tZjm920NNMyYKIdtWLo2KTp2ELZ3l6sn72gFRiSvE/lD4QS7MMRkyHllegUOAUSmC87WcRUC+IkUOdaMjonrIuf58WSAyn0A+ea/GOc=" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="https://ajax.aspnetcdn.com/ajax/4.5.1/1/WebForms.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+window.WebForm_PostBackOptions||document.write('<script type="text/javascript" src="/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZH6GgOgBQtqMPCPjRUnhj_pzNesAXKuAdu2pj-Sq-3JDJIgwEw2&amp;t=635369962285126825"><\/script>');//]]>
+</script>
+
+
+
+<script src="https://ajax.aspnetcdn.com/ajax/4.5.1/1/MicrosoftAjax.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+(window.Sys && Sys._Application && Sys.Observer)||document.write('<script type="text/javascript" src="/ScriptResource.axd?d=NJmAwtEo3Ipnlaxl6CMhvumliVar4i2j2lMD3IoEyWJLzR5nHuzAduQUc0aL2Mlk6x33pKXl4t8wV-HcuHw6oBnS1lwzKesKcNRQDsG9ufrF4--3-_YdpMr_CHZuNtX0ejV8Lq6JG6Taji5KieUXCTacPbQ1&t=ffffffffb53e74b8"><\/script>');//]]>
+</script>
+
+<script src="https://ajax.aspnetcdn.com/ajax/4.5.1/1/MicrosoftAjaxWebForms.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+(window.Sys && Sys.WebForms)||document.write('<script type="text/javascript" src="/ScriptResource.axd?d=dwY9oWetJoJoVpgL6Zq8OC_Qyj6iPZ9-IhfgU1PKd92NqwesSi5IgR2kHUAQCLPPKv5dmGb59sQmqQu3G6_D3NKJrjUgXZeod0TXb9neDij-vtT2tW5WrVuyLXf9BqECFbVGd3-sTKQ_7e03iLz9XRbz2Yc1&t=ffffffffb53e74b8"><\/script>');//]]>
+</script>
+
+<script src="/ScriptResource.axd?d=CDqNI0WXhoJm4wRVhLkhU_wJ7tHBqhMKa_DNcVEFX7028ZDXXoHoA1xAS-BVWW3oBvwCyCC7_t5p3pEyxJ-xwPnZUVT0wZujzF3b9cQCzohhaZnkh6Umv4YiFMUfJRSTxjNC5IxbYGvPw0XmTZngEiKOh5CbBl8QqD2Z8i8RIsftw0_meD6Wjd095KZ2VJ7NcFzlxCi9zExzrrWBYv3Ru3aTcwCXBD_lKVhP7_equkT74Usr0" type="text/javascript"></script>
+<script src="../Marketplace/EconomyServices.asmx/js" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="42DF5B7A" />
+</div>
+    <div id="fb-root">
+    </div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ctl00$ScriptManager', 'aspnetForm', [], [], [], 90, 'ctl00$ctl00');
+//]]>
+</script>
+
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    (function () {
+        if (Roblox && Roblox.Performance) {
+            Roblox.Performance.setPerformanceMark("navigation_end");
+        }
+    })();
+</script>
+
+
+        <div id="navContent" class="nav-content logged-in"><div class="nav-content-inner">
+    <div id="MasterContainer" >
+        
+
+<script type="text/javascript">
+    $(function(){
+        function trackReturns() {
+            function dayDiff(d1, d2) {
+                return Math.floor((d1-d2)/86400000);
+            }
+            if (!localStorage) {
+                return false;
+            }
+
+            var cookieName = 'RBXReturn';
+            var cookieOptions = {expires:9001};
+            var cookieStr = localStorage.getItem(cookieName) || "";
+            var cookie = {};
+
+            try {
+                cookie = JSON.parse(cookieStr);
+            } catch (ex) {
+                // busted cookie string from old previous version of the code
+            }
+
+            try {
+                if (typeof cookie.ts === "undefined" || isNaN(new Date(cookie.ts))) {
+                    localStorage.setItem(cookieName, JSON.stringify({ ts: new Date().toDateString() }));
+                    return false;
+                }
+            } catch (ex) {
+                return false;
+            }
+
+            var daysSinceFirstVisit = dayDiff(new Date(), new Date(cookie.ts));
+            if (daysSinceFirstVisit == 1 && typeof cookie.odr === "undefined") {
+                RobloxEventManager.triggerEvent('rbx_evt_odr', {});
+                cookie.odr = 1;
+            }
+            if (daysSinceFirstVisit >= 1 && daysSinceFirstVisit <= 7 && typeof cookie.sdr === "undefined") {
+                RobloxEventManager.triggerEvent('rbx_evt_sdr', {});
+                cookie.sdr = 1;
+            }
+            try {
+                localStorage.setItem(cookieName, JSON.stringify(cookie));
+            } catch (ex) {
+                return false;
+            }
+        }
+
+        GoogleListener.init();
+
+
+    
+        RobloxEventManager.initialize(true);
+        RobloxEventManager.triggerEvent('rbx_evt_pageview');
+        trackReturns();
+        
+
+    
+        RobloxEventManager._idleInterval = 450000;
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_start');
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_ftp');
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_success');
+        RobloxEventManager.registerCookieStoreEvent('rbx_evt_fmp');
+        RobloxEventManager.startMonitor();
+        
+
+    });
+
+</script>
+
+
+
+        <script type="text/javascript">Roblox.FixedUI.gutterAdsEnabled=false;</script>
+
+        
+
+        <div id="Container">
+            
+            
+        </div>
+
+		
+        
+        <noscript><div class="alert-info"><h5>Please enable Javascript to use all the features on this site.</h5></div></noscript>
+        
+        
+        <div class="alert-container">
+            
+            
+        </div>
+        
+        
+        
+        
+        <div id="BodyWrapper">
+            
+            <div id="RepositionBody">
+                <div id="Body" class="body-width">
+                    
+    
+
+<style type="text/css">
+    #Body {
+        padding: 10px;
+    }
+</style>
+<div class="MyMoneyPage text">
+    <div class="WhiteSquareTabsContainer">
+        <ul class="SquareTabsContainer">
+            
+            <li class="SquareTabGray selected" contentid="MyTransactions_tab">
+                <span><a>My Transactions</a></span>
+            </li>
+            
+            <li class="SquareTabGray " contentid="Summary_tab">
+                <span><a>Summary</a></span>
+            </li>
+            
+            <li class="SquareTabGray " contentid="TradeItems_tab">
+               <span><a>Trade Items</a></span>
+            </li>
+            
+            <li class="SquareTabGray" contentid="Promotion_tab">
+                <span><a>Promotion</a></span>
+            </li>
+            
+        </ul>
+    </div>
+    <a href=/upgrades/robux?ctx=money class="BuyRobuxButton btn-medium btn-primary">Buy Robux</a>
+    <div class="StandardPanelContainer">
+        <div id="TabsContentContainer" class="StandardPanelWhite">
+        
+
+
+            <div id="MyTransactions_tab" class="TabContent selected uninitialized">
+                <div class="SortsAndFilters">
+                    <div class="TransactionType">
+                        <span class="form-label">Transaction Type:</span>
+                        <select class="form-select" id="MyTransactions_TransactionTypeSelect">
+                            <option value="purchase">Purchases</option>
+                            <option value="sale">Sales</option>
+                            <option value="affiliatesale">Commissions</option>
+                            
+                            <option value="grouppayout">Group Payouts</option>
+                            
+                        </select>
+                    </div>
+                    <div style="clear:both;float:none;"></div>
+                </div>
+                <div class="TransactionsContainer">
+                    <table class="table" cellpadding="0" cellspacing="0" border="0">
+                        <tr class="table-header">
+                            <th class="Date first">Date</th>
+                            <th class="Member">Member</th>
+                            <th class="Description">Description</th>
+                            <th class="Amount">Amount</th>
+                        </tr>
+                        <tr class="datarow" colspan="4">
+                            <td class="loading"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="Summary_tab" class="TabContent uninitialized">
+                <div class="SortsAndFilters">
+                    <span class="form-label">Time Period:</span>
+                    <select class="form-select" id="TimePeriod">
+                        <option value="day">Past Day</option>
+                        <option value="week">Past Week</option>
+                        <option value="month">Past Month</option>
+                        <option value="year">Past Year</option>
+                    </select>
+                </div>
+                <div class="ColumnsContainer">
+                    <div class="RobuxColumn full-column">
+                        <div>
+                            <h2 class="light">
+                                    <span class="robux">&nbsp;</span>
+                                    <span>Robux</span>
+                                    <img src="/images/d3246f1ece35d773099f876a31a38e5a.png" class="tooltip" title="The principal currency of Robloxia, which Builders Club members receive a daily allowance of to live a comfortable life of leisure. For this and other benefits, join Builders Club! Alternately, you can purchase Robux using our secure payment system." />
+                            </h2>
+                            <table class="table" cellpadding="0" cellspacing="0" border="0" >
+                            <tr class="table-header">
+                                <th class="Categories first">Categories</th>
+                                <th class="Credit">Credit</th>
+                            </tr>
+                            <tr >
+                                <td class="Categories">Builders Club Stipend</td>
+                                <td class="Credit BCStipend">&nbsp;</td>
+                            </tr>
+                            <tr >
+                                <td class="Categories">Builders Club Stipend Bonus</td>
+                                <td class="Credit BCStipendBonus">&nbsp;</td>
+                            </tr>
+                            <tr >
+                                <td class="Categories">Sale of Goods</td>
+                                <td class="Credit SaleOfGoods">&nbsp;</td>
+                            </tr>
+                            <tr >
+                                <td class="Categories">Currency Purchase</td>
+                                <td class="Credit CurrencyPurchase">&nbsp;</td>
+                            </tr>
+                            <tr >
+                                <td class="Categories">Trade System Trades</td>
+                                <td class="Credit TradeSystem">&nbsp;</td>
+                            </tr> 
+                           
+                            
+                            <tr>
+                                <td class="Categories">Promoted Page Conversion Revenue</td>
+                                <td class="Credit PromotedPageConversionRevenue">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td class="Categories">Game Page Conversion Revenue</td>
+                                <td class="Credit GamePageConversionRevenue">&nbsp;</td>
+                            </tr>
+                            
+                            <tr  >
+                                <td class="Categories">Pending Sales <img src="/images/d3246f1ece35d773099f876a31a38e5a.png" class="tooltip" title="As an anti fraud precaution, revenue from certain transactions, such as Game Pass sales, is held for a short period of time before being released to the seller." /></td>
+                                <td class="Credit PendingSales">&nbsp;</td>
+                            </tr> 
+                            
+                            <tr>
+                                <td class="Categories">Group Payouts</td>
+                                <td class="Credit GroupPayouts">&nbsp;</td>
+                            </tr>
+                            
+                            <tr class="total">
+                                <td colspan="3"><h2 class="light">TOTAL&nbsp;</h2><span class="robux money">(xxx)</span></td>
+                            </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+            
+                <div id="TradeItems_tab" class="TabContent uninitialized">
+                    <div class="status-confirm" style="display:none;"></div>   
+                    <div class="SortsAndFilters">
+                    <div class="TradeType">
+                        <span class="form-label">Trade Type:</span>
+                        <select class="form-select" id="TradeItems_TradeType">
+                            <option value="inbound">Inbound</option>
+                            <option value="outbound">Outbound</option>
+                            <option value="completed">Completed</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+						<a href="https://en.help.roblox.com/hc/en-us/articles/203313310-Trading-System" target="_blank" id="trade-help-link" class="text-link">How do I send a trade?</a>
+                        <span class="tool-tip" style="display:none;" data-js-trade-write-disabled ><img src="/images/77c4414271016f8257c136305b7888b4.png" class="left"/>Trading is currently disabled. Trades can be viewed, but they may not be changed. Please check back later.</span>
+                    </div>
+                    <div style="clear:both;float:none;"></div>
+                </div>
+                <div class="TradeItemsContainer">
+                    <table class="table" cellpadding="0" cellspacing="0" border="0">
+                        <tr class="table-header">
+                            <th class="Date first">Date</th>
+                            <th class="Expires">Expires</th>
+                            <th class="TradePartner">Trade Partner</th>
+                            <th class="Status">Status</th>
+                            <th class="Action">Action</th>
+                        </tr>
+                        <tr class="datarow" colspan="4">
+                            <td class="loading"></td>
+                        </tr>
+                    </table>
+                </div>
+                    <table class="template table">
+                        <tr class="datarow">
+                            <td class="Date" data-se="trade-date"></td>
+                            <td class="Expires" data-se="trade-expires"></td>
+                            <td class="TradePartner" data-se="trade-tradepartner"></td>
+                            <td class="Status" data-se="trade-status"></td>
+                            <td class="Action" data-se="trade-Action"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div TradeUpdater></div>
+            
+                <div id="Promotion_tab" class="TabContent uninitialized">
+                    
+
+
+<div class="info">
+    When you share a promotional link to any ROBLOX page and new players come to ROBLOX from your link, you earn 5% of every purchase they make. You can use the Share button on any place page to generate a link that includes your promoter code.<br /><br />
+    You can also create promotional links with this link generator:
+</div>
+<div>
+    <div class="form-label">ROBLOX url:</div>
+    <input type="text" id="LinkGeneratorInput" data-rbx-id="@userIdStr" />
+</div>
+<div>
+    <div class="form-label">Promotion link:</div>
+    <div id="LinkGeneratorOutput">Please link to a page on www.freblx.xyz!</div>
+</div>
+<ul class="nav nav-pills">
+    <li class="active" data-rbx-time="hourly"><a>Hourly</a></li>
+    <li data-rbx-time="daily"><a>Daily</a></li>
+    <li data-rbx-time="monthly"><a>Monthly</a></li>
+</ul>
+<div id="PromotionAcquisitionsContainer">
+    <div class="separator-horizontal"></div>
+    <h2>
+        New Visitors
+        <img src="/images/d3246f1ece35d773099f876a31a38e5a.png" class="tooltip" title="Number of people who clicked on your links who have never been on ROBLOX before." />
+    </h2>
+    <div class="separator-horizontal"></div>
+    
+    <div data-rbx-organic-acquisition-type="0" data-rbx-time="hourly" data-rbx-series-names='["Visitors"]' data-rbx-series-units='["Visitors"]'>
+        <div id="new-visitors-hourly" class="stats-chart loading"></div>
+        <div id="new-visitors-hourly-legend" class="stats-legend"></div>
+    </div>
+
+    <div style="display:none" data-rbx-organic-acquisition-type="0" data-rbx-time="daily" data-rbx-series-names='["Visitors"]' data-rbx-series-units='["Visitors"]'>
+        <div id="new-visitors-daily" class="stats-chart loading"></div>
+        <div id="new-visitors-daily-legend" class="stats-legend"></div>
+    </div>
+
+    <div style="display:none" data-rbx-organic-acquisition-type="0" data-rbx-time="monthly" data-rbx-series-names='["Visitors"]' data-rbx-series-units='["Visitors"]'>
+        <div id="new-visitors-monthly" class="stats-chart loading"></div>
+        <div id="new-visitors-monthly-legend" class="stats-legend"></div>
+    </div>
+</div>
+<div id="PromotionConversionsContainer">
+    <div class="separator-horizontal"></div>
+    <h2>
+        Signups
+        <img src="/images/d3246f1ece35d773099f876a31a38e5a.png" class="tooltip" title="Number of new visitors from your links who signed up." />
+    </h2>
+    <div class="separator-horizontal"></div>
+
+    <div data-rbx-organic-acquisition-type="1" data-rbx-time="hourly" data-rbx-series-names='["Signups"]' data-rbx-series-units='["Signups"]'>
+        <div id="signups-hourly" class="stats-chart loading"></div>
+        <div id="signups-hourly-legend" class="stats-legend"></div>
+    </div>
+
+    <div style="display:none" data-rbx-organic-acquisition-type="1" data-rbx-time="daily" data-rbx-series-names='["Signups"]' data-rbx-series-units='["Signups"]'>
+        <div id="signups-daily" class="stats-chart loading"></div>
+        <div id="signups-daily-legend" class="stats-legend"></div>
+    </div>
+
+    <div style="display:none" data-rbx-organic-acquisition-type="1" data-rbx-time="monthly" data-rbx-series-names='["Signups"]' data-rbx-series-units='["Signups"]'>
+        <div id="signups-monthly" class="stats-chart loading"></div>
+        <div id="signups-monthly-legend" class="stats-legend"></div>
+    </div>
+</div>
+<div id="PromotionRevenueContainer">
+    <div class="separator-horizontal"></div>
+    <h2>
+        Promotional Revenue
+        <img src="/images/d3246f1ece35d773099f876a31a38e5a.png" class="tooltip" title="Robux earned through your promotional links." />
+    </h2>
+    <div class="separator-horizontal"></div>
+
+    <div data-rbx-organic-acquisition-type="3" data-rbx-time="hourly" data-rbx-series-names='["Revenue"]' data-rbx-series-units='["R$"]'>
+        <div id="revenue-hourly" class="stats-chart loading"></div>
+        <div id="revenue-hourly-legend" class="stats-legend"></div>
+    </div>
+
+    <div style="display:none" data-rbx-organic-acquisition-type="3" data-rbx-time="daily" data-rbx-series-names='["Revenue"]' data-rbx-series-units='["R$"]'>
+        <div id="revenue-daily" class="stats-chart loading"></div>
+        <div id="revenue-daily-legend" class="stats-legend"></div>
+    </div>
+
+    <div style="display:none" data-rbx-organic-acquisition-type="3" data-rbx-time="monthly" data-rbx-series-names='["Revenue"]' data-rbx-series-units='["R$"]'>
+        <div id="revenue-monthly" class="stats-chart loading"></div>
+        <div id="revenue-monthly-legend" class="stats-legend"></div>
+    </div>
+</div>
+<div class="separator-horizontal"></div>
+
+<table class="table" id="promotion-data-table">
+    <tr class="table-header">
+        <th class="first">Time</th>
+        <th class="acquisitions" data-rbx-organic-acquisition-type="0">New Visitors</th>
+        <th class="conversions" data-rbx-organic-acquisition-type="1">Signups</th>
+        <th class="revenue" data-rbx-organic-acquisition-type="3">Promotional Revenue (R$)</th>
+    </tr>
+</table>
+                </div>
+            
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+
+</div>
+<div id="TradeRequest" class="modalPopup unifiedModal smallModal TraderSystemRobux" UserID="@userIdStr" style="display:none;">
+	
+    <div style="height:38px;padding-top:2px;">
+        <span>Trade Request</span>
+    </div>
+    <div class="simplemodal-close">
+        <a class="ImageButton closeBtnCircle_20h" data-se="trade-close"></a>
+    </div>
+    <div class="unifiedModalContent" style="min-height:385px;width:584px; padding:5px;margin: 0 auto;" >
+        <div class="GenericModalErrorMessage status-error" style="display:none;"></div>
+        <div class="LeftContentContainer" >
+            <div class="roblox-avatar-image" data-user-id="" data-image-size="large" data-se="trade-partner-avatar"></div>
+            <p class="TradeRequestText">Trade with <a class="TradePartnerName"></a> <span class="TradeStatusText"></span></p>
+            <p class="TradeExpiration">Expires <span id="TradeRequestExpiration" data-se="trade-expire"></span></p>
+        </div>
+        <div style="padding-left: 5px; float:left;display:inline;">
+            <div class="OfferContainer" >
+                <div class="OfferList"  list-id="OfferList0">
+		            <div class="OfferHeaderWrapper">
+			            <h3 class="OfferHeader">ITEMS YOU WILL GIVE</h3>
+                        <div class="OfferValueContainer">
+                            Value: <img class="RBXImg" width="18" height="12" src="/images/a65931a25b2dec839012a81e5d217494.png" alt="RBX" /><span class="OfferValue" data-se="trade-give-value">0</span>
+		                </div>
+		            </div>                   
+                    <div class="OfferItems"></div>
+                </div>
+                    <img src="/images/fb9eac0bed90f89589edca8ee9d1943c.jpg" style="margin-left:-5px;" alt="" /> 
+                <div class="OfferList"  list-id="OfferList1">
+		            <div class="OfferHeaderWrapper">
+			            <h3 class="OfferHeader">ITEMS YOU WILL RECEIVE</h3>
+                        <div class="OfferValueContainer">
+                            Value: <img class="RBXImg" width="18" height="12" src="/images/a65931a25b2dec839012a81e5d217494.png" alt="RBX" /><span class="OfferValue" data-se="trade-receive-value">0</span>
+		                </div>
+		            </div>
+                    <div class="OfferItems"></div>  
+                    <div class="FeeNoteContainer"><div class="FeeNote" data-js="feenote" style="display:none;"><span class="Asterisk" >*</span> A  30% fee was taken from the amount.</div></div>
+		        </div> 
+	        </div> 
+            <div style="clear:both;"></div>
+        </div>  
+        <div style="clear:both;"></div>
+        <div class="ActionButtonContainer"  style="height:50px;display:none">
+            <div id="ButtonAcceptTrade" class="btn-large btn-neutral" data-se="trade-accept">Accept</div>
+            <div id="ButtonCounterTrade" class="btn-large btn-neutral" data-se="trade-counter">Counter</div>
+            <div id="ButtonDeclineTrade" class="btn-large btn-negative" data-se="trade-decline">Decline</div>
+            <div style="clear:both;"></div>
+        </div>
+        <div class="ReviewButtonContainer" style="height:50px;display:none">
+            <div roblox-ok class="btn-large btn-neutral" data-se="trade-ok">OK</div>
+            <div id="ButtonCancelTrade" class="btn-large btn-negative" data-se="trade-cancel">Cancel</div>
+            <div style="clear:both;"></div>
+        </div>
+        <div class="ViewButtonContainer" style="height:50px;display:none">
+            <div roblox-ok class="btn-large btn-neutral" data-se="trade-ok">OK</div>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+         Roblox.Trade.TradeRequestModal.initialize(4, true, 0.3);
+        });
+    </script>
+
+</div>
+<div id="InventoryItemTemplate" style="display:none;">
+    
+
+<div class="InventoryItemContainerOuter"  data-se="trade-item" >
+    <div fieldname="InventoryItemSize">
+		<div templateid="DefaultContent" class="InventoryItemContainerInner">
+            <div class="HeaderButtonPlaceHolder"></div>
+            <div class="InventoryNameWrapper">
+			    <a class="InventoryItemLink" href="#" target="_blank"><div class="InventoryItemName"></div></a>
+            </div>
+			<div class="ItemLinkDiv">
+				<img class="ItemImg" alt="Item Image" />
+			</div>
+			<div class="HoverContent">
+				<div><span class="ItemInfoLabel">Avg. Price:</span><img class="RBXImg" width="14" height="9" src="/images/cssspecific/rbx2/head_bux.png" alt="RBX" /><span class="ItemInfoData InventoryItemAveragePrice"></span></div>
+				<div><span class="ItemInfoLabel">Orig. Price:</span><img class="RBXImg" width="14" height="9" src="/images/cssspecific/rbx2/head_bux.png" alt="RBX"/><span class="ItemInfoData InventoryItemOriginalPrice"></span></div>
+				<div><span class="ItemInfoLabel">Serial # :&nbsp;</span><span class="InventoryItemSerial"></span><span class="ItemInfoLabel" style="margin:0 2px 0 2px;">/</span><span class="SerialNumberTotal"></span></div>
+				<div class="FooterButtonPlaceHolder"></div>
+            </div>
+            <img class="BuildersClubOverlay">
+		</div>
+	</div>	
+</div>
+
+</div>
+<div id="BlankTemplate" style="display:none;">
+    <div class="BlankItem LargeInventoryItem"  style="padding-right:4px;">
+    </div>
+</div>
+<div id="RobuxTemplate" style="display:none;">
+    <div class="RobuxTradeRequestItem" >
+        <div class="RobuxAmountWrapper" style="">
+			<div><span class="RobuxAmount" ></span><span class="RobuxItemAsterisk" >*</span> </div>
+            <div>Robux</div>
+        </div>
+		<div style="margin:auto; width:51px;">
+			<img class="ItemImg"src="/images/ROBUX.jpg" />
+        </div>
+    </div>
+</div>
+<div missing-user-asset-template style="display:none;">
+    <div class="LargeInventoryItem MissingItemContainer">
+        <div class="MissingItem " style="padding-right:4px;"></div>
+    </div>
+</div>
+<div deleted-user-asset-template style="display:none;">
+    <div class="LargeInventoryItem MissingItemContainer">
+        <div class="MissingItem Deleted" style="padding-right:4px;"></div>
+    </div>
+</div>
+
+
+    
+    
+
+
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+        </div> 
+        </div>
+
+        </div></div>
+    </div>
+
+        
+        <script type="text/javascript">
+            function urchinTracker() { };
+            GoogleAnalyticsReplaceUrchinWithGAJS = true;
+        </script>
+    
+
+    </form>
+    
+    <div ng-modules="robloxApp, notificationStream"
+     ng-controller="notificationStreamController"
+     class="roblox-popover-content manual bottom"
+     data-hidden-class-name="invisible"
+     id="notification-stream"
+     data-isNotificationContentOpen="{{layout.isNotificationContentOpen}}"
+     ng-class="{'inApp': library.inApp,
+                'isPhone': library.isPhone, 
+                'invisible': !library.inApp && !layout.isNotificationContentOpen}">
+    <div notification-content></div>
+
+</div>
+
+				<div id="chat-container" 
+					class="chat chat-container"
+					chat-base>
+				</div>
+		
+    
+    
+
+    <div id="InstallationInstructions" class="style2016" style="display:none;">
+        <div class="ph-installinstructions">
+            <div class="ph-modal-header">
+                    <span class="icon-close-16x16 simplemodal-close"></span>
+                    <h5 class="title">Thanks for playing ROBLOX</h5>
+            </div>
+            <div class="modal-content-container"> 
+                <div class="ph-installinstructions-body ">
+
+
+        <ul class="modal-col-5">
+            <li class="step1-of-5">
+                <h2>1</h2>
+                <p class="larger-font-size">Click <strong>Save File</strong> when the download window pops up</p>
+                <img data-delaysrc="/images/635085abe343ceec97e5da00103cbd8d.png" />
+            </li>
+            <li class="2-of-5">
+                <h2>2</h2>
+                <p class="larger-font-size">Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p>
+                <img data-delaysrc="/images/4791f147e474426b284e7885b8f91635.png" />
+            </li>
+            <li class="step3-of-5">
+                <h2>3</h2>
+                <p class="larger-font-size">Click <strong>Run</strong></p>
+                <img data-delaysrc="/images/27e0e77ae7b5d726ca231c5d338fa473.png" />
+            </li>
+            <li class="step4-of-5">
+                <h2>4</h2>
+                <p class="larger-font-size">Once installed, click <strong>Play</strong> to join the action!</p>
+                <div class="VisitButton VisitButtonContinueGLI">
+                    <a class="btn btn-primary-lg disabled btn-full-width">Play</a>
+                </div>
+            </li>
+            <li class="step5-of-5">
+                <h2>5</h2>
+                <p class="larger-font-size">Click <strong>Ok</strong> when the alert pops up</p>
+                <img data-delaysrc="/images/f024c63845c2f79d30ccebe2b2f5818d.png" />
+            </li>
+        </ul>
+
+                </div>
+            </div>
+            <div class="xsmall">
+                The ROBLOX installer should download shortly. If it doesn’t, start the <a href="#" class="text-link" onclick="Roblox.ProtocolHandlerClientInterface.manualDownload(); return false;">download now.</a>
+            </div>
+        </div>
+    </div>
+    <div class="InstallInstructionsImage" data-modalwidth="970" style="display:none;"></div>
+
+
+<div id="pluginObjDiv" style="height:1px;width:1px;visibility:hidden;position: absolute;top: 0;"></div>
+<iframe id="downloadInstallerIFrame" name="downloadInstallerIFrame" style="visibility:hidden;height:0;width:1px;position:absolute"></iframe>
+
+<script type='text/javascript' src='/JS/EventTracker.js'></script>
+<script type='text/javascript' src='/JS/ClientInstaller.js'></script>
+<script type='text/javascript' src='/JS/InstallationInstructions.js'></script>
+<script type='text/javascript' src='/JS/IEMetroInstructions.js'></script>
+
+<script type="text/javascript">
+    Roblox.Client._skip = null;
+    Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
+    Roblox.Client._installHost = 'setup.freblx.xyz';
+    Roblox.Client.ImplementsProxy = true;
+    Roblox.Client._silentModeEnabled = true;
+    Roblox.Client._bringAppToFrontEnabled = false;
+    Roblox.Client._currentPluginVersion = '';
+    Roblox.Client._eventStreamLoggingEnabled = true;
+
+        
+        Roblox.Client._installSuccess = function() {
+            if(GoogleAnalyticsEvents){
+                GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
+                GoogleAnalyticsEvents.FireEvent(['Plugin','Install Success']);
+                if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
+                    Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
+                }
+            }
+        }
+        
+    </script>
+
+
+<div id="PlaceLauncherStatusPanel" style="display:none;width:300px"
+     data-new-plugin-events-enabled="True"
+     data-event-stream-for-plugin-enabled="True"
+     data-event-stream-for-protocol-enabled="True"
+     data-is-game-launch-interface-enabled="True"
+     data-is-protocol-handler-launch-enabled="True"
+     data-is-user-logged-in="True"
+     data-os-name="Windows"
+     data-protocol-name-for-client="roblox-player"
+     data-protocol-name-for-studio="roblox-studio"
+     data-protocol-url-includes-launchtime="true"
+     data-protocol-detection-enabled="true"
+     data-protocol-version="1">
+    <div class="modalPopup blueAndWhite PlaceLauncherModal" style="min-height: 160px">
+        <div id="Spinner" class="Spinner" style="padding:20px 0;">
+            <img data-delaysrc="/images/e998fb4c03e8c2e30792f2f3436e9416.gif" height="32" width="32" alt="Progress" />
+        </div>
+        <div id="status" style="min-height:40px;text-align:center;margin:5px 20px">
+            <div id="Starting" class="PlaceLauncherStatus MadStatusStarting" style="display:block">
+                Starting Roblox...
+            </div>
+            <div id="Waiting" class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
+            <div id="StatusBackBuffer" class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
+        </div>
+        <div style="text-align:center;margin-top:1em">
+            <input type="button" class="Button CancelPlaceLauncherButton translate" value="Cancel" />
+        </div>
+    </div>
+</div>
+<div id="ProtocolHandlerStartingDialog" style="display:none;" class="protocol-handler-container">
+    <div class="modalPopup ph-modal-popup">
+        <div class="ph-modal-header">
+
+        </div>
+        <div class="ph-logo-row">
+            <img src="/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip" width="90" height="90" alt="R" class="play-logo-image" />
+            <img src="/images/3da410727fa2670dcb4f31316643138a.svg.gzip" width="90" height="90" alt="R" class="studio-logo-image hidden" />
+        </div>
+        <div class="ph-areyouinstalleddialog-content">
+            <p class="larger-font-size">
+                Roblox is now loading. Get ready to play!
+            </p>
+            <div class="ph-startingdialog-spinner-row">
+                <img src="/images/4bed93c91f909002b1f17f05c0ce13d1.gif" width="82" height="24" />
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ProtocolHandlerAreYouInstalled" style="display:none;" class="protocol-handler-container">
+    <div class="modalPopup ph-modal-popup">
+        <div class="ph-modal-header">
+            <span class="icon-close simplemodal-close"></span>
+        </div>
+        <div class="ph-logo-row">
+            <img src="/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip" width="90" height="90" alt="R" class="play-logo-image" />
+            <img src="/images/3da410727fa2670dcb4f31316643138a.svg.gzip" width="90" height="90" alt="R" class="studio-logo-image hidden" />
+        </div>
+        <div class="ph-areyouinstalleddialog-content">
+            <p class="larger-font-size">
+                You're moments away from getting into the game!
+            </p>
+            <div>
+                <button type="button" class="btn btn-primary-md" id="ProtocolHandlerInstallButton">
+                    Download and Install Roblox
+                </button>
+            </div>
+            <div class="small">
+                <a href="https://en.help.roblox.com/hc/en-us/articles/204473560" class="text-name" target="_blank">Click here for help</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ProtocolHandlerClickAlwaysAllowed"
+     class="ph-clickalwaysallowed"
+     
+     style="display:none;">
+    <p class="larger-font-size">
+        <span class="icon-moreinfo"></span>
+            
+                Check <b>Remember my choice</b> and click
+                <strong>OK</strong>
+            
+        in the dialog box above to join games faster in the future!
+    </p>
+</div>
+
+
+    <div id="videoPrerollPanel" style="display:none">
+        <div id="videoPrerollTitleDiv">
+            Gameplay sponsored by:
+        </div>
+        <div id="content">
+            <video id="contentElement" style="width:0; height:0;" />
+        </div>
+        <div id="videoPrerollMainDiv"></div>
+        <div id="videoPrerollCompanionAd">
+        </div>
+        <div id="videoPrerollLoadingDiv">
+            Loading <span id="videoPrerollLoadingPercent">0%</span> - <span id="videoPrerollMadStatus" class="MadStatusField">Starting game...</span><span id="videoPrerollMadStatusBackBuffer" class="MadStatusBackBuffer"></span>
+            <div id="videoPrerollLoadingBar">
+                <div id="videoPrerollLoadingBarCompleted">
+                </div>
+            </div>
+        </div>
+        <div id="videoPrerollJoinBC">
+            <span>Get more with Builders Club!</span>
+            <a href="/premium/membership?ctx=preroll" target="_blank" class="btn-medium btn-primary" id="videoPrerollJoinBCButton">Join Builders Club</a>
+        </div>
+    </div>   
+    <script type="text/javascript">
+        $(function () {
+            var videoPreRollDFP = Roblox.VideoPreRollDFP;
+            if (videoPreRollDFP) {
+                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
+                videoPreRollDFP.showVideoPreRoll = false;
+                videoPreRollDFP.loadingBarMaxTime = 33000;
+                videoPreRollDFP.videoLoadingTimeout = 11000;
+                videoPreRollDFP.videoPlayingTimeout = 41000;
+                videoPreRollDFP.videoLogNote = "BuildersClub";
+                videoPreRollDFP.logsEnabled = true;
+                videoPreRollDFP.excludedPlaceIds = "32373412";
+                videoPreRollDFP.adUnit = "/1015347/VideoPrerollUnder13";
+                videoPreRollDFP.adTime = 15;
+                videoPreRollDFP.isSwfPreloaderEnabled = false;
+                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
+                videoPreRollDFP.isAgeTargetingEnabled = true;
+                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
+                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
+                customTargeting.userAge = "8";
+                customTargeting.userAgeOrSegment = "U13";
+                customTargeting.userGender = "Female";
+                customTargeting.gameGenres = "";
+                customTargeting.environment = "Production";
+                customTargeting.adTime = "15";
+                customTargeting.PLVU = false;
+                $(videoPreRollDFP.checkEligibility);
+            }
+        });
+    </script>                                                     
+
+
+<div id="GuestModePrompt_BoyGirl" class="Revised GuestModePromptModal" style="display:none;">
+    <div class="simplemodal-close">
+        <a class="ImageButton closeBtnCircle_20h" style="cursor: pointer; margin-left:455px;top:7px; position:absolute;"></a>
+    </div>
+    <div class="Title">
+        Choose Your Avatar
+    </div>
+    <div style="min-height: 275px; background-color: white;">
+        <div style="clear:both; height:25px;"></div>
+
+        <div style="text-align: center;">
+            <div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style="float:left; margin-left:45px;"></div>
+            <div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style="float:right; margin-right:45px;"></div>
+        </div>
+        <div style="clear:both; height:25px;"></div>
+        <div class="RevisedFooter">
+            <div style="width:200px;margin:10px auto 0 auto;">
+                <a href="h/?returnUrl=https%3A%2F%2Fweb.roblox.com%2Fmy%2Fmoney.aspx"><div class="RevisedCharacterSelectSignup"></div></a>
+                <a class="HaveAccount" href="/newlogin?returnUrl=https%3A%2F%2Fweb.roblox.com%2Fmy%2Fmoney.aspx">I have an account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function checkRobloxInstall() {
+             return RobloxLaunch.CheckRobloxInstall('/install/download.aspx');
+    }
+</script>
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
+
+    Roblox.UpsellAdModal.Resources = {
+        //<sl:translate>
+        title: "Remove Ads Like This",
+        body: "Builders Club members do not see external ads like these.",
+        accept: "Upgrade Now",
+        decline: "No, thanks"
+        //</sl:translate>
+    };
+</script>  
+
+<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
+    <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+    <div class="Title"></div>
+    <div class="GenericModalBody">
+        <div class="TopBody">
+            <div class="ImageContainer roblox-item-image"  data-image-size="small" data-no-overlays data-no-click>
+                <img class="GenericModalImage" alt="generic image" />
+            </div>
+            <div class="Message"></div>
+        </div>
+        <div class="ConfirmationModalButtonContainer">
+            <a href id="roblox-confirm-btn"><span></span></a>
+            <a href id="roblox-decline-btn"><span></span></a>
+        </div>
+        <div class="ConfirmationModalFooter">
+        
+        </div>  
+    </div>   
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+
+        //<sl:translate>
+        Roblox.Resources.GenericConfirmation = {
+            yes: "Yes",
+            No: "No",
+            Confirm: "Confirm",
+            Cancel: "Cancel"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+
+	
+        <script>
+            $(function () {
+                Roblox.DeveloperConsoleWarning.showWarning();
+            });
+        </script>
+
+    <noscript>
+        <img src="http://b.scorecardresearch.com/p?c1=2&c2=&c3=&c4=&c5=&c6=&c15=&cv=2.0&cj=1"/>
+    </noscript>
+
+    <div ng-modules="baseTemplateApp">
+        <!-- Template bundle: base -->
+<script type="text/javascript">
+"use strict"; angular.module("baseTemplateApp", []).run(['$templateCache', function($templateCache) { 
+$templateCache.put('cc-modal-template', $('#cc-modal-template').html());
+ }]);
+</script>
+<script type="text/ng-template" id="cc-modal-template">
+        <div class="modal-header">
+            <button type="button" class="close"
+                    ng-show="modalData.closeButtonShow"
+                    ng-click="dismiss()">
+                <span class="icon-close"></span>
+            </button>
+            <div class="modal-title">
+                <span ng-if="modalData.titleIcon && modalData.titleIcon.length > 0" ng-class="modalData.titleIcon"></span>
+                <h4 ng-bind="modalData.titleText"></h4>
+            </div>            
+        </div>
+        <div class="modal-body">
+            <p class="body-text text-description" ng-bind-html="renderHtml(modalData.bodyText)"></p>
+            <div class="img-container"
+                 ng-show="modalData.imageUrl && modalData.imageUrl.length > 0">
+                <img class="modal-image-container" ng-src="{{modalData.imageUrl}}" />
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button type="submit" ng-attr-id="{{modalData.actionButtonId}}"
+                    class="modal-button" ng-class="modalData.actionButtonClass"
+                    ng-if="modalData.actionButtonShow"
+                    ng-click="close(true)" ng-bind="modalData.actionButtonText"></button
+            ><button type="button" class="modal-button" ng-class="modalData.neutralButtonClass"
+                    ng-if="modalData.neutralButtonShow"
+                    ng-click="dismiss()" ng-bind="modalData.neutralButtonText"></button>
+        </div>
+        <div class="modal-footer"
+             ng-if="modalData.footerText && modalData.footerText.length > 0">
+            <div class="text-footer" ng-bind-html="renderHtml(modalData.footerText)"></div>
+        </div>
+</script>
+
+    </div>
+    
+
+    <div ng-modules="pageTemplateApp">
+        <script type="text/javascript" src="/JS/page_splitApps___9efbdd8c00dc7339bd109d5ddd805a6e_m.js"></script>
+    </div>
+    
+    
+    <div id="TosAgreementInfo"
+         data-terms-check-needed="False">
+    </div>
+</body>                
+</html>

@@ -1,4 +1,3 @@
-@model IEnumerable<RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel>
 @{ Layout = "_Layout"; }
 <!DOCTYPE html>
 <html>
@@ -351,172 +350,17 @@ function __doPostBack(eventTarget, eventArgument) {
     <div class="right-content divider-left">
         <a href="/upgrades/robux?ctx=catalog" class="btn-medium btn-primary">Buy Robux</a>
 
-        <h2>Featured Items on ROBLOX</h2>
-        <div style="clear:both;"></div>
-        
-        @if (Model != null)
+        @if (ViewBag.FeaturedItemsHtml != null && !string.IsNullOrEmpty((string)ViewBag.FeaturedItemsHtml))
         {
-            foreach (var item in Model)
-            {
-                <div class="CatalogItemOuter BigOuter">
-                    <div class="SmallCatalogItemView BigView">
-                        <div class="CatalogItemInner BigInner">
-                            <div class="roblox-item-image image-large" data-item-id="@item.Id" data-image-size="large">
-                                <div class="item-image-wrapper">
-                                    <a href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })">
+            <h2>Featured Items</h2>
+            <div style="clear:both;"></div>
+            @Html.Raw((string)ViewBag.FeaturedItemsHtml)
+            <div style="clear:both;"></div>
+        }
 
-                                        <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
-
-                                        @if (item.IsLimitedUnique)
-                                        {
-                                            <img src="/images/LimitedUniqueItems.png" alt="Limited Unique" class="limited-overlay" />
-                                        }
-                                        else if (item.IsLimited)
-                                        {
-                                            <img src="/images/LimitedItems.png" alt="Limited" class="limited-overlay" />
-                                        }
-
-                                        @if (item.IsNew)
-                                        {
-                                            <img src="/images/NewItem.png" alt="New" />
-                                        }
-                                    </a>
-                                </div>
-                            </div>
-                            <div id="textDisplay">
-                                <div class="CatalogItemName notranslate">
-                                    <a class="name notranslate" href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })" title="@item.Name">@item.Name</a>
-
-                                </div>
-
-                                @if (item.PriceRobux.HasValue || item.PriceTickets.HasValue)
-                                {
-                                    if (item.PriceRobux.HasValue)
-                                    {
-                                        if (item.OriginalPriceRobux.HasValue && item.OriginalPriceRobux != item.PriceRobux)
-                                        {
-                                            <div class="robux-price"><span class="SalesText">was </span><span class="robux notranslate">@item.OriginalPriceRobux</span></div>
-                                            <div id="PrivateSales"><span class="SalesText">now </span><span class="robux notranslate">@item.PriceRobux</span></div>
-                                        }
-                                        else
-                                        {
-                                            <div class="robux-price"><span class="robux notranslate">@item.PriceRobux</span></div>
-                                        }
-                                    }
-                                    else if (item.PriceTickets.HasValue && item.PriceTickets.Value > 0)
-                                    {
-                                        <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
-                                    }
-                                }
-
-                                <div class="CatalogHoverContent">
-                                    <div>
-                                        <span class="CatalogItemInfoLabel">Creator:</span>
-                                        <span class="HoverInfo notranslate">@item.CreatorName</span>
-                                    </div>
-                                    @if (!string.IsNullOrEmpty(item.UpdatedText))
-                                    {
-                                        <div>
-                                            <span class="CatalogItemInfoLabel">Updated:</span>
-                                            <span class="HoverInfo">@item.UpdatedText</span>
-                                        </div>
-                                    }
-                                    @if (item.Sales.HasValue)
-                                    {
-                                        <div>
-                                            <span class="CatalogItemInfoLabel">Sales:</span>
-                                            <span class="HoverInfo notranslate">@item.Sales</span>
-                                        </div>
-                                    }
-                                    @if (item.FavoritedCount.HasValue)
-                                    {
-                                        <div>
-                                            <span class="CatalogItemInfoLabel">Favorited:</span>
-                                            <span class="HoverInfo">@item.FavoritedCount times</span>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            foreach (var item in Model)
-            {
-                <div class="CatalogItemOuter SmallOuter">
-                    <div class="SmallCatalogItemView SmallView">
-                        <div class="CatalogItemInner SmallInner">
-                            <div class="roblox-item-image image-small" data-item-id="@item.Id" data-image-size="small">
-                                <div class="item-image-wrapper">
-                                    <a href="@Url.Action("Item", "Catalog", new { id = item.Id, itemName = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name) })">
-
-                                        <img title="@item.Name" alt="@item.Name" class="original-image" src="@item.ImageUrl" />
-                                        else if (item.IsLimited)
-                                        {
-                                            <img src="/images/LimitedItems.png" alt="Limited" class="limited-overlay" />
-                                        }
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div id="textDisplay">
-                                <div class="CatalogItemName notranslate">
-                                    <a class="name notranslate" href="#" title="@item.Name">@item.Name</a>
-                                </div>
-
-                                @if (item.PriceRobux.HasValue || item.PriceTickets.HasValue)
-                                {
-                                    if (item.PriceRobux.HasValue)
-                                    {
-                                        if (item.OriginalPriceRobux.HasValue && item.OriginalPriceRobux != item.PriceRobux)
-                                        {
-                                            <div class="robux-price"><span class="SalesText">was </span><span class="robux notranslate">@item.OriginalPriceRobux</span></div>
-                                            <div id="PrivateSales"><span class="SalesText">now </span><span class="robux notranslate">@item.PriceRobux</span></div>
-                                        }
-                                        else
-                                        {
-                                            <div class="robux-price"><span class="robux notranslate">@item.PriceRobux</span></div>
-                                        }
-                                    }
-                                    else if (item.PriceTickets.HasValue)
-                                    {
-                                        <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
-                                    }
-                                }
-
-                                <div class="CatalogHoverContent">
-                                    <div>
-                                        <span class="CatalogItemInfoLabel">Creator:</span>
-                                        <span class="HoverInfo notranslate">@item.CreatorName</span>
-                                    </div>
-                                    @if (!string.IsNullOrEmpty(item.UpdatedText))
-                                    {
-                                        <div>
-                                            <span class="CatalogItemInfoLabel">Updated:</span>
-                                            <span class="HoverInfo">@item.UpdatedText</span>
-                                        </div>
-                                    }
-                                    @if (item.Sales.HasValue)
-                                    {
-                                        <div>
-                                            <span class="CatalogItemInfoLabel">Sales:</span>
-                                            <span class="HoverInfo notranslate">@item.Sales</span>
-                                        </div>
-                                    }
-                                    @if (item.FavoritedCount.HasValue)
-                                    {
-                                        <div>
-                                            <span class="CatalogItemInfoLabel">Favorited:</span>
-                                            <span class="HoverInfo">@item.FavoritedCount times</span>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
+        @if (ViewBag.PopularItemsHtml != null)
+        {
+            @Html.Raw((string)ViewBag.PopularItemsHtml)
         }
     </div>
     <div style="clear:both"></div>

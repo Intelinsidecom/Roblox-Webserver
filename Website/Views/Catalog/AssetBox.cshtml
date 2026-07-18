@@ -1,0 +1,142 @@
+@model RobloxWebserver.Assemblies.Catalog.AssetBoxViewModel
+@{
+    var item = Model.Item;
+    var size = Model.Size;
+    var outerClass = size == "large" ? "BigOuter" : "SmallOuter";
+    var viewClass = size == "large" ? "BigView" : "SmallView";
+    var innerClass = size == "large" ? "BigInner" : "SmallInner";
+    var imageClass = size == "large" ? "image-large" : "image-small";
+    var imageSize = size == "large" ? "large" : "small";
+    var isAudio = item.AssetTypeId == 3;
+
+    var slug = RobloxWebserver.Controllers.CatalogController.ToSlug(item.Name);
+    var imageUrl = item.ImageUrl;
+    if (isAudio && (string.IsNullOrWhiteSpace(imageUrl) || imageUrl == "/images/RobloxLogo.png"))
+        imageUrl = "/images/audio.png";
+
+    var creator = string.IsNullOrWhiteSpace(item.CreatorName) ? "ROBLOX" : item.CreatorName;
+    var updated = string.IsNullOrWhiteSpace(item.UpdatedText) ? "recently" : item.UpdatedText;
+    var sales = item.Sales ?? 0;
+    var favorited = item.FavoritedCount ?? 0;
+}
+@if (isAudio)
+{
+    <style>
+        .MediaPlayerControls {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        .MediaPlayerIcon.icon-play,
+        .MediaPlayerIcon.icon-pause {
+            background-image: url(/images/Shared/generic_09152017.svg);
+            background-repeat: no-repeat;
+            background-size: auto auto;
+            width: 28px;
+            height: 28px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .MediaPlayerIcon.icon-play {
+            background-position: 0 -308px;
+        }
+        .MediaPlayerIcon.icon-pause {
+            background-position: 0 -336px;
+        }
+        div#catalog .CatalogItemInner div.roblox-item-image div.item-image-wrapper .MediaPlayerControls {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            top: auto;
+            left: auto;
+        }
+        div#catalog .CatalogItemInner div.roblox-item-image div.item-image-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+}
+<div class="CatalogItemOuter @outerClass">
+    <div class="SmallCatalogItemView @viewClass">
+        <div class="CatalogItemInner @innerClass">
+            <div class="roblox-item-image @imageClass" data-item-id="@item.Id" data-image-size="@imageSize">
+                <div class="item-image-wrapper" @(isAudio ? "style=\"position:relative;\"" : "")>
+                    <a href="/catalog/@item.Id/@slug">
+                        <img class="original-image" alt="@item.Name" title="@item.Name" src="@imageUrl" />
+                        @if (item.IsLimitedUnique)
+                        {
+                            <img src="/images/LimitedUniqueItems.png" alt="Limited Unique" class="limited-overlay" />
+                        }
+                        else if (item.IsLimited)
+                        {
+                            <img src="/images/LimitedItems.png" alt="Limited" class="limited-overlay" />
+                        }
+                        @if (item.IsNew)
+                        {
+                            <img src="/images/NewItem.png" alt="New" />
+                        }
+                    </a>
+                    @if (isAudio)
+                    {
+                        <div class="MediaPlayerControls">
+                            <div class="MediaPlayerIcon icon-play" data-mediathumb-url="/asset/?id=@item.Id" data-jplayer-version="2.9.2"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div id="textDisplay">
+                <div class="CatalogItemName notranslate">
+                    <a class="name notranslate" href="/catalog/@item.Id/@slug" title="@item.Name">@item.Name</a>
+                </div>
+                @if (item.PriceRobux.HasValue || item.PriceTickets.HasValue)
+                {
+                    if (item.PriceRobux.HasValue)
+                    {
+                        if (item.OriginalPriceRobux.HasValue && item.OriginalPriceRobux != item.PriceRobux)
+                        {
+                            <div class="robux-price"><span class="SalesText">was </span><span class="robux notranslate">@item.OriginalPriceRobux</span></div>
+                            <div id="PrivateSales"><span class="SalesText">now </span><span class="robux notranslate">@(item.PriceRobux.Value == 0 ? "Free" : item.PriceRobux.Value.ToString())</span></div>
+                        }
+                        else
+                        {
+                            <div class="robux-price"><span class="robux notranslate">@(item.PriceRobux.Value == 0 ? "Free" : item.PriceRobux.Value.ToString())</span></div>
+                        }
+                    }
+                    else if (item.PriceTickets.HasValue)
+                    {
+                        <div class="tickets-price"><span class="tickets notranslate">@item.PriceTickets</span></div>
+                    }
+                }
+                <div class="CatalogHoverContent">
+                    <div>
+                        <span class="CatalogItemInfoLabel">Creator:</span>
+                        <span class="HoverInfo notranslate">
+                            @if (item.CreatorId.HasValue && item.CreatorId.Value > 0)
+                            {
+                                <a href="/users/@item.CreatorId/profile">@creator</a>
+                            }
+                            else
+                            {
+                                @creator
+                            }
+                        </span>
+                    </div>
+                    <div>
+                        <span class="CatalogItemInfoLabel">Updated:</span>
+                        <span class="HoverInfo">@updated</span>
+                    </div>
+                    <div>
+                        <span class="CatalogItemInfoLabel">Sales:</span>
+                        <span class="HoverInfo notranslate">@sales</span>
+                    </div>
+                    <div>
+                        <span class="CatalogItemInfoLabel">Favorited:</span>
+                        <span class="HoverInfo">@favorited times</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

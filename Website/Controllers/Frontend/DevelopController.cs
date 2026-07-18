@@ -90,8 +90,9 @@ namespace RobloxWebserver.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] UploadModel: {ex}");
                 return StatusCode(500, "Failed to save asset record.");
             }
 
@@ -140,8 +141,9 @@ namespace RobloxWebserver.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] UploadPlugin: {ex}");
                 return StatusCode(500, "Failed to save asset record.");
             }
 
@@ -207,8 +209,9 @@ namespace RobloxWebserver.Controllers
                     publicAssetBaseUrl,
                     cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] UploadTShirt: {ex}");
                 return StatusCode(500, "Failed to save asset record.");
             }
 
@@ -274,8 +277,9 @@ namespace RobloxWebserver.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] UploadPants: {ex}");
                 return StatusCode(500, "Failed to save asset record.");
             }
 
@@ -341,8 +345,9 @@ namespace RobloxWebserver.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] UploadShirt: {ex}");
                 return StatusCode(500, "Failed to save asset record.");
             }
 
@@ -416,8 +421,9 @@ namespace RobloxWebserver.Controllers
                 TempData["AudioUploadError"] = ex.Message;
                 return Redirect("/develop?view=3");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] UploadAudio: {ex}");
                 TempData["AudioUploadError"] = "Failed to save asset record.";
                 return Redirect("/develop?view=3");
             }

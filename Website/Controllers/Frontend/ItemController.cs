@@ -1,11 +1,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Users;
+using Website.Hubs;
+using Website.Services;
 
 namespace Website.Controllers
 {
@@ -14,10 +18,12 @@ namespace Website.Controllers
     public class ItemController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public ItemController(IConfiguration configuration)
+        public ItemController(IConfiguration configuration, IHubContext<NotificationHub> hubContext)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _hubContext = hubContext;
         }
 
         [Authorize]
@@ -75,9 +81,56 @@ namespace Website.Controllers
                 return Ok(errorPayload);
             }
 
-            string assetName = "Item";
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    long? sellerUserId = null;
+                    string assetName = "";
+                    string buyerName = "";
+                    string sellerName = "";
+
+                    await using var notifyConn = new NpgsqlConnection(connStr);
+                    await notifyConn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+                    const string assetSql = @"SELECT owner_user_id, name FROM assets WHERE asset_id = @aid";
+                    await using var assetCmd = new NpgsqlCommand(assetSql, notifyConn);
+                    assetCmd.Parameters.AddWithValue("aid", productId);
+                    await using var assetReader = await assetCmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                    if (await assetReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                    {
+                        if (!assetReader.IsDBNull(0)) sellerUserId = assetReader.GetInt64(0);
+                        if (!assetReader.IsDBNull(1)) assetName = assetReader.GetString(1);
+                    }
+
+                    string buyerNameResult = await UserQueries.GetUserNameByIdAsync(connStr, userId).ConfigureAwait(false) ?? "";
+                    if (sellerUserId.HasValue)
+                        sellerName = await UserQueries.GetUserNameByIdAsync(connStr, sellerUserId.Value).ConfigureAwait(false) ?? "";
+
+                    if (sellerUserId.HasValue && sellerUserId.Value != userId)
+                    {
+                        var svc = new NotificationService(connStr);
+                        await svc.CreateNotificationAsync(
+                            sellerUserId.Value,
+                            "AssetPurchased",
+                            userId,
+                            buyerNameResult,
+                            "Asset",
+                            productId,
+                            assetName,
+                            cancellationToken
+                        ).ConfigureAwait(false);
+                        await NotificationBroadcaster.BroadcastNewNotification(_hubContext, sellerUserId.Value, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+                catch
+                {
+                }
+            }, cancellationToken);
+
+            string assetDisplayName = "Item";
             string assetType = "Item";
-            string sellerName = "Seller";
+            string sellerDisplayName = "Seller";
             long price = expectedPrice;
 
             try
@@ -96,11 +149,11 @@ where a.asset_id = @aid";
                 if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
                     if (!reader.IsDBNull(0))
-                        assetName = reader.GetString(0);
+                        assetDisplayName = reader.GetString(0);
                     if (!reader.IsDBNull(1))
                         assetType = "Item";
                     if (!reader.IsDBNull(2))
-                        sellerName = reader.GetString(2);
+                        sellerDisplayName = reader.GetString(2);
                     if (!reader.IsDBNull(3))
                         price = reader.GetInt64(3);
                 }
@@ -114,8 +167,8 @@ where a.asset_id = @aid";
                 statusCode = 200,
                 Price = price,
                 AssetType = assetType,
-                AssetName = assetName,
-                SellerName = sellerName,
+                AssetName = assetDisplayName,
+                SellerName = sellerDisplayName,
                 TransactionVerb = "purchased ",
                 AssetID = productId
             };

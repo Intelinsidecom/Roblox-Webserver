@@ -95,8 +95,9 @@ namespace ControlPanel.Functions
                     System.Diagnostics.Debug.WriteLine($"{_serviceType} status check timed out");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] GetServiceStatusAsync {_serviceType}: {ex}");
                 status.IsOnline = false;
                 status.Status = "Unhealthy";
                 
@@ -105,9 +106,9 @@ namespace ControlPanel.Functions
                     var consoleWindow = Control_Panel.ConsoleWindow.Instance;
                     consoleWindow.WriteError($"{_serviceType} status check failed");
                 }
-                catch
+                catch (Exception ex2)
                 {
-                    System.Diagnostics.Debug.WriteLine($"{_serviceType} status check failed");
+                    Console.WriteLine($"[ERROR] {_serviceType} status check write failed: {ex2.Message}");
                 }
             }
 
@@ -161,8 +162,9 @@ namespace ControlPanel.Functions
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] CheckServiceHealthAsync: {ex}");
                 info.IsHealthy = false;
                 info.Status = "Error";
             }

@@ -202,7 +202,8 @@
                     .GetAwaiter().GetResult();
             }
 
-            var isNotSellable = record.AssetTypeId == 10 || record.AssetTypeId == 1;
+            var makeFreeTypes = new[] { 10, 4, 13, 3 };
+            var isNotSellable = record.AssetTypeId == 1 || makeFreeTypes.Contains(record.AssetTypeId);
             if (!isNotSellable)
             {
                 assetsRepo.UpdateAssetSaleAsync(connStr, resolvedId, onSalePosted, parsedPrice)
@@ -215,13 +216,20 @@
             assetsRepo.UpdateAssetGenreAsync(connStr, resolvedId, parsedGenre)
                 .GetAwaiter().GetResult();
 
-            if (record.AssetTypeId == 10)
+            if (makeFreeTypes.Contains(record.AssetTypeId))
             {
                 var freeCheckboxRaw = Context.Request.Form["ctl00$cphRoblox$EnableFreelyAvailableCheckBox"].ToString();
                 var isCopyingAllowedPosted = !string.IsNullOrWhiteSpace(freeCheckboxRaw);
                 assetsRepo.UpdateAssetCopyingAllowedAsync(connStr, resolvedId, isCopyingAllowedPosted)
                     .GetAwaiter().GetResult();
                 isCopyingAllowed = isCopyingAllowedPosted;
+
+                // When make-free is enabled, also set on_sale = true (price 0) so item appears in catalog
+                // When make-free is disabled, set on_sale = false to hide it from catalog
+                assetsRepo.UpdateAssetSaleAsync(connStr, resolvedId, isCopyingAllowedPosted, 0)
+                    .GetAwaiter().GetResult();
+                onSale = isCopyingAllowedPosted;
+                assetPrice = 0;
             }
 
             updateSucceeded = true;
@@ -237,8 +245,10 @@
             {
                 assetDescription = postedDescription;
             }
-            onSale = onSalePosted;
-            assetPrice = parsedPrice;
+            if (!makeFreeTypes.Contains(record.AssetTypeId))
+            {
+                onSale = onSalePosted;
+            }
             allowComments = allowCommentsPosted;
         }
         catch

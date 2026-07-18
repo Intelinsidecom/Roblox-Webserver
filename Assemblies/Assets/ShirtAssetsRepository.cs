@@ -15,6 +15,7 @@ namespace Assets
             public DateTime CreatedAt { get; set; }
             public string? ThumbnailUrl { get; set; }
             public long? ImageAssetId { get; set; }
+            public long Sales { get; set; }
         }
 
         public async Task<IReadOnlyList<UserShirtItem>> GetUserShirtsWithImagesAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
@@ -33,7 +34,8 @@ namespace Assets
        a.name,
        a.created_at,
        a.thumbnail_url,
-       i.asset_id as image_asset_id
+       i.asset_id as image_asset_id,
+       COALESCE(a.sales, 0) as sales
 from user_assets ua
 join assets a on a.asset_id = ua.asset_id and a.asset_type_id = 11 and a.owner_user_id = @uid
 left join assets i on i.owner_user_id = a.owner_user_id
@@ -55,7 +57,8 @@ limit 50;";
                     Name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1),
                     CreatedAt = reader.GetDateTime(2),
                     ThumbnailUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
-                    ImageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4)
+                    ImageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4),
+                    Sales = reader.IsDBNull(5) ? 0L : reader.GetInt64(5),
                 };
 
                 results.Add(item);

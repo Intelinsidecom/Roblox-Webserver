@@ -50,7 +50,7 @@ namespace Games
                     using (var cmd = new NpgsqlCommand(incrementUniverseSql, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("universeId", universeId);
-                        await cmd.ExecuteNonQueryAsync();
+                        var rows = await cmd.ExecuteNonQueryAsync();
                     }
 
                     const string incrementPlaceSql = @"
@@ -61,7 +61,7 @@ namespace Games
                     using (var cmd = new NpgsqlCommand(incrementPlaceSql, conn, transaction))
                     {
                         cmd.Parameters.AddWithValue("placeId", placeId);
-                        await cmd.ExecuteNonQueryAsync();
+                        var rows = await cmd.ExecuteNonQueryAsync();
                     }
 
                     const string updateUserSql = @"

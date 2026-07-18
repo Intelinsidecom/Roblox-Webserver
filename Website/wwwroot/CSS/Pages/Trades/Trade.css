@@ -1,0 +1,105 @@
+/* /CSS/Pages/Trades/Trade.css */
+.TradeWindowContainer {
+    height: 608px;
+    width: 882px;
+}
+
+.TradeHeader {
+    margin-left: 15px;
+    max-height: 20px;
+    padding: 10px 5px 15px 0;
+}
+
+.TradingPartner {
+    font-size: 11px;
+}
+
+.ExitText {
+    cursor: pointer;
+    float: right;
+    font-size: 12px;
+    font-weight: 400;
+    text-align: right;
+    *margin-top: -15px;
+}
+
+.InventoryContainer {
+    width: 559px;
+    margin: 0 5px;
+}
+
+.InventoryContainer .InventoryHeaderWrapper {
+    margin-bottom: 10px;
+}
+
+.InventoryContainer .InventoryHeader {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.InventoryContainer .InventoryDropDownContainer {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.InventoryContainer .InventorySmall {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.InventoryContainer .InventoryHandle {
+    height: 208px;
+}
+
+.InventoryContainer .InventoryRowContainer {
+    display: block;
+    height: 250px;
+    width: 576px;
+}
+
+.InventoryContainer .PagingContainerDivTop {
+    text-align: center;
+    padding: 8px 0 12px;
+}
+
+.InventoryContainer .paging_wrapper {
+    font-size: 11px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.InventoryContainer .AddButton,
+.InventoryContainer .RequestButton {
+    cursor: pointer;
+}
+
+.OfferList {
+    min-height: 125px;
+}
+
+.OfferItems {
+    min-height: 68px;
+    padding-left: 2px;
+}
+
+.OfferHeaderWrapper {
+    width: 100%;
+    margin: 0 auto;
+    padding: 15px 0 5px 5px;
+}
+
+.OfferHeader {
+    color: black;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.Offer {
+    background: #e1e1e1;
+    border: 1px solid #a7a7a7;
+    display: inline-block;
+    min-height: 355px;
+    width: 268px;
+    margin: 0 0 0 20px;
+}

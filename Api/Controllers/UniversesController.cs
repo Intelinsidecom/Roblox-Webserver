@@ -242,8 +242,9 @@ namespace Api.Controllers
                 var isValid = await GamesRepository.ValidatePlaceJoinAsync(connectionString, placeId.Value);
                 return isValid ? "true" : "false";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] ValidatePlaceJoin placeId={placeId}: {ex}");
                 return "false";
             }
         }

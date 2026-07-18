@@ -15,7 +15,7 @@ namespace RobloxWebserver.Assemblies.Catalog
     /// </summary>
     public static class CatalogSearchHelper
     {
-        public static async Task<string> BuildSearchHtmlAsync(string connectionString, string keyword, int category, IReadOnlyCollection<int>? genres, int maxCount)
+        public static async Task<string> BuildSearchHtmlAsync(string connectionString, string keyword, int category, IReadOnlyCollection<int>? genres, int maxCount, ICatalogItemRenderer? renderer = null)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException("connectionString is required", nameof(connectionString));
@@ -42,22 +42,24 @@ namespace RobloxWebserver.Assemblies.Catalog
                 sqlBuilder.Append("       a.created_at,");
                 sqlBuilder.Append("       a.on_sale,");
                 sqlBuilder.Append("       a.price,");
-                sqlBuilder.Append("       a.price_in_tix ");
+                sqlBuilder.Append("       a.price_in_tix,");
+                sqlBuilder.Append("       a.asset_type_id,");
+                sqlBuilder.Append("       a.limited_unique,");
+                sqlBuilder.Append("       a.limited_quantity ");
                 sqlBuilder.Append("from assets a ");
                 sqlBuilder.Append("join users u on u.user_id = a.owner_user_id ");
                 sqlBuilder.Append("where coalesce(a.asset_image, false) = false ");
-                sqlBuilder.Append("  and a.on_sale = true ");
+                sqlBuilder.Append("  and (a.on_sale = true or a.is_copying_allowed = true) ");
+                sqlBuilder.Append("  and (a.is_place = false or a.is_place is null) ");
                 sqlBuilder.Append("  and (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%') ");
                 sqlBuilder.Append("  and (a.name is null or a.name not ilike '%image%') ");
                 sqlBuilder.Append("  and a.name ilike @keyword ");
 
-                if (category == 3)
+                var typeIdsForCategory = AllCatalogHelper.GetAssetTypeIdsForCategory(category, null);
+                if (typeIdsForCategory != null && typeIdsForCategory.Length > 0)
                 {
-                    sqlBuilder.Append("  and a.asset_type_id = 2 ");
-                }
-                else if (category == 4)
-                {
-                    sqlBuilder.Append("  and a.asset_type_id <> 2 ");
+                    var placeholders = string.Join(", ", typeIdsForCategory.Select((_, i) => $"@type{i}"));
+                    sqlBuilder.Append($"  and a.asset_type_id in ({placeholders}) ");
                 }
 
                 if (genres != null && genres.Count > 0)
@@ -74,6 +76,14 @@ namespace RobloxWebserver.Assemblies.Catalog
                 {
                     cmd.Parameters.AddWithValue("keyword", "%" + keyword + "%");
                     cmd.Parameters.AddWithValue("limit", maxCount);
+
+                    if (typeIdsForCategory != null)
+                    {
+                        for (int i = 0; i < typeIdsForCategory.Length; i++)
+                        {
+                            cmd.Parameters.AddWithValue($"type{i}", typeIdsForCategory[i]);
+                        }
+                    }
 
                     if (genres != null && genres.Count > 0)
                     {
@@ -97,6 +107,9 @@ namespace RobloxWebserver.Assemblies.Catalog
                                 : reader.GetFieldValue<DateTimeOffset>(6);
                             var price = reader.IsDBNull(8) ? (long?)null : reader.GetInt64(8);
                             var priceTickets = reader.IsDBNull(9) ? (long?)null : reader.GetInt64(9);
+                            var assetTypeId = reader.IsDBNull(10) ? 0 : reader.GetInt32(10);
+                            var isLimitedUnique = !reader.IsDBNull(11) && reader.GetBoolean(11);
+                            var limitedQuantity = reader.IsDBNull(12) ? (long?)null : reader.GetInt64(12);
 
                             items.Add(new CatalogItem
                             {
@@ -104,13 +117,16 @@ namespace RobloxWebserver.Assemblies.Catalog
                                 Name = name,
                                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                                 CreatorId = ownerUserId,
-                                ImageUrl = string.IsNullOrWhiteSpace(thumb) ? "/images/RobloxLogo.png" : thumb,
+                                ImageUrl = string.IsNullOrWhiteSpace(thumb) ? (assetTypeId == 3 ? "/images/audio.png" : "/images/RobloxLogo.png") : thumb,
+                                AssetTypeId = assetTypeId,
                                 PriceRobux = price.HasValue ? (int?)price.Value : null,
                                 PriceTickets = priceTickets.HasValue ? (int?)priceTickets.Value : null,
                                 Sales = 0,
                                 FavoritedCount = 0,
                                 IsNew = AssetHelpers.IsNew(createdAt),
-                                UpdatedText = AssetHelpers.GetFriendlyUpdatedText(lastUpdated)
+                                UpdatedText = AssetHelpers.GetFriendlyUpdatedText(lastUpdated),
+                                IsLimitedUnique = isLimitedUnique,
+                                IsLimited = limitedQuantity.HasValue
                             });
                         }
                     }
@@ -137,7 +153,7 @@ namespace RobloxWebserver.Assemblies.Catalog
                 TotalItems = items.Count
             };
 
-            var service = new CatalogService(new CatalogRepository());
+            var service = new CatalogService(new CatalogRepository(), renderer);
             return service.BuildCatalogHtml(page);
         }
     }

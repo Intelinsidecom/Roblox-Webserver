@@ -12,6 +12,8 @@ namespace RobloxWebserver.Assemblies.Catalog
 
         string BuildCatalogHtml(CatalogPageResult pageResult);
 
+        string BuildCatalogItemHtml(CatalogItem item, string size = "small");
+
         Task<string> BuildTShirtCatalogHtmlAsync(string connectionString, int maxCount = 42);
     }
 }

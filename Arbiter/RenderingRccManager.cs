@@ -112,7 +112,7 @@ namespace RCCArbiter
                     var i = _instances[idx];
                     if (i.Load == 0 && now - i.LastUsedUtc > _idleTimeout)
                     {
-                        try { i.Proc.Dispose(); } catch { }
+                        try { i.Proc.Dispose(); } catch (Exception ex) { Console.WriteLine($"[ERROR] SweepIdle dispose RCC process: {ex}"); }
                         _instances.RemoveAt(idx);
                     }
                 }
@@ -126,7 +126,7 @@ namespace RCCArbiter
             {
                 foreach (var i in _instances)
                 {
-                    try { i.Proc.Dispose(); } catch { }
+                    try { i.Proc.Dispose(); } catch (Exception ex) { Console.WriteLine($"[ERROR] Dispose RCC process: {ex}"); }
                 }
                 _instances.Clear();
             }

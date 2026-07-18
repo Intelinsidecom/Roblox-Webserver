@@ -11,6 +11,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Users;
 using Avatar;
+using Assets;
 using Website.Services;
 
 namespace Website.Controllers;
@@ -394,21 +395,46 @@ public class AvatarV1Controller : ControllerBase
 
         if (filteredIds.Count > 0)
         {
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            // Reject any non-wearable asset types
+            const string typeSql = @"select a.asset_id, a.asset_type_id from assets a where a.asset_id = any(@ids)";
+            await using (var typeCmd = new NpgsqlCommand(typeSql, conn))
+            {
+                typeCmd.Parameters.AddWithValue("ids", filteredIds.ToArray());
+                await using var typeReader = await typeCmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                var nonWearable = new List<long>();
+                while (await typeReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    var id = typeReader.GetInt64(0);
+                    var typeId = typeReader.GetInt32(1);
+                    if (!AssetTypeNames.IsWearableAssetType(typeId))
+                    {
+                        nonWearable.Add(id);
+                    }
+                }
+                if (nonWearable.Count > 0)
+                {
+                    return BadRequest(new
+                    {
+                        errors = nonWearable.Select(id => new { message = $"Asset {id} is not a wearable asset type." }).ToArray()
+                    });
+                }
+            }
+
             // Enforce "only one T-Shirt" at the persistence layer even if
             // a buggy or malicious client sends multiple T-Shirt asset IDs.
             const int TShirtAssetTypeId = 2;
 
-            await using var conn = new NpgsqlConnection(connStr);
-            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-
-            const string sql = @"select asset_id from assets where asset_type_id = @tshirtTypeId and asset_id = any(@ids) order by asset_id";
-            await using (var cmd = new NpgsqlCommand(sql, conn))
+            const string tshirtSql = @"select asset_id from assets where asset_type_id = @tshirtTypeId and asset_id = any(@ids) order by asset_id";
+            await using (var tshirtCmd = new NpgsqlCommand(tshirtSql, conn))
             {
-                cmd.Parameters.AddWithValue("tshirtTypeId", TShirtAssetTypeId);
-                cmd.Parameters.AddWithValue("ids", filteredIds.ToArray());
+                tshirtCmd.Parameters.AddWithValue("tshirtTypeId", TShirtAssetTypeId);
+                tshirtCmd.Parameters.AddWithValue("ids", filteredIds.ToArray());
 
                 var tshirtIds = new System.Collections.Generic.List<long>();
-                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                await using var reader = await tshirtCmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
                 while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
                     tshirtIds.Add(reader.GetInt64(0));
@@ -454,6 +480,23 @@ public class AvatarV1Controller : ControllerBase
         var connStr = _configuration.GetConnectionString("Default");
         if (string.IsNullOrWhiteSpace(connStr))
             return Problem("Database not configured");
+
+        // Validate asset exists and is a wearable type
+        var assetRepo = new AssetMetadataRepository();
+        var asset = await assetRepo.GetAssetByIdAsync(connStr, assetId, cancellationToken).ConfigureAwait(false);
+        if (asset == null)
+            return NotFound(new { error = "Asset not found" });
+
+        if (!AssetTypeNames.IsWearableAssetType(asset.AssetTypeId))
+        {
+            return BadRequest(new
+            {
+                errors = new[]
+                {
+                    new { message = $"{AssetTypeNames.GetTypeName(asset.AssetTypeId)} assets cannot be worn." }
+                }
+            });
+        }
 
         var repo = new AvatarWornAssetsRepository();
         var wearResult = await repo.WearAssetAsync(connStr, userId, assetId, cancellationToken).ConfigureAwait(false);

@@ -45,10 +45,10 @@ namespace Api.Controllers
                         else if (obj is int iid) userId = iid;
                         else if (obj != null)
                         {
-                            try { userId = Convert.ToInt64(obj); } catch { userId = 0; }
+                            try { userId = Convert.ToInt64(obj); } catch (Exception ex2) { Console.WriteLine($"[ERROR] GetBalance parse session user_id: {ex2}"); userId = 0; }
                         }
                     }
-                    catch { }
+                    catch (Exception ex) { Console.WriteLine($"[ERROR] GetBalance session lookup: {ex}"); }
                 }
             }
 

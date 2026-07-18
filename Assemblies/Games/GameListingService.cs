@@ -13,6 +13,7 @@ public sealed class UniverseListEntry
     public string PlaceName { get; set; } = string.Empty;
     public string? ThumbnailUrl { get; set; }
     public short PrivacyLevel { get; set; }
+    public int VisitCount { get; set; }
 }
 
 public sealed class PlaceListEntry
@@ -52,7 +53,8 @@ public static class GameListingService
        u.root_place_id,
        a.name as place_name,
        COALESCE(a.thumbnail_url, '/images/blocked.png') as thumbnail_url,
-       COALESCE(u.privacy_level, 3) as privacy_level
+       COALESCE(u.privacy_level, 3) as privacy_level,
+       COALESCE(u.visit_count, 0) as visit_count
 from universes u
 left join assets a on a.asset_id = u.root_place_id
 where u.creator_user_id = @uid
@@ -71,6 +73,7 @@ order by u.created_at desc, u.universe_id desc;";
             var placeName = rootPlaceId > 0 && !reader.IsDBNull(3) ? reader.GetString(3) : "";
             var thumbUrl = reader.IsDBNull(4) ? null : reader.GetString(4);
             var privacyLevel = reader.IsDBNull(5) ? (short)1 : reader.GetInt16(5);
+            var visitCount = reader.IsDBNull(6) ? 0 : reader.GetInt32(6);
 
             results.Add(new UniverseListEntry
             {
@@ -80,6 +83,7 @@ order by u.created_at desc, u.universe_id desc;";
                 PlaceName = placeName,
                 ThumbnailUrl = thumbUrl,
                 PrivacyLevel = privacyLevel,
+                VisitCount = visitCount,
             });
         }
 

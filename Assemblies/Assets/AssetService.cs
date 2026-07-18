@@ -110,8 +110,9 @@ order by awa.asset_id";
                 
                 return (stream, ct, null);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] FetchAssetStreamAsync assetId={assetId}: {ex}");
                 return (null, string.Empty, "Failed to fetch asset from Roblox asset delivery");
             }
         }

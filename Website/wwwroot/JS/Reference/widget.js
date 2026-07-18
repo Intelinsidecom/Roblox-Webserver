@@ -1,7 +1,7 @@
 // Reference/widget.js
 var Roblox = Roblox || {};
 Roblox.BootstrapWidgets = function() {
-    function i() {
+    function a() {
         $("#horizontal-tabs a").on("click", function(n) {
             n.preventDefault(), $(this).tab("show")
         });
@@ -13,23 +13,35 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function b() {
+    function tt() {
         $('[data-toggle="dropdown-menu"] li').click(function(n) {
             var t = $(n.currentTarget);
-            return t.closest(".input-group-btn").find('[data-bind="label"]').text(t.text()).end().toggleClass("open"), !1
+            return t.closest(".input-group-btn").find('[data-bind="label"]').text(t.text()).end().toggleClass("open"), t.hasClass("rbx-clickable-li") ? void 0 : !1
         })
     }
 
-    function w() {
+    function t(n, t) {
+        var i = n.data("expanded-icon") || "icon-up-16x16",
+            r = n.data("collapsed-icon") || "icon-down-16x16",
+            f = t ? i : r,
+            u = t ? r : i;
+        n.prev(".panel-heading").find("." + u).removeClass(u).addClass(f)
+    }
+
+    function nt() {
         $('[data-toggle="collapsible-element"]').on("show.bs.collapse", function(n) {
-            $(n.target).prev(".panel-heading").find(".icon-down-16x16").removeClass("icon-down-16x16").addClass("icon-up-16x16")
+            t($(n.target), !0)
         });
         $('[data-toggle="collapsible-element"]').on("hide.bs.collapse", function(n) {
-            $(n.target).prev(".panel-heading").find(".icon-up-16x16").removeClass("icon-up-16x16").addClass("icon-down-16x16")
+            t($(n.target), !1)
         })
     }
 
-    function p() {
+    function g(n) {
+        $(n).collapse("show")
+    }
+
+    function d() {
         if ("ontouchstart" in window) $('[data-toggle-mobile="true"]').tooltip({
             placement: "bottom",
             trigger: "manual"
@@ -41,22 +53,26 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function y(n, t) {
+    function k(n, t) {
         $(n).attr("title", t).tooltip("fixTitle")
     }
 
-    function v() {
+    function b() {
         $("body").on("click touchstart", function(n) {
             $('[data-toggle="tooltip"]').each(function() {
                 if (!$(this).is(n.target) && $(this).has(n.target).length === 0) {
                     var t = n.type === "click" ? !0 : $(".tooltip").has(n.target).length === 0;
-                    t && $(this).tooltip("hide")
+                    if (t) try {
+                        $(this).tooltip("hide")
+                    } catch (n) {
+                        return !1
+                    }
                 }
             })
         })
     }
 
-    function a(n, t) {
+    function w(n, t) {
         n || (n = "bottom"), t || (t = {
             selector: "body",
             padding: 4
@@ -70,23 +86,25 @@ Roblox.BootstrapWidgets = function() {
                 var n = $(this).attr("data-bind");
                 return $('[data-toggle="' + n + '"]').html()
             }
-        }).unbind().on("click", function() {
-            $(this).popover("toggle")
+        }).unbind().on("click", function(e) {
+            e.stopPropagation(), e.stopImmediatePropagation(), e.preventDefault();
+            var $el = $(this), isOpen = $el.data("bs.popover") && $el.data("bs.popover").tip() && $el.data("bs.popover").tip().hasClass("in");
+            isOpen ? $el.popover("hide") : $el.popover("show")
         })
     }
 
-    function l() {
+    function p() {
         $("body").on("click touchstart", function(n) {
             $('[data-toggle="popover"]').each(function() {
                 if (!$(this).is(n.target) && $(this).has(n.target).length === 0) {
-                    var t = n.type === "click" ? !0 : $(".popover").has(n.target).length === 0;
-                    t && $(this).popover("hide")
+                    var t = $(".popover").has(n.target).length === 0;
+                    n.type === "touchstart" && $(".popover").has(n.target).length > 0 ? t = !0 : n.type === "click" && (t = !0), t && $(this).popover("hide")
                 }
             })
         })
     }
 
-    function c() {
+    function y() {
         $('[data-toggle="scrollbar"]').mCustomScrollbar({
             autoHideScrollbar: !1,
             autoExpandScrollbar: !1,
@@ -97,7 +115,7 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function h() {
+    function v() {
         var n = $('[data-toggle="pagination"]'),
             t = $('[data-toggle="pager"]');
         (n.twbsPagination || t.twbsPagination) && (n.twbsPagination({
@@ -129,7 +147,7 @@ Roblox.BootstrapWidgets = function() {
         }
     }
 
-    function s() {
+    function l() {
         $("#toggle-alert-loading").click(function() {
             n($(".sg-alert-section .alert-loading"), 100, 1e3)
         }), $("#toggle-alert-success").click(function() {
@@ -145,7 +163,7 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function o() {
+    function c() {
         $("input[placeholder]").focus(function() {
             var n = $(this);
             n.val() == n.attr("placeholder") && (n.val(""), n.removeClass("rbx-placeholder"))
@@ -155,15 +173,15 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function f() {
-        e.each(function() {
-            var i = $(this),
+    function s() {
+        h.each(function() {
+            var t = $(this),
                 n = $(this).clone().hide().height("auto");
-            n.width(i.width()), $("body").append(n), n.height() <= i.height() && (i.removeClass(t), $(this).find(".toggle-para").hide()), n.remove()
+            n.width(t.width()), $("body").append(n), n.height() <= t.height() && (t.removeClass(i), $(this).find(".toggle-para").hide()), n.remove()
         })
     }
 
-    function u(n, t) {
+    function o(n, t) {
         var i = "para-overflow-toggle",
             r = $("." + i),
             u = "para-height",
@@ -176,7 +194,7 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function r(n, t) {
+    function e(n, t) {
         var i = "para-overflow-toggle-off",
             r = "para-height";
         n || (n = "Read More"), t || (t = "Show Less"), $(".toggle-para").bind("click touchstart", function() {
@@ -185,14 +203,45 @@ Roblox.BootstrapWidgets = function() {
         })
     }
 
-    function k(n) {
+    function f() {
+        var n = "content-overflow-toggle",
+            t = $("." + n),
+            i = "content-height",
+            r = "content-overflow-page-loading";
+        $(".toggle-content").removeClass("hidden"), t.each(function() {
+            var t = $(this),
+                u = $(this).clone().hide().height("auto").width(t.width());
+            t.parent().append(u), u.css("font-weight", t.css("font-weight"));
+            var f = t.attr("id"),
+                e = $(".toggle-content[data-container-id='" + f + "']"),
+                o = $(".show-more-end[data-container-id='" + f + "']");
+            o.removeClass("hide"), (u.height() <= t.height() || !e.is(":visible")) && (t.removeClass(n).removeClass(i), e.hide(), o.addClass("hide")), t.removeClass(r), u.remove()
+        })
+    }
+
+    function u() {
+        var n = "content-overflow-toggle-off",
+            t = "content-height",
+            i = "Read More",
+            r = "Show Less",
+            u = function() {
+                $(this).unbind("click"), $(this).bind("click", function() {
+                    var f = $(this).data("container-id"),
+                        u = $("#" + f);
+                    $(this).text() === i ? (u.removeClass(t).addClass(n), $(this).text(r), u.find(".show-more-end").addClass("hide")) : (u.removeClass(n).addClass(t), $(this).text(i), u.find(".show-more-end").removeClass("hide"))
+                })
+            };
+        $(".toggle-content").each(u)
+    }
+
+    function r(n) {
         n = n ? n : "#carousel", $(n).carousel({
             interval: 6e3,
             pause: "hover"
         })
     }
 
-    function d() {
+    function it() {
         $(".btn-toggle").bind("click", function() {
             if ($(this).hasClass("disabled")) return !1;
             $(this).toggleClass("on"), $(this).trigger("toggleBtnClick", {
@@ -201,46 +250,71 @@ Roblox.BootstrapWidgets = function() {
             })
         })
     }
-    var t = "para-overflow",
-        e = $("." + t);
+
+    function rt() {
+        var i = 0,
+            r = 0,
+            u = ".menu-secondary-container",
+            n = $(".submenus"),
+            f = n.find("li"),
+            t = n.find("li " + u),
+            e = n.find("li " + u + "[hover=true]");
+        t.on("mouseover touchstart", function() {
+            $(this).attr("hover", "true")
+        });
+        t.mouseout(function() {
+            $(this).attr("hover", "false")
+        });
+        f.on("mouseover touchstart", function() {
+            var i = $(this).data("delay"),
+                f;
+            e.length === 0 && ($(this).attr("hover", "true"), i !== "never" && (r === 1 || i === "always") ? window.setTimeout(function() {
+                if (e.length === 0) {
+                    var i = n.find("li[hover=true] " + u);
+                    t.hide(), i.length !== 0 && i.show()
+                }
+            }, 1e3) : (t.hide(), f = $(this).find(u), f.show()))
+        });
+        f.mouseout(function() {
+            $(this).removeAttr("hover")
+        }), n.mouseleave(function() {
+            window.setTimeout(function() {
+                t.hide()
+            }, 100), i = 0, r = 0
+        }), n.mousemove(function(n) {
+            var t = i;
+            i = n.pageX, (t === i || t === 0) && (r = 0), r = t < i ? 1 : -1
+        });
+        $("body").on("touchstart", function(i) {
+            n.is(i.target) || n.has(i.target).length !== 0 || t.hide()
+        })
+    }
+    var i = "para-overflow",
+        h = $("." + i);
     return {
-        SetupTabs: i,
-        SetupDropdown: b,
-        SetupAccordion: w,
-        SetupTooltip: p,
-        UpdateTooltip: y,
-        CloseTooltip: v,
-        SetupPopover: a,
-        ClosePopover: l,
-        SetupScrollbar: c,
-        SetupPagination: h,
-        Placeholder: o,
-        IsTruncated: f,
-        TruncateParagraph: u,
-        ToggleParagraph: r,
-        SetupCarousel: k,
-        SetupToggleButton: d,
-        SetupSystemFeedback: s,
-        ToggleSystemMessage: n
+        SetupTabs: a,
+        SetupDropdown: tt,
+        SetupAccordion: nt,
+        ShowAccordionMenu: g,
+        SetupTooltip: d,
+        UpdateTooltip: k,
+        CloseTooltip: b,
+        SetupPopover: w,
+        ClosePopover: p,
+        SetupScrollbar: y,
+        SetupPagination: v,
+        Placeholder: c,
+        IsTruncated: s,
+        TruncateParagraph: o,
+        ToggleParagraph: e,
+        SetupCarousel: r,
+        SetupToggleButton: it,
+        SetupSystemFeedback: l,
+        ToggleSystemMessage: n,
+        SetupVerticalMenu: rt,
+        TruncateContent: f,
+        ToggleContent: u
     }
 }(), $(function() {
-    Roblox.BootstrapWidgets.SetupTabs(),
-    Roblox.BootstrapWidgets.SetupDropdown(),
-    Roblox.BootstrapWidgets.SetupAccordion(),
-    // Disabled SetupTooltip to prevent conflicts with Bootstrap tooltips
-    // Roblox.BootstrapWidgets.SetupTooltip(),
-    // Disabled CloseTooltip to prevent jQuery UI tooltip conflicts
-    // (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.CloseTooltip == "function" && Roblox.BootstrapWidgets.CloseTooltip()),
-    Roblox.BootstrapWidgets.SetupPopover(),
-    (Roblox.BootstrapWidgets && typeof Roblox.BootstrapWidgets.ClosePopover == "function" && Roblox.BootstrapWidgets.ClosePopover()),
-    Roblox.BootstrapWidgets.SetupScrollbar(),
-    Roblox.BootstrapWidgets.SetupPagination(),
-    (typeof Modernizr == "undefined" || Modernizr.input.placeholder || Roblox.BootstrapWidgets.Placeholder()),
-    Roblox.BootstrapWidgets.IsTruncated(),
-    Roblox.BootstrapWidgets.TruncateParagraph(),
-    Roblox.BootstrapWidgets.ToggleParagraph(),
-    Roblox.BootstrapWidgets.SetupCarousel(),
-    Roblox.BootstrapWidgets.SetupToggleButton(),
-    Roblox.BootstrapWidgets.SetupSystemFeedback(),
-    Roblox.BootstrapWidgets.ToggleSystemMessage()
+    Roblox.BootstrapWidgets.SetupTabs(), Roblox.BootstrapWidgets.SetupDropdown(), Roblox.BootstrapWidgets.SetupAccordion(), Roblox.BootstrapWidgets.SetupTooltip(), Roblox.BootstrapWidgets.CloseTooltip(), Roblox.BootstrapWidgets.SetupPopover(), Roblox.BootstrapWidgets.ClosePopover(), Roblox.BootstrapWidgets.SetupScrollbar(), Roblox.BootstrapWidgets.SetupPagination(), typeof Modernizr == "undefined" || Modernizr.input.placeholder || Roblox.BootstrapWidgets.Placeholder(), Roblox.BootstrapWidgets.IsTruncated(), Roblox.BootstrapWidgets.TruncateParagraph(), Roblox.BootstrapWidgets.ToggleParagraph(), Roblox.BootstrapWidgets.SetupCarousel(), Roblox.BootstrapWidgets.SetupToggleButton(), Roblox.BootstrapWidgets.SetupSystemFeedback(), Roblox.BootstrapWidgets.ToggleSystemMessage(), Roblox.BootstrapWidgets.SetupVerticalMenu(), Roblox.BootstrapWidgets.TruncateContent(), Roblox.BootstrapWidgets.ToggleContent()
 });

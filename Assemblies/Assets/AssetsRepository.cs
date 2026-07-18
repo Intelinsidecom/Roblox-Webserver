@@ -59,6 +59,7 @@ namespace Assets
         public string? AllowedGearTypes { get; set; } = "[]"; // Allowed gear types JSON array
         public bool AllowPlaceToBeCopiedInGame { get; set; } = false; // Allow place to be copied in game
         public bool AllowPlaceToBeUpdatedInGame { get; set; } = false; // Allow place to be updated in game
+        public long RecentAveragePrice { get; set; }
     }
 
     public sealed class AssetCreateParams
@@ -374,6 +375,7 @@ where asset_id = @asset_id;";
                 const string sql = @"update assets
 set price = @price,
     price_in_tix = @price_in_tix,
+    on_sale = true,
     last_updated = now()
 where asset_id = @asset_id";
 
@@ -914,5 +916,63 @@ where asset_id = @id";
             return Convert.ToInt64(result);
         }
 
+        /// <summary>
+        /// Updates the featured rank of an asset (0 = not featured, 1-4 = featured slot).
+        /// </summary>
+        public async Task UpdateAssetFeaturedRankAsync(string connectionString, long assetId, int rank, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+            if (rank < 0 || rank > 4)
+                throw new ArgumentOutOfRangeException(nameof(rank), "Rank must be between 0 and 4.");
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets
+set featured_rank = @rank,
+    last_updated = now()
+where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+            cmd.Parameters.AddWithValue("rank", rank);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Gets the asset IDs and names of featured items (featured_rank > 0), ordered by rank.
+        /// </summary>
+        public async Task<List<(long AssetId, string Name, int Rank)>> GetFeaturedAssetsAsync(string connectionString, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select asset_id, name, featured_rank
+from assets
+where featured_rank > 0
+order by featured_rank asc;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+            var results = new List<(long, string, int)>();
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                results.Add((
+                    reader.GetInt64(0),
+                    reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    reader.GetInt32(2)
+                ));
+            }
+
+            return results;
+        }
+    }
 }

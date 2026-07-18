@@ -68,7 +68,6 @@ namespace Website.Extensions
                         "JS/polyfill/ie7localStorage.js",
                         // widgets
                         "JS/widgets/jquery.mCustomScrollbar.concat.min.js",
-                        "JS/Reference/widget.js",
                         // thumbnails
                         "JS/Thumbnails/ThumbnailView.js",
                         // Tracking

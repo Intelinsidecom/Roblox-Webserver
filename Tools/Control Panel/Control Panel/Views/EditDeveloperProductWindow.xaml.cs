@@ -85,7 +85,7 @@ namespace Control_Panel
                     bitmap.EndInit();
                     ProductImagePreview.Source = bitmap;
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] SelectImageButton_Click preview: {ex}"); }
             }
         }
 
@@ -225,7 +225,7 @@ namespace Control_Panel
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine($"[ERROR] LoadJsonDeveloperProductIdAsync: {ex}"); }
         }
 
         private async Task LoadProductImageAsync(string imageUrl, long? imageAssetId)
@@ -242,7 +242,7 @@ namespace Control_Panel
                     ProductImagePreview.Source = bitmap;
                     return;
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] LoadProductImageAsync from URL: {ex}"); }
             }
 
             if (imageAssetId.HasValue)
@@ -265,7 +265,7 @@ namespace Control_Panel
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] LoadProductImageAsync from asset file: {ex}"); }
             }
         }
 

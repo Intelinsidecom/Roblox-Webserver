@@ -107,22 +107,16 @@ $(function() {
     $("#item-context-menu").on("click", ".popover-content .toggle-wear", function(r) {
         if (r.preventDefault(), !n) {
             n = !0;
-            var $link = $(".rbx-popover-content .toggle-wear"),
-                // data-toggle is stored as a string; treat "True" as currently wearing
-                isCurrentlyWearing = $link.attr("data-toggle") === "True";
+            var f = $(".popover-content .toggle-wear").data("toggle");
             $("#item-context-menu").find(".rbx-menu-item").popover("hide"), $.ajax({
                 type: "POST",
-                url: i.data(isCurrentlyWearing ? "avatar-remove-url" : "avatar-wear-url"),
+                url: i.data(f ? "avatar-remove-url" : "avatar-wear-url"),
                 success: function() {
-                    var newIsWearing = !isCurrentlyWearing;
-                    $link.attr("data-toggle", newIsWearing ? "True" : "False")
-                         .text(newIsWearing ? "Unwear" : "Wear");
-                    u(newIsWearing ? "Added to your avatar" : "Removed from your avatar");
-                    n = !1
+                    $(".rbx-popover-content .toggle-wear").attr("data-toggle", !f).text(f ? "Wear" : "Take Off"), u(f ? "Removed from your avatar" : "Added to your avatar"), n = !1
                 },
                 error: function(i) {
                     n = !1;
-                    var r = i.responseJSON && i.responseJSON.errors && i.responseJSON.errors.length > 0 ? i.responseJSON.errors[0].message : "Error occured";
+                    var r = i.responseJSON.errors && i.responseJSON.errors.length > 0 ? i.responseJSON.errors[0].message : "Error occured";
                     t(r)
                 }
             })

@@ -111,7 +111,10 @@ if (typeof notificationStream !== 'undefined') {
                     test: "Test",
                     friendRequestReceived: "FriendRequestReceived",
                     friendRequestAccepted: "FriendRequestAccepted",
-                    privateMessageReceived: "PrivateMessageReceived"
+                    privateMessageReceived: "PrivateMessageReceived",
+                    commentOnAsset: "CommentOnAsset",
+                    assetPurchased: "AssetPurchased",
+                    assetFavorited: "AssetFavorited"
                 }
             };
         };

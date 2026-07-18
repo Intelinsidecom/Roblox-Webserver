@@ -12,6 +12,14 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/Index.cshtml");
         }
         
+        [HttpGet("/Trade")]
+        public IActionResult Trade()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+                return Redirect("/");
+            return Redirect("/my/money.aspx#/#TradeItems_tab");
+        }
+
 
         [HttpGet("0")]
         public IActionResult RootAlt()
@@ -138,6 +146,17 @@ namespace RobloxWebserver.Controllers
             {
             return View("~/Views/Pages/Develop.cshtml");
             }
+        }
+
+        [HttpGet("inventory")]
+        public IActionResult Inventory()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+                return Redirect("/");
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+                return Redirect("/");
+            return Redirect($"/users/{userId}/inventory");
         }
     }
 }

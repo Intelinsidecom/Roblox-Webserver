@@ -5,11 +5,15 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Users;
+using Website.Hubs;
+using Website.Services;
 
 namespace RobloxWebserver.Controllers
 {
@@ -19,10 +23,12 @@ namespace RobloxWebserver.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly IConfiguration _configuration;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public CommentsController(IConfiguration configuration)
+        public CommentsController(IConfiguration configuration, IHubContext<NotificationHub> hubContext)
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _configuration = configuration;
+            _hubContext = hubContext;
         }
 
         private sealed class StoredComment
@@ -273,6 +279,41 @@ namespace RobloxWebserver.Controllers
                     }
 
                     await tx.CommitAsync(cancellationToken).ConfigureAwait(false);
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            long? assetOwnerId = null;
+                            const string ownerSql = "SELECT owner_user_id FROM assets WHERE asset_id = @id";
+                            await using var ownerConn = new NpgsqlConnection(connStr);
+                            await ownerConn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                            await using var ownerCmd = new NpgsqlCommand(ownerSql, ownerConn);
+                            ownerCmd.Parameters.AddWithValue("id", assetId);
+                            var ownerResult = await ownerCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+                            if (ownerResult != null && ownerResult != DBNull.Value)
+                                assetOwnerId = Convert.ToInt64(ownerResult);
+
+                            if (assetOwnerId.HasValue && assetOwnerId.Value != userId)
+                            {
+                                var svc = new NotificationService(connStr);
+                                var notifId = await svc.CreateNotificationAsync(
+                                    assetOwnerId.Value,
+                                    "CommentOnAsset",
+                                    userId,
+                                    authorName,
+                                    "Asset",
+                                    assetId,
+                                    text.Length > 50 ? text.Substring(0, 50) + "..." : text,
+                                    cancellationToken
+                                ).ConfigureAwait(false);
+                                await NotificationBroadcaster.BroadcastNewNotification(_hubContext, assetOwnerId.Value, cancellationToken).ConfigureAwait(false);
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }, cancellationToken);
 
                     var response = new
                     {

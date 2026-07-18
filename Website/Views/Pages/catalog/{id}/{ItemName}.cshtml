@@ -1,126 +1,24 @@
 ﻿@model RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel
 @{ Layout = "_Layout"; }
-<!DOCTYPE html><!--[if IE 8]><html class=ie8 ng-app=robloxApp><![endif]--> <!--[if gt IE 8]><!-->
-<div id=catalog-page-root><!--<![endif]-->
 
- <script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
- <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
- <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
- <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
- <script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
- <script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
- <script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
- <script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
- <script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
- <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
- <script type="text/javascript" src="/JS/utilities/deviceFeatureDetection.js"></script>
- <script type="text/javascript" src="/JS/utilities/lazyLoad.js"></script>
- <script type="text/javascript" src="/JS/XsrfToken.js"></script>
- <script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
- <script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
- <script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
- <script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
- <script type="text/javascript" src="/JS/Reference/widget.js"></script>
- <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
- <script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
- <script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
- <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
- <script type="text/javascript" src="/JS/extensions/string.js"></script>
- <script type="text/javascript" src="/JS/StringTruncator.js"></script>
- <script type="text/javascript" src="/JS/json2.min.js"></script>
- <script type="text/javascript" src="/JS/MasterPageUI.js"></script>
- <script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
- <script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
- <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
- <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
- <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
- <script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
- <script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
- <script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
- <script type="text/javascript" src="/JS/Linkify.js"></script>
- <script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
- <script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
- <script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
- <script type="text/javascript" src="/JS/Tracking/ModalEvents.js"></script>
- <script type="text/javascript" src="/JS/VideoPreRoll.js"></script>
- <script type="text/javascript" src="/JS/CharacterSelect.js"></script>
- <script type="text/javascript" src="/JS/MadStatus.js"></script>
- <script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
- <script type="text/javascript" src="/JS/GameLauncher.js"></script>
- <script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
- <script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
- <script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
- <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
- <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
- <script type="text/javascript" src="/JS/roblox.js"></script>
- <script type="text/javascript" src="/JS/leancore/RobloxHeaderInit.js"></script>
- <script type="text/javascript" src="/JS/utilities/performance.js"></script>
- <script type="text/javascript" src="/JS/RobloxCookies.js"></script>
- <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
- <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
- <script type="text/javascript" src="/JS/Events/AssetActionButtonClickEvent.js"></script>
- <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
- <script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
- <script type="text/javascript" src="/JS/NumberFormatting.js"></script>
- <script type="text/javascript" src="/JS/ItemPurchaseForDialog.js"></script>
- <script type="text/javascript" src="/JS/utilities/dialog.js"></script>
- <script type="text/javascript" src="/JS/utilities/countdownTimer.js"></script>
- <script type="text/javascript" src="/JS/Item/PurchaseItem.js"></script>
- <script type="text/javascript" src="/JS/widgets/Favorites.js"></script>
- <script type="text/javascript" src="/JS/viewapp/pages/recommendations/recommendations.js"></script>
- <script type="text/javascript" src="/JS/viewapp/pages/recommendations/controllers/recommendationsController.js"></script>
- <script type="text/javascript" src="/JS/viewapp/pages/recommendations/services/recommendationsPageService.js"></script>
- <script type="text/javascript" src="/JS/GenericModal.js"></script>
- <script type="text/javascript" src="/JS/Item/ItemPage.js"></script>
- <script type="text/javascript" src="/JS/Item/ContextMenu.js"></script>
- <script type="text/javascript" src="/JS/utilities/popover.js"></script>
- <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
- <script type="text/javascript" src="/JS/Bootstrap/GenericConfirmation.js"></script>
- <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
- <script type="text/javascript" src="/JS/Tracking/FormEvents.js"></script>
- <script type="text/javascript" src="/JS/viewapp/common/formEvents/formEvents.js"></script>
- <script type="text/javascript" src="/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
- <script type="text/javascript" src="/JS/viewapp/common/formEvents/directives/formContext.js"></script>
- <script type="text/javascript" src="/JS/TosModalCheck.js"></script>
- <script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
- <script type="text/javascript" src="/JS/Comments.js?v=3"></script>
- <script type="text/javascript" src="/JS/viewapp/common/directives/toggleLoadingDirective.js"></script>
- <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/emailAndPhoneUpsell.js"></script>
- <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/constants/emailAndPhoneUpsellConstants.js"></script>
- <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/services/emailAndPhoneUpsellService.js"></script>
- <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellController.js"></script>
- <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellModalController.js"></script>
- <script type="text/javascript" src="/JS/2017CatalogItem.js"></script>
-<script type="text/javascript" src="/JS/Plugins/Plugin.js"></script>
- <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
+@section Head {
+    <link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
+    <link rel="stylesheet" href="~/CSS/Pages/Shared/ItemThumbnail.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Recommendations/Recommendations.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/PlaceLauncher.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/RevisedCharacterSelectModal.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Login/SignupOrLogInModal.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/VideoPreRoll.css">
+    <link rel="stylesheet" href="~/CSS/Base/CSS/Abp.css">
+    <link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
+    <link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
+    <link rel="stylesheet" href="~/CSS/Pages/Shared/AssetStatusIcon.css">
+    <link rel="stylesheet" href="~/CSS/2017/Base/CSS/StyleGuide.css">
 
-<link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
-<link rel="stylesheet" href="~/CSS/Pages/Shared/ItemThumbnail.css">
-<link rel="stylesheet" href="~/CSS/Pages/Recommendations/Recommendations.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/jquery.mCustomScrollbar.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/PlaceLauncher.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/RevisedCharacterSelectModal.css">
-<link rel="stylesheet" href="~/CSS/Pages/Login/SignupOrLogInModal.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/VideoPreRoll.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/Abp.css">
-<link rel="stylesheet" href="~/CSS/Legacy/Modal.css">
-<link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
-<link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
-
-<link rel="stylesheet" href="~/CSS/Pages/Item/ItemPage.css">
-<link rel="stylesheet" href="~/CSS/Base/CSS/LoadingSpinner.css"> 
-<link rel="stylesheet" href="~/CSS/Pages/Shared/ItemThumbnail.css">
-<link rel="stylesheet" href="~/CSS/Pages/Recommendations/Recommendations.css">
-<link rel="stylesheet" href="~/CSS/Pages/Shared/AssetStatusIcon.css">
-
-<link rel="stylesheet" href="~/CSS/2017/Base/CSS/StyleGuide.css">
-<link rel="stylesheet" href="~/CSS//Base/CSS/Modals.css">
-
-<head data-machine-id=WEB1494>
-    <title>@(string.IsNullOrWhiteSpace(Model?.Name) ? "Item" : Model.Name) - ROBLOX</title>
-
+    <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script>
         var Roblox = Roblox || {};
         Roblox.RealTimeSettings = Roblox.RealTimeSettings || {
@@ -142,15 +40,8 @@
             chat: "https://chatsite.roblox.com"
         }
     </script>
-    <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-   
-    <script>
-        if (Roblox && Roblox.PageHeartbeatEvent) {
-            Roblox.PageHeartbeatEvent.Init([2, 8, 20, 60]);
-        }
-    </script>
-  
-</head>
+}
+
 <div id=rbx-body data-performance-relative-value=0.005 data-internal-page-name=CatalogItem data-send-event-percentage=0.01>
 
     <div id=roblox-linkify data-enabled=true data-regex="(https?:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;\&#64;#\/%%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags=gm data-as-http-regex=((wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.robloxlabs\.com)></div>
@@ -159,10 +50,8 @@
     <div id=http-retry-data data-http-retry-max-timeout=0 data-http-retry-base-timeout=0 data-http-retry-max-times=5></div>
     <div id=TosAgreementInfo data-terms-check-needed=False></div>
     <div id=fb-root></div>
-            <div id=wrap class="wrap no-gutter-ads logged-in" data-gutter-ads-enabled=false>
-       </div>
             <div class="content item-page-main">
-                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type="Package" data-userasset-id="" data-is-purchase-enabled=true data-product-id="@Model.Id" data-bc-requirement=0 data-expected-currency="1" data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique="@Model.IsLimitedUnique" data-user-id="@User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" data-asset-granted=False data-forward-url="" data-avatar-wear-url="/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="/v1/avatar/assets/@Model.Id/remove" data-current-time="@DateTime.UtcNow">
+                <div id=item-container class=page-content data-item-id="@Model.Id" data-item-name="@Model.Name" data-asset-type="@Model.AssetTypeLabel" data-userasset-id="" data-is-purchase-enabled=true data-product-id="@Model.Id" data-bc-requirement=0 data-expected-currency="1" data-expected-price="@(Model.PriceRobux ?? 0)" data-seller-name="@Model.CreatorName" data-expected-seller-id="@Model.CreatorId" data-lowest-private-sale-userasset-id="" data-is-limited-unique="@Model.IsLimitedUnique" data-user-id="@User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" data-asset-granted=False data-forward-url="" data-avatar-wear-url="/v1/avatar/assets/@Model.Id/wear" data-avatar-remove-url="/v1/avatar/assets/@Model.Id/remove" data-current-time="@DateTime.UtcNow">
                     <div class=system-feedback>
                         <div class=alert-system-feedback>
                             <div class="alert alert-success">Purchase Completed</div>
@@ -181,17 +70,20 @@
                                     <div class=divider>&nbsp;</div>
                                     <div class=label-checkmark><span class=icon-checkmark-white-bold></span></div><span>Item Owned</span>
                                 }
-
-                                @* <div id=phone-sale-clock class="sale-clock phone-sale-clock" data-off-sale-deadline="10/31/2017 5:50:49 PM"><span class=icon-red-timer-16x16></span>
-                                    <div class=text></div>
-                                </div> *@
                             </div>
                         </div>
                         <div class=item-thumbnail-container>
-                            <div id=AssetThumbnail class="thumbnail-holder thumbnail-Large three-dee-static" data-reset-enabled-every-page data-3d-thumbs-enabled three-dee-static data-3dtype=static data-url="/thumbnail/asset?assetId=@Model.Id&amp;thumbnailFormatId=254&amp;width=420&amp;height=420"><span class=thumbnail-span data-3d-url="/asset-thumbnail-3d/json?assetId=@Model.Id"><img src="@Model.ImageUrl"></span>
+                            <div id=AssetThumbnail class="thumbnail-holder thumbnail-Large three-dee-static" data-reset-enabled-every-page@(AssetTypeNames.Is3DSupported(Model.AssetTypeId) ? " data-3d-thumbs-enabled" : "") three-dee-static data-3dtype=static data-url="/thumbnail/asset?assetId=@Model.Id&amp;thumbnailFormatId=254&amp;width=420&amp;height=420"><span class=thumbnail-span data-3d-url="/asset-thumbnail-3d/json?assetId=@Model.Id"><img src="@Model.ImageUrl"></span>
 
-                                <div class=equipped-marker></div><span class="enable-three-dee three-dee-static-icon"></span>
-                                @* <div class="asset-status-icon status-sale has-icon"><span class=icon-clock></span> <span> </span></div> *@
+                                <div class=equipped-marker></div>@if (AssetTypeNames.Is3DSupported(Model.AssetTypeId)) {<span class="enable-three-dee three-dee-static-icon"></span>}
+                                @if (Model.IsLimitedUnique)
+                                {
+                                    <div class=asset-restriction-icon><span class=rbx-tooltip data-toggle=tooltip data-original-title="Serialized limited release, resellable."><span class=icon-label icon-limited-unique-label"></span></span></div>
+                                }
+                                else if (Model.IsLimited)
+                                {
+                                    <div class=asset-restriction-icon><span class=rbx-tooltip data-toggle=tooltip data-original-title="Limited release, resellable."><span class=icon-label icon-limited-label"></span></span></div>
+                                }
                             </div>
                             <script>
                                 (function() {
@@ -208,9 +100,13 @@
                                     {
                                         <div class=item-first-line>This item is available in your inventory.</div>
                                     }
-                                    @if (Model.IsOnSale)
+                                    @if (Model.IsLimited && Model.OwnedSerialNumber.HasValue)
                                     {
-                                    <div class="text-label field-label price-label">Price</div>
+                                        <div class=item-first-line>Serial Number #@Model.OwnedSerialNumber.Value</div>
+                                    }
+                                    @if (Model.IsOnSale && (!Model.IsLimited || Model.BestResalePrice > 0 || Model.PriceRobux > 0))
+                                    {
+                                    <div class="text-label field-label price-label">@(Model.IsLimited ? "Best Price" : "Price")</div>
                                     <div class=price-info>
                                         <div class="icon-text-wrapper clearfix icon-robux-price-container">
                                             <span class=icon-robux></span>
@@ -241,19 +137,27 @@
                                             <span class="btn-text">Install</span>
                                         </div>
                                     }
-                                    else if (Model.IsOwned)
+                                    else if (Model.IsOwned && AssetTypeNames.IsWearableAssetType(Model.AssetTypeId))
                                     {
                                         <a id=edit-avatar-button href="/my/character" class="btn-fixed-width-lg btn-control-md" data-button-action=avatar> Edit Avatar </a>
                                     }
-                                    else if (Model.IsOnSale)
+                                    else if (Model.IsOwned && Model.IsLimited)
                                     {
-                                        <button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux data-item-name="@Model.Name" data-seller-name="@Model.CreatorName" data-item-id="@Model.Id" data-expected-price="@(Model.PriceRobux ?? 0)" data-expected-currency="1" data-asset-type="Package" data-expected-seller-id="@Model.CreatorId"> Buy </button>
+                                        <button type=button class="btn-fixed-width-lg btn-primary-lg sell-button" id=sell-button data-asset-id="@Model.Id"> Sell </button>
                                     }
-                                    else
+                                    else if (Model.IsOnSale && !Model.IsOwned && (!Model.IsLimited || Model.BestResalePrice > 0 || Model.PriceRobux > 0))
+                                    {
+                                        <button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" data-button-type=main data-button-action=buy data-se=item-buyforrobux data-item-name="@Model.Name" data-seller-name="@Model.CreatorName" data-item-id="@Model.Id" data-product-id="@Model.Id" data-expected-price="@(Model.PriceRobux ?? 0)" data-expected-currency="1" data-asset-type="Package" data-expected-seller-id="@Model.CreatorId" data-is-limited-unique="@Model.IsLimitedUnique" data-lowest-private-sale-userasset-id=""> Buy </button>
+                                    }
+                                    else if (!Model.IsOwned)
                                     {
                                         <button type=button class="btn-fixed-width-lg btn-primary-lg PurchaseButton" disabled style="opacity:0.5;cursor:not-allowed"> Buy </button>
                                     }
                                 </div>
+                                @if (Model.IsLimited)
+                                {
+                                    <div class="item-note has-price-label">See more <a id=resellersLink class="text-link" href="#resellers">Resellers</a></div>
+                                }
                             </div>
                             <div class="clearfix item-mobile-description item-field-container">
                                 <pre class=description-content>@Model.Description</pre>
@@ -277,7 +181,7 @@
                         </div>
                         <ul class="item-social-container clearfix include-favorite">
                             <li class=favorite-button-container>
-                                <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=@Model.Id data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name"> <span class="text-favorite favoriteCount" id=result>@((Model.FavoritedCount ?? 0).ToString("N0"))</span>
+                                <div class=tooltip-container data-toggle=tooltip data-original-title="Add to Favorites"><a id=toggle-favorite data-toggle-url=/favorite/toggle data-assetid=@Model.Id data-isguest=False data-signin-url="https://web.roblox.com/newlogin?returnUrl=%2Fcatalog%2F@Model.Id%2F@Model.Name"> <span class=text-favorite favoriteCount" id=result>@((Model.FavoritedCount ?? 0).ToString("N0"))</span>
                                         <div id=favorite-icon class="icon-favorite@(Model.IsFavorited ? " favorited" : string.Empty)"></div>
                                     </a></div>
                             </li>
@@ -294,7 +198,15 @@
                                         <a class="rbx-menu-item item-context-menu" data-toggle=popover data-bind=popover-content> <span class=icon-more></span> </a>
                                         <div class="rbx-popover-content popover-content" data-toggle=popover-content>
                                             <ul class=dropdown-menu role=menu>
+                                                @if (AssetTypeNames.IsWearableAssetType(Model.AssetTypeId))
+                                                {
                                                 <li><a class=toggle-wear data-toggle="@(Model.IsWorn ? "True" : "False")"> @(Model.IsWorn ? "Unwear" : "Wear") </a></li>
+                                                }
+
+                                                @if (AssetTypeNames.IsWearableAssetType(Model.AssetTypeId) && Model.IsOwned && Model.IsLimited)
+                                                {
+                                                <li><a id=sell data-asset-id="@Model.Id"> Sell </a></li>
+                                                }
 
                                                 @if (Model.IsOwned && !isOwner)
                                                 {
@@ -316,12 +228,116 @@
                             }
                         </ul>
                     </div>
+                    @if (Model.IsLimited)
+                    {
+                    <div class="rbx-tabs-horizontal resale-pricechart-tabs">
+                        <ul id="horizontal-tabs" class="nav nav-tabs" role="tablist" style="display:none">
+                            <li class="rbx-tab active">
+                                <a class="rbx-tab-heading" href="#price-chart">
+                                    <span class="text-lead">Price Chart</span>
+                                </a>
+                            </li>
+                            <li class="rbx-tab">
+                                <a class="rbx-tab-heading" href="#resellers">
+                                    <span class="text-lead">Resellers</span>
+                                    <span class="rbx-tab-subtitle">(@Model.ResellerCount)</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content rbx-tab-content">
+                            <div id="price-chart" class="tab-pane active price-chart-section">
+                                <div class="section-content">
+                                    <div class="container-header">
+                                        <h3>Price Chart</h3>
+                                    </div>
+                                    <div class="price-chart-range-dropdown">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="input-dropdown-btn" data-toggle="dropdown">
+                                                <span class="rbx-selection-label" data-bind="label">180 Days</span>
+                                                <span class="icon-down-16x16"></span>
+                                            </button>
+                                            <ul data-toggle="dropdown-menu" class="dropdown-menu" role="menu">
+                                            <li><a id="price-chart-30-days" class="price-chart-range" data-days="30">30 Days</a></li>
+                                            <li><a id="price-chart-90-days" class="price-chart-range" data-days="90">90 Days</a></li>
+                                            <li class="active"><a id="price-chart-180-days" class="price-chart-range" data-days="180">180 Days</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="price-chart-legend">
+                                        <div class="line"></div>
+                                        <div class="text-pastname legend-text">Recent Average Price</div>
+                                        <div class="line volume"></div>
+                                        <div class="text-pastname legend-text">Volume</div>
+                                    </div>
+                                    <div class="price-chart-container" data-asset-id="@Model.Id"></div>
+                                    <div class="price-chart-volume-container"></div>
+                                    <div class="clearfix">
+                                        <div class="price-chart-info-container clearfix">
+                                            <div class="text-label">Quantity Sold</div>
+                                            <div id="item-quantity-sold" class="text-lead info-content">@(Model.Sales ?? 0)</div>
+                                        </div>
+                                        <div class="price-chart-info-container clearfix">
+                                            <div class="text-label">Original Price</div>
+                                            <div id="item-original-price" class="info-content">
+                                                <span id="original-price-robux-icon" class="icon-robux-20x20"></span>
+                                                <span class="text-robux">@(Model.OriginalPriceRobux?.ToString("N0") ?? "0")</span>
+                                            </div>
+                                        </div>
+                                        <div class="price-chart-info-container clearfix">
+                                            <div class="text-label">Average Price</div>
+                                            <div class="info-content">
+                                                <span class="icon-robux-20x20"></span>
+                                                <span id="item-average-price" class="text-robux">@(Model.RecentAveragePrice.ToString("N0"))</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="no-price-chart-data" class="section-content-off hide">No historical data to chart.</div>
+                                <div class="section-content price-chart-spinner">
+                                    <div class="loading-animated"><div><div></div><div></div><div></div></div></div>
+                                </div>
+                            </div>
+                            <div id="resellers" class="tab-pane resellers-container">
+                                <div class="container-header">
+                                    <h3>Resellers</h3>
+                                </div>
+                                <div class="section-content">
+                                    <div class="resellers">
+                                        <ul class="vlist resellers-list" data-asset-id="@Model.Id">
+                                            <li class="reseller-template list-item">
+                                                <a class="avatar avatar-headshot-md list-header">
+                                                    <img class="avatar-card-image">
+                                                </a>
+                                                <div class="resale-info">
+                                                    <a class="text-name username"></a>
+                                                    <span class="separator">-</span>
+                                                    <span class="serial-number"></span>
+                                                    <div class="reseller-price-container">
+                                                        <span class="icon-robux-20x20"></span>
+                                                        <span class="icon-robux-16x16"></span>
+                                                        <span class="text-robux"></span>
+                                                    </div>
+                                                </div>
+                                                <button class="PurchaseButton btn-fixed-width btn-buy-md buy-resale-btn" data-button-type="reseller"> Buy </button>
+                                            </li>
+                                        </ul>
+                                        <div class="loading-animated">
+                                            <div><div></div><div></div><div></div></div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-control-sm see-more-resellers">See More</button>
+                                    <div class="section-content-off">Sorry, no one is reselling this item at the moment.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
                     <div ng-modules="robloxApp, recommendations">
                         <script>
                             var Roblox = Roblox || {};
                             Roblox.InventoryData = {
                                 "inventoryDomain": "https://inventory.roblox.com",
-                                "useInventorySite": true
+                                "useInventorySite": false
                             };
                         </script>
                         <div class=current-items ng-controller=recommendationsController ng-init="initializeWithModelValues(@Model.Id, 32, 7)" ng-show="recommendationsData.items.length > 0" ng-cloak>
@@ -357,10 +373,10 @@
                             </div>
                             <div class="section-content AddAComment">
                                 <div id=send-comment-captcha></div>
-                                <div class=comment-form>
+                                <div class="comment-form">
                                     <form class="form-horizontal ng-pristine ng-valid" role=form>
                                         <div class=form-group><textarea class="form-control input-field rbx-comment-input blur" placeholder="Write a comment!" rows=1></textarea>
-                                            <div class=rbx-comment-msgs><span class="rbx-comment-error text-error text-overflow"></span> <span class="rbx-comment-count small"></span></div>
+                                            <div class=rbx-comment-msgs><span class=rbx-comment-error text-error text-overflow"></span> <span class=rbx-comment-count small"></span></div>
                                         </div><button type=button class="btn-secondary-md rbx-post-comment">Post Comment</button>
                                     </form>
                                 </div>
@@ -451,10 +467,55 @@
                         <div id=GenericModalButtonContainer class=GenericModalButtonContainer><a class="ImageButton btn-neutral btn-large roblox-ok">OK</a></div>
                     </div>
                 </div>
-                <div id=ItemPurchaseAjaxData data-has-currency-service-error=False data-currency-service-error-message="" data-authenticateduser-isnull="@(User?.Identity?.IsAuthenticated != true)" data-user-balance-robux="@Model.UserRobuxBalance" data-user-bc=0 data-continueshopping-url="/catalog/@Model.Id/@Model.Name" data-imageurl="@Model.ImageUrl" data-alerturl=/images/DataAlert.svg.gzip data-insufficentfundsurl=/images/b80339ddf867ccfe6ab23a2c263d8000.png></div>
+                <div id=sell-modal-content class="hidden sell-modal">
+                    <div class=price-form>
+                        <div class=form-group style="margin-bottom:10px;">
+                            <label class="form-control-label invisible" style="color:#c33;font-size:12px;margin-bottom:4px;">Please enter a valid whole number price greater than 0.</label>
+                            <div class=input-group>
+                                <span class="input-group-addon" style="background:#f2f2f2;border:1px solid #ccc;border-right:none;border-radius:3px 0 0 3px;padding:4px 8px;">
+                                    <span class=icon-robux-16x16></span>
+                                </span>
+                                <input type=number class="form-control sell-price" min=1 step=1 placeholder="Price"
+                                    style="height:32px;border-radius:0 3px 3px 0;border-left:none;">
+                            </div>
+                        </div>
+                        <div class=commission-label data-rate="0.3"
+                            style="margin-top:6px;padding:6px 8px;background:#f9f9f9;border-radius:3px;font-size:12px;color:#666;">
+                            <div>Commission fee (30%): <span class=commission style="color:#333;font-weight:600;"></span></div>
+                            <div style="margin-top:3px;">You will receive: <span class="after-commission text-robux" style="color:#02b757;font-weight:600;"></span></div>
+                        </div>
+                        <div class=below-market-warning style="display:none;" data-low-price-warning-percentage="15"></div>
+                    </div>
+                </div>
+                <div id=confirm-sell-modal class=hidden>
+                    <div style="padding:10px;text-align:center;">
+                        <p>Your price is significantly lower than the average. Are you sure you want to sell this item?</p>
+                        <p style="margin-top:10px;">Your price: <span class="attempted-sell-price" style="font-weight:bold;color:#333;"></span></p>
+                        <p>Average price: <span class="average-price" style="font-weight:bold;color:#333;"></span></p>
+                    </div>
+                </div>
+                <div id=ItemPurchaseAjaxData data-has-currency-service-error=False data-currency-service-error-message="" data-authenticateduser-isnull="@(User?.Identity?.IsAuthenticated != true)" data-user-balance-robux="@Model.UserRobuxBalance" data-user-bc="@Model.UserMembershipLevel" data-continueshopping-url="/catalog/@Model.Id/@Model.Name" data-imageurl="@Model.ImageUrl" data-alerturl=/images/DataAlert.svg.gzip data-insufficentfundsurl=/images/b80339ddf867ccfe6ab23a2c263d8000.png></div>
             </div>
-        </div>
-    </div>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/constants/signalR.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/providers/layoutLibraryProvider.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/layoutLibraryService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
     <div ng-modules="robloxApp, notificationStream" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
                 'isPhone': library.isPhone, 
                 'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
@@ -474,7 +535,6 @@
                 Cancel: "Cancel"
             };
         </script>
-    </div>
     <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation>
         <div id=modal-dialog class=modal-dialog>
             <div class=modal-content>
@@ -490,7 +550,7 @@
                     <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
                     <div class="loading modal-processing"><img class=loading-default src=/images/Loading.gif alt=Processing...></div>
                 </div>
-                <div class="modal-footer text-footer"></div>
+                <div class=modal-footer text-footer"></div>
             </div>
         </div>
         <script>
@@ -510,13 +570,29 @@
         var Roblox = Roblox || {};
         Roblox.jsConsoleEnabled = false;
     </script>
+    <script type="text/javascript">
+        Roblox.config.externalResources = [];
+        Roblox.config.paths['Pages.Catalog'] = '/JS/modules/Pages/Catalog.js';
+        Roblox.config.paths['Pages.CatalogShared'] = '/JS/modules/Pages/CatalogShared.js';
+        Roblox.config.paths['Widgets.AvatarImage'] = '/JS/modules/Widgets/AvatarImage.js';
+        Roblox.config.paths['Widgets.DropdownMenu'] = '/JS/modules/Widgets/DropdownMenu.js';
+        Roblox.config.paths['Widgets.HierarchicalDropdown'] = '/JS/modules/Widgets/HierarchicalDropdown.js';
+        Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
+        Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
+    </script>
     
     <div ng-modules=baseTemplateApp>
     </div>
     <div ng-modules=chatAppHtmlTemplateApp>
+        <script>angular.module('chatAppHtmlTemplateApp', []);</script>
     </div>
     <div ng-modules=pageTemplateApp>
+        <script>angular.module('pageTemplateApp', []);</script>
     </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" src="/JS/XsrfToken.js"></script>
     <script>
         Roblox.XsrfToken.setToken('gD0rq6yoHMBf');
     </script>
@@ -532,6 +608,18 @@
             });
         });
     </script>
+    <div id="InstallingPluginView" class="processing-view" style="display:none">
+        <div class="ProcessingModalBody">
+            <p style="margin:0px"><img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Installing Plugin..."></p>
+            <p class="processing-text" style="margin:7px 0px">Installing Plugin...</p>
+        </div>
+    </div>
+    <div id="UpdatingPluginView" class="processing-view" style="display:none">
+        <div class="ProcessingModalBody">
+            <p style="margin:0px"><img src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif" alt="Updating Plugin..."></p>
+            <p class="processing-text" style="margin:7px 0px">Updating Plugin...</p>
+        </div>
+    </div>
     <script>
         $(function() {
             Roblox.Plugins.Resources = {
@@ -551,5 +639,396 @@
             Roblox.Plugins.Init.init();
         });
     </script>
-</div>
-</div>
+    @if (Model.IsLimited)
+    {
+    <style>
+        .sell-dialog-wide .modal-top-body { display: flex; align-items: flex-start; gap: 16px; }
+        .sell-dialog-wide .modal-image-container { flex: 0 0 auto; min-height: auto; text-align: left; }
+        .sell-dialog-wide .modal-thumb { height: 120px; width: 120px; object-fit: cover; margin: 0; border-radius: 4px; }
+        .sell-dialog-wide .modal-message { flex: 1; }
+        .sell-dialog-wide .modal-dialog { width: 420px; }
+    </style>
+    <script>
+        $(function() {
+            var assetId = @Model.Id;
+            var userId = '@(User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "")';
+            var isAuthenticated = '@(User?.Identity?.IsAuthenticated == true)' === 'True';
+
+            function loadResellers(offset) {
+                offset = offset || 0;
+                $.get('/catalog-api/' + assetId + '/resellers?offset=' + offset + '&count=10', function(data) {
+                    var list = $('.resellers-list');
+                    if (offset === 0) list.empty();
+                    if (data.data && data.data.length > 0) {
+                        $.each(data.data, function(i, r) {
+                            var serialHtml = r.serialNumber ? ' <span class=separator>-</span> <span class=serial-number>#' + r.serialNumber + '</span>' : '';
+                            var item = '<li class="list-item">' +
+                                '<a class="avatar avatar-headshot-md list-header" href="/users/' + r.seller.id + '/profile">' +
+                                '<img class="avatar-card-image" src="/headshot-thumbnail/image?userId=' + r.seller.id + '" alt="' + r.seller.name + '">' +
+                                '</a>' +
+                                '<div class="resale-info">' +
+                                '<a class="text-name username" href="/users/' + r.seller.id + '/profile">' + r.seller.name + '</a>' +
+                                serialHtml +
+                                '<div class="reseller-price-container">' +
+                                '<span class="icon-robux-20x20"></span> <span class="icon-robux-16x16"></span> <span class="text-robux">' + r.price.toLocaleString() + '</span>' +
+                                '</div></div>' +
+                                (isAuthenticated ? '<button class="btn-fixed-width btn-buy-md buy-resale-btn" data-listing-id="' + r.listingId + '" data-price="' + r.price + '" data-seller-name="' + r.seller.name + '"> Buy </button>' : '') +
+                                '</li>';
+                            list.append(item);
+                        });
+                        if (data.data.length >= 10) {
+                            $('.see-more-resellers').show();
+                        } else {
+                            $('.see-more-resellers').hide();
+                        }
+                        $('.section-content-off').hide();
+                    } else if (offset === 0) {
+                        $('.see-more-resellers').hide();
+                        $('.section-content-off').show();
+                    }
+                    $('.loading-animated').hide();
+                }).fail(function() {
+                    $('.loading-animated').hide();
+                    if (offset === 0) {
+                        $('.section-content-off').show();
+                    }
+                });
+            }
+
+            function loadPriceChart(days) {
+                days = days || 180;
+                $.get('/catalog-api/' + assetId + '/pricechart?days=' + days, function(data) {
+                    if (data.priceData && data.priceData.length > 0) {
+                        $('#item-quantity-sold').text(data.quantitySold.toLocaleString());
+                        $('#item-original-price .text-robux').text(data.originalPrice.toLocaleString());
+                        $('#item-average-price').text(data.averagePrice.toLocaleString());
+                    } else {
+                        $('#no-price-chart-data').removeClass('hide');
+                        $('.price-chart-section .section-content').hide();
+                    }
+                });
+            }
+
+            if ($('#resellers').length) {
+                loadResellers(0);
+                loadPriceChart(180);
+            }
+
+            $(document).on('click', '.see-more-resellers', function() {
+                var count = $('.reseller-template').length;
+                loadResellers(count);
+            });
+
+            $(document).on('click', '.buy-resale-btn', function() {
+                if (!isAuthenticated) { window.location.href = '/newlogin'; return; }
+                var btn = $(this);
+                var listingId = btn.data('listing-id');
+                var price = btn.data('price');
+                var sellerName = btn.data('seller-name') || 'this seller';
+                var itemName = '@Model.Name';
+                Roblox.Dialog.open({
+                    titleText: 'Buy Item',
+                    bodyContent: 'Would you like to buy <b>' + itemName + '</b> from <b>' + sellerName + '</b> for <span class="text-robux">' + price.toLocaleString() + '</span> Robux?',
+                    allowHtmlContentInBody: true,
+                    onAccept: function() {
+                        btn.attr('disabled', 'disabled').text('Working...');
+                        $.ajax({
+                            url: '/catalog-api/buyresale',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ listingId: listingId }),
+                            success: function() {
+                                Roblox.Dialog.close();
+                                Roblox.BootstrapWidgets.ToggleSystemMessage('Purchase Completed', 2000);
+                                setTimeout(function() { window.location.reload(); }, 1000);
+                            },
+                            error: function(xhr) {
+                                var msg = xhr.responseJSON ? xhr.responseJSON.error : 'Purchase failed';
+                                Roblox.Dialog.close();
+                                Roblox.Dialog.open({
+                                    titleText: 'Purchase Failed',
+                                    bodyContent: msg,
+                                    acceptText: 'OK',
+                                    xToCancel: true
+                                });
+                                btn.removeAttr('disabled').text('Buy');
+                            }
+                        });
+                    },
+                    acceptText: 'Buy Now',
+                    declineText: 'Cancel',
+                    xToCancel: true
+                });
+            });
+
+            $(document).on('click', '.price-chart-range', function(e) {
+                e.preventDefault();
+                var days = $(this).data('days');
+                loadPriceChart(days);
+            });
+
+            $(document).on('click', '#sell', function(e) {
+                e.stopPropagation();
+                var bc = $('#ItemPurchaseAjaxData').attr('data-user-bc');
+                if (bc === '0' || !bc) {
+                    Roblox.Dialog.open({
+                        titleText: 'Sell Your Collectible Item',
+                        bodyContent: 'Only Builders Club members can re-sell collectible items. Get Builders Club today!',
+                        onAccept: function() { window.location = '/premium/membership'; },
+                        acceptText: 'Upgrade',
+                        declineText: 'Cancel',
+                        xToCancel: true
+                    });
+                    return;
+                }
+                $('#sell-modal-content').find('.form-control-label').addClass('invisible');
+                var itemImage = $('#ItemPurchaseAjaxData').attr('data-imageurl') || $('#item-container img').first().attr('src');
+                var rate = parseFloat($('#sell-modal-content .commission-label').data('rate')) || 0.3;
+                Roblox.Dialog.open({
+                    titleText: 'Sell Your Collectible Item',
+                    imageUrl: itemImage,
+                    cssClass: 'sell-dialog-wide',
+                    bodyContent: $('#sell-modal-content').clone().attr('id', 'sell-content-wrapper').removeClass('hidden'),
+                    onAccept: function() {
+                        var price = parseInt($('#sell-content-wrapper').find('.sell-price').val());
+                        if (!$.isNumeric(price) || Math.floor(price) != price || price <= 0) return false;
+                        var avgPrice = parseInt($('#item-average-price').text().replace(/,/g, '')) || 0;
+                        var warningPct = parseInt($('#sell-modal-content .below-market-warning').data('low-price-warning-percentage')) || 15;
+                        var threshold = avgPrice * warningPct / 100;
+                        function doSell() {
+                            Roblox.Dialog.close();
+                            $.post(Roblox.Endpoints.getAbsoluteUrl('/asset/toggle-sale'), {
+                                assetId: assetId,
+                                userAssetId: 0,
+                                price: price,
+                                sell: true
+                            }, function(resp) {
+                                if (resp.isValid) {
+                                    Roblox.BootstrapWidgets.ToggleSystemMessage('Successfully placed on sale', 2000);
+                                    setTimeout(function() { window.location.reload(); }, 1000);
+                                } else {
+                                    Roblox.BootstrapWidgets.ToggleSystemMessage('Failed to place on sale', 2000);
+                                }
+                            }).fail(function() {
+                                Roblox.BootstrapWidgets.ToggleSystemMessage('Failed to place on sale', 2000);
+                            });
+                        }
+                        if (avgPrice > 0 && price < avgPrice - threshold) {
+                            Roblox.Dialog.open({
+                                titleText: 'Sell Your Collectible Item',
+                                bodyContent: $('#confirm-sell-modal').clone().attr('id', 'confirm-sell-content-wrapper').removeClass('hidden'),
+                                onAccept: doSell,
+                                fieldValidationRequired: true,
+                                allowHtmlContentInBody: true,
+                                acceptText: 'Yes',
+                                declineText: 'Cancel',
+                                xToCancel: true,
+                                onOpenCallback: function() {
+                                    var wrapper = $('#confirm-sell-content-wrapper');
+                                    wrapper.find('.attempted-sell-price').text(Roblox.NumberFormatting.commas(price));
+                                    wrapper.find('.average-price').text(Roblox.NumberFormatting.commas(avgPrice));
+                                }
+                            });
+                        } else {
+                            doSell();
+                        }
+                        return false;
+                    },
+                    fieldValidationRequired: true,
+                    allowHtmlContentInBody: true,
+                    acceptText: 'Sell Now',
+                    declineText: 'Cancel',
+                    xToCancel: true,
+                    onOpenCallback: function() {
+                        var wrapper = $('#sell-content-wrapper');
+                        var input = wrapper.find('.sell-price');
+                        var form = wrapper.find('.price-form');
+                        var label = form.find('.form-control-label');
+                        var commEl = wrapper.find('.commission');
+                        var netEl = wrapper.find('.after-commission');
+                        function updateCalc() {
+                            var val = input.val();
+                            if (!$.isNumeric(val) || Math.floor(val) != val || val <= 0) {
+                                form.addClass('form-has-error');
+                                label.removeClass('invisible');
+                                commEl.text('');
+                                netEl.text('');
+                                return;
+                            }
+                            form.removeClass('form-has-error');
+                            label.addClass('invisible');
+                            var fee = Math.max(Math.round(val * rate), 1);
+                            var net = val - fee;
+                            commEl.text(Roblox.NumberFormatting.commas(fee));
+                            netEl.text(net >= 0 ? Roblox.NumberFormatting.commas(net) : '');
+                        }
+                        input.on('keyup', updateCalc);
+                        input.focus();
+                    }
+                });
+            });
+
+        });
+    </script>
+    }
+
+    <script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
+    <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="/JS/leancore/libs/underscore-min.js"></script>
+    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="/JS/utilities/deviceFeatureDetection.js"></script>
+    <script type="text/javascript" src="/JS/utilities/lazyLoad.js"></script>
+    <script type="text/javascript" src="/JS/utilities/urlParser.js"></script>
+    <script type="text/javascript" src="/JS/utilities/ExponentialBackoff.js"></script>
+    <script type="text/javascript" src="/JS/utilities/ExponentialBackoffSpecification.js"></script>
+    <script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="/JS/json2.min.js"></script>
+    <script type="text/javascript" src="/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="/JS/3D/three.js"></script>
+    <script type="text/javascript" src="/JS/3D/tween.js"></script>
+    <script type="text/javascript" src="/JS/3D/MTLLoader.js"></script>
+    <script type="text/javascript" src="/JS/3D/RobloxOrbitControls.js"></script>
+    <script type="text/javascript" src="/JS/3D/OBJMTLLoader.js"></script>
+    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/AnimatedThumbnails.js"></script>
+    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
+    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="/JS/Linkify.js"></script>
+    <script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/ModalEvents.js"></script>
+    <script type="text/javascript" src="/JS/VideoPreRoll.js"></script>
+    <script type="text/javascript" src="/JS/VideoPreRollDFP.js"></script>
+    <script type="text/javascript" src="/JS/CharacterSelect.js"></script>
+    <script type="text/javascript" src="/JS/MadStatus.js"></script>
+    <script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="/JS/GameLauncher.js"></script>
+    <script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
+    <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
+    <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="/JS/leancore/RobloxHeaderInit.js"></script>
+    <script type="text/javascript" src="/JS/utilities/performance.js"></script>
+    <script type="text/javascript" src="/JS/RobloxCookies.js"></script>
+    <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
+    <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="/JS/Events/AssetActionButtonClickEvent.js"></script>
+    <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+    <script type="text/javascript" src="/JS/common/constants.js"></script>
+    <script type="text/javascript" src="/JS/services/userService.js"></script>
+    <script type="text/javascript" src="/JS/NumberFormatting.js"></script>
+    <script type="text/javascript" src="/JS/ItemPurchaseForDialog.js"></script>
+    <script type="text/javascript" src="/JS/utilities/dialog.js"></script>
+    <script type="text/javascript" src="/JS/utilities/countdownTimer.js"></script>
+    <script type="text/javascript" src="/JS/Item/PurchaseItem.js"></script>
+    <script type="text/javascript" src="/JS/widgets/Favorites.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular.ng-modules.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular.audio.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular-elastic.js"></script>
+    <!-- app.js and robloxService.js already loaded by _Layout.cshtml -->
+    <script type="text/javascript" src="/JS/viewapp/common/services/chatDispatchService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/eventStreamService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/httpService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/hybridService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/imagesService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/localStorageService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/numericCodeService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/realtimeService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/retryService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/urlService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/userService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/performanceService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/keyCode.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/callBackTypes.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/deviceTypes.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/assetTypes.js"></script>
+    <!-- filters.js already loaded by _Layout.cshtml -->
+    <script type="text/javascript" src="/JS/viewapp/common/helpers.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/abbreviate.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/capitalize.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/firstLetter.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/getPercentage.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/htmlToPlainText.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/isEmpty.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/orderList.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/parseTimeStamp.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/positive.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/reverse.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/startsWith.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/autoResizeDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/blurDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/clickOutsideDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/enterEscapeShiftDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/focusDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/focusMeDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/formValidationDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/imageRetryWithLazyLoadDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/inputMaxLength.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/keyPressEnterDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/keyPressEscapeDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/numbersOnlyDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/onFinishRenderDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/phoneDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/switcherDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/recommendations/recommendations.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/recommendations/controllers/recommendationsController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/recommendations/services/recommendationsPageService.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/utilities/dialog.js"></script>
+    <script type="text/javascript" src="/JS/NumberFormatting.js"></script>
+    <script type="text/javascript" src="/JS/GenericModal.js"></script>
+    <script type="text/javascript" src="/JS/Item/ItemPage.js"></script>
+    <script type="text/javascript" src="/JS/HighCharts/highcharts.js"></script>
+    <script type="text/javascript" src="/JS/HighCharts/modules/data.js"></script>
+    <script type="text/javascript" src="/JS/Item/PriceChart.js"></script>
+    <script type="text/javascript" src="/JS/Item/Resellers.js"></script>
+    <script type="text/javascript" src="/JS/Item/ContextMenu.js"></script>
+    <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
+    <script type="text/javascript" src="/JS/Bootstrap/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/FormEvents.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/formEvents/formEvents.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/formEvents/directives/formContext.js"></script>
+    <script type="text/javascript" src="/JS/TosModalCheck.js"></script>
+    <script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+    <script type="text/javascript" src="/JS/Comments.js?v=3"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/toggleLoadingDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/emailAndPhoneUpsell.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/constants/emailAndPhoneUpsellConstants.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/services/emailAndPhoneUpsellService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellModalController.js"></script>
+    <script type="text/javascript" src="/JS/2017CatalogItem.js"></script>
+    <script type="text/javascript" src="/JS/Plugins/Plugin.js"></script>
+    <script>
+        $(function() {
+            if (Roblox && Roblox.PageHeartbeatEvent) {
+                Roblox.PageHeartbeatEvent.Init([2, 8, 20, 60]);
+            }
+        });
+    </script>
+}

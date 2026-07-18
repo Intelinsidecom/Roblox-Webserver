@@ -47,7 +47,7 @@ namespace Control_Panel
                     ProductImagePreview.Source = bitmap;
                     ImagePreviewBorder.Visibility = Visibility.Visible;
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] SelectImageButton_Click preview: {ex}"); }
             }
         }
 

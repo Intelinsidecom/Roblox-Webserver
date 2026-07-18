@@ -18,6 +18,7 @@ namespace Games
     public class TokenService
     {
         private readonly string _connectionString;
+        private readonly string _publicBaseUrl;
         private readonly IMemoryCache _memoryCache;
         private readonly MemoryCacheEntryOptions _ticketCacheOptions;
 
@@ -25,6 +26,7 @@ namespace Games
         {
             _connectionString = configuration.GetConnectionString("Default") 
                 ?? throw new ArgumentNullException("Database connection string not configured");
+            _publicBaseUrl = configuration["PublicBaseUrl"] ?? string.Empty;
             _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
             _ticketCacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(15))
@@ -48,7 +50,7 @@ namespace Games
                     )", conn);
                 await cmd.ExecuteNonQueryAsync();
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine($"[ERROR] EnsureSessionsTable: {ex}"); }
         }
 
         /// <summary>
@@ -191,20 +193,25 @@ namespace Games
             {
                 try
                 {
+                    var authenticationUrl = $"{_publicBaseUrl}/Game/PlaceLauncher.ashx?request=AuthenticateTicket";
+                    var joinScriptUrl = $"{_publicBaseUrl}/Game/PlaceLauncher.ashx?request=RequestGame&placeId={placeId}&isPartyLeader=false&gender=&isTeleport=true";
+
                     using var conn = new NpgsqlConnection(_connectionString);
                     await conn.OpenAsync();
                     using var cmd = new NpgsqlCommand(@"
                         INSERT INTO authentication_tickets 
-                        (ticket_token, user_id, place_id, created_at, expires_at, is_active, memory_cached, cache_expires_at, ticket_type)
-                        VALUES (@token, @user_id, @place_id, NOW(), NOW() + INTERVAL '15 minutes', true, true, NOW() + INTERVAL '15 minutes', 'game_session')
+                        (ticket_token, user_id, place_id, authentication_url, join_script_url, created_at, expires_at, is_active, memory_cached, cache_expires_at, ticket_type)
+                        VALUES (@token, @user_id, @place_id, @auth_url, @join_url, NOW(), NOW() + INTERVAL '15 minutes', true, true, NOW() + INTERVAL '15 minutes', 'game_session')
                         ON CONFLICT (ticket_token) DO NOTHING", conn);
                     
                     cmd.Parameters.AddWithValue("token", token);
                     cmd.Parameters.AddWithValue("user_id", userId);
                     cmd.Parameters.AddWithValue("place_id", placeId);
+                    cmd.Parameters.AddWithValue("auth_url", authenticationUrl);
+                    cmd.Parameters.AddWithValue("join_url", joinScriptUrl);
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch {}
+                catch (Exception ex) { Console.WriteLine($"[ERROR] CreateGameTicketAsync insert: {ex}"); }
             });
 
             return token;
@@ -251,7 +258,7 @@ namespace Games
                     cmd.Parameters.AddWithValue("token", token);
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch {}
+                catch (Exception ex) { Console.WriteLine($"[ERROR] MarkTicketUsedAsync: {ex}"); }
             });
 
             await Task.CompletedTask;

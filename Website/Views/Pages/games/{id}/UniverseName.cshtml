@@ -458,7 +458,7 @@
                                     }
                                     else
                                     {
-                                        <div id=MultiplayerVisitButton class="VisitButton VisitButtonPlayGLI" placeid=@ViewBag.Id data-action=play data-is-membership-level-ok=true><a class=btn-primary-lg>Play</a></div>
+                                        <div id=MultiplayerVisitButton class="VisitButton VisitButtonPlayGLI" placeid=@ViewBag.Id data-action=play data-is-membership-level-ok=true data-user-bc="@(ViewBag.UserMembershipLevel ?? 0)"><a class=btn-primary-lg>Play</a></div>
                                     }
                                     <script>
                                         Roblox = Roblox || {};
@@ -992,7 +992,7 @@
                         <div id=GenericModalButtonContainer class=GenericModalButtonContainer><a class="ImageButton btn-neutral btn-large roblox-ok">OK</a></div>
                     </div>
                 </div>
-                <div id=ItemPurchaseAjaxData data-has-currency-service-error=False data-currency-service-error-message="" data-authenticateduser-isnull=False data-user-balance-robux=0 data-user-bc=0 data-continueshopping-url=https://web.roblox.com/games/370731277/MeepCity data-imageurl=https://t1.rbxcdn.com/44da2b4728c38dabc5524199405dc72b data-alerturl=https://images.rbxcdn.com/75af9e2cb6a75450bee5245f5ee11c86.svg.gzip data-insufficentfundsurl=https://images.rbxcdn.com/b80339ddf867ccfe6ab23a2c263d8000.png></div>
+                <div id=ItemPurchaseAjaxData data-has-currency-service-error=False data-currency-service-error-message="" data-authenticateduser-isnull="@(ViewBag.IsUserAuthenticated != true)" data-user-balance-robux=0 data-user-bc="@(ViewBag.UserMembershipLevel ?? 0)" data-continueshopping-url="/games/@ViewBag.Id/@ViewBag.Name" data-imageurl="" data-alerturl=/images/DataAlert.svg.gzip data-insufficentfundsurl=/images/b80339ddf867ccfe6ab23a2c263d8000.png></div>
                 <div id=BCOnlyModal class=modal-dialog style=display:none>
                     <div class=modal-content>
                         <div class=modal-header><button type=button class=close onclick=$.modal.close()> <span aria-hidden=true> <span class=icon-close></span> </span> <span class=sr-only>Close</span> </button>

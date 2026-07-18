@@ -221,7 +221,7 @@ namespace RCCArbiter
                     using var pkill = Process.Start(psi);
                     pkill?.WaitForExit(2000);
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] KillProcessTree pkill -P {processId}: {ex}"); }
             }
         }
 

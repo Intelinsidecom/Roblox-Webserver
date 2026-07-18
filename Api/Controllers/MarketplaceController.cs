@@ -57,32 +57,75 @@ namespace Api.Controllers
                 parameter.Value = assetId;
                 command.Parameters.Add(parameter);
                 
-                using var reader = await command.ExecuteReaderAsync();
-                
-                if (await reader.ReadAsync())
-                {
+                    using var reader = await command.ExecuteReaderAsync();
+                    
+                    if (await reader.ReadAsync())
+                    {
+                        var assetTypeId = reader.GetInt32(3);
+                        var isForSale = reader.GetBoolean(6);
+                        var price = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7);
+                        var creatorId = reader.IsDBNull(8) ? 0 : reader.GetInt64(8);
+                        var creatorName = reader.IsDBNull(9) ? "Unknown" : reader.GetString(9);
+                        var assetIdResult = reader.GetInt64(0);
+                        var name = reader.GetString(1);
+                        var description = reader.IsDBNull(2) ? null : reader.GetString(2);
+                        var created = reader.GetDateTime(4);
+                        var updated = reader.GetDateTime(5);
+
+                        reader.Close();
+
+                        var limCmd = connection.CreateCommand();
+                    limCmd.CommandText = @"SELECT limited_unique, limited_quantity, limited_remaining, limited_until, recent_average_price
+                                           FROM assets WHERE asset_id = @assetId";
+                    var limParam = limCmd.CreateParameter();
+                    limParam.ParameterName = "@assetId";
+                    limParam.Value = assetId;
+                    limCmd.Parameters.Add(limParam);
+
+                    bool isLimitedUnique = false;
+                    bool isLimited = false;
+                    long? limitedQuantity = null;
+                    long? limitedRemaining = null;
+                    long rap = 0;
+
+                    using (var limReader = await limCmd.ExecuteReaderAsync())
+                    {
+                        if (await limReader.ReadAsync())
+                        {
+                            isLimitedUnique = !limReader.IsDBNull(0) && limReader.GetBoolean(0);
+                            limitedQuantity = limReader.IsDBNull(1) ? null : (long?)limReader.GetInt64(1);
+                            limitedRemaining = limReader.IsDBNull(2) ? null : (long?)limReader.GetInt64(2);
+                            rap = limReader.IsDBNull(4) ? 0 : limReader.GetInt64(4);
+                            isLimited = isLimitedUnique || (limitedQuantity.HasValue && limitedQuantity.Value > 0);
+                        }
+                    }
+
                     dynamic result = new
                     {
-                        AssetId = reader.GetInt64(0),
-                        Name = reader.GetString(1),
-                        Description = reader.IsDBNull(2) ? null : reader.GetString(2),
-                        AssetTypeId = reader.GetInt32(3),
-                        Created = reader.GetDateTime(4),
-                        Updated = reader.GetDateTime(5),
-                        IsForSale = reader.GetBoolean(6),
-                        Price = reader.IsDBNull(7) ? (int?)null : reader.GetInt32(7),
+                        AssetId = assetIdResult,
+                        Name = name,
+                        Description = description,
+                        AssetTypeId = assetTypeId,
+                        Created = created,
+                        Updated = updated,
+                        IsForSale = isForSale,
+                        Price = price,
                         Creator = new
                         {
-                            Id = reader.IsDBNull(8) ? 0 : reader.GetInt64(8),
-                            Name = reader.IsDBNull(9) ? "Unknown" : reader.GetString(9),
+                            Id = creatorId,
+                            Name = creatorName,
                             Type = "User"
-                        }
+                        },
+                        IsLimited = isLimited,
+                        IsLimitedUnique = isLimitedUnique,
+                        Quantity = limitedQuantity,
+                        Remaining = limitedRemaining,
+                        OriginalPrice = price,
+                        RAP = rap
                     };
 
                     if (result.AssetTypeId == 9)
                     {
-                        reader.Close();
-                        
                         using var placeCommand = connection.CreateCommand();
                         placeCommand.CommandText = @"
                             SELECT 

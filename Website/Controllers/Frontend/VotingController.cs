@@ -2,11 +2,10 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Games;
-using Common;
-using Npgsql;
 
 namespace Website.Controllers.Frontend;
 

@@ -375,6 +375,37 @@ namespace Control_Panel
 
                 string successMessage = $"{assetTypeName} Asset: {result.AssetId} Uploaded successfully";
                 _viewLoader?.UpdateStatus(successMessage);
+
+                if (IsLimitedCheckBox.IsChecked == true)
+                {
+                    _viewLoader?.UpdateStatus("Setting limited fields...");
+                    await System.Threading.Tasks.Task.Delay(100);
+                    try
+                    {
+                        var asset = await _assetService.GetAssetByIdAsync(result.AssetId);
+                        if (asset != null)
+                        {
+                            asset.IsLimited = true;
+                            if (long.TryParse(LimitedQuantityTextBox.Text.Trim(), out long quantity))
+                            {
+                                asset.LimitedQuantity = quantity;
+                                asset.LimitedRemaining = quantity;
+                            }
+                            if (LimitedUntilDatePicker.SelectedDate.HasValue)
+                            {
+                                asset.LimitedUntil = LimitedUntilDatePicker.SelectedDate.Value;
+                            }
+                            await _assetService.UpdateAssetAsync(asset);
+                            _viewLoader?.UpdateStatus("Limited fields saved.");
+                        }
+                    }
+                    catch (Exception limitEx)
+                    {
+                        _viewLoader?.UpdateStatus($"Warning: Upload succeeded but limited fields failed: {limitEx.Message}");
+                        await Task.Delay(2000);
+                    }
+                }
+
                 await System.Threading.Tasks.Task.Delay(2000);
                 ClearForm();
                 _viewLoader?.UpdateStatus("Ready");
@@ -697,6 +728,25 @@ namespace Control_Panel
             {
                 System.Diagnostics.Debug.WriteLine($"Error opening asset management: {ex.Message}");
                 MessageBox.Show($"Error opening asset management: {ex.Message}", "Navigation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Opens the Catalog Configuration window for managing featured items.
+        /// </summary>
+        private void ConfigureCatalogButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var configWindow = new CatalogConfigurationWindow();
+                configWindow.Owner = Window.GetWindow(this);
+                configWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                configWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error opening Catalog Configuration: {ex.Message}");
+                MessageBox.Show($"Error opening Catalog Configuration: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

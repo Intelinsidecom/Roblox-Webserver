@@ -17,7 +17,7 @@
             else if (n.attributes)
                 for (t = 0; t < n.attributes.length; t++) c = n.attributes[t], h.indexOf(c.name) != -1 && (f.push(n), s.push(c.value))
         }
-        for (i = 0; i < f.length; i++) a = f[i], v = s[i].replace(/ /g, "").split(","), angular.bootstrap(a, v)
+        for (i = 0; i < f.length; i++) { a = f[i]; v = s[i].replace(/ /g, "").split(","); try { angular.element(a).injector() || angular.bootstrap(a, v) } catch (e) { console.warn("angular.ng-modules: failed to bootstrap", v, e) } }
     }
     angular.element(document).ready(function() {
         n(document)

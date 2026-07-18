@@ -1818,8 +1818,9 @@ namespace RobloxWebserver.Controllers
 
                 return Json(new { html = sb.ToString(), page, totalPages });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] GetVersionHistory for assetId: {ex}");
                 return Json(new { html = "<thead><tr><th>Version number</th><th>Created</th><th></th><th></th></tr></thead><tbody><tr><td colspan='4'>An error occurred while loading version history</td></tr></tbody>", page = 1, totalPages = 1 });
             }
         }
@@ -1849,8 +1850,9 @@ namespace RobloxWebserver.Controllers
 
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] RevertToVersion assetId={assetID} version={assetVersionID}: {ex}");
                 return StatusCode(500);
             }
         }

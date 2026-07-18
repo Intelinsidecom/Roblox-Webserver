@@ -8,7 +8,7 @@ THREE.OBJMTLLoader = function() {}, THREE.OBJMTLLoader.prototype = {
     },
     loadWithRetries: function(n, t, i, r, u) {
         function h() {
-            f < o ? (f = f + 1, setTimeout(e, s)) : u("Unable to load file", t)
+            f < o ? (f = f + 1, setTimeout(e, s)) : u && u("Unable to load file", t)
         }
 
         function e() {
@@ -19,42 +19,42 @@ THREE.OBJMTLLoader = function() {}, THREE.OBJMTLLoader.prototype = {
             s = 5e3;
         e()
     },
-    interpretData: function(n, t, i) {
-        function r(n) {
+    interpretData: function(n, t, i, r, u) {
+        function e(n) {
             return n.length === 32 && n.indexOf("/") === -1
         }
 
         function f(n) {
-            return !r(n) && n.indexOf("/") > -1 && n.indexOf("\n") === -1
+            return !e(n) && n.indexOf("/") > -1 && n.indexOf("\n") === -1
         }
 
         function o(n) {
-            return !r(n) && !f(n)
+            return !e(n) && !f(n)
         }
-        var e = this,
-            u = new THREE.FileLoader(e.manager);
-        r(t) ? this.loadWithRetries(u, this.getHashUrl(t), function(t) {
+        var c = this,
+            h = new THREE.FileLoader(c.manager);
+        e(t) ? this.loadWithRetries(h, this.getHashUrl(t), function(t) {
             i(n, t)
-        }, function() {}, function() {}) : f(t) ? this.loadWithRetries(u, t, function(t) {
+        }, r, u) : f(t) ? this.loadWithRetries(h, t, function(t) {
             i(n, t)
-        }, function() {}, function() {}) : o(t) && i(n, t)
+        }, r, u) : o(t) && i(n, t)
     },
     cleanObjData: function(n) {
         return n.replace(new RegExp("-1.#IND", "g"), "0")
     },
-    load: function(n, t, i) {
-        var u, r, f = "anonymous",
-            e = new THREE.MTLLoader({}, f);
-        this.interpretData(this, t, function(t, f) {
-            u = e.parse(f), t.interpretData(t, n, function(n, t) {
-                r = n.cleanObjData(t), r = n.parse(r), r.traverse(function(n) {
+    load: function(n, t, i, r, u) {
+        var f, e, o = "anonymous",
+            c = new THREE.MTLLoader({}, o);
+        this.interpretData(this, t, function(t, e) {
+            f = c.parse(e), t.interpretData(t, n, function(n, t) {
+                e = n.cleanObjData(t), e = n.parse(e), e.traverse(function(n) {
                     if (n instanceof THREE.Mesh && n.material.name) {
-                        var t = u.create(n.material.name);
+                        var t = f.create(n.material.name);
                         t && (n.material = t)
                     }
-                }), i(r, u)
-            })
-        })
+                }), i(e, f)
+            }, r, u)
+        }, r, u)
     },
     parse: function(n, t) {
         function g(n, t, i) {

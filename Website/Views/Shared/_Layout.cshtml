@@ -51,6 +51,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style> -->
     <!-- i did this since games page needs extra care, that means full frontend rework in css will be needed, yikes -->
 
         @if (ViewContext.HttpContext.Request.Path.Value.Contains("/404"))
@@ -77,28 +78,52 @@
         <link rel="stylesheet" href="~/CSS/Pages/Login/SignupOrLogInIframe.css">
         <link rel="stylesheet" href="~/CSS/signup/SignupOrLogInLegacy.css">
         <link rel="stylesheet" href="/CSS/Legacy/iFrameLogin.css">
+        <link rel="stylesheet" href="~/CSS/Pages/Notifications/NotificationStream.css">
+
         
     <script async src="~/JS/lib/beacon/beacon.js"></script>
     <!-- Now we import the roblox js scripts, there is plenty of them -->
     <!-- dependencies other scripts may use or not, angular, ajax and so on -->
     <script type="text/javascript" src="~/JS/jquery/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="~/JS/jquery/jquery-migrate-1.2.1.min.js"></script>
-    @if (!ViewContext.HttpContext.Request.Path.Value.Contains("/games/"))
+    @if (!ViewContext.HttpContext.Request.Path.Value.Contains("/games/") &&
+         !ViewContext.HttpContext.Request.Path.Value.Contains("/catalog/") &&
+         !ViewContext.HttpContext.Request.Path.Value.Contains("/users/"))
     {
         <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
     }
+
+    <script type="text/javascript" src="~/JS/roblox.js"></script>
+
+    <script type='text/javascript'>
+        Roblox.config.externalResources = [];
+        Roblox.config.paths['Pages.Catalog'] = '/JS/modules/Pages/Catalog.js';
+        Roblox.config.paths['Pages.CatalogShared'] = '/JS/modules/Pages/CatalogShared.js';
+        Roblox.config.paths['Widgets.AvatarImage'] = '/JS/modules/Widgets/AvatarImage.js';
+        Roblox.config.paths['Widgets.DropdownMenu'] = '/JS/modules/Widgets/DropdownMenu.js';
+        Roblox.config.paths['Widgets.HierarchicalDropdown'] = '/JS/modules/Widgets/HierarchicalDropdown.js';
+        Roblox.config.paths['Widgets.ItemImage'] = '/JS/modules/Widgets/ItemImage.js';
+        Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
+    </script>
+
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
     <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.js"></script>
+    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
     <script type="text/javascript" src="~/JS/templateApp.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
-    <script type="text/javascript" src="~/JS/roblox.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/translate.js"></script>
     <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
     <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
     <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
@@ -110,7 +135,6 @@
     <script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
     <script type="text/javascript" src="~/JS/modules/Widgets/SurveyModal.js"></script>
     <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
-    <script type="text/javascript" src="/JS/Navigation.js"></script>
     <script type="text/javascript">
       window.Roblox = window.Roblox || {};
       Roblox.Lang = Roblox.Lang || {};
@@ -142,29 +166,53 @@
       window.Roblox = window.Roblox || {};
       Roblox.EnvironmentUrls = Roblox.EnvironmentUrls || {};
       
-      Roblox.EnvironmentUrls.websiteUrl = Roblox.EnvironmentUrls.websiteUrl || "http://localhost:5077";
-      Roblox.EnvironmentUrls.notificationApi = Roblox.EnvironmentUrls.notificationApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.chatApi = Roblox.EnvironmentUrls.chatApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.presenceApi = Roblox.EnvironmentUrls.presenceApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.friendsApi = Roblox.EnvironmentUrls.friendsApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.thumbnailsApi = Roblox.EnvironmentUrls.thumbnailsApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.gamesApi = Roblox.EnvironmentUrls.gamesApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.followingsApi = Roblox.EnvironmentUrls.followingsApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.metricsApi = Roblox.EnvironmentUrls.metricsApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.localeApi = Roblox.EnvironmentUrls.localeApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.accountSettingsApi = Roblox.EnvironmentUrls.accountSettingsApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.gameInternationalizationApi = Roblox.EnvironmentUrls.gameInternationalizationApi || "http://localhost:5077";
-      Roblox.EnvironmentUrls.domain = Roblox.EnvironmentUrls.domain || "localhost:5077";
+      var _origin = window.location.origin;
+      Roblox.EnvironmentUrls.websiteUrl = Roblox.EnvironmentUrls.websiteUrl || _origin;
+      Roblox.EnvironmentUrls.notificationApi = Roblox.EnvironmentUrls.notificationApi || _origin;
+      Roblox.EnvironmentUrls.chatApi = Roblox.EnvironmentUrls.chatApi || _origin;
+      Roblox.EnvironmentUrls.presenceApi = Roblox.EnvironmentUrls.presenceApi || _origin;
+      Roblox.EnvironmentUrls.friendsApi = Roblox.EnvironmentUrls.friendsApi || _origin;
+      Roblox.EnvironmentUrls.thumbnailsApi = Roblox.EnvironmentUrls.thumbnailsApi || _origin;
+      Roblox.EnvironmentUrls.gamesApi = Roblox.EnvironmentUrls.gamesApi || _origin;
+      Roblox.EnvironmentUrls.followingsApi = Roblox.EnvironmentUrls.followingsApi || _origin;
+      Roblox.EnvironmentUrls.metricsApi = Roblox.EnvironmentUrls.metricsApi || _origin;
+      Roblox.EnvironmentUrls.localeApi = Roblox.EnvironmentUrls.localeApi || _origin;
+      Roblox.EnvironmentUrls.accountSettingsApi = Roblox.EnvironmentUrls.accountSettingsApi || _origin;
+      Roblox.EnvironmentUrls.gameInternationalizationApi = Roblox.EnvironmentUrls.gameInternationalizationApi || _origin;
+      Roblox.EnvironmentUrls.domain = Roblox.EnvironmentUrls.domain || window.location.host;
       
       if (Roblox.EventStream && Roblox.EventStream.Init) {
         Roblox.EventStream.Init("/images/signup/e.png", "/images/signup/e.png", "/pe?t=studio", "/pe?t=diagnostic");
       }
     </script>
-    <!-- Temporarily disabled notification stream for debugging
+    <script type="text/javascript" src="~/JS/lib/signalr/signalr.min.js"></script>
+    <script type="text/javascript">
+      window.Roblox = window.Roblox || {};
+      var _currentUserId = @(User.Identity?.IsAuthenticated == true ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0" : "0");
+      Roblox.CurrentUser = Roblox.CurrentUser || { userId: _currentUserId };
+      Roblox.DeviceMeta = Roblox.DeviceMeta || function() {
+        return { isInApp: false, isPhone: false, isAndroidApp: false, isIosApp: false, isUWPApp: false };
+      };
+      Roblox.RealTimeSettings = Roblox.RealTimeSettings || {
+        NotificationsEndpoint: window.location.origin,
+        UserId: _currentUserId,
+        MaxConnectionTime: "21600000",
+        IsEventPublishingEnabled: false,
+        IsDisconnectOnSlowConnectionDisabled: false,
+        IsSignalRClientTransportRestrictionEnabled: false,
+        IsLocalStorageInRealTimeEnabled: true
+      };
+    </script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/signalRConnectionWrapper.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/signalRSource.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/hybridSource.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/crossTabReplicatedSource.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/client.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/factory.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/stateTracker.js"></script>
     <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Notifications_NotificationStreamResources_en_us_standard.js"></script>
+
     <script type="text/javascript" src="~/JS/dist/js/notificationStream.bundle.min.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
-    -->
 
 
 
@@ -255,6 +303,7 @@
                             <span class="icon-nav-blog"></span><span>Blog</span>
                         </a>
                     </li>
+                    <li class="rbx-upgrade-now">
                 </ul>
             </div>
         </div>
@@ -298,12 +347,26 @@
         </div>
     </div>
 
+            Roblox.Resources.Dialog = {
+                yes: "Yes",
+                No: "No",
+                OK: "OK",
+                Confirm: "Confirm",
+                Cancel: "Cancel",
+                Agree: "Agree"
+            };
+        </script>
+
+
     @if (!(isApp && User.Identity.IsAuthenticated))
     {
         <partial name="_Footer" />
     }
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+
+   <!-- <div class="notification-stream-base gotham-font" notification-stream-base ng-modules="notificationStream, notificationStreamHtmlTemplate"></div> -->
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

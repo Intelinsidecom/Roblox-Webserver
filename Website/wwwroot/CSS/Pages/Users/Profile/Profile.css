@@ -1,454 +1,580 @@
 /* ~/CSS/Pages/Users/Profile/Profile.css */
-.profile-container {
-	max-width: 970px;
-	margin: 0 auto;
+.form-inline {
+    position: static;
 }
 
-@media(max-width:991px) {
-	.profile-container {
-		margin: 0 5px;
-	}
+.icon-default-badges,
+.icon-inviter,
+.icon-friendship,
+.icon-welcome-to-the-club,
+.icon-ambassador,
+.icon-combat-initiation,
+.icon-warrior,
+.icon-bloxxer,
+.icon-homestead,
+.icon-bricksmith,
+.icon-official-model-maker,
+.icon-builders-club,
+.icon-turbo-builders-club,
+.icon-outrageous-builders-club,
+.icon-administrator,
+.icon-veteran {
+    background-image: url(/images/Badges/badges_06282017.svg);
+    background-repeat: no-repeat;
+    background-size: 280px auto;
+    width: 140px;
+    height: 140px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-inviter {
+    background-position: 0 0;
+}
+
+.icon-friendship {
+    background-position: -140px 0;
+}
+
+.icon-welcome-to-the-club {
+    background-position: 0 -140px;
+}
+
+.icon-ambassador {
+    background-position: -140px -140px;
+}
+
+.icon-combat-initiation {
+    background-position: 0 -280px;
+}
+
+.icon-warrior {
+    background-position: -140px -280px;
+}
+
+.icon-bloxxer {
+    background-position: 0 -420px;
+}
+
+.icon-homestead {
+    background-position: -140px -420px;
+}
+
+.icon-bricksmith {
+    background-position: 0 -560px;
+}
+
+.icon-official-model-maker {
+    background-position: -140px -560px;
+}
+
+.icon-builders-club {
+    background-position: 0 -700px;
+}
+
+.icon-turbo-builders-club {
+    background-position: -140px -700px;
+}
+
+.icon-outrageous-builders-club {
+    background-position: 0 -840px;
+}
+
+.icon-administrator {
+    background-position: -140px -840px;
+}
+
+.icon-veteran {
+    background-position: 0 -980px;
+}
+
+.icon-default-iconlabels,
+.icon-bc-label,
+.icon-tbc-label,
+.icon-obc-label,
+.icon-limited-label,
+.icon-limited-bc-label,
+.icon-limited-tbc-label,
+.icon-limited-obc-label,
+.icon-limited-unique-label,
+.icon-limited-unique-bc-label,
+.icon-limited-unique-tbc-label,
+.icon-limited-unique-obc-label,
+.icon-thirteen-plus-label,
+.icon-thirteen-plus-bc-label,
+.icon-thirteen-plus-tbc-label,
+.icon-thirteen-plus-obc-label,
+.icon-thirteen-plus-limited-label,
+.icon-thirteen-plus-limited-bc-label,
+.icon-thirteen-plus-limited-tbc-label,
+.icon-thirteen-plus-limited-obc-label,
+.icon-thirteen-plus-limited-unique-label,
+.icon-thirteen-plus-limited-unique-bc-label,
+.icon-thirteen-plus-limited-unique-tbc-label,
+.icon-thirteen-plus-limited-unique-obc-label {
+    background-image: url(/images/AssetIcons/itemlabel_06282017.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 123px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-bc-label {
+    background-position: 0 0;
+}
+
+.icon-tbc-label {
+    background-position: 0 -18px;
+}
+
+.icon-obc-label {
+    background-position: 0 -36px;
+}
+
+.icon-limited-label {
+    background-position: 0 -54px;
+}
+
+.icon-limited-bc-label {
+    background-position: 0 -72px;
+}
+
+.icon-limited-tbc-label {
+    background-position: 0 -90px;
+}
+
+.icon-limited-obc-label {
+    background-position: 0 -108px;
+}
+
+.icon-limited-unique-label {
+    background-position: 0 -126px;
+}
+
+.icon-limited-unique-bc-label {
+    background-position: 0 -144px;
+}
+
+.icon-limited-unique-tbc-label {
+    background-position: 0 -162px;
+}
+
+.icon-limited-unique-obc-label {
+    background-position: 0 -180px;
+}
+
+.icon-thirteen-plus-label {
+    background-position: 0 -198px;
+}
+
+.icon-thirteen-plus-bc-label {
+    background-position: 0 -216px;
+}
+
+.icon-thirteen-plus-tbc-label {
+    background-position: 0 -234px;
+}
+
+.icon-thirteen-plus-obc-label {
+    background-position: 0 -252px;
+}
+
+.icon-thirteen-plus-limited-label {
+    background-position: 0 -270px;
+}
+
+.icon-thirteen-plus-limited-bc-label {
+    background-position: 0 -288px;
+}
+
+.icon-thirteen-plus-limited-tbc-label {
+    background-position: 0 -306px;
+}
+
+.icon-thirteen-plus-limited-obc-label {
+    background-position: 0 -324px;
+}
+
+.icon-thirteen-plus-limited-unique-label {
+    background-position: 0 -342px;
+}
+
+.icon-thirteen-plus-limited-unique-bc-label {
+    background-position: 0 -360px;
+}
+
+.icon-thirteen-plus-limited-unique-tbc-label {
+    background-position: 0 -378px;
+}
+
+.icon-thirteen-plus-limited-unique-obc-label {
+    background-position: 0 -396px;
+}
+
+.profile-container {
+    max-width: 970px;
+    margin: 0 auto;
 }
 
 .profile-container .rbx-tab {
-	width: 50%;
+    width: 50%;
 }
 
 .profile-container .hide-game-items {
-	position: absolute;
-	width: 970px;
-	height: 200px;
+    position: absolute;
+    width: 970px;
+    height: 200px;
 }
 
 .profile-container .profile-game {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .profile-container .profile-game .game-grid:before,
 .profile-container .profile-game .game-grid:after {
-	content: " ";
-	display: table;
+    content: " ";
+    display: table;
 }
 
 .profile-container .profile-game .game-grid:after {
-	clear: both;
+    clear: both;
 }
 
 .profile-container .item-list {
-	overflow: hidden;
-	max-height: 170px;
+    overflow: hidden;
+    max-height: 170px;
 }
 
 @media(max-width:767px) {
-	.profile-container .item-list {
-		max-height: 115px;
-	}
+    .profile-container .item-list {
+        max-height: 115px;
+    }
 }
 
 .profile-container .badge-list {
-	overflow: hidden;
-	max-height: 170px;
+    overflow: hidden;
+    max-height: 170px;
 }
 
 @media(max-width:767px) {
-	.profile-container .badge-list {
-		max-height: 115px;
-	}
+    .profile-container .badge-list {
+        max-height: 115px;
+    }
 }
 
 .profile-container .badge-list-more {
-	overflow: auto;
-	max-height: 100%;
+    overflow: auto;
+    max-height: 100%;
 }
 
 .profile-container .game-list-more {
-	overflow: auto;
-	max-height: 100%;
+    overflow: auto;
+    max-height: 100%;
 }
 
-.profile-container .game-container {
-	display: none;
-	width: 16.66667%;
-	min-width: 102px;
-	float: left;
-	text-align: center;
-}
-
-@media(max-width:991px) {
-	.profile-container .game-container {
-		width: auto;
-	}
-}
-
-.profile-container .game-container.shown {
-	display: inline-block;
+.profile-container .game-container,
+.profile-container .group-container {
+    display: none;
+    width: 16.66667%;
+    min-width: 102px;
+    float: left;
+    text-align: center;
 }
 
 @media(max-width:991px) {
-	.profile-container .game-container.shown {
-		white-space: nowrap;
-		float: none;
-	}
+
+    .profile-container .game-container,
+    .profile-container .group-container {
+        width: auto;
+    }
+}
+
+.profile-container .game-container.shown,
+.profile-container .group-container.shown {
+    display: inline-block;
+}
+
+@media(max-width:991px) {
+
+    .profile-container .game-container.shown,
+    .profile-container .group-container.shown {
+        white-space: nowrap;
+        float: none;
+    }
+}
+
+.profile-container .group-container .game-card-container:hover {
+    height: 100%;
 }
 
 .profile-container .container-buttons {
-	float: right;
+    float: right;
 }
 
 .profile-container .asset-item {
-	padding: 5px 0;
-	text-align: center;
-	width: 16.66667%;
+    padding: 5px 0;
+    text-align: center;
+    width: 16.66667%;
 }
 
 @media(max-width:991px) {
-	.profile-container .asset-item {
-		width: 25%;
-	}
+    .profile-container .asset-item {
+        width: 25%;
+    }
 }
 
 @media(max-width:767px) {
-	.profile-container .asset-item {
-		width: 33.33333%;
-	}
+    .profile-container .asset-item {
+        width: 33.33333%;
+    }
 }
 
 .profile-container .asset-item img {
-	width: 140px;
-	height: 140px;
-	border: 1px solid #B8B8B8;
-	border-radius: 3px;
+    width: 140px;
+    height: 140px;
+    border: 1px solid #B8B8B8;
+    border-radius: 3px;
 }
 
 @media(max-width:767px) {
-	.profile-container .asset-item img {
-		width: 85px;
-		height: 85px;
-	}
+    .profile-container .asset-item img {
+        width: 85px;
+        height: 85px;
+    }
 }
 
 .profile-container .asset-item span[title] {
-	width: 140px;
-	height: 140px;
-	border: 1px solid #B8B8B8;
-	border-radius: 3px;
+    width: 140px;
+    height: 140px;
+    border: 1px solid #B8B8B8;
+    border-radius: 3px;
 }
 
 @media(max-width:767px) {
-	.profile-container .asset-item span[title] {
-		width: 85px;
-		height: 85px;
-		background-size: 170px auto;
-	}
+    .profile-container .asset-item span[title] {
+        width: 85px;
+        height: 85px;
+        background-size: 170px auto;
+    }
 }
 
 .profile-container .asset-item .item-name {
-	display: block;
-	width: 140px;
-	text-align: left;
-	margin: auto;
-	line-height: 22px;
-	overflow-x: hidden;
-	white-space: nowrap;
+    display: block;
+    width: 140px;
+    text-align: left;
+    margin: auto;
+    line-height: 22px;
+    overflow-x: hidden;
+    white-space: nowrap;
 }
 
 @media(max-width:767px) {
-	.profile-container .asset-item .item-name {
-		width: 85px;
-	}
+    .profile-container .asset-item .item-name {
+        width: 85px;
+    }
 }
 
 .profile-container .asset-item .item-name:hover {
-	color: #00A2FF;
+    color: #00A2FF;
+}
+
+.profile-container .asset-item .collections-link .img-container {
+    position: relative;
+}
+
+.profile-container .asset-item .collections-link .img-container .asset-restriction-icon {
+    position: absolute;
+    text-align: left;
+    left: 8px;
+    bottom: 0;
+}
+
+@media(max-width:991px) {
+    .profile-container .asset-item .collections-link .img-container .asset-restriction-icon {
+        width: 138px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+    }
+}
+
+@media(max-width:767px) {
+    .profile-container .asset-item .collections-link .img-container .asset-restriction-icon {
+        width: 83px;
+    }
+}
+
+.profile-container .asset-item .collections-link .img-container .asset-restriction-icon .rbx-tooltip {
+    width: auto;
+    height: auto;
+    border: none;
 }
 
 .profile-container .collection-btns {
-	float: right;
+    float: right;
 }
 
 .profile-container .collection-btns .trade-link {
-	margin-right: 6px;
+    margin-right: 6px;
 }
 
-@media(max-width:479px) {
-	.profile-container .collection-btns .trade-link {
-		display: none;
-	}
+@media(max-width:543px) {
+    .profile-container .collection-btns .trade-link {
+        display: none;
+    }
 }
 
-@media(max-width:479px) {
+@media(max-width:543px) {
 
-	.profile-container .collections-item a,
-	.profile-container .clothing-item a,
-	.profile-container .model-item a {
-		max-width: 90px;
-		margin: 0 auto;
-	}
-}
-
-.profile-container .group-header {
-	margin-bottom: 12px;
-	height: 35px;
-}
-
-.profile-container .group-header h3 {
-	float: left;
+    .profile-container .collections-item a,
+    .profile-container .clothing-item a,
+    .profile-container .model-item a {
+        max-width: 90px;
+        margin: 0 auto;
+    }
 }
 
 .profile-container .group-list {
-	display: inline;
+    overflow: hidden;
 }
 
 .profile-container .group-list:before,
 .profile-container .group-list:after {
-	content: " ";
-	display: table;
+    content: " ";
+    display: table;
 }
 
 .profile-container .group-list:after {
-	clear: both;
+    clear: both;
 }
 
 @media(max-width:991px) {
-	.profile-container .group-list {
-		display: block;
-		overflow-y: hidden;
-		overflow-x: auto;
-		white-space: nowrap;
-	}
-}
-
-.profile-container .group-list .group-container {
-	display: none;
-	width: 16.66667%;
-	min-width: 102px;
-	float: left;
-	text-align: center;
-}
-
-@media(max-width:991px) {
-	.profile-container .group-list .group-container {
-		width: auto;
-	}
-}
-
-.profile-container .group-list .group-container.shown {
-	display: inline-block;
-}
-
-@media(max-width:991px) {
-	.profile-container .group-list .group-container.shown {
-		white-space: nowrap;
-		float: none;
-	}
+    .profile-container .group-list {
+        display: block;
+        overflow-y: hidden;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
 }
 
 .load-more-button {
-	width: 100%;
+    width: 100%;
 }
 
 @media(max-width:991px) {
-	.load-more-button {
-		display: none;
-	}
+    .load-more-button {
+        display: none;
+    }
 }
 
 .load-more-badges {
-	display: none;
-	width: 100%;
-	margin-top: 12px;
+    display: none;
+    width: 100%;
+    margin-top: 12px;
 }
 
 @media(max-width:767px) {
-	.load-more-badges {
-		display: block;
-	}
+    .load-more-badges {
+        display: block;
+    }
 }
 
 .profile-ads-container {
-	text-align: center;
+    text-align: center;
 }
 
 @media(max-width:991px) {
-	.profile-ads-container {
-		display: none;
-	}
+    .profile-ads-container {
+        display: none;
+    }
 }
 
 .profile-ads-container .profile-ad {
-	width: 350px;
-	display: inline-block;
+    width: 350px;
+    display: inline-block;
 }
 
 .trade-link {
-	float: right;
-	margin-right: 12px;
+    float: right;
+    margin-right: 12px;
 }
 
 .btn-secondary-xs:visited {
-	background-color: #00A2FF;
+    background-color: #00A2FF;
 }
 
 .btn-secondary-xs:visited:hover {
-	background-color: #32B5FF;
+    background-color: #32B5FF;
 }
 
 @media(max-width:767px) {
-	.container-header .assets-count {
-		display: none;
-	}
+    .container-header .assets-count {
+        display: none;
+    }
 
-	.container-header .see-more-roblox-badges-button {
-		display: none;
-	}
-}
+    .container-header .see-more-roblox-badges-button {
+        display: none;
+    }
 
-.icon-inviter {
-	background-position: 0 0;
-}
+    .icon-inviter {
+        background-position: 0 0;
+    }
 
-@media(max-width:767px) {
-	.icon-inviter {
-		background-position: 0 0;
-	}
-}
+    .icon-friendship {
+        background-position: -85px 0;
+    }
 
-.icon-friendship {
-	background-position: -140px 0;
-}
+    .icon-welcome-to-the-club {
+        background-position: 0 -85px;
+    }
 
-@media(max-width:767px) {
-	.icon-friendship {
-		background-position: -85px 0;
-	}
-}
+    .icon-ambassador {
+        background-position: -85px -85px;
+    }
 
-.icon-welcome-to-the-club {
-	background-position: 0 -140px;
-}
+    .icon-combat-initiation {
+        background-position: 0 -170px;
+    }
 
-@media(max-width:767px) {
-	.icon-welcome-to-the-club {
-		background-position: 0 -85px;
-	}
-}
+    .icon-warrior {
+        background-position: -85px -170px;
+    }
 
-.icon-ambassador {
-	background-position: -140px -140px;
-}
+    .icon-bloxxer {
+        background-position: 0 -255px;
+    }
 
-@media(max-width:767px) {
-	.icon-ambassador {
-		background-position: -85px -85px;
-	}
-}
+    .icon-homestead {
+        background-position: -85px -255px;
+    }
 
-.icon-combat-initiation {
-	background-position: 0 -280px;
-}
+    .icon-bricksmith {
+        background-position: 0 -340px;
+    }
 
-@media(max-width:767px) {
-	.icon-combat-initiation {
-		background-position: 0 -170px;
-	}
-}
+    .icon-official-model-maker {
+        background-position: -85px -340px;
+    }
 
-.icon-warrior {
-	background-position: -140px -280px;
-}
+    .icon-builders-club {
+        background-position: 0 -425px;
+    }
 
-@media(max-width:767px) {
-	.icon-warrior {
-		background-position: -85px -170px;
-	}
-}
+    .icon-turbo-builders-club {
+        background-position: -85px -425px;
+    }
 
-.icon-bloxxer {
-	background-position: 0 -420px;
-}
+    .icon-outrageous-builders-club {
+        background-position: 0 -510px;
+    }
 
-@media(max-width:767px) {
-	.icon-bloxxer {
-		background-position: 0 -255px;
-	}
-}
+    .icon-administrator {
+        background-position: -85px -510px;
+    }
 
-.icon-homestead {
-	background-position: -140px -420px;
-}
-
-@media(max-width:767px) {
-	.icon-homestead {
-		background-position: -85px -255px;
-	}
-}
-
-.icon-bricksmith {
-	background-position: 0 -560px;
-}
-
-@media(max-width:767px) {
-	.icon-bricksmith {
-		background-position: 0 -340px;
-	}
-}
-
-.icon-official-model-maker {
-	background-position: -140px -560px;
-}
-
-@media(max-width:767px) {
-	.icon-official-model-maker {
-		background-position: -85px -340px;
-	}
-}
-
-.icon-builders-club {
-	background-position: 0 -700px;
-}
-
-@media(max-width:767px) {
-	.icon-builders-club {
-		background-position: 0 -425px;
-	}
-}
-
-.icon-turbo-builders-club {
-	background-position: -140px -700px;
-}
-
-@media(max-width:767px) {
-	.icon-turbo-builders-club {
-		background-position: -85px -425px;
-	}
-}
-
-.icon-outrageous-builders-club {
-	background-position: 0 -840px;
-}
-
-@media(max-width:767px) {
-	.icon-outrageous-builders-club {
-		background-position: 0 -510px;
-	}
-}
-
-.icon-administrator {
-	background-position: -140px -840px;
-}
-
-@media(max-width:767px) {
-	.icon-administrator {
-		background-position: -85px -510px;
-	}
-}
-
-.icon-veteran {
-	background-position: 0 -980px;
-}
-
-@media(max-width:767px) {
-	.icon-veteran {
-		background-position: 0 -595px;
-	}
+    .icon-veteran {
+        background-position: 0 -595px;
+    }
 }

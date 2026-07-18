@@ -1,0 +1,102 @@
+var _____WB$wombat$assign$function_____=function(name){return (globalThis._wb_wombat && globalThis._wb_wombat.local_init && globalThis._wb_wombat.local_init(name))||globalThis[name];};if(!globalThis.__WB_pmw){globalThis.__WB_pmw=function(obj){this.__WB_source=obj;return this;}}{
+let window = _____WB$wombat$assign$function_____("window");
+let self = _____WB$wombat$assign$function_____("self");
+let document = _____WB$wombat$assign$function_____("document");
+let location = _____WB$wombat$assign$function_____("location");
+let top = _____WB$wombat$assign$function_____("top");
+let parent = _____WB$wombat$assign$function_____("parent");
+let frames = _____WB$wombat$assign$function_____("frames");
+let opener = _____WB$wombat$assign$function_____("opener");
+var Roblox = Roblox || {};
+
+Roblox.Popover = (function () {
+    "use strict";
+    var popoverClassName = ".roblox-popover";
+    var popoverContentClassName = ".roblox-popover-content";
+    var popoverContainerClassName = ".roblox-popover-container";
+    var arrowClassName = ".arrow";
+
+    function setUpTrianglePosition(popoverContentElm, popoverContainerElm) {
+        var popoverContentSelector = $(popoverContentElm);
+        var popoverContainerSelector = $(popoverContainerElm);
+        var popoverTriggerSelector = $(popoverClassName);
+        var popoverTrigerWidth = popoverTriggerSelector.outerWidth();
+        var triangleWidth = popoverContentSelector.find(arrowClassName).outerWidth();
+        var popoverTriggerOffsetLeft = popoverTriggerSelector.offset().left;
+        var right = 0;
+
+        if (popoverContentSelector.hasClass("bottom") || popoverContentSelector.hasClass("top")) {
+            var popoverContainerOffsetLeft = $("body").outerWidth() - parseInt(popoverContainerSelector.width() + popoverContainerSelector.offset().left);
+            right = $("body").outerWidth() - popoverTriggerOffsetLeft - popoverContainerOffsetLeft - popoverTrigerWidth / 2 - triangleWidth / 2;
+            popoverContentSelector.find(arrowClassName).css("right", right);
+        }
+    }
+
+    function togglePopover() {
+        $(popoverClassName).on('click touchstart', function (e) {
+            var dataBind = $(this).data("bind");
+            var popoverContentElm = dataBind ? ("#" + dataBind) : popoverContentClassName;
+            var popoverContentSelector = $(popoverContentElm);
+            var dataContainer = $(this).data("container");
+            var popoverContainerElm = dataContainer ? ("#" + dataContainer) : popoverContainerClassName;
+
+            if (!popoverContentSelector.hasClass("manual")) {
+                popoverContentSelector.toggleClass("hidden");
+            }
+            var isOpen = !popoverContentSelector.hasClass("hidden");
+            $(document).triggerHandler("Roblox.Popover.Status", { isOpen: isOpen, eventType: e.type });
+            if (isOpen) {
+                setUpTrianglePosition(popoverContentElm, popoverContainerElm);
+            }
+        });
+    }
+
+    function closePopover() {
+        $("body").on('click touchstart', function (e) {
+            $(popoverClassName).each(function () {
+                var elemBinded = $(this).data("bind");
+                var popoverContentSelector = elemBinded ? $("#" + elemBinded) : $(popoverContentClassName);
+                //the 'is' for links that trigger popups
+                //the 'has' for icons within a link that triggers a popup
+                if (!$(this).is(e.target)
+                    && $(this).has(e.target).length === 0
+                    && popoverContentSelector.has(e.target).length === 0
+                    && !popoverContentSelector.hasClass("hidden")
+                    && e.type === "click") {
+                    popoverContentSelector.addClass('hidden');
+                    $(document).triggerHandler("Roblox.Popover.Status", { isHidden: true, eventType: e.type });
+                }
+            });
+        });
+    }
+
+    function init() {
+        togglePopover();
+        closePopover();
+    }
+
+    $(function () {
+        init();
+    });
+
+    return {
+        setUpTrianglePosition: setUpTrianglePosition
+    }
+})();
+}
+
+/*
+     FILE ARCHIVED ON 13:45:49 Oct 29, 2016 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 07:25:28 Jul 18, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.496
+  load_resource: 74.853
+  PetaboxLoader3.resolve: 32.577
+  PetaboxLoader3.datanode: 8.588
+*/

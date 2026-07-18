@@ -7,6 +7,7 @@ namespace RobloxWebserver.Assemblies.Catalog
         public string CreatorName { get; set; } = string.Empty;
         public long? CreatorId { get; set; }
         public string ImageUrl { get; set; } = string.Empty;
+        public int AssetTypeId { get; set; }
 
         public int? PriceRobux { get; set; }
         public int? PriceTickets { get; set; }
@@ -25,5 +26,16 @@ namespace RobloxWebserver.Assemblies.Catalog
     {
         public IReadOnlyList<CatalogItem> Items { get; set; } = Array.Empty<CatalogItem>();
         public int TotalItems { get; set; }
+    }
+
+    public class AssetBoxViewModel
+    {
+        public CatalogItem Item { get; set; } = new();
+        public string Size { get; set; } = "small";
+    }
+
+    public interface ICatalogItemRenderer
+    {
+        string RenderItem(CatalogItem item, string size);
     }
 }

@@ -33,8 +33,9 @@ namespace Users
                 var exists = scalar is bool b && b;
                 return new UsernameCheckResult { success = exists };
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] CheckUsernameAsync username={username}: {ex}");
                 return new UsernameCheckResult { success = false };
             }
         }

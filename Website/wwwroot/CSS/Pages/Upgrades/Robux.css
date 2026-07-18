@@ -1,4 +1,16 @@
 /* ~/CSS/Pages/Upgrades/Robux.css */
+.form-inline {
+    position: static;
+}
+
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
 .grid:before,
 .grid:after {
     content: " ";
@@ -38,10 +50,6 @@
     width: 66.66667%;
 }
 
-.icon-robux {
-    background-position: -98px -392px;
-}
-
 .content {
     max-width: 970px;
     padding-top: 0;
@@ -61,206 +69,289 @@
     clear: both;
 }
 
-.robux-header h1,
+.robux-header .caption-mobile {
+    display: none;
+}
+
+@media(max-width:991px) {
+    .robux-header .caption-mobile {
+        display: block;
+    }
+}
+
+.robux-header h2,
 .robux-header h3 {
-    float: left;
     display: inline-block;
 }
 
-.robux-header h1 {
-    line-height: 1em;
-}
-
-@media(max-width:767px) {
-    .robux-header {
-        padding: 2px 0;
-    }
-
-    .robux-header h1 {
-        font-size: 30px;
-    }
-
-    .robux-header h3 {
-        font-size: 12px;
-        margin-top: 12px;
-    }
-}
-
-.robux-grid .cell-content {
-    height: 170px;
-    padding: 12px 24px;
-    position: relative;
-}
-
-.robux-grid .robux-set-flag {
-    position: absolute;
-    width: 96px;
-    height: 27px;
-    top: 0;
-    right: -6px;
-    background-color: #F68802;
-    color: #fff;
-    font-weight: 600;
-    text-align: center;
-    padding: 4px 0;
-    text-transform: uppercase;
-}
-
-.robux-grid .robux-set-flag .robox-flag-traingle {
-    position: absolute;
-    bottom: -6px;
-    right: 0;
-    width: 0;
-    height: 0;
-    margin-left: -6px;
-    border-bottom: 6px solid transparent;
-    border-left: 6px solid #9F550D;
-}
-
-@media(max-width:991px) {
-    .robux-grid .cell-content {
-        height: 150px;
-        padding: 12px;
-    }
-}
-
-.robux-grid .robux-title {
-    height: 36px;
-}
-
-.robux-grid .robux-title h1,
-.robux-grid .robux-bonus {
-    font-weight: 400;
-}
-
-.robux-grid .robux-title h1,
-.robux-grid .robux-title h2 {
+.robux-header h3 {
     display: inline-block;
-    margin: 0;
 }
 
-.robux-grid .robux-title h1 {
-    color: #757575;
-    line-height: 1em;
-}
-
-.robux-grid .robux-title h2 {
-    color: #B8B8B8;
-}
-
-@media(max-width:991px) {
-    .robux-grid .robux-title {
-        height: 30px;
-    }
-
-    .robux-grid .robux-title h1 {
-        font-size: 30px;
-    }
-
-    .robux-grid .robux-title h2 {
-        font-size: 24px;
-    }
-}
-
-.robux-grid .robux-cell-header .cell-content {
-    padding: 12px;
-}
-
-.robux-grid .robux-cell-header .cell-content:before,
-.robux-grid .robux-cell-header .cell-content:after {
+.robux-header h3:before,
+.robux-header h3:after {
     content: " ";
     display: table;
 }
 
-.robux-grid .robux-cell-header .cell-content:after {
+.robux-header h3:after {
     clear: both;
 }
 
-.robux-grid .robux-cell-header .robux-header-icon,
-.robux-grid .robux-cell-header .robux-header-desc {
-    float: left;
+.robux-header .logo-tagline {
     display: inline-block;
-}
-
-.robux-grid .robux-cell-header .robux-header-icon {
-    margin: 0 12px 0 8px;
-    width: 98px;
-}
-
-.robux-grid .robux-cell-header .robux-header-icon .icon-robux {
-    background-size: 200% auto;
-    width: 98px;
-    height: 98px;
-}
-
-.robux-grid .robux-cell-header .robux-header-desc {
-    width: 70%;
-    width: calc(100% - 98px - 12px * 4);
-    margin: 8px 0 0;
-}
-
-.robux-grid .robux-cell-header .robux-header-desc span {
-    display: inline-block;
-    width: 100%;
+    float: right;
+    height: 30px;
 }
 
 @media(max-width:991px) {
-    .robux-grid .robux-cell-header .robux-header-icon {
-        width: 60px;
-        margin: 0 6px 0 8px;
-    }
-
-    .robux-grid .robux-cell-header .robux-header-icon .icon-robux {
-        -webkit-transform: scale(0.61224);
-        -ms-transform: scale(0.61224);
-        -o-transform: scale(0.61224);
-        transform: scale(0.61224);
-        margin: -18px 0 0 -24px;
-    }
-
-    .robux-grid .robux-cell-header .robux-header-desc {
-        width: 80%;
-        width: calc(100% - 60px - 12px * 2);
-        font-size: 14px;
-        margin: 0;
-        max-height: 100px;
+    .robux-header .logo-tagline {
+        height: 24px;
     }
 }
 
-@media(max-width:767px) {
-    .robux-grid .robux-cell-header .robux-header-icon {
+.robux-header .logo-tagline .logo-img {
+    height: 100%;
+    margin-top: 5px;
+}
+
+@media(max-width:991px) {
+    .robux-header .logo-tagline .logo-img {
+        margin-top: 2px;
+    }
+}
+
+.robux-containter-updated .magic-wand-image {
+    float: left;
+    width: 300px;
+    padding: 15px;
+    float: left;
+    border-top-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    background-color: #191919;
+    background-image: url("/Images/Upgrades/Robux/img_linework.png");
+    background-size: 300px;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+@media(max-width:991px) {
+    .robux-containter-updated .magic-wand-image {
         display: none;
     }
-
-    .robux-grid .robux-cell-header .robux-header-desc {
-        float: none;
-        width: 100%;
-    }
 }
 
-@media(max-width:767px) {
-    .robux-grid .robux-cell-header .cell-content {
+.robux-containter-updated .magic-wand-image .robux-man {
+    position: static;
+    top: -12px;
+    right: -12px;
+    width: 180px;
+    margin-top: -27px;
+    margin-right: -27px;
+    margin-bottom: 12px;
+    float: right;
+}
+
+.robux-containter-updated .magic-wand-image .robux-text {
+    position: relative;
+    color: #fff;
+    width: 95%;
+    display: inline-block;
+}
+
+.robux-containter-updated .magic-wand-image .icon-robux-white {
+    background-position: 0 -686px;
+    background-size: 196px auto;
+    width: 98px;
+    height: 98px;
+    float: left;
+}
+
+.robux-containter-updated .robux-list {
+    float: right;
+    width: 65%;
+}
+
+@media(max-width:991px) {
+    .robux-containter-updated .robux-list {
+        width: 100%;
         height: auto;
     }
 }
 
-.robux-grid .robux-bonus-nbc {
-    padding: 0 0 5px;
+.robux-grid li {
+    margin-bottom: 15px;
+}
+
+.robux-grid .cell-content .robux-buy-container:before,
+.robux-grid .cell-content .robux-buy-container:after {
+    content: " ";
+    display: table;
+}
+
+.robux-grid .cell-content .robux-buy-container:after {
+    clear: both;
+}
+
+.robux-grid .cell-content .robux-title {
+    float: left;
+}
+
+.robux-grid .cell-content .robux-title span[class^="icon"] {
+    background-position: 0 -152px;
+    background-size: 76px auto;
+    width: 38px;
+    height: 38px;
 }
 
 @media(max-width:991px) {
-    .robux-grid .robux-bonus-nbc {
+    .robux-grid .cell-content .robux-title span[class^="icon"] {
+        background-position: 0 -112px;
+        background-size: 56px auto;
+        width: 28px;
+        height: 28px;
+    }
+}
+
+.robux-grid .cell-content .robux-title h1 {
+    vertical-align: middle;
+    line-height: .8em;
+    display: inline-block;
+    margin: 0;
+}
+
+.robux-grid .cell-content .banner-wrap {
+    float: right;
+    position: relative;
+}
+
+.robux-grid .cell-content .banner-wrap:before,
+.robux-grid .cell-content .banner-wrap:after {
+    content: " ";
+    display: table;
+}
+
+.robux-grid .cell-content .banner-wrap:after {
+    clear: both;
+}
+
+.robux-grid .cell-content .banner-wrap .red-banner {
+    background-image: url("/images/Upgrades/Robux/graphic_discount.png");
+    position: absolute;
+    left: -15px;
+    top: -5px;
+    width: 48px;
+    height: 48px;
+    float: right;
+    background-size: 48px;
+    background-repeat: no-repeat;
+}
+
+@media(max-width:767px) {
+    .robux-grid .cell-content .banner-wrap .red-banner {
+        width: 36px;
+        height: 36px;
+        background-size: 36px;
+        top: -3px;
+        left: -18px;
+    }
+}
+
+@media(max-width:767px) {
+    .robux-grid .cell-content .banner-wrap .red-banner .font-bold {
+        font-size: 12px;
+    }
+}
+
+.robux-grid .cell-content .banner-wrap .red-banner .banner-percent {
+    color: #fff;
+    line-height: 1em;
+    text-align: center;
+    position: absolute;
+    top: 12px;
+    left: 11px;
+}
+
+.robux-grid .cell-content .banner-wrap .red-banner .banner-percent span {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+@media(max-width:767px) {
+    .robux-grid .cell-content .banner-wrap .red-banner .banner-percent {
+        font-size: 10px;
+        top: 8px;
+        left: 7px;
+    }
+
+    .robux-grid .cell-content .banner-wrap .red-banner .banner-percent span {
         font-size: 14px;
     }
 }
 
-.robux-grid .robux-buy {
-    width: 100%;
-    margin: 9px 0;
+@media(max-width:543px) {
+    .robux-grid .cell-content .banner-wrap .red-banner .banner-percent {
+        font-size: 10px;
+        top: 8px;
+        left: 7px;
+    }
 }
 
-.robux-grid-bc .cell-content {
-    height: 126px;
+.robux-grid .cell-content .banner-wrap .robux-buy {
+    width: 240px;
+    float: right;
+}
+
+@media(max-width:543px) {
+    .robux-grid .cell-content .banner-wrap .robux-buy {
+        width: 120px;
+        font-size: 12px;
+    }
+}
+
+.robux-grid .cell-content .robux-bonus-footer:before,
+.robux-grid .cell-content .robux-bonus-footer:after {
+    content: " ";
+    display: table;
+}
+
+.robux-grid .cell-content .robux-bonus-footer:after {
+    clear: both;
+}
+
+.robux-grid .cell-content .robux-bonus-footer .robux-bonus-nbc {
+    padding: 0 0 5px;
+    float: right;
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+@media(max-width:991px) {
+    .robux-grid .cell-content .robux-bonus-footer .robux-bonus-nbc {
+        font-size: 12px;
+        padding-top: 7px;
+    }
+}
+
+@media(max-width:543px) {
+    .robux-grid .cell-content .robux-bonus-footer .robux-bonus-nbc {
+        text-align: center;
+        width: 100%;
+    }
+}
+
+.robux-grid .cell-content .robux-bonus-footer .robux-bonus-nbc .robux-bonus {
+    font-weight: 400;
+}
+
+@media(max-width:991px) {
+    .robux-grid .cell-content {
+        padding: 12px 20px;
+    }
+}
+
+.robux-grid-bc li {
+    margin-bottom: 15px;
 }
 
 .robux-grid-bc .robux-cell-header .robux-header-desc {
@@ -268,26 +359,7 @@
 }
 
 @media(max-width:991px) {
-    .robux-grid-bc .cell-content {
-        height: 104px;
-    }
-}
-
-@media(max-width:991px) {
     .robux-container {
         margin: 0 12px;
     }
-}
-
-@media(max-width:767px) {
-    .cell {
-        float: none;
-        width: 100%;
-        padding: 0 0 12px;
-    }
-}
-
-.robux-footer {
-    color: #757575;
-    padding: 12px 0 0 5px;
 }

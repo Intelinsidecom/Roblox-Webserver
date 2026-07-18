@@ -23,6 +23,7 @@ public class AvatarThumbnail3DController : ControllerBase
     }
 
     [HttpGet("avatar-thumbnail-3d/user-avatar")]
+    [HttpGet("avatar-thumbnail-3d/json")]
     public async Task<IActionResult> UserAvatar([FromQuery] long userId, [FromQuery] int? width, [FromQuery] int? height)
     {
         if (userId <= 0)

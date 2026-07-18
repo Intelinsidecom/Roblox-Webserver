@@ -1,0 +1,18 @@
+/* ~/CSS/Pages/Widgets/FunCaptchaModal.css */
+.funcaptcha-modal-body{margin:0 auto;display:block;width:303px;}
+
+/*
+     FILE ARCHIVED ON 16:40:39 Aug 13, 2021 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 07:25:37 Jul 18, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.598
+  load_resource: 86.425
+  PetaboxLoader3.resolve: 69.672
+  PetaboxLoader3.datanode: 15.712
+*/

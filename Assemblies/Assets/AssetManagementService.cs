@@ -167,7 +167,9 @@ namespace Assets
                 const string sql = @"
                     select a.asset_id, a.name, a.description, a.asset_type_id, a.price, a.price_in_tix,
                            u.user_name, a.owner_user_id, a.last_updated, a.thumbnail_url,
-                           a.high_res_thumbnail_url
+                           a.high_res_thumbnail_url,
+                           a.on_sale, a.limited_unique, a.limited_quantity,
+                           a.limited_remaining, a.limited_until
                     from assets a
                     left join users u on a.owner_user_id = u.user_id
                     where a.asset_id = @asset_id and a.asset_image = false";
@@ -191,7 +193,12 @@ namespace Assets
                         CreatorId = reader.IsDBNull(7) ? 0 : reader.GetInt64(7),
                         UpdatedTime = FormatRelativeTime(reader.GetDateTime(8)),
                         ThumbnailUrl = reader.IsDBNull(9) ? GetDefaultThumbnailUrl(reader.GetInt32(3)) : reader.GetString(9),
-                        HighResThumbnailUrl = reader.IsDBNull(10) ? null : reader.GetString(10)
+                        HighResThumbnailUrl = reader.IsDBNull(10) ? null : reader.GetString(10),
+                        PutOnSale = !reader.IsDBNull(11) && reader.GetBoolean(11),
+                        IsLimited = !reader.IsDBNull(12) && reader.GetBoolean(12),
+                        LimitedQuantity = reader.IsDBNull(13) ? (long?)null : reader.GetInt64(13),
+                        LimitedRemaining = reader.IsDBNull(14) ? (long?)null : reader.GetInt64(14),
+                        LimitedUntil = reader.IsDBNull(15) ? (DateTime?)null : reader.GetDateTime(15),
                     };
                 }
             }

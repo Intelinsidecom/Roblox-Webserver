@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Games;
 using Assets;
+using Users;
 using Npgsql;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
@@ -372,7 +373,7 @@ namespace Website.Controllers.Client
                     displayName = userName;
                 }
                 
-                var membership = "None"; // or "BuildersClub", etc.
+                var membership = "None";
                 var accountAge = 365;
                 var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') + "/";
                 var machineAddress = "127.0.0.1";
@@ -393,7 +394,24 @@ namespace Website.Controllers.Client
                 
                 if (userId > 0)
                 {
-                    var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_configuration.GetConnectionString("Default"), gameid);
+                    var connStr = _configuration.GetConnectionString("Default");
+                    if (!string.IsNullOrWhiteSpace(connStr))
+                    {
+                        try
+                        {
+                            membership = await UserQueries.GetMembershipTypeAsync(connStr, userId).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // fallback to None
+                        }
+                    }
+                }
+
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_configuration.GetConnectionString("Default"), gameid);
+
+                if (userId > 0)
+                {
                     if (universeId.HasValue)
                     {
                         await VisitTracking.RecordVisitAsync(userId, universeId.Value, gameid, _configuration);
@@ -440,7 +458,7 @@ namespace Website.Controllers.Client
                     ClientTicket = clientTicket,
                     GameId = jobid,
                     PlaceId = gameid,
-                    UniverseId = gameid,
+                    UniverseId = universeId ?? 0L,
                     CreatorId = await AssetsRepository.GetAssetCreatorIdAsync(
                         _configuration.GetConnectionString("Default")!, 
                         gameid) ?? 1L,

@@ -199,8 +199,9 @@ namespace RobloxWebserver.Controllers
 
                 return Ok(new { isValid = true, success = true });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] Install plugin assetId={assetId}: {ex}");
                 return StatusCode(500, new { isValid = false, success = false, error = "Failed to install plugin" });
             }
         }
@@ -239,8 +240,9 @@ namespace RobloxWebserver.Controllers
 
                 return Ok(new { isValid = true, success = true });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] Uninstall plugin assetId={assetId}: {ex}");
                 return StatusCode(500, new { isValid = false, success = false, error = "Failed to uninstall plugin" });
             }
         }

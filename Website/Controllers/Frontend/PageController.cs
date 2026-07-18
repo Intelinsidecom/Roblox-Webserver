@@ -4,11 +4,7 @@ namespace RobloxWebserver.Controllers
 {
     public class PageController : Controller
     {
-        [HttpGet("upgrades/robux")]
-        public IActionResult Robux()
-        {
-            return View("~/Views/Pages/Robux.cshtml");
-        }
+
 
         [HttpGet("ide/clienttoolbox")]
         public IActionResult Toolbox()
@@ -16,11 +12,6 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/ide/ClientToolbox.aspx.cshtml");
         }
 
-        [HttpPost("upgrades/robux")]
-        public IActionResult RobuxPost()
-        {
-            return View("~/Views/Pages/Robux.cshtml");
-        }
 
         [HttpGet("Games.aspx")]
         public IActionResult GamesPage()

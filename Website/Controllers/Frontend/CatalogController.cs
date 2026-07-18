@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Assets;
 using RobloxWebserver.Assemblies.Catalog;
+using RobloxWebserver.Assemblies.Economy;
 using Users;
 using Avatar;
 using Website.Services;
@@ -20,16 +21,18 @@ namespace RobloxWebserver.Controllers
     {
         private readonly ICatalogService _catalogService;
         private readonly IConfiguration _configuration;
+        private readonly ICatalogItemRenderer _catalogItemRenderer;
         private readonly AssetMetadataRepository _assetMetadataRepository;
         private readonly UserAssetsRepository _userAssetsRepository = new UserAssetsRepository();
         private readonly AssetsRepository _assetsRepository = new AssetsRepository();
         private readonly AvatarWornAssetsRepository _avatarWornAssetsRepository = new AvatarWornAssetsRepository();
         private readonly DevelopTabService _developTabService;
 
-        public CatalogController(ICatalogService catalogService, IConfiguration configuration, DevelopTabService developTabService)
+        public CatalogController(ICatalogService catalogService, IConfiguration configuration, DevelopTabService developTabService, ICatalogItemRenderer catalogItemRenderer)
         {
             _catalogService = catalogService;
             _configuration = configuration;
+            _catalogItemRenderer = catalogItemRenderer;
             _assetMetadataRepository = new AssetMetadataRepository();
             _developTabService = developTabService ?? throw new ArgumentNullException(nameof(developTabService));
         }
@@ -42,6 +45,7 @@ namespace RobloxWebserver.Controllers
             public long CreatorId { get; set; }
             public string ImageUrl { get; set; } = string.Empty;
 
+            public int AssetTypeId { get; set; }
             public string AssetTypeLabel { get; set; } = string.Empty;
 
             public int? PriceRobux { get; set; }
@@ -65,11 +69,20 @@ namespace RobloxWebserver.Controllers
             public bool IsWorn { get; set; }
             public bool IsOnSale { get; set; }
             public long ItemVersionId { get; set; }
+
+            public long? LimitedQuantity { get; set; }
+            public long? LimitedRemaining { get; set; }
+            public DateTime? LimitedUntil { get; set; }
+            public long RecentAveragePrice { get; set; }
+            public long? OwnedSerialNumber { get; set; }
+            public int ResellerCount { get; set; }
+            public long BestResalePrice { get; set; }
+            public int UserMembershipLevel { get; set; }
         }
 
         [HttpGet("{id:long}")]
         [HttpGet("{id:long}/{itemName}")]
-        public async Task<IActionResult> Item(long id, string? itemName)
+        public async Task<IActionResult> Item(long id, string? itemName, CancellationToken cancellationToken = default)
         {
             if (id <= 0)
             {
@@ -119,14 +132,30 @@ namespace RobloxWebserver.Controllers
             bool isOwned = false;
             bool isFavorited = false;
             bool isWorn = false;
+            int userMembershipLevel = 0;
+            long currentUserId = 0;
             var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var currentUserId) && currentUserId > 0)
+            if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var parsedUserId) && parsedUserId > 0)
             {
+                currentUserId = parsedUserId;
                 try
                 {
                     userRobux = await UserQueries.GetCurrencyByIdAsync(connectionString, currentUserId, "robux").ConfigureAwait(false);
                     isOwned = await _userAssetsRepository.UserOwnsAssetAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
                     isFavorited = await _assetsRepository.UserHasFavoritedAsync(connectionString, currentUserId, asset.AssetId).ConfigureAwait(false);
+
+                    var profileData = await UserQueries.GetUserProfileDataAsync(connectionString, currentUserId).ConfigureAwait(false);
+                    if (profileData != null)
+                    {
+                        var membershipStatus = profileData.GetValueOrDefault("membershipStatus") as short? ?? 0;
+                        userMembershipLevel = membershipStatus switch
+                        {
+                            1 => 1,
+                            2 => 2,
+                            3 => 11,
+                            _ => 0
+                        };
+                    }
 
                     if (isOwned)
                     {
@@ -156,9 +185,75 @@ namespace RobloxWebserver.Controllers
                 var result = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 itemVersionId = result is long l ? l : 0;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] Item({id}) fetch last_updated: {ex}");
                 itemVersionId = 0;
+            }
+
+            var isLimited = asset.LimitedUnique || asset.LimitedQuantity.HasValue;
+            Console.WriteLine($"[LIMITED] Item({id}): LimitedUnique={asset.LimitedUnique}, LimitedQuantity={asset.LimitedQuantity}, IsLimited={isLimited}");
+            long bestResalePrice = 0;
+            int resellerCount = 0;
+            long? ownedSerial = null;
+
+            if (isLimited)
+            {
+                try
+                {
+                    var limitedService = new Economy.LimitedItemService();
+                    var limitedData = await limitedService.GetLimitedDataAsync(connectionString, asset.AssetId, cancellationToken).ConfigureAwait(false);
+                    if (limitedData != null)
+                    {
+                        asset.LimitedQuantity = limitedData.Quantity;
+                        asset.LimitedRemaining = limitedData.Remaining;
+                        asset.LimitedUntil = limitedData.Until;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] Item({id}) fetch limited data: {ex}");
+                }
+
+                try
+                {
+                    var resaleService = new Economy.ResaleListingService(new Economy.MarketplaceFeeService(_configuration));
+                    await using var conn2 = new NpgsqlConnection(connectionString);
+                    await conn2.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+                    var cheapest = await resaleService.GetCheapestListingAsync(conn2, asset.AssetId, cancellationToken).ConfigureAwait(false);
+                    if (cheapest != null)
+                        bestResalePrice = cheapest.Price;
+
+                    resellerCount = await resaleService.GetResellerCountAsync(conn2, asset.AssetId, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] Item({id}) fetch resale listings: {ex}");
+                }
+
+                if (currentUserId > 0)
+                {
+                    try
+                    {
+                        var limitedService2 = new Economy.LimitedItemService();
+                        ownedSerial = await limitedService2.GetUserSerialAsync(connectionString, asset.AssetId, currentUserId, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[ERROR] Item({id}) fetch user serial: {ex}");
+                    }
+                }
+            }
+
+            int? displayPrice = null;
+            if (isLimited && bestResalePrice > 0)
+            {
+                displayPrice = (int)Math.Min(bestResalePrice, int.MaxValue);
+            }
+            else if (asset.OnSale || asset.IsCopyingAllowed)
+            {
+                displayPrice = asset.IsCopyingAllowed ? 0 : (int?)Math.Min(asset.Price, int.MaxValue);
             }
 
             var model = new CatalogItemViewModel
@@ -168,12 +263,13 @@ namespace RobloxWebserver.Controllers
                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                 CreatorId = asset.OwnerUserId,
                 ImageUrl = string.IsNullOrWhiteSpace(primaryThumb) ? "/images/RobloxLogo.png" : primaryThumb,
+                AssetTypeId = asset.AssetTypeId,
                 AssetTypeLabel = AssetTypeNames.GetTypeName(asset.AssetTypeId),
-                PriceRobux = asset.OnSale ? (int?)Math.Min(asset.Price, int.MaxValue) : null,
-                PriceTickets = asset.OnSale ? (int?)Math.Min(asset.PriceTickets, int.MaxValue) : null,
-                OriginalPriceRobux = null,
-                IsLimited = false,
-                IsLimitedUnique = false,
+                PriceRobux = displayPrice,
+                PriceTickets = (asset.OnSale || asset.IsCopyingAllowed) ? (int?)(asset.IsCopyingAllowed ? 0 : Math.Min(asset.PriceTickets, int.MaxValue)) : null,
+                OriginalPriceRobux = (int?)Math.Min(asset.Price, int.MaxValue),
+                IsLimited = isLimited,
+                IsLimitedUnique = asset.LimitedUnique,
                 IsNew = false,
                 UpdatedText = string.Empty,
                 Sales = null,
@@ -186,8 +282,16 @@ namespace RobloxWebserver.Controllers
                 IsOwned = isOwned,
                 IsFavorited = isFavorited,
                 IsWorn = isWorn,
-                IsOnSale = asset.OnSale,
-                ItemVersionId = itemVersionId
+                IsOnSale = asset.OnSale || asset.IsCopyingAllowed,
+                ItemVersionId = itemVersionId,
+                LimitedQuantity = asset.LimitedQuantity,
+                LimitedRemaining = asset.LimitedRemaining,
+                LimitedUntil = asset.LimitedUntil,
+                RecentAveragePrice = asset.RecentAveragePrice,
+                OwnedSerialNumber = ownedSerial,
+                ResellerCount = resellerCount,
+                BestResalePrice = bestResalePrice,
+                UserMembershipLevel = userMembershipLevel
             };
 
             return View("~/Views/Pages/catalog/{id}/{ItemName}.cshtml", model);
@@ -226,11 +330,25 @@ namespace RobloxWebserver.Controllers
             return string.IsNullOrEmpty(result) ? string.Empty : result;
         }
 
-       // [HttpGet("")]
-     //   public IActionResult Index()
-       // {
-      //      return RedirectToAction("Browse");
-      //  }
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
+        {
+            var connectionString = _configuration.GetConnectionString("Default") ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return StatusCode(500, "Database connection string is not configured.");
+            }
+
+            var excludeNonCatalog = _configuration.GetValue<bool>("Catalog:ExcludeNonCatalogTypes");
+
+            var featuredHtml = await CatalogFiltering.BuildFeaturedItemsHtmlAsync(connectionString, _catalogItemRenderer);
+            var popularHtml = await CatalogFiltering.BuildPopularItemsHtmlAsync(connectionString, 42, excludeNonCatalog, _catalogItemRenderer);
+
+            ViewBag.FeaturedItemsHtml = featuredHtml;
+            ViewBag.PopularItemsHtml = popularHtml;
+
+            return View("~/Views/Pages/Catalog.cshtml");
+        }
 
         [HttpGet("browse.aspx")]
         public async System.Threading.Tasks.Task<IActionResult> Browse(
@@ -285,7 +403,7 @@ namespace RobloxWebserver.Controllers
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 var connStr = _configuration.GetConnectionString("Default") ?? string.Empty;
-                var html = await CatalogSearchHelper.BuildSearchHtmlAsync(connStr, keyword, category ?? 0, effectiveGenres, 42);
+                var html = await CatalogSearchHelper.BuildSearchHtmlAsync(connStr, keyword, category ?? 0, effectiveGenres, 42, _catalogItemRenderer);
 
                 ViewBag.Category = category ?? 0;
                 ViewBag.Subcategory = subcategory ?? 0;
@@ -308,7 +426,7 @@ namespace RobloxWebserver.Controllers
             // hard-coded example item list.
 
             var connectionString = _configuration.GetConnectionString("Default") ?? string.Empty;
-            var allHtml = await AllCatalogHelper.BuildAllAssetsHtmlAsync(connectionString, 42, category, subcategory, effectiveGenres);
+            var allHtml = await AllCatalogHelper.BuildAllAssetsHtmlAsync(connectionString, 42, category, subcategory, effectiveGenres, _catalogItemRenderer);
 
             ViewBag.PageNumber = 1;
             ViewBag.TotalPages = 1;

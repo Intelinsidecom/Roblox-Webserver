@@ -443,8 +443,9 @@ namespace RobloxWebserver.Controllers
 
                 return Json(new { Success = true, Message = "" });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] ValidateDevProductName: {ex}");
                 return Json(new { Success = false, Message = "An error occurred while validating the name" });
             }
         }

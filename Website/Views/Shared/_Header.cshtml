@@ -117,6 +117,9 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <ul class="nav navbar-right rbx-navbar-icon-group">
+                        <li class="navbar-icon-item" id="notification-stream-icon-container">
+                            <div notification-stream></div>
+                        </li>
                         <li class="navbar-icon-item">
                             <a class="rbx-menu-item" data-toggle="popover" data-bind="popover-setting" data-viewport="#header">
                                 <span class="icon-nav-settings" id="nav-settings"></span>
@@ -141,8 +144,8 @@
                             </a>
                             <div class="rbx-popover-content" data-toggle="popover-robux">
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="https://www.roblox.com/My/Money.aspx#/#Summary_tab" id="nav-robux-balance" class="rbx-menu-item">@robuxBalance.ToString("N0") ROBUX</a></li>
-                                    <li><a href="https://www.roblox.com/upgrades/robux?ctx=navpopover" class="rbx-menu-item">Buy ROBUX</a></li>
+                                    <li><a href="/My/Money.aspx#/#Summary_tab" id="nav-robux-balance" class="rbx-menu-item">@robuxBalance.ToString("N0") ROBUX</a></li>
+                                    <li><a href="/upgrades/robux?ctx=navpopover" class="rbx-menu-item">Buy ROBUX</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -153,7 +156,7 @@
                             </a>
                             <div class="rbx-popover-content" data-toggle="popover-tix">
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="https://www.roblox.com/My/Money.aspx#/#Summary_tab" id="nav-tix-balance" class="rbx-menu-item">@tixBalance.ToString("N0") Tix</a></li>
+                                    <li><a href="/My/Money.aspx#/#Summary_tab" id="nav-tix-balance" class="rbx-menu-item">@tixBalance.ToString("N0") Tix</a></li>
                                 </ul>
                             </div>
                         </li>

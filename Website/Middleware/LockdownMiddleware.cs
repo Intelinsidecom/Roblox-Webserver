@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace Website.Middleware
@@ -29,13 +30,15 @@ namespace Website.Middleware
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
         private readonly ICompositeViewEngine _viewEngine;
+        private readonly ILogger<MaintenanceMiddleware> _logger;
         private static readonly string[] AllowedExtensions = { ".js", ".css", ".png", ".jpg", ".jpeg", ".webp", ".gif" };
 
-        public MaintenanceMiddleware(RequestDelegate next, IConfiguration configuration, ICompositeViewEngine viewEngine)
+        public MaintenanceMiddleware(RequestDelegate next, IConfiguration configuration, ICompositeViewEngine viewEngine, ILogger<MaintenanceMiddleware> logger)
         {
             _next = next;
             _configuration = configuration;
             _viewEngine = viewEngine;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -56,7 +59,7 @@ namespace Website.Middleware
                         isMaintenanceEnabled = enabled;
                     }
                 }
-                catch {}
+                catch (Exception ex) { _logger.LogError(ex, "Failed to query Maintenance_mode_enabled"); }
             }
 
             if (!isMaintenanceEnabled)
@@ -90,7 +93,7 @@ namespace Website.Middleware
                         detailedInfo = info;
                     }
                 }
-                catch {}
+                catch (Exception ex) { _logger.LogError(ex, "Failed to query lockdown_mode_reason"); }
             }
 
             viewData["DetailedInfo"] = detailedInfo;

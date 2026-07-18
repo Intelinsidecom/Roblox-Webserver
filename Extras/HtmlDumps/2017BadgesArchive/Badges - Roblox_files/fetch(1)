@@ -1,0 +1,18 @@
+/* ~/CSS/Pages/Info/RobloxBadges.css */
+.badge-container{max-width:970px;margin:10px auto 0;}@media(max-width:767px){.badge-container{padding:0 15px;}}.badge-container .badge-category{padding-bottom:10px;}.badge-container .badge-category ul{margin:0;padding:0;list-style:none;}.badge-container .badge-category li{margin-top:-80px;}.badge-container .badge-category li:last-child{border-bottom:none;}.badge-container .BadgePadding{height:80px;}.badge-container .badge-content{padding:15px 5px 5px;}.badge-container .badge-image{float:left;width:75px;height:75px;text-align:center;}.badge-container .badge-image img{height:75px;}.badge-container .badge-image .icon-administrator{background-image:url(/web/20170920144325im_/https://static.rbxcdn.com/images/Badges/badges_06282017.svg);background-position:-75px -450px;background-repeat:no-repeat;background-size:150px auto;width:75px;height:75px;display:inline-block;vertical-align:middle;}.badge-container .badge-description{margin-left:85px;min-height:75px;}.badge-container h1{margin-top:0;}.stack .stack-list .stack-row.selectedFadeOut{background-color:#99DAFF;transition:background-color 1.5s ease-in;}
+
+/*
+     FILE ARCHIVED ON 14:43:25 Sep 20, 2017 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 19:20:57 Jul 16, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 8.933
+  load_resource: 192.022
+  PetaboxLoader3.resolve: 132.299
+  PetaboxLoader3.datanode: 56.905
+*/

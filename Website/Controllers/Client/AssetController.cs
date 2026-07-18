@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Net.Http;
 using Assets;
+using Economy;
 using Users;
 using Website.Services;
 
@@ -391,12 +392,60 @@ namespace Website.Controllers
 
                 await repo.RemoveUserAssetAsync(connStr, userId, assetId).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] RemoveFromInventory assetId={assetId}: {ex}");
                 return StatusCode(500, new { isValid = false, success = false, error = "Failed to remove asset from inventory" });
             }
 
             return Ok(new { isValid = true, success = true });
+        }
+
+        [Authorize]
+        [HttpPost("toggle-sale")]
+        public async Task<IActionResult> ToggleSale(
+            [FromForm] long assetId,
+            [FromForm] long userAssetId,
+            [FromForm] long price,
+            [FromForm] bool sell)
+        {
+            var userIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                return Ok(new { isValid = false });
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, new { isValid = false });
+
+            await using var conn = new Npgsql.NpgsqlConnection(connStr);
+            await conn.OpenAsync();
+
+            var service = new ResaleListingService(new MarketplaceFeeService(_configuration));
+
+            if (sell)
+            {
+                long? serial = userAssetId > 0 ? userAssetId : null;
+                await using var tx = await conn.BeginTransactionAsync();
+                var (success, error) = await service.CreateListingAsync(conn, tx, userId, assetId, serial, price);
+                if (success)
+                    await tx.CommitAsync();
+                else
+                    await tx.RollbackAsync();
+                return Ok(new { isValid = success });
+            }
+            else
+            {
+                var listing = await service.GetUserListingAsync(conn, userId, assetId);
+                if (listing == null)
+                    return Ok(new { isValid = false });
+                await using var tx = await conn.BeginTransactionAsync();
+                var (success, _) = await service.CancelListingAsync(conn, tx, listing.ListingId, userId);
+                if (success)
+                    await tx.CommitAsync();
+                else
+                    await tx.RollbackAsync();
+                return Ok(new { isValid = success });
+            }
         }
 
     }

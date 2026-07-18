@@ -1,5 +1,5 @@
 
-local fileExtension= "PNG"
+local fileExtension= %fileExtension%
 local x = %x%
 local y = %y%
 local baseUrl = "http://www.freblx.xyz"

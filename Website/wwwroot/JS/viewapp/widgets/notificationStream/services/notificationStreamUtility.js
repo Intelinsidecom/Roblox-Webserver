@@ -34,7 +34,8 @@ notificationStream.factory("notificationStreamUtility", ["signalR", "layoutLibra
 
             , isCardClickable:function(n) {
                 var t=n.notificationSourceType; switch(t) {
-                    case r.friendRequestAccepted:return n.eventCount>1||n.eventCount===1&&n.metadataCollection.length===0; case r.privateMessageReceived:return !0
+                    case r.friendRequestAccepted:return n.eventCount>1||n.eventCount===1&&n.metadataCollection.length===0; case r.privateMessageReceived:return !0;
+                    case r.commentOnAsset:case r.assetPurchased:case r.assetFavorited:return !0
                 }
 
                 return !1
@@ -46,7 +47,8 @@ notificationStream.factory("notificationStreamUtility", ["signalR", "layoutLibra
                 }
 
                 ; switch(n) {
-                    case r.friendRequestReceived:i.userId=t.SenderUserId, i.userName=t.SenderUserName; break; case r.friendRequestAccepted:i.userId=t.AccepterUserId, i.userName=t.AccepterUserName; break; case r.privateMessageReceived:i.userId=t.AuthorUserId, i.userName=t.AuthorUserName
+                    case r.friendRequestReceived:i.userId=t.SenderUserId, i.userName=t.SenderUserName; break; case r.friendRequestAccepted:i.userId=t.AccepterUserId, i.userName=t.AccepterUserName; break; case r.privateMessageReceived:i.userId=t.AuthorUserId, i.userName=t.AuthorUserName; break;
+                    case r.commentOnAsset:case r.assetPurchased:case r.assetFavorited:i.userId=t.SenderUserId, i.userName=t.SenderUserName; break;
                 }
 
                 return i

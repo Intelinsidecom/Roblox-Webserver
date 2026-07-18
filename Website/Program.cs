@@ -13,6 +13,7 @@ using Assets;
 using Website.Services;
 using Website.Middleware;
 using Games;
+using Website.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,8 @@ builder.Services.AddSingleton<AvatarThumbnailRefreshService>();
 builder.Services.AddSingleton<GamesCacheService>();
 builder.Services.AddHostedService<GamesCacheService>(sp => sp.GetRequiredService<GamesCacheService>());
 builder.Services.AddSingleton<ICatalogRepository, CatalogRepository>();
+builder.Services.AddSingleton<IRazorViewRenderer, RazorViewRenderer>();
+builder.Services.AddSingleton<ICatalogItemRenderer, RazorCatalogItemRenderer>();
 builder.Services.AddSingleton<ICatalogService, CatalogService>();
 builder.Services.AddSingleton<Website.Services.DevelopTabService>();
 builder.Services.AddSingleton<ScriptTemplateService>();
@@ -78,6 +81,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<Assets.AssetService>();
 builder.Services.AddHttpClient();
 builder.Services.AddWebOptimizerPipeline();
+builder.Services.AddSignalR();
 
 // Add Games services
 builder.Services.AddSingleton<AuthenticationTicketService>();
@@ -85,6 +89,9 @@ builder.Services.AddSingleton<Games.TokenService>();
 builder.Services.AddHostedService<TokenCleanupService>();
 builder.Services.AddSingleton<GamePresenceService>();
 builder.Services.AddHostedService<GamePresenceCleanupService>();
+
+// Add Limited Items expiry service
+builder.Services.AddHostedService<Economy.LimitedExpiryService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -166,12 +173,22 @@ app.UseMiddleware<LockdownMiddleware>();
 app.UseRouting();
 
 
-app.UseSession();
-app.UseRateLimiting();
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/hubs"),
+    appBuilder => appBuilder.UseSession()
+);
+
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/hubs"),
+    appBuilder => appBuilder.UseRateLimiting()
+);
 
 if (enableRequestLogging)
 {
-    app.UseHttpLogging();
+    app.UseWhen(
+        context => !context.Request.Path.StartsWithSegments("/hubs"),
+        appBuilder => appBuilder.UseHttpLogging()
+    );
 }
 
 app.Use(async (context, next) =>
@@ -211,13 +228,19 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseMiddleware<RequestResponseLoggingMiddleware>();
+//app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<PageErrorRedirectMiddleware>();
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/hubs"),
+    appBuilder => appBuilder.UseMiddleware<PageErrorRedirectMiddleware>()
+);
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.MapControllerRoute(
     name: "default",

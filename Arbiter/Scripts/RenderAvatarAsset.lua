@@ -4,7 +4,7 @@ local assetId = %assetId%
 
 local assetUrl = "rbxassetid://" .. assetId
 local baseUrl = "https://freblx.xyz"
-local fileExtension = "PNG"
+local fileExtension = "%fileExtension%"
 local x, y = 1024, 1024
 
 local ThumbnailGenerator = game:GetService("ThumbnailGenerator")
@@ -12,7 +12,6 @@ local ThumbnailGenerator = game:GetService("ThumbnailGenerator")
 pcall(function() game:GetService("ContentProvider"):SetBaseUrl(baseUrl) end)
 game:GetService("ScriptContext").ScriptsDisabled = true
 
--- Create a local test player and load a default character
 local Player = game.Players:CreateLocalPlayer(0)
 Player:LoadCharacter(false)
 

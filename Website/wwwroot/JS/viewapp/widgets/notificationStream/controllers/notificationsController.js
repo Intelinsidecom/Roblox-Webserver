@@ -58,11 +58,12 @@ notificationStream.controller("notificationsController", ["$scope", "notificatio
 
                     , r.navigateToFeature(e, function(n) {
                             s.debug("openUserProfile ---- status:" +n)
-                        })):window.location.href=f.getAbsoluteUrl(u)
+                        })):window.location.href=f.getAbsoluteUrl(u); break;
+                case i.notificationSourceType.commentOnAsset:case i.notificationSourceType.assetPurchased:case i.notificationSourceType.assetFavorited:n.interactNotification(t),t.metadataCollection&&t.metadataCollection.length>0&&(o=t.metadataCollection[0],o.SubjectType==="Asset"||o.SubjectType==="Game"?window.location.href="/item?id="+o.SubjectId:window.location.href="/item?id="+o.SubjectId);break;
             }
-        }
 
-        , n.notificationSourceType=i.notificationSourceType
+            ; n.notificationSourceType=i.notificationSourceType
+    }
     }
 
     ]);

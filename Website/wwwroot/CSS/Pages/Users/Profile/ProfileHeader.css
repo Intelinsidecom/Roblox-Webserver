@@ -1,378 +1,374 @@
 /* ~/CSS/Pages/Users/Profile/ProfileHeader.css */
+.form-inline {
+    position: static;
+}
+
+.icon-default-profileicon,
+.icon-add-friend,
+.icon-remove-friend,
+.icon-friend-pending,
+.icon-send-message,
+.icon-join-game,
+.icon-send-message-disabled,
+.icon-start-chat,
+.icon-accept-friend {
+    background-image: url(/images/Profile/profile_06282017.svg);
+    background-repeat: no-repeat;
+    background-size: 44px auto;
+    width: 44px;
+    height: 44px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-add-friend {
+    background-position: 0 0;
+}
+
+.icon-remove-friend {
+    background-position: 0 -44px;
+}
+
+.icon-friend-pending {
+    background-position: 0 -88px;
+}
+
+.icon-send-message {
+    background-position: 0 -132px;
+}
+
+.icon-join-game {
+    background-position: 0 -176px;
+}
+
+.icon-send-message-disabled {
+    background-position: 0 -220px;
+}
+
+.icon-start-chat {
+    background-position: 0 -308px;
+}
+
+.icon-accept-friend {
+    background-position: 0 -396px;
+}
+
 .profile-header:before,
 .profile-header:after {
-	content: " ";
-	display: table;
+    content: " ";
+    display: table;
 }
 
 .profile-header:after {
-	clear: both;
+    clear: both;
 }
 
 .profile-header .profile-header-top:before,
 .profile-header .profile-header-top:after {
-	content: " ";
-	display: table;
+    content: " ";
+    display: table;
 }
 
 .profile-header .profile-header-top:after {
-	clear: both;
+    clear: both;
 }
 
 .profile-header .profile-avatar-image,
 .profile-header .profile-header-content {
-	float: left;
+    float: left;
 }
 
 .profile-header .profile-avatar-image {
-	position: relative;
-	margin-right: 12px;
+    position: relative;
+    margin-right: 12px;
+    width: 128px;
+    height: 128px;
 }
 
-.profile-header .profile-avatar-image .icon-online,
-.profile-header .profile-avatar-image .icon-ingame,
-.profile-header .profile-avatar-image .icon-instudio {
-	background-size: 38px auto;
-	width: 38px;
-	height: 38px;
+.profile-header .profile-avatar-image.avatar-headshot-lg.card-plain {
+    width: 128px;
+    height: 128px;
 }
 
-@media(max-width:480px) {
-	.profile-header .profile-avatar-image {
-		width: 25%;
-		margin-right: 0;
-		padding-top: 12px;
-		margin-bottom: 12px;
-	}
+@media(max-width:767px) {
+    .profile-header .profile-avatar-image {
+        float: none;
+        margin: 0 auto;
+        width: 102px;
+        height: 102px;
+    }
 }
 
-.profile-header .profile-avatar-image .icon-ingame {
-	background-position: 0 0;
-}
-
-.profile-header .profile-avatar-image .icon-instudio {
-	background-position: 0 -38px;
-}
-
-.profile-header .profile-avatar-image .icon-online {
-	background-position: 0 -76px;
-}
-
-.profile-header .profile-avatar-image .avatar-image-link {
-	display: block;
-	border: 1px solid #B8B8B8;
-}
-
-.profile-header .profile-avatar-image .avatar-image-link img {
-	width: 110px;
-	height: 110px;
-}
-
-@media(max-width:479px) {
-	.profile-header .profile-avatar-image .avatar-image-link img {
-		width: 100%;
-		height: 100%;
-	}
+@media(max-width:767px) {
+    .profile-header .profile-avatar-image .avatar-profile {
+        width: 102px;
+        height: 102px;
+    }
 }
 
 .profile-header .profile-avatar-image .profile-avatar-status {
-	position: absolute;
-	right: -12px;
-	bottom: -12px;
-	z-index: 1000;
-}
-
-@media(max-width:991px) {
-	.profile-header .profile-avatar-image .profile-avatar-status {
-		background-image: none;
-		display: block;
-		height: 6px;
-		width: 100%;
-		right: 0;
-		bottom: 0;
-	}
-
-	.profile-header .profile-avatar-image .profile-avatar-status.icon-ingame {
-		background-color: #02b757;
-	}
-
-	.profile-header .profile-avatar-image .profile-avatar-status.icon-instudio {
-		background-color: #F68802;
-	}
-
-	.profile-header .profile-avatar-image .profile-avatar-status.icon-online {
-		background-color: #00A2FF;
-	}
+    z-index: 1000;
 }
 
 .profile-header .profile-header-content {
-	width: 100%;
-	position: relative;
+    width: 100%;
+    position: relative;
 }
 
 @media(max-width:767px) {
-	.profile-header .profile-header-content {
-		width: 100%;
-		margin-left: 0;
-		position: static;
-	}
+    .profile-header .profile-header-content {
+        width: 100%;
+        margin-left: 0;
+        position: static;
+    }
 }
 
 .profile-header .header-title {
-	display: inline-block;
+    display: inline-block;
+}
+
+.profile-header .header-title:before,
+.profile-header .header-title:after {
+    content: " ";
+    display: table;
+}
+
+.profile-header .header-title:after {
+    clear: both;
 }
 
 @media(max-width:767px) {
-	.profile-header .header-title {
-		padding-top: 12px;
-	}
+    .profile-header .header-title {
+        padding-top: 12px;
+    }
 }
 
-@media(max-width:480px) {
-	.profile-header .header-title {
-		float: right;
-		width: 75%;
-		overflow: hidden;
-		padding-left: 12px;
-	}
+@media(max-width:767px) {
+    .profile-header .header-title {
+        float: none;
+        width: 100%;
+        overflow: hidden;
+        padding-left: 0;
+    }
+}
+
+.profile-header .header-title h2,
+.profile-header .header-title span[class^="icon"] {
+    float: left;
 }
 
 .profile-header .header-title h2 {
-	display: inline-block;
-	margin: 0 12px 0 0;
+    display: inline-block;
+    margin: 0 12px 0 0;
 }
 
 @media(max-width:767px) {
-	.profile-header .header-title h2 {
-		margin: 0 12px 0 12px;
-	}
+    .profile-header .header-title h2 {
+        margin: 0;
+    }
 }
 
-@media(max-width:480px) {
-	.profile-header .header-title h2 {
-		margin: 0;
-	}
+.profile-header .header-title span[class^="icon"] {
+    margin: 3px 0 0 3px;
 }
 
-.profile-header .header-title .icon-tbc {
-	display: inline-block;
+.profile-header .header-caption {
+    width: 82%;
+    width: calc(100% - 128px - 28px);
+    height: 128px;
+    position: relative;
+    float: left;
+}
+
+@media(max-width:767px) {
+    .profile-header .header-caption {
+        float: none;
+        height: auto;
+        min-height: 140px;
+        width: 100%;
+    }
 }
 
 .profile-header .header-userstatus {
-	margin: 6px 0;
-	overflow: hidden;
+    overflow: hidden;
 }
 
-@media(max-width:479px) {
-	.profile-header .header-userstatus {
-		font-size: 14px;
-		overflow: inherit;
-	}
+@media(max-width:767px) {
+    .profile-header .header-userstatus {
+        font-size: 14px;
+        margin: 12px 0 0;
+    }
+}
+
+.profile-header .header-userstatus .input-field {
+    padding: 2px 12px;
+    height: 24px;
 }
 
 .profile-header .header-userstatus .header-userstatus-text span {
-	display: inline-block;
-	width: 100%;
-	height: 1em;
+    width: 100%;
+    display: inline-block;
+}
+
+@media(max-width:767px) {
+    .profile-header .header-userstatus .header-userstatus-text span {
+        white-space: normal;
+    }
 }
 
 .profile-header .header-userstatus .header-userstatus-text span.userstatus-editable {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .profile-header .header-userstatus .header-userstatus-share-progress {
-	margin: 12px;
-	height: 17px;
-	width: 48px;
+    margin: 6px;
+    height: 16px;
+    width: 48px;
 }
 
 .profile-header .header-details {
-	position: relative;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 100%;
 }
 
 .profile-header .header-details:before,
 .profile-header .header-details:after {
-	content: " ";
-	display: table;
+    content: " ";
+    display: table;
 }
 
 .profile-header .header-details:after {
-	clear: both;
+    clear: both;
 }
 
 @media(max-width:767px) {
-	.profile-header .header-details {
-		display: inline-block;
-		padding-left: 4px;
-		padding-top: 3px;
-	}
-}
-
-@media(max-width:480px) {
-	.profile-header .header-details {
-		width: 75%;
-	}
+    .profile-header .header-details {
+        position: relative;
+    }
 }
 
 .profile-header .header-details .details-info:before,
 .profile-header .header-details .details-info:after,
 .profile-header .header-details .details-actions:before,
 .profile-header .header-details .details-actions:after {
-	content: " ";
-	display: table;
+    content: " ";
+    display: table;
 }
 
 .profile-header .header-details .details-info:after,
 .profile-header .header-details .details-actions:after {
-	clear: both;
+    clear: both;
 }
 
 .profile-header .header-details .details-info li,
 .profile-header .header-details .details-actions li {
-	padding: 0 5px;
-	text-align: center;
+    padding: 0 5px;
+    text-align: center;
 }
 
 .profile-header .header-details .details-info {
-	float: left;
-	width: 36%;
+    float: left;
+    width: 36%;
+    height: 54px;
 }
 
 .profile-header .header-details .details-info li {
-	float: left;
-	width: 33%;
+    float: left;
+    width: 33%;
 }
 
 @media(max-width:767px) {
-	.profile-header .header-details .details-info {
-		width: 100%;
-		float: none;
-	}
+    .profile-header .header-details .details-info {
+        width: 100%;
+        float: none;
+    }
 }
 
-@media(max-width:479px) {
-	.profile-header .header-details .details-info {
-		width: 100%;
-	}
+@media(max-width:543px) {
+    .profile-header .header-details .details-info {
+        width: 100%;
+    }
 }
 
 .profile-header .header-details .details-actions {
-	float: right;
-	width: 45%;
+    float: right;
+    width: 55%;
+    margin-top: 6px;
+}
+
+.profile-header .header-details .details-actions.desktop-action {
+    display: block;
+}
+
+.profile-header .header-details .details-actions.mobile-action {
+    display: none;
 }
 
 @media(max-width:767px) {
-	.profile-header .header-details .details-actions {
-		width: 100%;
-		margin-top: 6px;
-	}
+    .profile-header .header-details .details-actions {
+        float: none;
+        width: 100%;
+    }
+
+    .profile-header .header-details .details-actions.desktop-action {
+        display: none;
+    }
+
+    .profile-header .header-details .details-actions.mobile-action {
+        display: block;
+    }
 }
 
 .profile-header .header-details .details-actions li {
-	float: right;
+    float: right;
 }
 
-@media(max-width:991px) {
-
-	.profile-header .header-details .details-actions li .btn-control-sm,
-	.profile-header .header-details .details-actions li .btn-primary-sm {
-		padding: 7px 5px;
-	}
+.profile-header .header-details .details-actions.mobile-action li {
+    float: left;
+    width: 50%;
+    border-right: 1px solid #B8B8B8;
 }
 
-@media(max-width:479px) {
+.profile-header .header-details .details-actions.mobile-action li:last-child {
+    border-right: 0 none;
+}
 
-	.profile-header .header-details .details-actions li .btn-control-sm,
-	.profile-header .header-details .details-actions li .btn-primary-sm {
-		width: 100%;
-		margin: 6px auto;
-	}
+.profile-header .header-details .details-actions.mobile-action.three-item-list li {
+    width: 33%;
+}
+
+.profile-header .header-details .details-actions.mobile-action .btn-unfollow {
+    background-color: transparent;
 }
 
 .profile-header .header-details .details-actions .btn-unfollow {
-	background-color: #E2231A;
-	color: #fff;
-}
-
-.profile-header .mobile-details-actions {
-	margin: 12px auto;
-}
-
-.profile-header .mobile-details-actions ul {
-	white-space: nowrap;
-}
-
-.profile-header .mobile-details-actions ul.two-item-list li {
-	width: 50%;
-}
-
-.profile-header .mobile-details-actions ul.three-item-list li {
-	width: 33%;
-}
-
-.profile-header .mobile-details-actions li {
-	display: inline-block;
-}
-
-.profile-header .mobile-details-actions li a {
-	text-align: center;
-	display: block;
-}
-
-.profile-header .mobile-details-actions li a .icon-background {
-	background: url("/web/20160326012633im_/http://static.rbxcdn.com/images/Profile/profile_icons_02182016.svg");
-	height: 40px;
-	width: 44px;
-	margin: 0 auto;
-}
-
-.profile-header .mobile-details-actions li a .icon-text {
-	font-size: 14px;
-	color: #757575;
-}
-
-.profile-header .mobile-details-actions .center-icon {
-	border-left: 1px solid #B8B8B8;
-}
-
-.profile-header .mobile-details-actions .last-icon {
-	border-left: 1px solid #B8B8B8;
-}
-
-.profile-header .mobile-details-actions .action-add-friend .icon-background {
-	background-position-y: 0;
-}
-
-.profile-header .mobile-details-actions .action-remove-friend .icon-background {
-	background-position-y: -44px;
-}
-
-.profile-header .mobile-details-actions .action-friend-pending .icon-background {
-	background-position-y: -86px;
-}
-
-.profile-header .mobile-details-actions .action-message .icon-background {
-	background-position-y: -125px;
-}
-
-.profile-header .mobile-details-actions .action-join-game .icon-background {
-	background-position-y: -170px;
+    background-color: #E2231A;
+    color: #fff;
 }
 
 .profile-header .header-details-error {
-	float: right;
-	margin: 0 6px 0 0;
+    float: right;
+    margin: 0 6px 0 0;
 }
 
 .profile-header .profile-header-more {
-	position: absolute;
-	top: 0;
-	right: 6px;
+    position: absolute;
+    top: 0;
+    right: 6px;
+}
+
+@media(max-width:767px) {
+    .profile-header .profile-header-more {
+        top: 124px;
+        right: 12px;
+    }
 }
 
 .profile-header .icon-more {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

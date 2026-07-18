@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets;
+using Economy;
 using Games;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -102,6 +103,29 @@ public sealed class DevelopTabService
         };
     }
 
+    private async Task<Dictionary<long, long>> GetSalesLast7DaysAsync(
+        NpgsqlConnection conn,
+        IReadOnlyCollection<long> assetIds,
+        CancellationToken cancellationToken)
+    {
+        if (assetIds == null || assetIds.Count == 0)
+            return new Dictionary<long, long>();
+
+        const string sql = @"SELECT asset_id, COUNT(*)
+                             FROM asset_sales_log
+                             WHERE asset_id = ANY(@ids) AND sold_at >= now() - interval '7 days'
+                             GROUP BY asset_id";
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("ids", assetIds);
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        var dict = new Dictionary<long, long>();
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            dict[reader.GetInt64(0)] = reader.GetInt64(1);
+        }
+        return dict;
+    }
+
     private async Task PopulateGamesAsync(Assemblies.Common.DevelopTabViewModel vm, bool showPublicOnly, CancellationToken cancellationToken)
     {
         vm.AssetTypeId = 0;
@@ -144,6 +168,7 @@ public sealed class DevelopTabService
                     StartPlaceName = u.PlaceName,
                     StartPlaceId = u.RootPlaceId,
                     IsPublic = u.PrivacyLevel == 1,
+                    VisitCount = u.VisitCount,
                     StatusText = u.PrivacyLevel switch
                     {
                         2 => "Friends",
@@ -156,8 +181,9 @@ public sealed class DevelopTabService
             vm.Items = items;
             vm.ActiveCount = items.Count(i => i.IsPublic);
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateGamesAsync: {ex}");
             vm.Items = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -200,8 +226,9 @@ public sealed class DevelopTabService
 
             vm.Items = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulatePlacesAsync: {ex}");
             vm.Items = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -227,7 +254,8 @@ public sealed class DevelopTabService
         t.name,
         ua_t.created_at,
         t.thumbnail_url,
-        i.asset_id as image_asset_id
+        i.asset_id as image_asset_id,
+        COALESCE(t.sales, 0) as sales
 from user_assets ua_t
 join assets t on t.asset_id = ua_t.asset_id and t.asset_type_id = 2 and t.owner_user_id = @uid
 left join assets i on i.owner_user_id = t.owner_user_id
@@ -237,36 +265,48 @@ where ua_t.user_id = @uid
 order by ua_t.created_at desc, t.asset_id desc
 limit 50;";
 
-            await using var cmd = new NpgsqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("uid", vm.UserId);
-
-            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
             var items = new List<Assemblies.Common.ClothingItem>();
-            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                var assetId = reader.GetInt64(0);
-                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
-                var createdAt = reader.GetDateTime(2);
-                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
-                var imageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
+                await using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("uid", vm.UserId);
 
-                items.Add(new Assemblies.Common.ClothingItem
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    AssetId = assetId,
-                    ImageAssetId = imageAssetId,
-                    Name = name,
-                    CreatedAt = createdAt,
-                    ThumbnailUrl = thumb,
-                    Type = "tshirts",
-                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
-                });
+                    var assetId = reader.GetInt64(0);
+                    var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                    var createdAt = reader.GetDateTime(2);
+                    var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    var imageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
+                    var sales = reader.IsDBNull(5) ? 0L : reader.GetInt64(5);
+
+                    items.Add(new Assemblies.Common.ClothingItem
+                    {
+                        AssetId = assetId,
+                        ImageAssetId = imageAssetId,
+                        Name = name,
+                        CreatedAt = createdAt,
+                        ThumbnailUrl = thumb,
+                        Type = "tshirts",
+                        CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                        Sales = sales,
+                    });
+                }
+            }
+
+            var assetIds = items.Select(i => i.AssetId).ToList();
+            var salesLast7 = await GetSalesLast7DaysAsync(conn, assetIds, cancellationToken).ConfigureAwait(false);
+            foreach (var item in items)
+            {
+                if (salesLast7.TryGetValue(item.AssetId, out var count))
+                    item.SalesLast7Days = count;
             }
 
             vm.TShirts = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateTShirtsAsync: {ex}");
             vm.TShirts = new List<Assemblies.Common.ClothingItem>();
         }
     }
@@ -289,7 +329,7 @@ limit 50;";
                 .GetUserShirtsWithImagesAsync(connStr, vm.UserId, cancellationToken)
                 .ConfigureAwait(false);
 
-            vm.Shirts = shirts.Select(s => new Assemblies.Common.ClothingItem
+            var clothingItems = shirts.Select(s => new Assemblies.Common.ClothingItem
             {
                 AssetId = s.AssetId,
                 ImageAssetId = s.ImageAssetId,
@@ -298,10 +338,24 @@ limit 50;";
                 ThumbnailUrl = s.ThumbnailUrl,
                 Type = "shirts",
                 CatalogUrl = "/catalog/" + s.AssetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(s.Name),
+                Sales = s.Sales,
             }).ToList();
+
+            var assetIds = clothingItems.Select(i => i.AssetId).ToList();
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            var salesLast7 = await GetSalesLast7DaysAsync(conn, assetIds, cancellationToken).ConfigureAwait(false);
+            foreach (var item in clothingItems)
+            {
+                if (salesLast7.TryGetValue(item.AssetId, out var count))
+                    item.SalesLast7Days = count;
+            }
+
+            vm.Shirts = clothingItems;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateShirtsAsync: {ex}");
             vm.Shirts = new List<Assemblies.Common.ClothingItem>();
         }
     }
@@ -324,7 +378,7 @@ limit 50;";
                 .GetUserPantsWithImagesAsync(connStr, vm.UserId, cancellationToken)
                 .ConfigureAwait(false);
 
-            vm.Pants = pants.Select(p => new Assemblies.Common.ClothingItem
+            var clothingItems = pants.Select(p => new Assemblies.Common.ClothingItem
             {
                 AssetId = p.AssetId,
                 ImageAssetId = p.ImageAssetId,
@@ -333,10 +387,24 @@ limit 50;";
                 ThumbnailUrl = p.ThumbnailUrl,
                 Type = "pants",
                 CatalogUrl = "/catalog/" + p.AssetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(p.Name),
+                Sales = p.Sales,
             }).ToList();
+
+            var assetIds = clothingItems.Select(i => i.AssetId).ToList();
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            var salesLast7 = await GetSalesLast7DaysAsync(conn, assetIds, cancellationToken).ConfigureAwait(false);
+            foreach (var item in clothingItems)
+            {
+                if (salesLast7.TryGetValue(item.AssetId, out var count))
+                    item.SalesLast7Days = count;
+            }
+
+            vm.Pants = clothingItems;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulatePantsAsync: {ex}");
             vm.Pants = new List<Assemblies.Common.ClothingItem>();
         }
     }
@@ -355,7 +423,7 @@ limit 50;";
 
         try
         {
-            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url, COALESCE(a.sales, 0) as sales
                 from assets a
                 where a.owner_user_id = @uid
                   and a.asset_type_id = 10
@@ -366,37 +434,49 @@ limit 50;";
             await using var conn = new NpgsqlConnection(connStr);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-            await using var cmd = new NpgsqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("uid", vm.UserId);
-
-            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
-
             var items = new List<Assemblies.Common.DevelopItem>();
-            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                var assetId = reader.GetInt64(0);
-                var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
-                var createdAt = reader.GetDateTime(2);
-                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                await using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("uid", vm.UserId);
 
-                items.Add(new Assemblies.Common.DevelopItem
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    ItemId = assetId,
-                    AssetId = assetId,
-                    RootPlaceId = assetId,
-                    Name = name,
-                    ThumbnailUrl = thumb,
-                    Type = "models",
-                    ConfigureUrl = "/asset/" + assetId + "/configure",
-                    CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
-                    CreatedAt = createdAt,
-                });
+                    var assetId = reader.GetInt64(0);
+                    var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                    var createdAt = reader.GetDateTime(2);
+                    var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
+
+                    items.Add(new Assemblies.Common.DevelopItem
+                    {
+                        ItemId = assetId,
+                        AssetId = assetId,
+                        RootPlaceId = assetId,
+                        Name = name,
+                        ThumbnailUrl = thumb,
+                        Type = "models",
+                        ConfigureUrl = "/asset/" + assetId + "/configure",
+                        CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                        CreatedAt = createdAt,
+                        Sales = sales,
+                    });
+                }
+            }
+
+            var assetIds = items.Select(i => i.AssetId).ToList();
+            var salesLast7 = await GetSalesLast7DaysAsync(conn, assetIds, cancellationToken).ConfigureAwait(false);
+            foreach (var item in items)
+            {
+                if (salesLast7.TryGetValue(item.AssetId, out var count))
+                    item.SalesLast7Days = count;
             }
 
             vm.Models = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateModelsAsync: {ex}");
             vm.Models = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -415,7 +495,7 @@ limit 50;";
 
         try
         {
-            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url, COALESCE(a.sales, 0) as sales
                 from assets a
                 where a.owner_user_id = @uid
                   and a.asset_type_id = 13
@@ -437,6 +517,7 @@ limit 50;";
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
                 var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem
                 {
@@ -449,13 +530,15 @@ limit 50;";
                     ConfigureUrl = "/asset/" + assetId + "/configure",
                     CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
                     CreatedAt = createdAt,
+                    Sales = sales,
                 });
             }
 
             vm.Decals = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateDecalsAsync: {ex}");
             vm.Decals = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -474,7 +557,7 @@ limit 50;";
 
         try
         {
-            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url, COALESCE(a.sales, 0) as sales
                 from assets a
                 where a.owner_user_id = @uid
                   and a.asset_type_id = 4
@@ -496,6 +579,7 @@ limit 50;";
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
                 var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem
                 {
@@ -508,13 +592,15 @@ limit 50;";
                     ConfigureUrl = "/asset/" + assetId + "/configure",
                     CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
                     CreatedAt = createdAt,
+                    Sales = sales,
                 });
             }
 
             vm.Meshes = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateMeshesAsync: {ex}");
             vm.Meshes = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -533,7 +619,7 @@ limit 50;";
 
         try
         {
-            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url, COALESCE(a.sales, 0) as sales
                 from assets a
                 where a.owner_user_id = @uid
                   and a.asset_type_id = 3
@@ -556,6 +642,7 @@ limit 50;";
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
                 var thumb = reader.IsDBNull(3) ? defaultThumb : reader.GetString(3);
+                var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem
                 {
@@ -568,13 +655,15 @@ limit 50;";
                     ConfigureUrl = "/asset/" + assetId + "/configure",
                     CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
                     CreatedAt = createdAt,
+                    Sales = sales,
                 });
             }
 
             vm.Audios = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateAudiosAsync: {ex}");
             vm.Audios = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -682,8 +771,9 @@ limit 50;";
 
             vm.LibraryItems = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulateLibraryAsync: {ex}");
             vm.LibraryItems = new List<Assemblies.Common.DevelopItem>();
         }
     }
@@ -702,7 +792,7 @@ limit 50;";
 
         try
         {
-            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url, COALESCE(a.sales, 0) as sales
                 from assets a
                 where a.owner_user_id = @uid
                   and a.asset_type_id = 38
@@ -724,6 +814,7 @@ limit 50;";
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
                 var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem
                 {
@@ -736,13 +827,15 @@ limit 50;";
                     ConfigureUrl = "/asset/" + assetId + "/configure",
                     CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
                     CreatedAt = createdAt,
+                    Sales = sales,
                 });
             }
 
             vm.Plugins = items;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] PopulatePluginsAsync: {ex}");
             vm.Plugins = new List<Assemblies.Common.DevelopItem>();
         }
     }

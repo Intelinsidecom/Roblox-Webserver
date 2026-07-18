@@ -347,5 +347,3 @@ Roblox.Thumbs.AssetImage.InitMediaPlayer = function () {
         });
     }
 }
-
-}

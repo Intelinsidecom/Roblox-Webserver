@@ -303,9 +303,9 @@ namespace Control_Panel.Views
         {
             if (_currentUser == null) return;
             
-            if (!long.TryParse(RobuxAmountTextBox.Text, out long amount) || amount < 0)
+            if (!long.TryParse(RobuxAmountTextBox.Text, out long amount) || amount == 0)
             {
-                MessageBox.Show("Please enter a valid positive number for Robux amount.", "Invalid Input", 
+                MessageBox.Show("Please enter a valid non-zero number for Robux amount. Use a negative value to subtract.", "Invalid Input", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -342,9 +342,9 @@ namespace Control_Panel.Views
         {
             if (_currentUser == null) return;
             
-            if (!long.TryParse(TixAmountTextBox.Text, out long amount) || amount < 0)
+            if (!long.TryParse(TixAmountTextBox.Text, out long amount) || amount == 0)
             {
-                MessageBox.Show("Please enter a valid positive number for Tix amount.", "Invalid Input", 
+                MessageBox.Show("Please enter a valid non-zero number for Tix amount. Use a negative value to subtract.", "Invalid Input", 
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }

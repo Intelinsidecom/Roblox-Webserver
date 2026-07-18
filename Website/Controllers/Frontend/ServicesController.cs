@@ -53,7 +53,7 @@ namespace RobloxWebserver.Controllers
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] ValidateLogin parse JSON body: {ex}"); }
             }
 
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))

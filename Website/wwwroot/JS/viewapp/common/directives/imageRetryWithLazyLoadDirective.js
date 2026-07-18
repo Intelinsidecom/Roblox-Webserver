@@ -1,5 +1,11 @@
 "use strict";
 
+if (robloxHelpers._invokeQueue) {
+    robloxHelpers._invokeQueue = robloxHelpers._invokeQueue.filter(function(entry) {
+        return !(entry[0] === '$provide' && entry[1] === 'directive' && entry[2][0] === 'imageRetry');
+    });
+}
+
 robloxHelpers.directive("imageRetry", ["robloxImagesService", "$log", function(n, t) {
         return {
             restrict:"A", scope: {

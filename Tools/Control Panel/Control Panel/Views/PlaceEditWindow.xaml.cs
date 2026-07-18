@@ -274,7 +274,7 @@ namespace Control_Panel
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine($"[ERROR] SetDeviceCompatibility: {ex}"); }
         }
 
         private void SetMaxPlayersSelection(int count)
@@ -344,7 +344,7 @@ namespace Control_Panel
                     }
                 }
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine($"[ERROR] SetGearPermissions: {ex}"); }
         }
 
         private async Task LoadDeveloperProductsAsync()
@@ -411,7 +411,7 @@ namespace Control_Panel
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] LoadBitmapFromUrlOrLocal: {ex}"); }
                 return null;
             }
         }
@@ -539,7 +539,7 @@ namespace Control_Panel
                     bitmap.EndInit();
                     GameIconImage.Source = bitmap;
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] SelectIconButton_Click preview: {ex}"); }
             }
         }
 

@@ -173,7 +173,7 @@ namespace Api.Controllers
                     await DevProductHandler.CreateDeveloperProduct(
                         connectionString, universeId, name, description, priceInRobux, 0, null);
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] CreateDeveloperProduct DevProductHandler: {ex}"); }
 
                 return Ok(new { success = true, productId = productId });
             }
@@ -231,7 +231,7 @@ namespace Api.Controllers
                     await DevProductHandler.UpdateDeveloperProductInDatabaseAsync(
                         connectionString, productId, name, description, priceInRobux, 0, imageAssetId);
                 }
-                catch { }
+                catch (Exception ex) { Console.WriteLine($"[ERROR] UpdateDeveloperProduct DevProductHandler: {ex}"); }
 
                 return Ok(new { success = true, productId = productId });
             }

@@ -65,6 +65,8 @@ public sealed class DevelopItem
     public int? PriceRobux { get; set; }
     public int? PriceTickets { get; set; }
     public bool IsOnSale { get; set; }
+    public long Sales { get; set; }
+    public long SalesLast7Days { get; set; }
 }
 
 public sealed class ClothingItem
@@ -76,4 +78,6 @@ public sealed class ClothingItem
     public string? ThumbnailUrl { get; set; }
     public string CatalogUrl { get; set; } = string.Empty;
     public string Type { get; set; } = "tshirts";
+    public long Sales { get; set; }
+    public long SalesLast7Days { get; set; }
 }

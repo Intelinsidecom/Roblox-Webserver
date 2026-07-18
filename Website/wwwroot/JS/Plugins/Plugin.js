@@ -20,13 +20,24 @@ typeof Roblox.Plugins == "undefined" && (Roblox.Plugins = {}), Roblox.Plugins.In
             u = Roblox.Plugins.Resources.updateText,
             n = $(".InstallButton"),
             t, i;
-        n.is(":visible") && (t = JSON.parse(window.external.GetInstalledPlugins()), t.hasOwnProperty(n.data("item-id")) && (i = t[n.data("item-id")].AssetVersion, i != "undefined" && i < n.data("item-version-id") ? (n.text(u), n.unbind(), n.removeClass("InstallButton").addClass("UpdateButton"), $(".PluginMessageContainer").show(), $(".UpdateButton").click(function() {
-            var n = $(this);
-            return n.hasClass("btn-disabled-primary") || h(n), !1
-        })) : (n.text(r), n.unbind(), n.removeClass("InstallButton").addClass("ReinstallButton"), $(".ReinstallButton").click(function() {
-            var n = $(this);
-            return n.hasClass("btn-disabled-primary") || s(n), !1
-        }))))
+        if (!n.is(":visible") || typeof window.external == "undefined" || typeof window.external.InstallPlugin != "function") return;
+        try {
+            t = JSON.parse(window.external.GetInstalledPlugins());
+            if (t.hasOwnProperty(n.data("item-id"))) {
+                i = t[n.data("item-id")].AssetVersion;
+                i != "undefined" && i < n.data("item-version-id") ? (n.text(u), n.unbind(), n.removeClass("InstallButton").addClass("UpdateButton"), $(".PluginMessageContainer").show(), $(".UpdateButton").click(function() {
+                    var n = $(this);
+                    return n.hasClass("btn-disabled-primary") || h(n), !1
+                })) : (n.text(r), n.unbind(), n.removeClass("InstallButton").addClass("ReinstallButton"), $(".ReinstallButton").click(function() {
+                    var n = $(this);
+                    return n.hasClass("btn-disabled-primary") || s(n), !1
+                }))
+            } else {
+                n.removeClass("btn-disabled-primary")
+            }
+        } catch(e) {
+            n.removeClass("btn-disabled-primary")
+        }
     }
 
     function e(r) {

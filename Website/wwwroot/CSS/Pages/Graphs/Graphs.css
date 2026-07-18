@@ -1,0 +1,90 @@
+/* /CSS/Pages/Graphs/Graphs.css */
+.form-inline {
+    position: static;
+}
+
+.stats-chart {
+    height: 400px;
+    width: 760px;
+    float: left;
+    margin-bottom: 40px;
+}
+
+.stats-chart.loading {
+    background: url("/images/Spinners/ajax_loader_blue_300.gif") no-repeat center;
+}
+
+.stats-legend {
+    float: left;
+    padding-left: 20px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 410px;
+    padding-right: 15px;
+}
+
+.stats-legend input[type="checkbox"] {
+    margin: 2px 2px 0 0;
+    vertical-align: top;
+}
+
+.stats-legend .legendLabel {
+    max-width: 155px;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    color: #757575;
+}
+
+.flot-tooltip {
+    background: #000;
+    color: #fff;
+    z-index: 1040;
+    font-size: 14px;
+    line-height: 1.428;
+    padding: .4em .6em;
+    display: none;
+    white-space: nowrap;
+    opacity: .8;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+h2 {
+    font-size: 30px;
+    clear: left;
+}
+
+#game-tab .chart-types {
+    display: none;
+}
+
+.pie-chart {
+    height: 400px;
+    width: 400px;
+    float: left;
+    margin-bottom: 40px;
+    margin-left: 40px;
+    margin-right: 5px;
+}
+
+.pie-chart.loading {
+    background: url("/images/Spinners/ajax_loader_blue_300.gif") no-repeat center;
+}
+
+.pie-chart .rbx-pie-label {
+    background-color: #191919;
+    padding: 5px;
+    border-radius: 3px;
+    color: #fff;
+    display: none;
+    text-align: center;
+}
+
+.pie-chart .rbx-pie-label.shown {
+    display: block;
+}

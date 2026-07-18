@@ -152,8 +152,9 @@ namespace Control_Panel
                 {
                     testResults.Add("✗ Arbiter: Connection failed");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[ERROR] TestConnectionsButton_Click: {ex.Message}");
                     testResults.Add("✗ Arbiter: Connection failed");
                 }
                 
@@ -184,8 +185,9 @@ namespace Control_Panel
                 {
                     testResults.Add("✗ Website: Connection failed");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[ERROR] TestConnectionsButton_Click Website: {ex.Message}");
                     testResults.Add("✗ Website: Connection failed");
                 }
                 
@@ -216,8 +218,9 @@ namespace Control_Panel
                 {
                     testResults.Add("✗ API Service: Connection failed");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[ERROR] TestConnectionsButton_Click API Service: {ex.Message}");
                     testResults.Add("✗ API Service: Connection failed");
                 }
                 
@@ -248,8 +251,9 @@ namespace Control_Panel
                 {
                     testResults.Add("✗ Data Service: Connection failed");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[ERROR] TestConnectionsButton_Click Data Service: {ex.Message}");
                     testResults.Add("✗ Data Service: Connection failed");
                 }
                 
@@ -280,8 +284,9 @@ namespace Control_Panel
                 {
                     testResults.Add("✗ CDN: Connection failed");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[ERROR] TestConnectionsButton_Click CDN: {ex.Message}");
                     testResults.Add("✗ CDN: Connection failed");
                 }
 
@@ -312,8 +317,9 @@ namespace Control_Panel
                 {
                     testResults.Add("✗ Setup Service: Connection failed");
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[ERROR] TestConnectionsButton_Click Setup Service: {ex.Message}");
                     testResults.Add("✗ Setup Service: Connection failed");
                 }
 
