@@ -1,0 +1,22 @@
+<li class="player-item avatar-card responsive-card" ng-repeat="user in results">
+    <div class=avatar-card-container>
+        <div class=avatar-card-content ng-click=openProfile(user.UserProfilePageUrl,$event)>
+            <div class=avatar-card-fullbody ng-if=!layout.inMobile>
+                <a ng-href={{user.UserProfilePageUrl}} ng-click=$event.stopPropagation() class=avatar-card-link>
+                    <img class=avatar-card-image ng-src={{user.Thumbnail.Url}} thumbnail=user.Thumbnail reset-src=true image-retry>
+                </a>
+                <a href="" class=avatar-status ng-show=user.IsOnline ng-class=user.StatusClass>
+                    <span ng-class="'icon-'+user.StatusClass"></span>
+                </a>
+            </div>
+            <div class="avatar avatar-headshot avatar-headshot-md" ng-if=layout.inMobile>
+                <a ng-href={{user.UserProfilePageUrl}} ng-click=$event.stopPropagation() class=avatar-card-link>
+                    <img class=avatar-card-image ng-src={{user.Thumbnail.Url}} thumbnail=user.Thumbnail reset-src=true image-retry>
+                </a>
+                <span class=avatar-status ng-show=user.IsOnline ng-class=user.StatusClass></span>
+            </div>
+            <div class=avatar-card-caption ng-include="'player-card-content'"></div>
+        </div>
+        <ng-include src="'player-card-buttons'"></ng-include>
+    </div>
+</li>

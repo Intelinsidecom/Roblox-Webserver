@@ -1,0 +1,14 @@
+<div class=rbx-pager>
+    <ul class=pager>
+        <li class=first ng-class="{'disabled':pagination.curPage===1}">
+            <a ng-click="pagination.pageUpdated('first')"><span class=icon-first-page></span></a>
+        <li class=pager-prev ng-class="{'disabled':pagination.curPage===1}">
+            <a ng-click="pagination.pageUpdated('prev')"><span class=icon-left></span></a>
+        <li class=pager-cur><span id=rbx-current-page>{{pagination.curPage|number}}</span>
+        <li class=pager-total><span>of</span> <span>{{pagination.totalPages|number}}</span>
+        <li class=pager-next ng-class="{'disabled':pagination.curPage===pagination.totalPages}">
+            <a ng-click="pagination.pageUpdated('next')"><span class=icon-right></span></a>
+        <li class=last ng-class="{'disabled':pagination.curPage===pagination.totalPages}">
+            <a ng-click="pagination.pageUpdated('last')"><span class=icon-last-page></span></a>
+    </ul>
+</div>

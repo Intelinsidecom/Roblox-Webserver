@@ -292,5 +292,58 @@ namespace Users
                 return false;
             }
         }
+        public static async Task<long> CountUsersByKeywordAsync(string connectionString, string keyword, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (string.IsNullOrWhiteSpace(keyword))
+                return 0;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand("SELECT COUNT(*) FROM users WHERE LOWER(user_name) LIKE LOWER(@pattern)", conn);
+            cmd.Parameters.AddWithValue("pattern", $"%{keyword}%");
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result == null || result is DBNull ? 0 : Convert.ToInt64(result);
+        }
+
+        public static async Task<List<UserSearchResult>> SearchUsersByKeywordAsync(string connectionString, string keyword, int offset, int limit, CancellationToken cancellationToken = default)
+        {
+            var results = new List<UserSearchResult>();
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (string.IsNullOrWhiteSpace(keyword))
+                return results;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand(@"
+                SELECT user_id, user_name
+                FROM users
+                WHERE LOWER(user_name) LIKE LOWER(@pattern)
+                ORDER BY user_name
+                OFFSET @offset
+                LIMIT @limit", conn);
+            cmd.Parameters.AddWithValue("pattern", $"%{keyword}%");
+            cmd.Parameters.AddWithValue("offset", offset);
+            cmd.Parameters.AddWithValue("limit", limit);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                results.Add(new UserSearchResult
+                {
+                    UserId = reader.GetInt64(0),
+                    Username = reader.GetString(1)
+                });
+            }
+            return results;
+        }
     }
+}
+
+public class UserSearchResult
+{
+    public long UserId { get; set; }
+    public string Username { get; set; } = "";
 }

@@ -1,0 +1,24 @@
+<div class=avatar-card-btns ng-if=user.YourOwnResult><h5 class=info-text>This is you</h5></div>
+<div class=avatar-card-btns ng-class="{'not-visible':pageData.inMobileOrTabletBrowser}" ng-if=showButtonsForFriends(user)>
+    <button class="btn-control-md join-game" type=button ng-click=joinGame(user) ng-if=user.InGame&&user.AllowedToFollowInGame>Join Game</button>
+    <button class=btn-control-md type=button ng-click=startChat(user.UserId) ng-class="{'full-size':!(user.InGame&&user.AllowedToFollowInGame)}">Chat</button>
+</div>
+<div class=avatar-card-btns ng-class="{'not-visible':user.YourOwnResult}" ng-if=showButtonsForNonFriends(user)>
+    <button class="btn-control-md disabled full-size" type=button ng-disabled=true ng-if="user.FriendshipStatus===layout.friendship.PendingOnOtherUser">Request Sent</button>
+    <button class="btn-control-md full-size" type=button ng-click=acceptFriend(user.UserId,pageData.currentUserId) ng-if="user.FriendshipStatus===layout.friendship.PendingOnCurrentUser">Accept Request</button>
+    <button class="btn-control-md full-size" type=button ng-click=addFriend(user.UserId) ng-if="user.FriendshipStatus===layout.friendship.NoFriendship">Add Friend</button>
+</div>
+<div class=mobile-btn-container ng-if=!layout.isUserGuest&&!user.YourOwnResult>
+    <div class=mobile-card-btn ng-click=startChat(user.UserId) ng-if="user.FriendshipStatus===layout.friendship.Friends&&pageData.inApp">
+        <span class="btn-chat icon-chat"></span>
+    </div>
+    <div class=mobile-card-btn ng-click=addFriend(user.UserId) ng-if="user.FriendshipStatus===layout.friendship.NoFriendship">
+        <span class="btn-add-friend icon-addfriend"></span>
+    </div>
+    <div class=mobile-card-btn ng-click=acceptFriend(user.UserId,pageData.currentUserId) ng-if="user.FriendshipStatus===layout.friendship.PendingOnCurrentUser">
+        <span class="btn-add-friend icon-acceptfriend"></span>
+    </div>
+    <div class=mobile-card-btn ng-if="user.FriendshipStatus===layout.friendship.PendingOnOtherUser">
+        <span class="btn-pending-friend icon-sandglass inactive"></span>
+    </div>
+</div>

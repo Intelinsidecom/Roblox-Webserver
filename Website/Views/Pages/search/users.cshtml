@@ -1,0 +1,348 @@
+@{ Layout = "_Layout"; }
+<!DOCTYPE html>
+<html><!--<![endif]-->
+
+    <!-- MachineID: WEB308 -->
+    <title>Players - ROBLOX</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<link rel="stylesheet" href="~/CSS/2017/Base/CSS/jquery.mCustomScrollbar.css">
+<link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
+<link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
+
+<link rel="stylesheet" href="/CSS/Pages/Search/PlayerSearchPage.css">
+<link rel="stylesheet" href="/CSS/Pages/Logo/Logo.css">
+
+    
+    
+    
+    <script type="text/javascript" src="/js/jquery/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")</script>
+<script type="text/javascript" src="/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
+
+    <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
+    <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="/JS/roblox.js"></script>
+    <script type="text/javascript" src="/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/JS/utilities/performance.js"></script>
+    <script type="text/javascript" src="/JS/RobloxCookies.js"></script>
+    <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
+    <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.AdsHelper = Roblox.AdsHelper || {};
+    Roblox.AdsLibrary = Roblox.AdsLibrary || {};
+
+    Roblox.AdsHelper.toggleAdsSlot = function (slotId, GPTRandomSlotIdentifier) {
+        var gutterAdsEnabled = false;
+        if (gutterAdsEnabled) {
+            googletag.display(GPTRandomSlotIdentifier);
+            return;
+        }
+        
+        if (typeof slotId !== 'undefined' && slotId && slotId.length > 0) {
+            var slotElm = $("#"+slotId);
+            if (slotElm.is(":visible")) {
+                googletag.display(GPTRandomSlotIdentifier);
+            }else {
+                var adParam = Roblox.AdsLibrary.adsParameters[slotId];
+                if (adParam) {
+                    adParam.template = slotElm.html();
+                    slotElm.empty();
+                }
+            }
+        }
+    }
+</script><script type="text/javascript">
+    $(function () {
+        Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+    });
+</script>    <script type="text/javascript">
+        $(function () {
+            RobloxEventManager.triggerEvent('rbx_evt_newuser', {});
+        });
+
+    </script>
+
+
+
+    
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript">
+if (typeof(Roblox) === "undefined") { Roblox = {}; }
+Roblox.Endpoints = Roblox.Endpoints || {};
+Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+</script>
+
+<body id="rbx-body" class="" data-performance-relative-value="0.005" data-internal-page-name="PlayerSearch" data-send-event-percentage="0.01">
+    <div id="roblox-linkify" data-enabled="true" data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags="gm" data-as-http-regex="((blog|wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.roblox\.com|robloxlabs\.com)"></div>
+
+<div id="image-retry-data" data-image-retry-max-times="10" data-image-retry-timer="1500" data-isnewexponentialbackoffforimageretryenabled="true">
+</div>
+<div id="http-retry-data" data-http-retry-max-timeout="0" data-http-retry-base-timeout="0" data-http-retry-max-times="5">
+</div>
+
+    
+
+
+<div id="fb-root"></div>
+
+<div id="wrap" class="wrap no-gutter-ads logged-out" data-gutter-ads-enabled="false">
+
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    (function() {
+        if (Roblox && Roblox.Performance) {
+            Roblox.Performance.setPerformanceMark("navigation_end");
+        }
+    })();
+</script>
+
+    <div class="container-main  
+                 
+                
+                
+                ">
+            <script type="text/javascript">
+                if (top.location != self.location) {
+                    top.location = self.location.href;
+                }
+            </script>
+        
+        <div class="content ">
+
+            
+
+<div id="player-search-container" class="player-search-container">
+    <!-- ngInclude: 'player-search-page' --><div id="player-search-page" class="player-search-page ng-scope" ng-modules="robloxApp, playerSearch" ng-controller="playerSearchController" ng-init="init(&#39;/search/users/metadata&#39;);" ng-include="&#39;player-search-page&#39;"><div class="top-row ng-scope"><h3 class="header">Player Results for <span class="keyword ng-binding"></span></h3><div class="search-container ng-hide" ng-hide="pageData.inApp"><div class="input-group"><input class="form-control input-field ng-pristine ng-valid" type="text" placeholder="Search" ng-keyup="$event.keyCode==13&amp;&amp;startNewSearch($event)" ng-model="formData.keyword"><div class="input-group-btn"><button class="input-addon-btn" ng-click="startNewSearch()"><span class="icon-search"></span></button></div></div></div><div class="row results-count ng-hide" ng-show="pageData.totalResults&gt;0"><span class="text-secondary hideable ng-binding">0 - 0 of</span> <span class="text-secondary ng-binding">0 <ng-pluralize count="pageData.totalResults" when="{&#39;1&#39;:&#39;Result&#39;,&#39;other&#39;:&#39;Results&#39;}">Results</ng-pluralize></span></div></div><div class="col-xs-12 section-content-off no-results ng-binding ng-scope ng-hide" ng-show="showNoMatches()">There are no matches available for ""</div><div class="col-xs-12 section-content-off no-results ng-binding ng-scope ng-hide" ng-show="layout.isKeywordTooShort">Please enter at least 0 characters.</div><div class="col-xs-12 section-content-off unsafe-input ng-scope ng-hide" ng-show="layout.unsafeInputDetected">You have entered unsafe input. Please try your search again.</div><!-- ngInclude: 'search-result-item' --><ul class="search-result avatar-cards ng-scope ng-hide" ng-hide="!layout.inMobile&amp;&amp;layout.resultsLoading" ng-include="&#39;search-result-item&#39;" infinite-scroll="getNextScrollResults()" infinite-scroll-always-disabled="!layout.inMobile"><!-- ngRepeat: user in results --></ul><div class="results-loading ng-scope" ng-show="layout.resultsLoading"><img ng-src="" class="loading-default load-image"></div><div class="row ng-scope ng-hide" ng-show="!layout.inMobile&amp;&amp;results.length&gt;0&amp;&amp;!layout.resultsLoading" current-page="layout.curPage" items-per-page="pageData.maxRows" num-pages="layout.numPages" model-changed="pageModelChanged" page-changed="pageUpdate" scroll-to-top="true" pagination=""><div class="rbx-pager"><ul class="pager"><li class="first" ng-class="{&#39;disabled&#39;:pagination.curPage===1}"><a ng-click="pagination.pageUpdated(&#39;first&#39;)"><span class="icon-first-page"></span></a></li><li class="pager-prev" ng-class="{&#39;disabled&#39;:pagination.curPage===1}"><a ng-click="pagination.pageUpdated(&#39;prev&#39;)"><span class="icon-left"></span></a></li><li class="pager-cur"><span id="rbx-current-page" class="ng-binding"></span></li><li class="pager-total"><span>of</span> <span class="ng-binding"></span></li><li class="pager-next disabled" ng-class="{&#39;disabled&#39;:pagination.curPage===pagination.totalPages}"><a ng-click="pagination.pageUpdated(&#39;next&#39;)"><span class="icon-right"></span></a></li><li class="last disabled" ng-class="{&#39;disabled&#39;:pagination.curPage===pagination.totalPages}"><a ng-click="pagination.pageUpdated(&#39;last&#39;)"><span class="icon-last-page"></span></a></li></ul></div></div></div>
+</div>
+
+
+            
+        </div>
+            </div> 
+</div> 
+
+
+
+    <script type="text/javascript">function urchinTracker() {}</script>
+
+<script type="text/javascript" src="/JS/EventTracker.js"></script>
+<script type="text/javascript" src="/JS/ClientInstaller.js"></script>
+<script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
+<script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
+
+
+<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
+    <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+    <div class="Title"></div>
+    <div class="GenericModalBody">
+        <div class="TopBody">
+            <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays="" data-no-click="">
+                <img class="GenericModalImage" alt="generic image">
+            </div>
+            <div class="Message"></div>
+        </div>
+        <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+            <a href="/search/users?keyword=a" id="roblox-confirm-btn"><span></span></a>
+            <a href="/search/users?keyword=a" id="roblox-decline-btn"><span></span></a>
+        </div>
+        <div class="ConfirmationModalFooter">
+        
+        </div>  
+    </div>  
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+        
+        //<sl:translate>
+        Roblox.Resources.GenericConfirmation = {
+            yes: "Yes",
+            No: "No",
+            Confirm: "Confirm",
+            Cancel: "Cancel"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+<div id="modal-confirmation" class="modal-confirmation" data-modal-type="confirmation">
+    <div id="modal-dialog" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5 class="modal-title"></h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-top-body">
+                    <div class="modal-message"></div>
+                    <div class="modal-image-container roblox-item-image" data-image-size="medium" data-no-overlays="" data-no-click="">
+                        <img class="modal-thumb" alt="generic image">
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <a href="/search/users?keyword=a" id="confirm-btn"><span></span></a>
+                    <a href="/search/users?keyword=a" id="decline-btn"><span></span></a>
+                </div>
+                <div class="loading modal-processing">
+                    <img class="loading-default" src="/images/4bed93c91f909002b1f17f05c0ce13d1.gif" alt="Processing...">
+                </div>
+            </div>
+            <div class="modal-footer text-footer">
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+
+        //<sl:translate>
+        Roblox.Resources.Dialog = {
+            yes: "Yes",
+            No: "No",
+            Confirm: "Confirm",
+            Cancel: "Cancel"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.jsConsoleEnabled = false;
+</script>
+
+
+    
+    <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
+
+    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="/JS/utilities/deviceFeatureDetection.js"></script>
+    <script type="text/javascript" src="/JS/utilities/lazyLoad.js"></script>
+    <script type="text/javascript" src="/JS/utilities/ExponentialBackoff.js"></script>
+    <script type="text/javascript" src="/JS/utilities/ExponentialBackoffSpecification.js"></script>
+    <script type="text/javascript" src="/JS/XsrfToken.js"></script>
+    <script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="/JS/Reference/widget.js"></script>
+    <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="/JS/json2.min.js"></script>
+    <script type="text/javascript" src="/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="/JS/Linkify.js"></script>
+    <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="/JS/VideoPreRollDFP.js"></script>
+    <script type="text/javascript" src="/JS/CharacterSelect.js"></script>
+    <script type="text/javascript" src="/JS/MadStatus.js"></script>
+    <script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="/JS/GameLauncher.js"></script>
+    <script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
+
+
+    
+    <script type="text/javascript" src="/JS/angular/angular.ng-modules.js"></script>
+    <script type="text/javascript" src="/JS/angular/ui-bootstrap-0.11.2.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/helpers.js"></script>
+
+
+
+        <div ng-modules="baseTemplateApp" class="ng-scope">
+            <script type="text/javascript" src="/js/base_splitApps___6270dac0d34e031c7b0d0e626e08e857_m.js"></script>
+        </div>
+        <div ng-modules="pageTemplateApp" class="ng-scope">
+            <script type="text/javascript" src="/js/page_splitApps___0d5ff2b9f6e05502fec40db38d223b63_m.js"></script>
+        </div>
+                        
+    <script>
+        Roblox.XsrfToken.setToken('GaVLn6xLz93H');
+    </script>
+
+        <script>
+            $(function () {
+                Roblox.DeveloperConsoleWarning.showWarning();
+            });
+        </script>
+    <script type="text/javascript">
+    $(function () {
+        Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+    });
+</script>
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
+
+    Roblox.UpsellAdModal.Resources = {
+        //<sl:translate>
+        title: "Remove Ads Like This",
+        body: "Builders Club members do not see external ads like these.",
+        accept: "Upgrade Now",
+        decline: "No, thanks"
+        //</sl:translate>
+    };
+</script>
+
+    <script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/infiniteScrollDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/paginationDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/adsService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/playerSearch/playerSearch.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/playerSearch/constants/cardLabels.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/playerSearch/constants/playerSearchConstants.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/playerSearch/services/playerSearchService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/playerSearch/controllers/playerSearchController.js"></script>
+    <script type="text/javascript" src="/JS/utilities/popover.js"></script>
+    <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
+    <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/utilities/dialog.js"></script>
+
+    
+
+</body></html>

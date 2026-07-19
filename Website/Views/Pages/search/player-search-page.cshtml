@@ -1,0 +1,21 @@
+<div class=top-row>
+    <h3 class=header>Player Results for <span class=keyword>{{pageData.keyword}}</span></h3>
+    <div class=search-container ng-hide=pageData.inApp>
+        <div class=input-group>
+            <input class="form-control input-field" type=text placeholder=Search ng-keyup="$event.keyCode==13&&startNewSearch($event)" ng-model=formData.keyword>
+            <div class=input-group-btn>
+                <button class=input-addon-btn ng-click=startNewSearch()><span class=icon-search></span></button>
+            </div>
+        </div>
+    </div>
+    <div class="row results-count ng-cloak" ng-show="pageData.totalResults>0">
+        <span class="text-secondary hideable">{{layout.resultsStart|number}} - {{layout.resultsInPage|number}} of</span>
+        <span class=text-secondary>{{pageData.totalResults|number}} <ng-pluralize count=pageData.totalResults when="{'1':'Result','other':'Results'}"> </ng-pluralize></span>
+    </div>
+</div>
+<div class="col-xs-12 section-content-off no-results" ng-show=showNoMatches()>There are no matches available for "{{pageData.keyword}}"</div>
+<div class="col-xs-12 section-content-off no-results" ng-show=layout.isKeywordTooShort>Please enter at least {{pageData.keywordMinLength}} characters.</div>
+<div class="col-xs-12 section-content-off unsafe-input" ng-show=layout.unsafeInputDetected>You have entered unsafe input. Please try your search again.</div>
+<ul class="search-result avatar-cards" ng-hide=!layout.inMobile&&layout.resultsLoading ng-include="'search-result-item'" infinite-scroll=getNextScrollResults() infinite-scroll-always-disabled=!layout.inMobile></ul>
+<div class=results-loading ng-show=layout.resultsLoading><img ng-src={{layout.loadingImageUrl}} class="loading-default load-image"></div>
+<div class=row ng-show="!layout.inMobile&&results.length>0&&!layout.resultsLoading" current-page=layout.curPage items-per-page=pageData.maxRows num-pages=layout.numPages model-changed=pageModelChanged page-changed=pageUpdate scroll-to-top=true pagination></div>

@@ -1,0 +1,108 @@
+/* ~/CSS/Pages/Logo/Logo.css */
+#MainLogo {
+    top: 0;
+}
+
+#MainLogoImage {
+    margin-right: 40px;
+}
+
+@media(max-width:991px) {
+    #MainLogoImage {
+        margin-right: auto;
+    }
+}
+
+#headerLogo {
+    width: auto;
+}
+
+.icon-administrator {
+    background-image: url(/images/Badges/badges_12192016.svg);
+}
+
+.MyMoneyPage td.Member div.Roblox {
+    background: url('/images/Logo/admin_icon_11222016.svg') no-repeat 50%/18px;
+}
+
+.icon-logo {
+    background-image: url("/images/Logo/roblox_logo_11212016.svg");
+}
+
+.icon-logo-r {
+    background-image: url("/images/Logo/logo_R_11212016.svg");
+}
+
+.payment-method-image {
+    background-image: url("/images/Upgrades/payment_methods_sprite_11222016.png");
+}
+
+.coverSprite-transitional {
+    background-image: url('/images/Logo/landing_page_icon_12192016.svg');
+}
+
+.big-logo {
+    background-image: url("/images/Logo/roblox_logo_white_11222016.svg");
+}
+
+.studio-title {
+    background-color: #00A2FF;
+    float: left;
+    height: 100%;
+}
+
+.studio-title img {
+    position: relative;
+    margin: 12px 12px 0 16px;
+}
+
+.BadgeImage .icon-administrator {
+    background-image: url(/images/Badges/badges_12192016.svg);
+    background-position: -75px -450px;
+    background-repeat: no-repeat;
+    background-size: 150px auto;
+    width: 75px;
+    height: 75px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.big-logo {
+    background-image: url("/images/Logo/roblox_logo_white_11222016.svg");
+}
+
+.studio-title {
+    background-color: #00A2FF;
+    float: left;
+    height: 100%;
+}
+
+.studio-title img {
+    position: relative;
+    margin: 12px 12px 0 16px;
+}
+
+#StudioSplashScreen .header-container .studio-icon {
+    width: 492px;
+}
+
+@media(max-width:991px) {
+    #StudioSplashScreen .header-container .studio-icon {
+        width: 369px;
+    }
+}
+
+@media(max-width:767px) {
+    #StudioSplashScreen .header-container .studio-icon {
+        width: 250px;
+    }
+}
+
+#GamecardHeader {
+    background-image: url("/images/Gamecards/game_cards_h2.png");
+    top: -64px;
+}
+
+.pagification-icon .icon-logo-r {
+    background-image: url('/images/Logo/landing_page_icon_12192016.svg');
+}

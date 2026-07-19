@@ -82,6 +82,29 @@ public sealed class AvatarThumbnailRefreshService
             return;
         }
 
+        // Compute config hashes for avatar and headshot caching
+        string? avatarConfigHash = null;
+        string? headshotConfigHash = null;
+        try
+        {
+            var configBuilder = new AvatarRenderConfigBuilder();
+            var config = await configBuilder
+                .BuildAvatarRenderConfigAsync(connStr!, userId, "avatar", 420, 420, cancellationToken)
+                .ConfigureAwait(false);
+            avatarConfigHash = config.configHash;
+        }
+        catch { }
+
+        try
+        {
+            var configBuilder = new AvatarRenderConfigBuilder();
+            var config = await configBuilder
+                .BuildAvatarRenderConfigAsync(connStr!, userId, "headshot", 352, 352, cancellationToken)
+                .ConfigureAwait(false);
+            headshotConfigHash = config.configHash;
+        }
+        catch { }
+
         // If this avatar configuration has already been rendered and stored in the
         // global avatar thumbnail cache, reuse it instead of opening a new RCC
         // render. This covers cases where the user toggles back to a previously
@@ -89,37 +112,51 @@ public sealed class AvatarThumbnailRefreshService
         // refer to a different, more recent configuration.
         try
         {
-            var configBuilder = new AvatarRenderConfigBuilder();
-            var config = await configBuilder
-                .BuildAvatarRenderConfigAsync(connStr!, userId, "avatar", 420, 420, cancellationToken)
-                .ConfigureAwait(false);
-
-            var cacheRepo = new AvatarThumbnailCacheRepository();
-            var (found, fileName) = await cacheRepo.TryGetAsync(connStr!, config.configHash, cancellationToken).ConfigureAwait(false);
-            if (found && !string.IsNullOrWhiteSpace(fileName))
+            if (!string.IsNullOrWhiteSpace(avatarConfigHash))
             {
-                var cachedUrl = CombineUrl(baseUrl!, fileName!);
-                await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, userId, cachedUrl, cancellationToken).ConfigureAwait(false);
-
-                // Update last_avatar_thumbnail to the current avatar_state_hash so
-                // subsequent warm calls for this configuration can short-circuit
-                // on the hash equality check above.
-                try
+                var cacheRepo = new AvatarThumbnailCacheRepository();
+                var (found, fileName) = await cacheRepo.TryGetAsync(connStr!, avatarConfigHash, cancellationToken).ConfigureAwait(false);
+                if (found && !string.IsNullOrWhiteSpace(fileName))
                 {
-                    await using var conn = new NpgsqlConnection(connStr);
-                    await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+                    var cachedUrl = CombineUrl(baseUrl!, fileName!);
+                    await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, userId, cachedUrl, cancellationToken).ConfigureAwait(false);
 
-                    const string updateSql = "update users set last_avatar_thumbnail = avatar_state_hash where user_id = @id";
-                    await using var cmd = new NpgsqlCommand(updateSql, conn);
-                    cmd.Parameters.AddWithValue("id", userId);
-                    await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
-                }
-                catch
-                {
-                }
+                    // Update last_avatar_thumbnail to the current avatar_state_hash so
+                    // subsequent warm calls for this configuration can short-circuit
+                    // on the hash equality check above.
+                    try
+                    {
+                        await using var conn = new NpgsqlConnection(connStr);
+                        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                // We have fully satisfied the warm request from cache; no RCC call.
-                return;
+                        const string updateSql = "update users set last_avatar_thumbnail = avatar_state_hash where user_id = @id";
+                        await using var cmd = new NpgsqlCommand(updateSql, conn);
+                        cmd.Parameters.AddWithValue("id", userId);
+                        await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                    }
+
+                    // Also try to wire up the headshot from cache
+                    if (!string.IsNullOrWhiteSpace(headshotConfigHash))
+                    {
+                        try
+                        {
+                            var hsCacheRepo = new AvatarThumbnailCacheRepository();
+                            var (hsFound, hsFileName) = await hsCacheRepo.TryGetAsync(connStr!, headshotConfigHash, cancellationToken).ConfigureAwait(false);
+                            if (hsFound && !string.IsNullOrWhiteSpace(hsFileName))
+                            {
+                                var hsCachedUrl = CombineUrl(baseUrl!, hsFileName!);
+                                await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, userId, hsCachedUrl, cancellationToken).ConfigureAwait(false);
+                            }
+                        }
+                        catch { }
+                    }
+
+                    // We have fully satisfied the warm request from cache; no RCC call.
+                    return;
+                }
             }
         }
         catch
@@ -134,6 +171,17 @@ public sealed class AvatarThumbnailRefreshService
             var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", userId, 420, 420, cancellationToken).ConfigureAwait(false);
             var avatarUrl = CombineUrl(baseUrl!, avatarSave.FileName);
             await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, userId, avatarUrl, cancellationToken).ConfigureAwait(false);
+
+            // Save to global avatar thumbnail cache for cross-user reuse
+            if (!string.IsNullOrWhiteSpace(avatarConfigHash))
+            {
+                try
+                {
+                    var cacheRepo = new AvatarThumbnailCacheRepository();
+                    await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, avatarSave.Hash, avatarSave.FileName, "avatar", 420, 420, cancellationToken).ConfigureAwait(false);
+                }
+                catch { }
+            }
         }
         catch
         {
@@ -142,9 +190,20 @@ public sealed class AvatarThumbnailRefreshService
 
         try
         {
-            var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", userId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", userId, 352, 352, cancellationToken).ConfigureAwait(false);
             var headshotUrl = CombineUrl(baseUrl!, headshotSave.FileName);
             await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, userId, headshotUrl, cancellationToken).ConfigureAwait(false);
+
+            // Save to global avatar thumbnail cache for cross-user reuse
+            if (!string.IsNullOrWhiteSpace(headshotConfigHash))
+            {
+                try
+                {
+                    var cacheRepo = new AvatarThumbnailCacheRepository();
+                    await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, headshotSave.Hash, headshotSave.FileName, "headshot", 352, 352, cancellationToken).ConfigureAwait(false);
+                }
+                catch { }
+            }
         }
         catch
         {

@@ -1,0 +1,30 @@
+<div class="text-overflow avatar-name">{{user.Name}}</div>
+<div class=avatar-card-label ng-switch=labelToShow(user)>
+    <span class=previous-name ng-switch-when=aka>
+        <span class=text>aka.</span> <span class=small-oneline>{{user.MatchingPreviousName}}</span>
+        <span class=mobile-extra-details ng-if=layout.inMobile>
+            <span class=friends ng-if="user.FriendshipStatus===layout.friendship.Friends">
+                <span class=icon-nav-friends></span> <span class=icon-text>You are friends</span>
+            </span>
+            <span class=following ng-if=user.IsFollowed>You are following</span>
+        </span>
+    </span>
+    <span class=friends ng-switch-when=friends>
+        <span class=icon-nav-friends></span> <span class=icon-text>You are friends</span>
+    </span>
+    <span class=following ng-switch-when=following>You are following</span>
+    <span class=yourself ng-switch-when=yourself>This is you</span>
+    <span class=online ng-switch-default>{{user.IsOnline?'Online':'Offline'}}</span>
+</div>
+<div class=avatar-status-container ng-if="getUserInfo(user)===layout.userInfo.game">
+    <div ng-if="user.LastLocation.length>0&&user.AbsolutePlaceUrl.length>0" class=avatar-card-label>Playing</div>
+    <a ng-if="user.AbsolutePlaceUrl.length>0" ng-href={{user.AbsolutePlaceUrl}} ng-click=$event.stopPropagation() title={{user.LastLocation}} class="text-link text-overflow avatar-status-link">{{user.LastLocation}}</a>
+</div>
+<div class=avatar-status-container ng-if="getUserInfo(user)===layout.userInfo.studio">
+    <div ng-if="user.LastLocation.length>0" class=avatar-card-label>Creating</div>
+    <div ng-if="user.LastLocation.length>0" title={{user.LastLocation}} class=small-oneline>{{user.LastLocation}}</div>
+</div>
+<div class=avatar-status-container ng-if="getUserInfo(user)===layout.userInfo.group">
+    <div class=avatar-card-label>Primary Group</div>
+    <a ng-href={{user.PrimaryGroupUrl}} ng-click=$event.stopPropagation() title={{user.PrimaryGroup}} class="text-link text-overflow avatar-status-link">{{user.PrimaryGroup}}</a>
+</div>

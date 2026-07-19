@@ -345,7 +345,31 @@ public class ThumbnailsController : ControllerBase
         if (!string.IsNullOrWhiteSpace(url))
             return Redirect(url);
 
-        var save = await _thumbnailService.RenderAvatarAsync("headshot", userId, cancellationToken: cancellationToken);
+        var targetWidth = width.GetValueOrDefault(352);
+        var targetHeight = height.GetValueOrDefault(352);
+        var configBuilder = new AvatarRenderConfigBuilder();
+        var config = await configBuilder
+            .BuildAvatarRenderConfigAsync(connStr, userId, "headshot", targetWidth, targetHeight, cancellationToken)
+            .ConfigureAwait(false);
+        var configHash = config.configHash;
+
+        try
+        {
+            var cacheRepo = new AvatarThumbnailCacheRepository();
+            var (found, fileName) = await cacheRepo.TryGetAsync(connStr, configHash, cancellationToken);
+            if (found && !string.IsNullOrWhiteSpace(fileName))
+            {
+                var baseCachedUrl = GetCdnBaseUrl();
+                var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
+                await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr, userId, cachedFullUrl, cancellationToken);
+                return Redirect(cachedFullUrl);
+            }
+        }
+        catch
+        {
+        }
+
+        var save = await _thumbnailService.RenderAvatarAsync("headshot", userId, targetWidth, targetHeight, cancellationToken);
         var hash = save.Hash;
         var baseUrl = _configuration["Thumbnails:ThumbnailUrl"];
         if (string.IsNullOrWhiteSpace(baseUrl))
@@ -355,6 +379,16 @@ public class ThumbnailsController : ControllerBase
             baseUrl = $"{scheme}://{host}/";
         }
         var fullUrl = CombineUrl(baseUrl!, save.FileName);
+
+        try
+        {
+            var cacheRepo = new AvatarThumbnailCacheRepository();
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "headshot", targetWidth, targetHeight, cancellationToken);
+        }
+        catch
+        {
+        }
+
         await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr, userId, fullUrl, cancellationToken);
         return Redirect(fullUrl);
     }

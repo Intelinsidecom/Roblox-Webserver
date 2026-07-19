@@ -234,6 +234,34 @@ public class AvatarV1Controller : ControllerBase
         if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var targetUserId) || targetUserId <= 0)
             return Unauthorized(new { error = "Authentication required" });
 
+        var connStr = _configuration.GetConnectionString("Default");
+
+        // Pre-compute config hashes for 2D cache
+        string? avatarConfigHash = null;
+        string? headshotConfigHash = null;
+        if (!string.IsNullOrWhiteSpace(connStr))
+        {
+            try
+            {
+                var configBuilder = new AvatarRenderConfigBuilder();
+                var config = await configBuilder
+                    .BuildAvatarRenderConfigAsync(connStr, targetUserId, "avatar", 420, 420, cancellationToken)
+                    .ConfigureAwait(false);
+                avatarConfigHash = config.configHash;
+            }
+            catch { }
+
+            try
+            {
+                var configBuilder = new AvatarRenderConfigBuilder();
+                var config = await configBuilder
+                    .BuildAvatarRenderConfigAsync(connStr, targetUserId, "headshot", 352, 352, cancellationToken)
+                    .ConfigureAwait(false);
+                headshotConfigHash = config.configHash;
+            }
+            catch { }
+        }
+
         try
         {
             var save = await _thumbnailService.RenderAvatarAsync(renderType, targetUserId, cancellationToken: cancellationToken);
@@ -247,18 +275,38 @@ public class AvatarV1Controller : ControllerBase
             }
             var fullUrl = CombineUrl(baseUrl!, save.FileName);
 
-            var connStr = _configuration.GetConnectionString("Default");
             if (!string.IsNullOrWhiteSpace(connStr))
             {
                 if (renderType == "avatar")
                 {
                     await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
+                    
+                    if (!string.IsNullOrWhiteSpace(avatarConfigHash))
+                    {
+                        try
+                        {
+                            var cacheRepo = new AvatarThumbnailCacheRepository();
+                            await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, save.Hash, save.FileName, "avatar", 420, 420, cancellationToken);
+                        }
+                        catch { }
+                    }
 
                     try
                     {
-                        var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", targetUserId, cancellationToken: cancellationToken);
+                        var headshotSave = await _thumbnailService.RenderAvatarAsync("headshot", targetUserId, 352, 352, cancellationToken: cancellationToken);
                         var headshotUrl = CombineUrl(baseUrl!, headshotSave.FileName);
                         await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, headshotUrl, cancellationToken);
+
+                        // Upsert headshot into global cache
+                        if (!string.IsNullOrWhiteSpace(headshotConfigHash))
+                        {
+                            try
+                            {
+                                var cacheRepo = new AvatarThumbnailCacheRepository();
+                                await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, headshotSave.Hash, headshotSave.FileName, "headshot", 352, 352, cancellationToken);
+                            }
+                            catch { }
+                        }
                     }
                     catch
                     {
@@ -266,17 +314,37 @@ public class AvatarV1Controller : ControllerBase
                 }
                 else if (renderType == "headshot")
                 {
+                    await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
+
+                    if (!string.IsNullOrWhiteSpace(headshotConfigHash))
+                    {
+                        try
+                        {
+                            var cacheRepo = new AvatarThumbnailCacheRepository();
+                            await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, save.Hash, save.FileName, "headshot", 352, 352, cancellationToken);
+                        }
+                        catch { }
+                    }
+
                     try
                     {
-                        var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", targetUserId, cancellationToken: cancellationToken);
+                        var avatarSave = await _thumbnailService.RenderAvatarAsync("avatar", targetUserId, 420, 420, cancellationToken: cancellationToken);
                         var avatarUrl = CombineUrl(baseUrl!, avatarSave.FileName);
                         await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr!, targetUserId, avatarUrl, cancellationToken);
+
+                        if (!string.IsNullOrWhiteSpace(avatarConfigHash))
+                        {
+                            try
+                            {
+                                var cacheRepo = new AvatarThumbnailCacheRepository();
+                                await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, avatarSave.Hash, avatarSave.FileName, "avatar", 420, 420, cancellationToken);
+                            }
+                            catch { }
+                        }
                     }
                     catch
                     {
                     }
-
-                    await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr!, targetUserId, fullUrl, cancellationToken);
                 }
                 else if (renderType == "full")
                 {
