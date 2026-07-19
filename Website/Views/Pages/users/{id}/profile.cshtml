@@ -204,7 +204,8 @@
                                     inApp: false,
                                     inAndroidApp: false,
                                     iniOSApp: false,
-                                    isChatDisabledByPrivacySetting: false
+                                    isChatDisabledByPrivacySetting: false,
+                                    profileCollectables: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ProfileCollectables ?? new int[0]))
                                 };
                             </script>
                             <div profile-header-data set-message-btn-display=setMessageBtnDisplay(layout) profile-header-layout=profileHeaderLayout class=hidden></div>
@@ -530,13 +531,16 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="section profile-collections" ng-controller=profileCollectionsController>
-                                    <div class=container-header>
-                                        <h3>Collections</h3>
-                                        <div class=collection-btns><a href="/users/@ViewBag.ProfileUserId/inventory/" class="btn-fixed-width btn-secondary-xs btn-more inventory-link">Inventory</a></div>
+                                @if (ViewBag.HasProfileCollectables)
+                                {
+                                    <div class="section profile-collections" ng-controller=profileCollectionsController>
+                                        <div class=container-header>
+                                            <h3>Collections</h3>
+                                            <div class=collection-btns><a href="/users/@ViewBag.ProfileUserId/inventory/" class="btn-fixed-width btn-secondary-xs btn-more inventory-link">Inventory</a></div>
+                                        </div>
+                                        <div class=section-content ng-include="'profile-collections-section'"></div>
                                     </div>
-                                    <div class=section-content ng-include="'profile-collections-section'"></div>
-                                </div>
+                                }
                                 <div ng-include="'profile-groups-section'"></div>
                                 <div class=section ng-controller=profileUtilitiesController>
                                     <div class=container-header>

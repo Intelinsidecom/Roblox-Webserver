@@ -1,0 +1,111 @@
+/* ~/CSS/Pages/Download.css */
+div#Body {
+    background-color: transparent;
+    height: 640px;
+    padding: 5px 0 0 0;
+}
+
+.big-logo {
+    width: 342px;
+    height: 87px;
+    margin: 80px auto 20px auto;
+}
+
+#download-body,
+#thanks-body,
+#studio-thanks-body,
+#uwp-thanks-body {
+    margin-top: 30px;
+    text-align: center;
+}
+
+h1 {
+    color: white;
+    margin-bottom: 12px;
+}
+
+a.download-now {
+    padding: 20px 120px;
+    font-size: 36px;
+}
+
+a.download-studio {
+    padding: 20px 120px;
+    font-size: 36px;
+}
+
+.download-container {
+    margin: 80px auto 40px auto;
+}
+
+.create-text,
+.steps-text {
+    margin: auto;
+    color: white;
+}
+
+.app-badge {
+    margin-left: 30px;
+}
+
+.os-container {
+    margin-bottom: 39px;
+}
+
+h1.title-level {
+    color: white;
+    margin-bottom: 12px;
+    font-size: 45px;
+}
+
+.instructions-text {
+    color: #e3e3e3;
+    font-size: 12px;
+}
+
+.instructions-text a {
+    color: #ffcc34;
+}
+
+.instructions-text.big {
+    font-size: 18px;
+}
+
+.step {
+    float: left;
+    margin: 0 20px;
+}
+
+.steps {
+    margin: 80px auto 20px auto;
+    height: 300px;
+    width: 835px;
+}
+
+.step-title {
+    font-size: 28px;
+    color: white;
+}
+
+.step-text {
+    font-size: 16px;
+}
+
+.title-level {
+    margin-top: 60px;
+}
+
+div#Container {
+    background: url("/images/Download/background.jpg") top repeat-x !important;
+}
+
+.big-logo {
+    background-image: url("/images/logo/roblox_logo.png");
+    background-size: 100%;
+}
+
+.container-footer {
+    position: inherit;
+    padding-top: 50px;
+    background: #FFF;
+}

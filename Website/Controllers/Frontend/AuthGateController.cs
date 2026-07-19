@@ -11,6 +11,14 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/home");
             return View("~/Views/Pages/Index.cshtml");
         }
+
+        [HttpGet("users/inventory")]
+        public IActionResult InventoryAuth()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+                return Redirect("/inventory");
+            return View("~/Views/Pages/Index.cshtml");
+        }
         
         [HttpGet("/Trade")]
         public IActionResult Trade()

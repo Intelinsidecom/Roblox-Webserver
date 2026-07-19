@@ -28,7 +28,7 @@ Roblox = Roblox || {}, Roblox.GamesPage = Roblox.GamesPage || {}, Roblox.GamesPa
             StartRows: this.startIndex,
             MaxRows: n,
             IsUserLoggedIn: i.isUserLoggedIn,
-            NumberOfRowsToOccupy: this.numberOfRowsToOccupy,
+            NumberOfRowsToOccupy: isNaN(this.numberOfRowsToOccupy) ? 0 : this.numberOfRowsToOccupy,
             NumberOfColumns: r.numberOfColumns,
             IsInHorizontalScrollMode: u,
             DeviceTypeId: i.deviceTypeId,

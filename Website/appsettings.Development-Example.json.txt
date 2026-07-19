@@ -11,13 +11,18 @@
   "PublicBaseUrl": "https://www.freblx.xyz",
   "PublicAPIBaseUrl": "https://api.freblx.xyz",
   "Auth": {
-    "CookieDomain": ".freblx.xyz"
+    "CookieDomain": ""
   },
   "Features": {
     "EnableRequestLogging": true
   },
   "ConnectionStrings": {
-    "Default": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root"
+    "Default": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root;Maximum Pool Size=25;Connection Idle Lifetime=60;Connection Pruning Interval=30"
+  },
+  "Economy": {
+    "AllowFreeRobux" : true,
+    "MaxFreeRobuxFromApiAtTime" : "22500",
+    "MaxFreeRobuxFromApi" : "100000"
   },
   "Thumbnails": {
     "OutputDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails",
@@ -26,7 +31,11 @@
     "TshirtTemplatePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png",
     "TshirtTemplateHighResPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png",
     "PendingAvatarPlaceholderUrl": "/images/blocked.png",
-    "Avatar3DDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\3DAvatar"
+    "PluginThumbnailUrl": "/images/plugin.png",
+    "Avatar3DDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\3DAvatar",
+    "AudioThumbnailUrl": "/images/audio.png",
+    "AudioHighResThumbnailUrl": "/images/audio.png",
+    "DefaultThumbnailUrl": "/images/b35fdfe2c7856872c3695871e2efbe18.png"
   },
   "Upload": {
     "AccessKey": "ChangeMe"
@@ -63,20 +72,24 @@
     "BaseUrl": "http://assetdelivery.roblox.com"
   },
   "RSA": {
-    "PrivateKey": "-----BEGIN RSA PRIVATE KEY-----MIICfRcfmbx5arddZa5V8TcgJfoMSCb-----END RSA PRIVATE KEY-----",
+    "PrivateKey": "-----BEGIN RSA PRIVATE KEY-----MIICXQIBAANfRcfmbx5arddZa5V8TcgJfoMSCb-----END RSA PRIVATE KEY-----",
     "PublicKey": "BgIAAACkAABSU0ExAAQAAAEAAQAdopkj6LZ9EJ8LJmIn19GwSMXQGpej1qcjymBjuwhjzEC0LRpK2HeUiJtuDsaWKlHMUuPDHz/GkDM/V1JjWv4iKVJVhPiWfnv/vZWP35brLL/CVmEDS367gNSrGOKYrNHK1ZcWy5yvZVKxVuFkxzlnuyNELQyE0ToMgKMByrqGrQ=="
   },
   "ScriptTemplates": {
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Scripts"
   },
-  "LocalhostMode": true,
-  "MachineAddress": "127.0.0.1",
+  "XMLTemplates": {
+    "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\XML"
+  },
+  "LocalhostMode": false,
+  "MachineAddress": "26.74.59.137",
   "Arbiter": {
     "Host": "localhost",
     "Port": "5000"
   },
   "Setup": {
-    "SetupServicePublicHost": "http://setup.freblx.xyz"
+    "SetupServicePublicHost": "https://setup.freblx.xyz",
+    "UWPClientDownloadLocation": "https://www.freblx.xyz/Appx.zip"
   },
   "Social": {
     "DiscordServerInviteURL": "https://discord.com/invite/9ypw3ytK4t"

@@ -227,8 +227,8 @@ app.Use(async (context, next) =>
     }
     await next();
 });
-
-//app.UseMiddleware<RequestResponseLoggingMiddleware>();
+if (enableRequestLogging)
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

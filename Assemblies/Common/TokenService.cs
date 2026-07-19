@@ -193,6 +193,19 @@ namespace Games
             {
                 try
                 {
+                    var userExists = false;
+                    await using (var checkConn = new NpgsqlConnection(_connectionString))
+                    {
+                        await checkConn.OpenAsync();
+                        using var checkCmd = new NpgsqlCommand("select 1 from users where user_id = @id", checkConn);
+                        checkCmd.Parameters.AddWithValue("id", userId);
+                        userExists = await checkCmd.ExecuteScalarAsync() != null;
+                    }
+                    if (!userExists)
+                    {
+                        return;
+                    }
+
                     var authenticationUrl = $"{_publicBaseUrl}/Game/PlaceLauncher.ashx?request=AuthenticateTicket";
                     var joinScriptUrl = $"{_publicBaseUrl}/Game/PlaceLauncher.ashx?request=RequestGame&placeId={placeId}&isPartyLeader=false&gender=&isTeleport=true";
 

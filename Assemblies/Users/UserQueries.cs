@@ -84,6 +84,7 @@ namespace Users
                        in_game,
                        current_place_id,
                        status_text,
+                       profile_collectables,
                        user_created
                 from users
                 where user_id = @id", conn);
@@ -112,7 +113,8 @@ namespace Users
                 ["inGame"] = reader.GetBoolean(14),
                 ["currentPlaceId"] = reader.IsDBNull(15) ? (long?)null : reader.GetInt64(15),
                 ["statusText"] = reader.IsDBNull(16) ? null : reader.GetString(16),
-                ["userCreated"] = reader.IsDBNull(17) ? null : reader.GetDateTime(17)
+                ["profileCollectables"] = reader.IsDBNull(17) ? null : (int[]?)reader.GetValue(17),
+                ["userCreated"] = reader.IsDBNull(18) ? null : reader.GetDateTime(18)
             };
         }
 
@@ -237,6 +239,57 @@ namespace Users
             {
                 System.Diagnostics.Debug.WriteLine($"Error updating password for user {userId}: {ex.Message}");
                 throw;
+            }
+        }
+        public static async Task<bool> ToggleProfileCollectableAsync(string connectionString, long userId, long assetId, bool addToProfile)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0 || assetId <= 0)
+                return false;
+
+            try
+            {
+                await using var conn = new NpgsqlConnection(connectionString);
+                await conn.OpenAsync().ConfigureAwait(false);
+
+                int[] current;
+                using (var readCmd = new NpgsqlCommand("select profile_collectables from users where user_id = @uid", conn))
+                {
+                    readCmd.Parameters.AddWithValue("uid", userId);
+                    var result = await readCmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    current = result == null || result == DBNull.Value
+                        ? Array.Empty<int>()
+                        : (int[])result;
+                }
+
+                if (addToProfile)
+                {
+                    if (Array.IndexOf(current, (int)assetId) < 0)
+                    {
+                        var extended = new int[current.Length + 1];
+                        current.CopyTo(extended, 0);
+                        extended[extended.Length - 1] = (int)assetId;
+                        current = extended;
+                    }
+                }
+                else
+                {
+                    current = Array.FindAll(current, id => id != (int)assetId);
+                }
+
+                using (var writeCmd = new NpgsqlCommand("update users set profile_collectables = @arr where user_id = @uid", conn))
+                {
+                    writeCmd.Parameters.AddWithValue("arr", current);
+                    writeCmd.Parameters.AddWithValue("uid", userId);
+                    await writeCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

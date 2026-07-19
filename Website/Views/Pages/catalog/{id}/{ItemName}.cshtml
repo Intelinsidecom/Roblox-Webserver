@@ -254,7 +254,7 @@
                                                 }
                                                 @if (Model.IsOwned)
                                                 {
-                                                <li><a class=toggle-profile data-toggle=False> Add to Profile </a></li>
+                                                <li><a class=toggle-profile data-toggle=@(Model.IsOnProfile ? "True" : "False")> @(Model.IsOnProfile ? "Remove from Profile" : "Add to Profile") </a></li>
                                                 }
                                             </ul>
                                         </div>

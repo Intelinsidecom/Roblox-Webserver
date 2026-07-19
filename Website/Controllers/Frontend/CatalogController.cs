@@ -68,6 +68,7 @@ namespace RobloxWebserver.Controllers
             public bool IsFavorited { get; set; }
             public bool IsWorn { get; set; }
             public bool IsOnSale { get; set; }
+            public bool IsOnProfile { get; set; }
             public long ItemVersionId { get; set; }
 
             public long? LimitedQuantity { get; set; }
@@ -132,6 +133,7 @@ namespace RobloxWebserver.Controllers
             bool isOwned = false;
             bool isFavorited = false;
             bool isWorn = false;
+            bool isOnProfile = false;
             int userMembershipLevel = 0;
             long currentUserId = 0;
             var userIdClaim = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -155,6 +157,10 @@ namespace RobloxWebserver.Controllers
                             3 => 11,
                             _ => 0
                         };
+
+                        var collectables = profileData.GetValueOrDefault("profileCollectables") as int[];
+                        if (collectables != null)
+                            isOnProfile = System.Array.IndexOf(collectables, (int)asset.AssetId) >= 0;
                     }
 
                     if (isOwned)
@@ -281,6 +287,7 @@ namespace RobloxWebserver.Controllers
                 IsOwned = isOwned,
                 IsFavorited = isFavorited,
                 IsWorn = isWorn,
+                IsOnProfile = isOnProfile,
                 IsOnSale = asset.OnSale || asset.IsCopyingAllowed,
                 ItemVersionId = itemVersionId,
                 LimitedQuantity = asset.LimitedQuantity,

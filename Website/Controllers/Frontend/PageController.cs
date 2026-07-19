@@ -12,6 +12,29 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/ide/ClientToolbox.aspx.cshtml");
         }
 
+        [HttpGet("My/Stuff.aspx")]
+        public IActionResult Inventory()
+        {
+            return Redirect("/users/inventory");
+        }
+
+        [HttpPost("My/Stuff.aspx")]
+        public IActionResult InventoryPost()
+        {
+            return Redirect("/users/inventory");
+        }
+
+        [HttpGet("premium/windows/bc")]
+        public IActionResult BC()
+        {
+            return Redirect("/premium/membership");
+        }
+
+        [HttpGet("premium/windows/robux")]
+        public IActionResult Robux()
+        {
+            return Redirect("/upgrades/robux");
+        }
 
         [HttpGet("Games.aspx")]
         public IActionResult GamesPage()

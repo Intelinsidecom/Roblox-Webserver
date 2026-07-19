@@ -8,7 +8,8 @@
     bool containsIPad = userAgent.Contains("iPad");
     bool containsIPod = userAgent.Contains("iPod");
     bool containsRobloxiOS = userAgent.Contains("ROBLOX iOS App");
-    bool containsRobloxUWP = userAgent.Contains("WOW64");
+    bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || /*userAgent.Contains("WOW64")  breaks ie  ||*/ userAgent.Contains("Edge/");
+    bool containsRobloxStudio = userAgent.Contains("RobloxStudio");
 
     bool isMobile = containsAndroid || containsIPhone || containsIPad || containsIPod || containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
 

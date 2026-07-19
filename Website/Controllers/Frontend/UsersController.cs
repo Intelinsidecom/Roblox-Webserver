@@ -176,6 +176,9 @@ namespace Website.Controllers;
         ViewBag.CurrentPlaceId = currentPlaceId?.ToString() ?? "";
         ViewBag.GameName = gameName;
         ViewBag.GamePlaceId = currentPlaceId?.ToString() ?? "";
+        var profileCollectables = profileData?.GetValueOrDefault("profileCollectables") as int[];
+        ViewBag.ProfileCollectables = profileCollectables ?? Array.Empty<int>();
+        ViewBag.HasProfileCollectables = profileCollectables is { Length: > 0 };
         ViewBag.StatusText = statusText;
         ViewBag.WornAssets = wornAssets;
         ViewBag.JoinDate = userCreated?.ToString("M/d/yyyy") ?? "";
@@ -347,16 +350,31 @@ namespace Website.Controllers;
             await using var conn = new NpgsqlConnection(connStr);
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
+            // First, get the user's explicitly selected profile collectables
+            int[] collectableIds;
+            {
+                await using var collectCmd = new NpgsqlCommand(
+                    "select profile_collectables from users where user_id = @uid", conn);
+                collectCmd.Parameters.AddWithValue("uid", userId);
+                var result = await collectCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+                collectableIds = result == null || result == DBNull.Value
+                    ? Array.Empty<int>()
+                    : (int[])result;
+            }
+
+            if (collectableIds.Length == 0)
+                return Json(new { CollectionsItems = new object[] { } });
+
             const string sql = @"
                 select a.asset_id, a.name, coalesce(a.thumbnail_url, '') as thumbnail_url
-                from user_assets ua
-                join assets a on a.asset_id = ua.asset_id
-                where ua.user_id = @uid
-                order by ua.created_at desc
-                limit 50";
+                from assets a
+                join user_assets ua on ua.asset_id = a.asset_id and ua.user_id = @uid
+                where a.asset_id = any(@ids)
+                order by a.name";
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("uid", userId);
+            cmd.Parameters.AddWithValue("ids", collectableIds);
 
             var items = new List<object>();
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);

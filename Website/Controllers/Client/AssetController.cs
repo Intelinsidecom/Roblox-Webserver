@@ -448,5 +448,25 @@ namespace Website.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost("toggle-profile")]
+        public async Task<IActionResult> ToggleProfile(
+            [FromForm] long assetId,
+            [FromForm] bool addToProfile)
+        {
+            var userIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                return Ok(new { isValid = false });
+
+            if (assetId <= 0)
+                return Ok(new { isValid = false });
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500, new { isValid = false });
+
+            var success = await UserQueries.ToggleProfileCollectableAsync(connStr, userId, assetId, addToProfile).ConfigureAwait(false);
+            return Ok(new { isValid = success });
+        }
     }
 }
