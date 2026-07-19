@@ -542,7 +542,7 @@ where ua.user_id = @uid
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var rawThumb = reader.IsDBNull(2) ? "" : reader.GetString(2);
                 var thumbUrl = string.IsNullOrWhiteSpace(rawThumb)
-                    ? (assetTypeId == 3 ? (_configuration["AudioThumbnailUrl"] ?? "/images/audio.png") : "")
+                    ? (assetTypeId == 3 ? (_configuration["AudioThumbnailUrl"] ?? "/images/audio.png") : (_configuration["DefaultThumbnailUrl"] ?? "/images/default.png"))
                     : rawThumb;
                 var creatorName = reader.IsDBNull(3) ? "Unknown" : reader.GetString(3);
                 var creatorId = reader.IsDBNull(4) ? 0 : reader.GetInt64(4);

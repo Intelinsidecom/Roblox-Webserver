@@ -1,0 +1,414 @@
+<Window x:Class="Control_Panel.PlaceCreateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Control_Panel"
+        mc:Ignorable="d"
+        Title="Create Place" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Background}"
+        FontFamily="Segoe UI"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <Style x:Key="VerticalTabStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="TabBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="0"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource AccentPrimary}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource AccentSecondary}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource AccentPressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}"/>
+        </Style>
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}"/>
+            <Setter Property="Background" Value="{DynamicResource Background}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SubtleText}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal" TextElement.Foreground="{TemplateBinding Foreground}">
+                            <Border x:Name="CheckBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Width="16" Height="16"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center">
+                                <Path x:Name="CheckMark"
+                                      Stroke="{DynamicResource AccentPrimary}"
+                                      StrokeThickness="2"
+                                      Data="M 2,6 L 6,10 L 14,2"
+                                      Visibility="Collapsed"
+                                      Stretch="Uniform"
+                                      Margin="2"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource AccentPrimary}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource AccentSecondary}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource AccentSecondary}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckBorder" Property="Background" Value="{DynamicResource AccentPrimary}"/>
+                                <Setter TargetName="CheckMark" Property="Stroke" Value="White"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsChecked" Value="True"/>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="CheckBorder" Property="Background" Value="{DynamicResource AccentSecondary}"/>
+                                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource AccentSecondary}"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="CheckBorder" Property="Opacity" Value="0.5"/>
+                                <Setter Property="Foreground" Value="{DynamicResource SubtleText}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="157"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" BorderBrush="{StaticResource SubtleText}" BorderThickness="0,0,1,0">
+                <StackPanel x:Name="TabNavBar" Margin="0,20,0,0">
+                    <RadioButton x:Name="BasicSettingsTab" GroupName="PlaceEditTabs"
+                                 Style="{StaticResource VerticalTabStyle}"
+                                 IsChecked="True"
+                                 Content="Basic Settings"
+                                 Click="Tab_Click"/>
+                    <RadioButton x:Name="AccessTab" GroupName="PlaceEditTabs"
+                                 Style="{StaticResource VerticalTabStyle}"
+                                 Content="Access"
+                                 Click="Tab_Click"/>
+                    <RadioButton x:Name="PermissionsTab" GroupName="PlaceEditTabs"
+                                 Style="{StaticResource VerticalTabStyle}"
+                                 Content="Permissions"
+                                 Click="Tab_Click"/>
+                </StackPanel>
+            </Border>
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="20,20,20,0">
+                <StackPanel>
+                    <Border x:Name="BasicSettingsContent" Padding="0" BorderThickness="0">
+                        <StackPanel>
+                            <TextBlock Text="Basic Settings" Style="{StaticResource DashboardTitle}"
+                                       Foreground="{StaticResource AccentPrimary}"
+                                       Margin="0,0,0,20"/>
+                            <TextBlock Text="Name:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <TextBox x:Name="PlaceNameTextBox"
+                                     Style="{StaticResource ModernTextBox}"
+                                     MaxLength="50"
+                                     Margin="0,0,0,15"/>
+                            <TextBlock Text="Description:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <TextBox x:Name="PlaceDescriptionTextBox"
+                                     Style="{StaticResource ModernTextBox}"
+                                     MaxLength="1000"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"
+                                     MinHeight="100"
+                                     Margin="0,0,0,15"/>
+                            <TextBlock Text="Genre:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <ComboBox x:Name="GenreComboBox"
+                                      Style="{StaticResource ModernComboBox}"
+                                      Margin="0,0,0,15"
+                                      Width="200" HorizontalAlignment="Left">
+                                <ComboBoxItem Content="All"/>
+                                <ComboBoxItem Content="Adventure"/>
+                                <ComboBoxItem Content="Building"/>
+                                <ComboBoxItem Content="Comedy"/>
+                                <ComboBoxItem Content="Fighting"/>
+                                <ComboBoxItem Content="FPS"/>
+                                <ComboBoxItem Content="Horror"/>
+                                <ComboBoxItem Content="Medieval"/>
+                                <ComboBoxItem Content="Military"/>
+                                <ComboBoxItem Content="Naval"/>
+                                <ComboBoxItem Content="RPG"/>
+                                <ComboBoxItem Content="Sci-Fi"/>
+                                <ComboBoxItem Content="Sports"/>
+                                <ComboBoxItem Content="Town and City"/>
+                                <ComboBoxItem Content="Western"/>
+                            </ComboBox>
+                            <Border BorderBrush="{StaticResource SubtleText}" BorderThickness="0,1,0,0" Margin="0,0,0,15"/>
+                            <TextBlock Text="Place File:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="Select a .rbxl file to use as the starting place. This is required." Style="{StaticResource DescriptionText}"
+                                       Foreground="{StaticResource SubtleText}"
+                                       Margin="0,0,0,8"/>
+                            <Grid Margin="0,0,0,15" VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0"
+                                        BorderBrush="{DynamicResource SubtleText}"
+                                        BorderThickness="1"
+                                        Padding="8,6"
+                                        Margin="0"
+                                        Background="{DynamicResource Background}">
+                                    <TextBlock x:Name="PlaceFilePathText"
+                                               Text="No file selected"
+                                               Style="{StaticResource NormalText}"
+                                               Foreground="{DynamicResource SubtleText}"
+                                               TextTrimming="CharacterEllipsis"/>
+                                </Border>
+                                <Button Grid.Column="1"
+                                        Content="Browse..."
+                                        Style="{StaticResource ModernButton}"
+                                        Width="80" Height="30"
+                                        Margin="5,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Click="BrowsePlaceFile_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="AccessContent" Padding="0" BorderThickness="0" Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock Text="Access" Style="{StaticResource DashboardTitle}"
+                                       Foreground="{StaticResource AccentPrimary}"
+                                       Margin="0,0,0,20"/>
+                            <TextBlock Text="Playable devices:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <CheckBox x:Name="DeviceComputerCheckBox" Content="Computer"
+                                      Style="{StaticResource ModernCheckBox}" Margin="0,0,0,3"/>
+                            <CheckBox x:Name="DevicePhoneCheckBox" Content="Phone"
+                                      Style="{StaticResource ModernCheckBox}" Margin="0,0,0,3"/>
+                            <CheckBox x:Name="DeviceTabletCheckBox" Content="Tablet"
+                                      Style="{StaticResource ModernCheckBox}" Margin="0,0,0,3"/>
+                            <CheckBox x:Name="DeviceConsoleCheckBox" Content="Console"
+                                      Style="{StaticResource ModernCheckBox}" Margin="0,0,0,15"/>
+                            <Border BorderBrush="{StaticResource SubtleText}" BorderThickness="0,1,0,0" Margin="0,0,0,15"/>
+                            <TextBlock Text="Game Access:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <CheckBox x:Name="SellGameAccessCheckBox" Content="Sell access to this game"
+                                      Style="{StaticResource ModernCheckBox}" Margin="0,0,0,10"/>
+                            <Border x:Name="PricingPanel" BorderBrush="{StaticResource SubtleText}" BorderThickness="1" Padding="10" Margin="0,0,0,15" IsEnabled="False">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Price:" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                        <TextBox Grid.Column="1" x:Name="PriceTextBox"
+                                                 Style="{StaticResource ModernTextBox}" Width="100" HorizontalAlignment="Left"/>
+                                    </Grid>
+                                    <Grid Margin="0,0,0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Marketplace Fee:" Style="{StaticResource DescriptionText}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" x:Name="MarketplaceFeeText" Text="0" Style="{StaticResource NormalText}" Foreground="Green"/>
+                                    </Grid>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="You Earn:" Style="{StaticResource DescriptionText}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" x:Name="ProfitText" Text="0" Style="{StaticResource NormalText}" Foreground="Green"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="160"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="Maximum Visitor Count:" Style="{StaticResource LabelText}"
+                                           Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" x:Name="MaxPlayersComboBox"
+                                          Style="{StaticResource ModernComboBox}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,10"/>
+                                <TextBlock Text="Server Fill:" Style="{StaticResource LabelText}"
+                                           Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,10">
+                                    <RadioButton x:Name="ServerFillAutomaticRadio" GroupName="ServerFill"
+                                                 Content="Roblox optimizes server fill for me" Margin="0,0,0,3" IsChecked="True"/>
+                                    <RadioButton x:Name="ServerFillEmptyRadio" GroupName="ServerFill"
+                                                 Content="Fill each server as full as possible" Margin="0,0,0,3"/>
+                                    <RadioButton x:Name="ServerFillCustomRadio" GroupName="ServerFill"
+                                                 Content="Customize how many server slots to reserve"/>
+                                </StackPanel>
+                                <TextBlock Text="Access:" Style="{StaticResource LabelText}"
+                                           Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,0,0,10"/>
+                                <ComboBox Grid.Row="2" Grid.Column="1" x:Name="AccessComboBox"
+                                          Style="{StaticResource ModernComboBox}" Width="150" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <ComboBoxItem Content="Everyone"/>
+                                    <ComboBoxItem Content="Friends"/>
+                                </ComboBox>
+                            </Grid>
+                                <StackPanel>
+                                    <TextBlock Text="Private Servers:" Style="{StaticResource LabelText}"
+                                               Margin="0,0,0,10"/>
+                                    <CheckBox x:Name="AllowPrivateServersCheckBox"
+                                              Content="Allow Private Servers"
+                                              Style="{StaticResource ModernCheckBox}" Margin="0,0,0,5"/>
+                                    <Border x:Name="PrivateServerDetails" BorderBrush="{StaticResource SubtleText}" BorderThickness="0,1,0,0" Padding="0,10,0,0" Margin="22,0,0,0" IsEnabled="False">
+                                        <StackPanel>
+                                            <TextBlock Text="Private Server Pricing:" Style="{StaticResource LabelText}" Margin="0,0,0,5"/>
+                                            <RadioButton x:Name="PrivateServerFreeRadio" GroupName="PrivateServerPrice"
+                                                         Content="Free" Margin="0,0,0,3" IsChecked="True"/>
+                                            <RadioButton x:Name="PrivateServerPaidRadio" GroupName="PrivateServerPrice"
+                                                         Content="Paid" Margin="0,0,0,10"/>
+                                            <Border x:Name="PrivateServerPricePanel" BorderBrush="{StaticResource SubtleText}" BorderThickness="1" Padding="12" IsEnabled="False">
+                                                <StackPanel>
+                                                    <Grid Margin="0,0,0,8">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="120"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="Price:" Style="{StaticResource NormalText}" VerticalAlignment="Center"/>
+                                                        <TextBox Grid.Column="1" x:Name="PrivateServerPriceTextBox"
+                                                                 Style="{StaticResource ModernTextBox}" Width="120" HorizontalAlignment="Left"/>
+                                                    </Grid>
+                                                    <Grid Margin="0,0,0,5">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="120"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="Marketplace Fee:" Style="{StaticResource DescriptionText}" VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="1" x:Name="PrivateServerFeeText" Text="0" Style="{StaticResource NormalText}" Foreground="Green"/>
+                                                    </Grid>
+                                                    <Grid Margin="0,0,0,8">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="120"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="You Earn:" Style="{StaticResource DescriptionText}" VerticalAlignment="Center"/>
+                                                        <TextBlock Grid.Column="1" x:Name="PrivateServerProfitText" Text="0" Style="{StaticResource NormalText}" Foreground="Green"/>
+                                                    </Grid>
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="PermissionsContent" Padding="0" BorderThickness="0" Visibility="Collapsed">
+                        <StackPanel>
+                            <TextBlock Text="Gear Permissions" Style="{StaticResource DashboardTitle}"
+                                       Foreground="{StaticResource AccentPrimary}"
+                                       Margin="0,0,0,20"/>
+                            <TextBlock Text="Allowed Genre:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <RadioButton x:Name="GenreGearRadio" GroupName="GearGenre"
+                                         Content="Game genre (All)" Margin="0,0,0,3" IsChecked="True"/>
+                            <RadioButton x:Name="AllGenresGearRadio" GroupName="GearGenre"
+                                         Content="All genres" Margin="0,0,0,15"/>
+                            <TextBlock Text="Gear types:" Style="{StaticResource DashboardSubtitle}"
+                                       Foreground="{StaticResource Foreground}"
+                                       Margin="0,0,0,5"/>
+                            <WrapPanel MaxWidth="500" Margin="0,0,0,15">
+                                <CheckBox x:Name="GearMeleeCheckBox" Content="Melee"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearPowerUpsCheckBox" Content="Power ups"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearRangedCheckBox" Content="Ranged"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearNavigationCheckBox" Content="Navigation"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearExplosivesCheckBox" Content="Explosives"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearMusicalCheckBox" Content="Musical"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearSocialCheckBox" Content="Social"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearTransportCheckBox" Content="Transport"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                                <CheckBox x:Name="GearBuildingCheckBox" Content="Building"
+                                          Style="{StaticResource ModernCheckBox}" Width="140" Margin="0,0,0,3"/>
+                            </WrapPanel>
+                            <Border BorderBrush="{StaticResource SubtleText}" BorderThickness="0,1,0,0" Margin="0,0,0,15"/>
+                            <TextBlock Text="Other Permissions" Style="{StaticResource DashboardTitle}"
+                                       Foreground="{StaticResource AccentPrimary}"
+                                       Margin="0,0,0,10"/>
+                            <CheckBox x:Name="AllowCopyingCheckBox" Content="Allow Copying"
+                                      Style="{StaticResource ModernCheckBox}" Margin="0,0,0,15"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <Border Grid.Row="1" BorderBrush="{StaticResource SubtleText}" BorderThickness="0,1,0,0"
+                Background="{StaticResource Background}" Padding="20,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button x:Name="CreateButton"
+                        Content="Create Place"
+                        Style="{StaticResource ModernButton}"
+                        Width="100" Height="35"
+                        Margin="0,0,10,0"
+                        Click="CreateButton_Click"/>
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        Style="{StaticResource ModernButton}"
+                        Width="100" Height="35"
+                        Background="{StaticResource SubtleText}"
+                        Click="CancelButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

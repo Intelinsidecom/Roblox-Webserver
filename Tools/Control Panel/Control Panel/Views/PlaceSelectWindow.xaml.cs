@@ -105,5 +105,13 @@ namespace Control_Panel
         {
             Close();
         }
+
+        private void EditGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new UniverseEditWindow(_universeId);
+            window.Owner = this;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.ShowDialog();
+        }
     }
 }

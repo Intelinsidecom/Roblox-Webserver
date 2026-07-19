@@ -452,7 +452,7 @@ public class ThumbnailsController : ControllerBase
 
         if (string.IsNullOrWhiteSpace(thumbnailUrl))
         {
-            thumbnailUrl = "/images/RobloxLogo.png";
+            thumbnailUrl = _configuration["DefaultThumbnailUrl"] ?? "/images/default.png";
         }
         else if (!thumbnailUrl.StartsWith("http://") && !thumbnailUrl.StartsWith("https://") && !thumbnailUrl.StartsWith("/"))
         {
@@ -616,7 +616,7 @@ public class ThumbnailsController : ControllerBase
         var isFinal = true;
         if (string.IsNullOrWhiteSpace(thumbnailUrl))
         {
-            thumbnailUrl = "/images/RobloxLogo.png";
+            thumbnailUrl = _configuration["DefaultThumbnailUrl"] ?? "/images/default.png";
             if (!asset.IsPlace)
                 isFinal = false;
         }

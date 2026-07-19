@@ -25,7 +25,7 @@ Roblox.DevelopPage = function() {
         o = $("#GroupCreationsTabLink"), s = $("#MyCreationsTabLink"), t = $("#LibraryTabLink"), n = $("#LibraryTab"), c = o.data("url"), l = s.data("url"), f = t.data("url"), h = t.attr("id"), u = $("#DevelopTabs .tab-active"), i = !0, a = document.URL.indexOf("#") === -1 ? document.URL : document.URL.split("#")[1], History.replaceState({
             clickTargetID: u.attr("id"),
             url: document.URL
-        }, document.title, a), i = !1, document.URL.indexOf(f) !== -1 && (r = document.URL.split("?")[1], r && Roblox.CatalogValues && Roblox.CatalogValues.CatalogContentsUrl ? Roblox.CatalogShared.LoadCatalogAjax(Roblox.CatalogValues.CatalogContentsUrl + "?" + r, null, n, !0) : (e = !0, Roblox.CatalogShared.LoadCatalogAjax(t.data("library-get-url"), null, n, !1, !0))), History.Adapter.bind(window, "statechange", function() {
+        }, document.title, a),         i = !1, document.URL.indexOf(f) !== -1 && (r = document.URL.split("?")[1], $("div.tab-active").removeClass("tab-active"), t.addClass("tab-active"), n.addClass("tab-active"), r && Roblox.CatalogValues && Roblox.CatalogValues.CatalogContentsUrl ? Roblox.CatalogShared.LoadCatalogAjax(Roblox.CatalogValues.CatalogContentsUrl + "?" + r, null, n, !0) : (e = !0, Roblox.CatalogShared.LoadCatalogAjax(t.data("library-get-url"), null, n, !1, !0))), History.Adapter.bind(window, "statechange", function() {
             y(History.getState().data)
         });
         $("#DevelopTabs").on("tabsactivate", function() {

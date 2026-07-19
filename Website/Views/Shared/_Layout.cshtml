@@ -304,6 +304,9 @@
                         </a>
                     </li>
                     <li class="rbx-upgrade-now">
+                        <a href="/premium/membership?ctx=leftnav" class=btn-secondary-md id=upgrade-now-button>Upgrade Now
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -347,6 +350,151 @@
         </div>
     </div>
 
+
+<div id=push-notification-registrar-settings data-notificationshost=https://freblx.xyz data-reregistrationinterval=0 data-registrationpath=register-firefox data-shoulddeliveryendpointbesentduringregistration=True data-platformtype=FirefoxOnDesktop></div>
+    <div id=push-notification-registration-ui-settings data-noncontextualpromptallowed=true data-promptonfriendrequestsentenabled=true data-promptonprivatemessagesentenabled=false data-promptintervals=[604800000,1209600000,2419200000] data-notificationsdomain=https://notifications.roblox.com data-userid=62022330></div>
+    <script type=text/template id=push-notifications-initial-global-prompt-template>
+        <div class="push-notifications-global-prompt">
+        <div class="alert-info push-notifications-global-prompt-site-wide-body">
+            <div class="push-notifications-prompt-content">
+                <h5>
+                    <span class="push-notifications-prompt-text">
+                        Can we send you notifications on this computer?
+                    </span>
+                </h5>
+            </div>
+            <div class="push-notifications-prompt-actions">
+                <button type="button" class="btn-fixed-width btn-control-xs push-notifications-prompt-accept">Notify Me</button>
+                <span class="icon-close-white push-notifications-dismiss-prompt"></span>
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-permissions-prompt-template>
+        <div class="modal fade" id="push-notifications-permissions-prompt-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog rbx-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">
+                            <span class="icon-close"></span>
+                        </span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h5>Enable Desktop Push Notifications</h5>
+                </div>
+                <div class="modal-body">
+                        <div>
+                            Now just click <strong>Always Receive Notifications</strong> in your browser, and we'll start sending you push notifications!
+                        </div>
+                        <div class="push-notifications-permissions-prompt-instructional-image">
+                                <img width="380" height="250" src="https://static.rbxcdn.com/images/Notifications/push-permission-prompt-firefox-windows-20160701.png" />
+                        </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-permissions-disabled-instruction-template>
+        <div class="modal fade" id="push-notifications-permissions-disabled-instruction-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog rbx-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">
+                            <span class="icon-close"></span>
+                        </span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h5>Turn Push Notifications Back On</h5>
+                </div>
+                <div class="instructions-body">
+                    <div class="reenable-step reenable-step1-of3">
+                        <h1>1</h1>
+                            <p class="larger-font-size push-notifications-modal-step-instruction">Click the green lock next to the URL bar to open up your site permissions.</p>
+                                <img width="270" height="139" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step1-firefox-windows-20160701.png" />
+                    </div>
+                    <div class="reenable-step reenable-step2-of3">
+                        <h1>2</h1>
+                            <p class="larger-font-size push-notifications-modal-step-instruction">Click the drop-down arrow next to Notifications in the <strong>Permissions</strong> tab.</p>
+                                <img width="270" height="142" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step2-firefox-windows-20160701.png" />
+                    </div>
+                    <div class="reenable-step reenable-step3-of3">
+                        <h1>3</h1>
+                            <p class="larger-font-size push-notifications-modal-step-instruction">Select <strong>Allow</strong> to turn notifications back on.</p>
+                                <img width="270" height="182" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step3-firefox-windows-20160701.png" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-successfully-enabled-template>
+        <div class="push-notifications-global-prompt">
+        <div class="alert-system-feedback">
+            <div class="alert alert-success">
+                Push notifications have been enabled!
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-successfully-disabled-template>
+        <div class="push-notifications-global-prompt">
+        <div class="alert-system-feedback">
+            <div class="alert alert-success">
+                Push notifications have been disabled.
+            </div>
+        </div>
+    </div>
+</script>
+
+<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle=confirmation style=display:none><a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+        <div class=Title></div>
+        <div class=GenericModalBody>
+            <div class=TopBody>
+                <div class="ImageContainer roblox-item-image" data-image-size=small data-no-overlays data-no-click><img class=GenericModalImage alt="generic image"></div>
+                <div class=Message></div>
+            </div>
+            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer"><a href="" id=roblox-confirm-btn><span></span></a> <a href="" id=roblox-decline-btn><span></span></a></div>
+            <div class=ConfirmationModalFooter></div>
+        </div>
+        <script>
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+            Roblox.Resources.GenericConfirmation = {
+                yes: "Yes",
+                No: "No",
+                Confirm: "Confirm",
+                Cancel: "Cancel"
+            };
+        </script>
+    </div>
+    <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation style="display:none">
+        <div id=modal-dialog class=modal-dialog>
+            <div class=modal-content>
+                <div class=modal-header><button type=button class=close data-dismiss=modal> <span aria-hidden=true><span class=icon-close></span></span><span class=sr-only>Close</span> </button>
+                    <h5 class=modal-title></h5>
+                </div>
+                <div class=modal-body>
+                    <div class=modal-top-body>
+                        <div class=modal-message></div>
+                        <div class="modal-image-container roblox-item-image" data-image-size=medium data-no-overlays data-no-click><img class=modal-thumb alt="generic image"></div>
+                        <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
+                    </div>
+                    <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
+                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
+                </div>
+                <div class="modal-footer text-footer"></div>
+            </div>
+        </div>
+
+        <script>
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
             Roblox.Resources.Dialog = {
                 yes: "Yes",
                 No: "No",
@@ -357,6 +505,7 @@
             };
         </script>
 
+    </div>
 
     @if (!(isApp && User.Identity.IsAuthenticated))
     {

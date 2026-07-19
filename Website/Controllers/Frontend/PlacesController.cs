@@ -565,13 +565,13 @@ namespace RobloxWebserver.Controllers
                             }
                         });
                         
-                        thumbnailUrl = "/images/RobloxLogo.png";
+                        thumbnailUrl = _configuration["DefaultThumbnailUrl"] ?? "/images/default.png";
                     }
 
                     return Json(new { 
                         success = true, 
                         message = "Auto-generated thumbnail created successfully",
-                        thumbnailUrl = thumbnailUrl ?? "/images/RobloxLogo.png"
+                        thumbnailUrl = thumbnailUrl ?? (_configuration["DefaultThumbnailUrl"] ?? "/images/default.png")
                     });
                 }
                 catch (Exception ex)

@@ -78,6 +78,7 @@ namespace Control_Panel.Views
             TixBalanceText.Text = "";
             StatusText.Text = "";
             CreatedText.Text = "";
+            MembershipText.Text = "";
             RobuxAmountTextBox.Text = "0";
             TixAmountTextBox.Text = "0";
         }
@@ -94,6 +95,7 @@ namespace Control_Panel.Views
             GenderText.Text = _currentUser.GenderText;
             StatusText.Text = _currentUser.StatusText;
             CreatedText.Text = _currentUser.CreatedDateFormatted;
+            MembershipText.Text = _currentUser.MembershipText;
         }
         
         private void SetLoadingState(bool isLoading)
@@ -108,6 +110,7 @@ namespace Control_Panel.Views
                 GenderText.Text = "Loading...";
                 StatusText.Text = "Loading...";
                 CreatedText.Text = "Loading...";
+                MembershipText.Text = "Loading...";
             }
         }
         
@@ -292,11 +295,38 @@ namespace Control_Panel.Views
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
         
-        private void ViewLogsButton_Click(object sender, RoutedEventArgs e)
+        private async void EditMembershipButton_Click(object sender, RoutedEventArgs e)
         {
             if (_currentUser == null) return;
-            MessageBox.Show($"View logs functionality for user {_currentUser.Username} to be implemented.", 
-                "Coming Soon", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            var membershipWindow = new MembershipConfigWindow();
+            membershipWindow.Owner = this;
+            membershipWindow.SetCurrentMembership(_currentUser.MembershipType);
+
+            if (membershipWindow.ShowDialog() == true)
+            {
+                try
+                {
+                    if (!DatabaseConnectionWindow.EnsureDatabaseAccessible(this, () => EditMembershipButton_Click(sender, (RoutedEventArgs)e)))
+                    {
+                        return;
+                    }
+
+                    var connectionString = DatabaseUtilities.GetConnectionString();
+                    var service = new ControlPanel.Functions.UserManagementService(connectionString);
+                    var success = await service.SetMembershipAsync(_currentUser.UserId, membershipWindow.MembershipStatus);
+
+                    if (success)
+                    {
+                        await LoadUserDataAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error updating membership: {ex.Message}",
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
         
         private async void AddRobuxButton_Click(object sender, RoutedEventArgs e)

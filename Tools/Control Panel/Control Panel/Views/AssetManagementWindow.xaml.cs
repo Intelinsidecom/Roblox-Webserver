@@ -20,6 +20,8 @@ namespace Control_Panel
         private readonly UserSearchService _userSearchService;
         private bool _isHighResThumbnail = false;
         private string _connectionString;
+        private System.Windows.Media.MediaPlayer _mediaPlayer;
+        private bool _isAudioPlaying = false;
 
         public AssetManagementWindow()
         {
@@ -137,8 +139,10 @@ namespace Control_Panel
 
         private void ClearAssetData()
         {
+            ResetAudioPlayback();
             _currentAsset = null;
             AssetThumbnailImage.Source = null;
+            AudioPlayButtonBorder.Visibility = Visibility.Collapsed;
             AssetIdText.Text = "";
             AssetNameText.Text = "";
             AssetDescriptionTextBox.Text = "";
@@ -171,6 +175,11 @@ namespace Control_Panel
             TixPriceText.Text = _currentAsset.TixPrice ?? "Not for sale";
             OnSaleText.Text = _currentAsset.PutOnSale.ToString();
             Title = $"Asset Management - ID: {_currentAsset.Id}";
+
+            AudioPlayButtonBorder.Visibility = _currentAsset.AssetTypeId == 3
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            ResetAudioPlayback();
         }
 
         private void SetLoadingState(bool isLoading)
@@ -214,8 +223,7 @@ namespace Control_Panel
                         }
                         else
                         {
-                            ShowCdnNotActiveMessage();
-                            return;
+                            thumbnailUrl = Properties.Settings.Default.DefaultThumbnailUrl ?? string.Empty;
                         }
                     }
                 }
@@ -227,8 +235,7 @@ namespace Control_Panel
                     }
                     else
                     {
-                        ShowCdnNotActiveMessage();
-                        return;
+                        thumbnailUrl = Properties.Settings.Default.DefaultThumbnailUrl ?? string.Empty;
                     }
                 }
 
@@ -245,8 +252,28 @@ namespace Control_Panel
                     }
                     catch (Exception imgEx)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Failed to load image from website: {imgEx.Message}");
-                        ShowWebsiteNotActiveMessage();
+                        System.Diagnostics.Debug.WriteLine($"Failed to load image from URL, trying default thumbnail: {imgEx.Message}");
+                        var defaultUrl = Properties.Settings.Default.DefaultThumbnailUrl ?? string.Empty;
+                        if (!string.IsNullOrEmpty(defaultUrl) && defaultUrl != thumbnailUrl)
+                        {
+                            try
+                            {
+                                var fallbackBitmap = new BitmapImage();
+                                fallbackBitmap.BeginInit();
+                                fallbackBitmap.UriSource = new Uri(defaultUrl);
+                                fallbackBitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                fallbackBitmap.EndInit();
+                                AssetThumbnailImage.Source = fallbackBitmap;
+                            }
+                            catch
+                            {
+                                ShowWebsiteNotActiveMessage();
+                            }
+                        }
+                        else
+                        {
+                            ShowWebsiteNotActiveMessage();
+                        }
                     }
                 }
                 else
@@ -443,6 +470,69 @@ namespace Control_Panel
             {
                 ThemeManager.InitializeThemeForWindow(this);
             }
+        }
+
+        private void AudioPlayButton_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+
+            try
+            {
+                if (_currentAsset == null || _currentAsset.AssetTypeId != 3) return;
+
+                if (_isAudioPlaying && _mediaPlayer != null)
+                {
+                    _mediaPlayer.Pause();
+                    _isAudioPlaying = false;
+                    AudioPlayIcon.Text = "\u25B6";
+                    AudioPlayButtonBorder.Background = new System.Windows.Media.SolidColorBrush(
+                        System.Windows.Media.Color.FromArgb(128, 0, 0, 0));
+                    return;
+                }
+
+                if (!_isAudioPlaying && _mediaPlayer != null)
+                {
+                    _mediaPlayer.Play();
+                    _isAudioPlaying = true;
+                    AudioPlayIcon.Text = "\u23F8";
+                    AudioPlayButtonBorder.Background = new System.Windows.Media.SolidColorBrush(
+                        System.Windows.Media.Color.FromArgb(204, 76, 175, 80));
+                    return;
+                }
+
+                var host = Settings.Default.WebsiteHost ?? "localhost";
+                var port = Settings.Default.WebsitePort ?? "5077";
+                var url = $"http://{host}:{port}/asset/?id={_currentAsset.Id}";
+
+                _mediaPlayer = new System.Windows.Media.MediaPlayer();
+                _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
+                _mediaPlayer.Open(new Uri(url));
+                _mediaPlayer.Play();
+                _isAudioPlaying = true;
+                AudioPlayIcon.Text = "\u23F8";
+                AudioPlayButtonBorder.Background = new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromArgb(204, 76, 175, 80));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error playing audio: {ex.Message}");
+                ResetAudioPlayback();
+            }
+        }
+
+        private void MediaPlayer_MediaEnded(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(ResetAudioPlayback);
+        }
+
+        private void ResetAudioPlayback()
+        {
+            _mediaPlayer?.Close();
+            _mediaPlayer = null;
+            _isAudioPlaying = false;
+            AudioPlayIcon.Text = "\u25B6";
+            AudioPlayButtonBorder.Background = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromArgb(128, 0, 0, 0));
         }
     }
 }

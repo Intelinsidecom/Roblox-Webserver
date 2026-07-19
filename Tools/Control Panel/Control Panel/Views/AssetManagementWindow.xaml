@@ -239,10 +239,32 @@
                         Background="{DynamicResource Background}"
                         Width="250" Height="250"
                         HorizontalAlignment="Center"
-                        Margin="0,0,0,20">
-                    <Image Name="AssetThumbnailImage" 
-                           Width="250" Height="250" 
-                           Margin="5"/>
+                        Margin="0,0,0,20"
+                        ClipToBounds="True">
+                    <Grid>
+                        <Image Name="AssetThumbnailImage" 
+                               Width="250" Height="250" 
+                               Margin="5"/>
+                        <Border x:Name="AudioPlayButtonBorder"
+                                Width="40" Height="40"
+                                CornerRadius="20"
+                                Background="#80000000"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,10,10"
+                                Cursor="Hand"
+                                Visibility="Collapsed"
+                                MouseLeftButtonDown="AudioPlayButton_Click"
+                                ToolTip="Play Audio">
+                            <TextBlock x:Name="AudioPlayIcon"
+                                       Text="&#x25B6;"
+                                       FontSize="16"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Margin="3,0,0,0"/>
+                        </Border>
+                    </Grid>
                 </Border>
                 <StackPanel>
                     <Grid Margin="0,0,0,10">

@@ -33,6 +33,7 @@ public sealed class DevelopTabViewModel
     public int SelectedCategory { get; set; }
     public int SelectedSortType { get; set; }
     public List<int> SelectedGenres { get; set; } = new();
+    public string? Keyword { get; set; }
     public int TotalItems { get; set; }
     public int PageNumber { get; set; } = 1;
     public int TotalPages { get; set; } = 1;

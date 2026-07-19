@@ -206,7 +206,7 @@ namespace Games
                     
                     cmd.Parameters.AddWithValue("token", token);
                     cmd.Parameters.AddWithValue("user_id", userId);
-                    cmd.Parameters.AddWithValue("place_id", placeId);
+                    cmd.Parameters.AddWithValue("place_id", placeId > 0 ? (object)placeId : DBNull.Value);
                     cmd.Parameters.AddWithValue("auth_url", authenticationUrl);
                     cmd.Parameters.AddWithValue("join_url", joinScriptUrl);
                     await cmd.ExecuteNonQueryAsync();

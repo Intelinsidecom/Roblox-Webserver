@@ -27,12 +27,19 @@
                            Style="{StaticResource DashboardSubtitle}"
                            Foreground="{DynamicResource SubtleText}"/>
             </StackPanel>
-            <Button Grid.Column="1" Content="Refresh"
-                    Style="{StaticResource ModernButton}"
-                    Background="{DynamicResource AccentPrimary}"
-                    Foreground="White"
-                    Width="80" Height="35"
-                    Click="RefreshButton_Click"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="Refresh"
+                        Style="{StaticResource ModernButton}"
+                        Background="{DynamicResource AccentPrimary}"
+                        Foreground="White"
+                        Width="80" Height="35"
+                        Click="RefreshButton_Click"/>
+                <Button Content="Edit Game"
+                        Style="{StaticResource ModernButton}"
+                        Width="100" Height="35"
+                        Margin="8,0,0,0"
+                        Click="EditGameButton_Click"/>
+            </StackPanel>
         </Grid>
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"

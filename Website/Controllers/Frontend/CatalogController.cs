@@ -192,7 +192,6 @@ namespace RobloxWebserver.Controllers
             }
 
             var isLimited = asset.LimitedUnique || asset.LimitedQuantity.HasValue;
-            Console.WriteLine($"[LIMITED] Item({id}): LimitedUnique={asset.LimitedUnique}, LimitedQuantity={asset.LimitedQuantity}, IsLimited={isLimited}");
             long bestResalePrice = 0;
             int resellerCount = 0;
             long? ownedSerial = null;
@@ -262,7 +261,7 @@ namespace RobloxWebserver.Controllers
                 Name = asset.Name,
                 CreatorName = string.IsNullOrWhiteSpace(creatorName) ? "ROBLOX" : creatorName,
                 CreatorId = asset.OwnerUserId,
-                ImageUrl = string.IsNullOrWhiteSpace(primaryThumb) ? "/images/RobloxLogo.png" : primaryThumb,
+                ImageUrl = string.IsNullOrWhiteSpace(primaryThumb) ? (_configuration["DefaultThumbnailUrl"] ?? "/images/default.png") : primaryThumb,
                 AssetTypeId = asset.AssetTypeId,
                 AssetTypeLabel = AssetTypeNames.GetTypeName(asset.AssetTypeId),
                 PriceRobux = displayPrice,
@@ -448,6 +447,7 @@ namespace RobloxWebserver.Controllers
             [FromQuery(Name = "SortType")] int sortType = 0,
             [FromQuery(Name = "Category")] int category = 0,
             [FromQuery(Name = "Genres")] string[]? genres = null,
+            [FromQuery(Name = "Keyword")] string? keyword = null,
             [FromQuery(Name = "PageNumber")] int pageNumber = 1,
             CancellationToken cancellationToken = default)
         {
@@ -471,6 +471,7 @@ namespace RobloxWebserver.Controllers
                 category: category > 0 ? category : null,
                 sortType: sortType,
                 genres: genreList,
+                keyword: keyword,
                 pageNumber: pageNumber,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 

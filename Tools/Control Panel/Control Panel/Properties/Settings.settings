@@ -59,10 +59,13 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="AudioThumbnailUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">/images/audio.png</Value>
+      <Value Profile="(Default)">http://www.freblx.xyz/images/audio.png</Value>
     </Setting>
     <Setting Name="AudioHighResThumbnailUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">/images/audio.png</Value>
+      <Value Profile="(Default)">http://www.freblx.xyz/images/audio.png</Value>
+    </Setting>
+    <Setting Name="DefaultThumbnailUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.freblx.xyz/images/b35fdfe2c7856872c3695871e2efbe18.png</Value>
     </Setting>
   </Settings>
 </SettingsFile>

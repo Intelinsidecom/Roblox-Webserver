@@ -122,6 +122,14 @@
                                    Style="{StaticResource LabelText}"
                                    Foreground="{DynamicResource Foreground}"
                                    Margin="0,0,0,15"/>
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Membership:" 
+                                   Style="{StaticResource DashboardSubtitle}" 
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock Grid.Row="8" Grid.Column="1" Name="MembershipText" 
+                                   Style="{StaticResource LabelText}"
+                                   Foreground="{DynamicResource Foreground}"
+                                   Margin="0,0,0,15"/>
                     </Grid>
                     <Border BorderBrush="{DynamicResource SubtleText}" 
                             BorderThickness="1" 
@@ -227,13 +235,13 @@
                                 Margin="0,0,5,0"
                                 Height="35"
                                 Click="BanUserButton_Click"/>
-                        <Button Grid.Column="1" Content="View Logs" 
+                        <Button Grid.Column="1" Content="Edit Membership" 
                                 Style="{StaticResource ModernButton}"
                                 Background="{DynamicResource AccentPrimary}"
                                 Foreground="White"
                                 Margin="5,0,0,0"
                                 Height="35"
-                                Click="ViewLogsButton_Click"/>
+                                Click="EditMembershipButton_Click"/>
                     </Grid>
                 </StackPanel>
             </StackPanel>

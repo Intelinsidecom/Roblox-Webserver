@@ -370,5 +370,17 @@ namespace Control_Panel.Properties {
                 this["AudioHighResThumbnailUrl"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("/images/default.png")]
+        public string DefaultThumbnailUrl {
+            get {
+                return ((string)(this["DefaultThumbnailUrl"]));
+            }
+            set {
+                this["DefaultThumbnailUrl"] = value;
+            }
+        }
     }
 }

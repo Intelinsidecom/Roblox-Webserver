@@ -428,8 +428,25 @@ namespace Website.Controllers.Client
                             await _gamePresenceService.RemoveFromGameAsync(userId);
                         }
                         
+                        // Validate place exists before creating ticket
+                        var placeExists = false;
+                        try
+                        {
+                            var placeCheckConn = _configuration.GetConnectionString("Default");
+                            if (!string.IsNullOrWhiteSpace(placeCheckConn))
+                            {
+                                var assetRepo = new AssetMetadataRepository();
+                                var placeRecord = await assetRepo.GetPlaceByIdAsync(placeCheckConn, gameid);
+                                placeExists = placeRecord != null;
+                            }
+                        }
+                        catch { }
+
+
                         // Create a ticket for this join
-                        var ticketToken = await _tokenService.CreateGameTicketAsync(userId, gameid, jobid);
+                        var ticketToken = placeExists
+                            ? await _tokenService.CreateGameTicketAsync(userId, gameid, jobid)
+                            : null;
                         if (!string.IsNullOrEmpty(ticketToken))
                         {
                             await _gamePresenceService.RecordGameJoinAsync(userId, gameid, jobid, ticketToken);

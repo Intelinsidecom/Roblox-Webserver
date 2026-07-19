@@ -20,7 +20,11 @@ namespace Website.Middleware
         {
             await _next(context);
 
-            // Only process page requests (not API requests)
+            if (context.Response.HasStarted)
+            {
+                return;
+            }
+
             var path = context.Request.Path.Value?.ToLower() ?? "";
             var isApiRequest = path.StartsWith("/api/") || 
                                path.StartsWith("/v1/") ||
@@ -40,18 +44,18 @@ namespace Website.Middleware
             {
                 if (!path.StartsWith("/login") && !path.StartsWith("/404"))
                 {
-                    var returnUrl = context.Request.Path.Value + context.Request.QueryString.Value;
                     context.Response.StatusCode = 302;
-                    context.Response.Headers["Location"] = "/login?returnUrl=" + Uri.EscapeDataString(returnUrl);
+                    context.Response.Headers["Location"] = "/login?returnUrl=" + Uri.EscapeDataString(context.Request.Path.Value + context.Request.QueryString.Value);
+                    context.Response.Body.Close();
                 }
             }
             else if (statusCode == 400)
             {
-                // Don't redirect if already at 404 page to prevent infinite loop
                 if (!path.StartsWith("/404") && !path.StartsWith("/develop/"))
                 {
                     context.Response.StatusCode = 302;
                     context.Response.Headers["Location"] = "/404";
+                    context.Response.Body.Close();
                 }
             }
         }

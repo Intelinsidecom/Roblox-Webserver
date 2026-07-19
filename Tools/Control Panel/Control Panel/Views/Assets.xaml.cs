@@ -21,8 +21,10 @@ namespace Control_Panel
     /// <summary>
     /// Represents an asset item for display in catalog
     /// </summary>
-    public class AssetItem
+    public class AssetItem : System.ComponentModel.INotifyPropertyChanged
     {
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
         public long Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
@@ -31,6 +33,21 @@ namespace Control_Panel
         public string Creator { get; set; }
         public string UpdatedTime { get; set; }
         public string ThumbnailUrl { get; set; }
+        public bool IsAudio => Type == "Audio";
+
+        private bool _isPlaying;
+        public bool IsPlaying
+        {
+            get => _isPlaying;
+            set
+            {
+                if (_isPlaying != value)
+                {
+                    _isPlaying = value;
+                    PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsPlaying)));
+                }
+            }
+        }
 
         public AssetItem()
         {
@@ -60,6 +77,8 @@ namespace Control_Panel
         private System.Timers.Timer _searchDebounceTimer;
         private const int SearchDebounceMs = 300;
         private readonly UserSearchService _userSearchService;
+        private System.Windows.Media.MediaPlayer _mediaPlayer;
+        private long? _currentPlayingAssetId;
 
         public AssetsView()
         {
@@ -158,6 +177,7 @@ namespace Control_Panel
             PublicBaseUrlTextBox.Text = settings.PublicBaseUrl ?? string.Empty;
             AudioThumbnailUrlTextBox.Text = settings.AudioThumbnailUrl ?? string.Empty;
             AudioHighResThumbnailUrlTextBox.Text = settings.AudioHighResThumbnailUrl ?? string.Empty;
+            DefaultThumbnailUrlTextBox.Text = settings.DefaultThumbnailUrl ?? string.Empty;
             DefaultOwnerUserIdTextBox.Text = settings.DefaultOwnerUserId ?? "1";
         }
 
@@ -193,6 +213,7 @@ namespace Control_Panel
                 settings.PublicBaseUrl = EnsureUrlProtocol(PublicBaseUrlTextBox.Text);
                 settings.AudioThumbnailUrl = AudioThumbnailUrlTextBox.Text;
                 settings.AudioHighResThumbnailUrl = AudioHighResThumbnailUrlTextBox.Text;
+                settings.DefaultThumbnailUrl = DefaultThumbnailUrlTextBox.Text;
                 settings.DefaultOwnerUserId = DefaultOwnerUserIdTextBox.Text;
                 settings.Save();
                 settings.Reload();
@@ -200,6 +221,7 @@ namespace Control_Panel
                 PublicBaseUrlTextBox.Text = settings.PublicBaseUrl ?? string.Empty;
                 AudioThumbnailUrlTextBox.Text = settings.AudioThumbnailUrl ?? string.Empty;
                 AudioHighResThumbnailUrlTextBox.Text = settings.AudioHighResThumbnailUrl ?? string.Empty;
+                DefaultThumbnailUrlTextBox.Text = settings.DefaultThumbnailUrl ?? string.Empty;
                 _viewLoader?.UpdateStatus("Configuration saved successfully!");
             }
             catch (Exception ex)
@@ -766,6 +788,94 @@ namespace Control_Panel
                 System.Diagnostics.Debug.WriteLine($"Error creating Asset Management window: {ex.Message}");
                 MessageBox.Show($"Error opening Asset Management: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+
+        private void CatalogThumbnailImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            if (sender is System.Windows.Controls.Image image)
+            {
+                var defaultUrl = Properties.Settings.Default.DefaultThumbnailUrl ?? string.Empty;
+                if (!string.IsNullOrEmpty(defaultUrl))
+                {
+                    try
+                    {
+                        var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new System.Uri(defaultUrl);
+                        bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                        bitmap.EndInit();
+                        image.Source = bitmap;
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+
+
+        private void AudioPlayButton_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+
+            try
+            {
+                if (sender is FrameworkElement element && element.DataContext is AssetItem asset && asset.IsAudio)
+                {
+                    if (_currentPlayingAssetId == asset.Id && _mediaPlayer != null)
+                    {
+                        if (asset.IsPlaying)
+                        {
+                            _mediaPlayer.Pause();
+                            asset.IsPlaying = false;
+                        }
+                        else
+                        {
+                            _mediaPlayer.Play();
+                            asset.IsPlaying = true;
+                        }
+                        return;
+                    }
+
+                    foreach (var item in _assetItems)
+                        item.IsPlaying = false;
+
+                    _mediaPlayer?.Close();
+                    _currentPlayingAssetId = asset.Id;
+                    asset.IsPlaying = true;
+
+                    var host = Properties.Settings.Default.WebsiteHost ?? "localhost";
+                    var port = Properties.Settings.Default.WebsitePort ?? "5077";
+                    var url = $"http://{host}:{port}/asset/?id={asset.Id}";
+
+                    _mediaPlayer = new System.Windows.Media.MediaPlayer();
+                    _mediaPlayer.MediaEnded += MediaPlayer_MediaEnded;
+                    _mediaPlayer.Open(new Uri(url));
+                    _mediaPlayer.Play();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error playing audio: {ex.Message}");
+                _mediaPlayer?.Close();
+                _mediaPlayer = null;
+                foreach (var item in _assetItems)
+                    item.IsPlaying = false;
+                _currentPlayingAssetId = null;
+            }
+        }
+
+        private void MediaPlayer_MediaEnded(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                foreach (var item in _assetItems)
+                    item.IsPlaying = false;
+                _mediaPlayer?.Close();
+                _mediaPlayer = null;
+                _currentPlayingAssetId = null;
+            });
         }
 
 

@@ -41,12 +41,11 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0">
                 <StackPanel>
-                    <Border BorderBrush="{DynamicResource SubtleText}" BorderThickness="1" Padding="10" Margin="0,0,0,15">
                         <StackPanel>
                             <TextBlock Text="Place Information"
-                                       Style="{StaticResource DashboardSubtitle}"
-                                       Foreground="{DynamicResource AccentPrimary}"
-                                       Margin="0,0,0,10"/>
+                                    Style="{StaticResource DashboardSubtitle}" 
+                                    Foreground="{DynamicResource AccentPrimary}"
+                                    Margin="0,0,0,20"/>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="120"/>
@@ -232,13 +231,16 @@
                                            Foreground="{DynamicResource Foreground}"/>
                             </Grid>
                         </StackPanel>
-                    </Border>
-                    <Border BorderBrush="{DynamicResource SubtleText}" BorderThickness="1" Padding="10" Margin="0,0,0,15">
-                        <StackPanel>
+                    <Border BorderBrush="{DynamicResource SubtleText}" 
+                            BorderThickness="1" 
+                            Background="{DynamicResource Background}"
+                            Margin="0,20,0,0"
+                            Padding="10">
+                        <StackPanel Margin="0,0,0,10">
                             <TextBlock Text="Version History"
-                                       Style="{StaticResource DashboardSubtitle}"
-                                       Foreground="{DynamicResource AccentPrimary}"
-                                       Margin="0,0,0,10"/>
+                                        Style="{StaticResource DashboardSubtitle}" 
+                                        Foreground="{DynamicResource AccentPrimary}"
+                                        Margin="0,0,0,20"/>
                             <ListView Name="VersionHistoryListView"
                                       Height="120"
                                       SelectionMode="Single"
@@ -329,7 +331,7 @@
                             Background="{DynamicResource AccentPrimary}"
                             Foreground="White"
                             Height="35"
-                            Width="280"
+                            Width="300"
                             Margin="8,0,0,0"
                             IsEnabled="False"
                             Click="EditPlaceButton_Click"/>

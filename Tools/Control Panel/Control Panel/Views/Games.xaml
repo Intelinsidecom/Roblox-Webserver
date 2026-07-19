@@ -415,10 +415,12 @@
                     </Grid>
                     <Grid x:Name="GamesTab" Margin="20,20,20,0" Visibility="Collapsed">
                         <StackPanel>
-                            <Grid Margin="0,0,0,10" HorizontalAlignment="Left">
+                            <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <ComboBox Grid.Column="0" x:Name="GameTypeFilter" 
@@ -467,6 +469,13 @@
                                     <ComboBoxItem Content="Name Z-A"/>
                                     <ComboBoxItem Content="Most Players"/>
                                 </ComboBox>
+                                <Button Grid.Column="4" x:Name="CreatePlaceButton" Content="Create Game"
+                                        Style="{StaticResource ModernButton}"
+                                        Background="{DynamicResource AccentPrimary}"
+                                        Foreground="White"
+                                        Height="30" Width="110" Margin="10,0,0,0"
+                                        HorizontalAlignment="Right"
+                                        Click="CreatePlaceButton_Click"/>
                             </Grid>
                             <Grid Margin="0,0,0,10" HorizontalAlignment="Stretch">
                                 <Grid.ColumnDefinitions>

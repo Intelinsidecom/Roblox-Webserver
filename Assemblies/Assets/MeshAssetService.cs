@@ -26,6 +26,7 @@ namespace Assets
             string name,
             byte[] fileBytes,
             string cdnAssetsRoot,
+            bool bypassLimits = false,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -39,7 +40,7 @@ namespace Assets
             if (string.IsNullOrWhiteSpace(cdnAssetsRoot))
                 throw new ArgumentException("cdnAssetsRoot is required", nameof(cdnAssetsRoot));
 
-            var (isValid, errorMessage) = AssetValidationHelper.ValidateMeshContent(fileBytes);
+            var (isValid, errorMessage) = AssetValidationHelper.ValidateMeshContent(fileBytes, bypassLimits);
             if (!isValid)
                 throw new ArgumentException(errorMessage ?? "Mesh validation failed.");
 

@@ -24,6 +24,17 @@ public sealed class DevelopTabService
 
     public string? ConnectionString => _configuration.GetConnectionString("Default");
 
+    private string DefaultThumbnailUrl => _configuration["Thumbnails:DefaultThumbnailUrl"] ?? "/images/default.png";
+    private string AudioThumbnailUrl => _configuration["Thumbnails:AudioThumbnailUrl"] ?? "/images/audio.png";
+    private string PluginThumbnailUrl => _configuration["Thumbnails:PluginThumbnailUrl"] ?? "/images/plugin.png";
+
+    private string GetFallbackThumbnailUrl(int assetTypeId) => assetTypeId switch
+    {
+        3 => AudioThumbnailUrl,
+        38 => PluginThumbnailUrl,
+        _ => DefaultThumbnailUrl,
+    };
+
     public async Task<Assemblies.Common.DevelopTabViewModel> BuildAsync(
         long userId,
         string? userName,
@@ -33,6 +44,7 @@ public sealed class DevelopTabService
         int? category = null,
         int? sortType = null,
         List<int>? genres = null,
+        string? keyword = null,
         int pageNumber = 1,
         CancellationToken cancellationToken = default)
     {
@@ -45,6 +57,7 @@ public sealed class DevelopTabService
             SelectedCategory = category ?? 0,
             SelectedSortType = sortType ?? 0,
             SelectedGenres = genres ?? new List<int>(),
+            Keyword = keyword,
             PageNumber = pageNumber,
         };
 
@@ -276,7 +289,7 @@ limit 50;";
                     var assetId = reader.GetInt64(0);
                     var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                     var createdAt = reader.GetDateTime(2);
-                    var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
                     var imageAssetId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
                     var sales = reader.IsDBNull(5) ? 0L : reader.GetInt64(5);
 
@@ -445,7 +458,7 @@ limit 50;";
                     var assetId = reader.GetInt64(0);
                     var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                     var createdAt = reader.GetDateTime(2);
-                    var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                    var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
                     var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                     items.Add(new Assemblies.Common.DevelopItem
@@ -516,7 +529,7 @@ limit 50;";
                 var assetId = reader.GetInt64(0);
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
-                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
                 var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem
@@ -578,7 +591,7 @@ limit 50;";
                 var assetId = reader.GetInt64(0);
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
-                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
                 var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem
@@ -634,7 +647,7 @@ limit 50;";
 
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
-            var defaultThumb = _configuration["AudioThumbnailUrl"] ?? "/images/audio.png";
+            var defaultThumb = _configuration["Thumbnails:AudioThumbnailUrl"] ?? "/images/audio.png";
             var items = new List<Assemblies.Common.DevelopItem>();
             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
@@ -699,6 +712,11 @@ limit 50;";
                 whereClauses.Add($"a.genre in ({genreList})");
             }
 
+            if (!string.IsNullOrWhiteSpace(vm.Keyword))
+            {
+                whereClauses.Add($"a.name ilike @keyword");
+            }
+
             var orderClause = vm.SelectedSortType switch
             {
                 3 => "order by a.last_updated desc nulls last, a.asset_id desc",
@@ -715,6 +733,8 @@ limit 50;";
             await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
             await using var countCmd = new NpgsqlCommand(countSql, conn);
+            if (!string.IsNullOrWhiteSpace(vm.Keyword))
+                countCmd.Parameters.AddWithValue("keyword", $"%{vm.Keyword}%");
             var totalCount = (long)(await countCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) ?? 0);
 
             vm.TotalItems = (int)totalCount;
@@ -730,6 +750,8 @@ limit 50;";
                 limit 50 offset {offset};";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
+            if (!string.IsNullOrWhiteSpace(vm.Keyword))
+                cmd.Parameters.AddWithValue("keyword", $"%{vm.Keyword}%");
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
 
             var items = new List<Assemblies.Common.DevelopItem>();
@@ -737,8 +759,8 @@ limit 50;";
             {
                 var assetId = reader.GetInt64(0);
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
-                var thumb = reader.IsDBNull(2) ? null : reader.GetString(2);
                 var assetTypeId = reader.GetInt32(3);
+                var thumb = reader.IsDBNull(2) ? GetFallbackThumbnailUrl(assetTypeId) : reader.GetString(2);
                 var creatorName = reader.IsDBNull(4) ? "ROBLOX" : reader.GetString(4);
                 var createdAt = reader.GetDateTime(5);
                 var onSale = !reader.IsDBNull(6) && reader.GetBoolean(6);
@@ -813,7 +835,7 @@ limit 50;";
                 var assetId = reader.GetInt64(0);
                 var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
                 var createdAt = reader.GetDateTime(2);
-                var thumb = reader.IsDBNull(3) ? null : reader.GetString(3);
+                var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
                 var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
 
                 items.Add(new Assemblies.Common.DevelopItem

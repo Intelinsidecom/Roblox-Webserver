@@ -20,7 +20,7 @@ namespace RobloxWebserver.Controllers
         public IActionResult Setup()
         {
             var setupHost = _configuration["Setup:SetupServicePublicHost"] ?? "setup.freblx.xyz";
-            var redirectUrl = $"https://{setupHost}/RobloxPlayerLauncher.exe";
+            var redirectUrl = $"{setupHost}/RobloxPlayerLauncher.exe";
             return Redirect(redirectUrl);
         }
 
@@ -28,7 +28,7 @@ namespace RobloxWebserver.Controllers
         public IActionResult DownloadLauncher()
         {
             var setupHost = _configuration["Setup:SetupServicePublicHost"] ?? "setup.freblx.xyz";
-            var redirectUrl = $"https://{setupHost}/RobloxPlayerLauncher.exe";
+            var redirectUrl = $"{setupHost}/RobloxPlayerLauncher.exe";
             return Redirect(redirectUrl);
         }
 
@@ -36,7 +36,7 @@ namespace RobloxWebserver.Controllers
         public IActionResult SetupStudio()
         {
             var setupHost = _configuration["Setup:SetupServicePublicHost"] ?? "setup.freblx.xyz";
-            var redirectUrl = $"https://{setupHost}/RobloxStudioLauncher.exe";
+            var redirectUrl = $"{setupHost}/RobloxStudioLauncher.exe";
             return Redirect(redirectUrl);
         }
     }

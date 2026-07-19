@@ -1,7 +1,10 @@
 @model Assemblies.Common.DevelopTabViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     Layout = null;
-    var fallbackThumb = "/images/audio.png";
+    var audioThumb = Configuration["Thumbnails:AudioThumbnailUrl"] ?? "/images/audio.png";
+    var pluginThumb = Configuration["Thumbnails:PluginThumbnailUrl"] ?? "/images/plugin.png";
+    var defaultThumb = Configuration["Thumbnails:DefaultThumbnailUrl"] ?? "/images/default.png";
 }
 <style>
     .MediaPlayerControls {
@@ -41,7 +44,7 @@
 <div id="catalog" data-empty-search-enabled="true" style="font-size:12px">
     <div class="header" style="height:60px">
         <div class="CatalogSearchBar">
-            <input id="keywordTextbox" name="name" type="text" class="translate text-box text-box-small">
+            <input id="keywordTextbox" name="name" type="text" class="translate text-box text-box-small" value="@(Model?.Keyword ?? "")">
             <div style="height:23px;border:1px solid #a7a7a7;padding:2px;margin-right:6px;float:left;position:relative">
                 <select id="categoriesForKeyword">
                     <option value="6">Models</option>
@@ -231,8 +234,16 @@
                 <div class="CatalogItemInner SmallInner">
                     <div class="roblox-item-image image-small" data-item-id="@item.ItemId" data-image-size="small">
                         <div class="item-image-wrapper" style="position: relative;">
+                            @{
+                                var fallback = item.Type switch
+                                {
+                                    "audios" => audioThumb,
+                                    "plugins" => pluginThumb,
+                                    _ => defaultThumb,
+                                };
+                            }
                             <a href="@item.CatalogUrl">
-                                <img title="@item.Name" alt="@item.Name" class="original-image" src="@(item.ThumbnailUrl ?? (item.Type == "audios" ? fallbackThumb : "/images/RobloxLogo.png"))" />
+                                <img title="@item.Name" alt="@item.Name" class="original-image" src="@(item.ThumbnailUrl ?? fallback)" />
                             </a>
                             @if (item.Type == "audios")
                             {
@@ -240,8 +251,14 @@
                                     <div class="MediaPlayerIcon icon-play" data-mediathumb-url="/asset/?id=@item.ItemId" data-jplayer-version="2.9.2"></div>
                                 </div>
                             }
-                        </div>
-                    </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            var cat = @(Model?.SelectedCategory ?? 0);
+            if (cat > 0) $("#categoriesForKeyword").val(cat);
+        });
+    </script>
                     <div id="textDisplay">
                         <div class="CatalogItemName notranslate">
                             <a class="name notranslate" href="@item.CatalogUrl" title="@item.Name">@item.Name</a>
@@ -296,8 +313,10 @@ else
             var sel = $("#dropdownUl .selectedAssetTypeFilter");
             var category = sel.length > 0 ? (sel.first().data("category") || 0) : 0;
             var sortType = $("#SortMain").val() || 0;
+            var keyword = $.trim($("#keywordTextbox").val() || "");
             var parts = ["sortType=" + encodeURIComponent(sortType)];
             if (category > 0) parts.push("category=" + encodeURIComponent(category));
+            if (keyword) parts.push("keyword=" + encodeURIComponent(keyword));
             $("input.genreFilter:checked").each(function () {
                 parts.push("genres=" + encodeURIComponent($(this).data("genreid")));
             });
@@ -335,12 +354,7 @@ else
 
         $("#submitSearchButton").on("click", function (e) {
             e.preventDefault();
-            var keyword = $.trim($("#keywordTextbox").val() || "");
-            if (!keyword) {
-                reloadLibrary();
-                return;
-            }
-            window.location = "/catalog/browse.aspx?Category=" + ($("#categoriesForKeyword").val() || 0) + "&Keyword=" + encodeURIComponent(keyword);
+            reloadLibrary();
         });
 
         $("#keywordTextbox").on("keypress", function (e) {

@@ -106,14 +106,6 @@
     </style>
     <link rel="stylesheet" href="~/CSS/Pages/Notifications/NotificationStream.css">
 
-    <script src=//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js></script>
-    <script>
-        window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")
-    </script>
-    <script src=//ajax.aspnetcdn.com/ajax/jquery.migrate/jquery-migrate-1.2.1.min.js></script>
-    <script>
-        window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")
-    </script>
     <script>
         var Roblox = Roblox || {};
         Roblox.RealTimeSettings = Roblox.RealTimeSettings || {
@@ -137,10 +129,7 @@
     </script>
     <script src="~/JS/GPTAdScript.js"></script>
     <script src="~/JS/leancore/libs/json3.min.js"></script>
-    <script src="~/JS/roblox.js"></script>
     <script src="~/JS/common/constants.js"></script>
-    <script src="~/JS/leancore/RobloxHeaderInit.js"></script>
-    <script src="~/JS/jquery.cookie.js"></script>
     <script src="~/JS/utilities/performance.js"></script>
     <script src="~/JS/RobloxCookies.js"></script>
     <script src="~/JS/RobloxEventStream.js"></script>
@@ -149,13 +138,6 @@
     <script src="~/JS/services/userService.js"></script>
     <script src="~/JS/SignalR/jquery.signalr-2.2.0.js"></script>
     <script src="~/JS/SignalR/SignalRAbortAsyncPatch-2.2.0.js"></script>
-    <script src="~/JS/Notifications/RealTime/signalRConnectionWrapper.js"></script>
-    <script src="~/JS/Notifications/RealTime/Sources/signalRSource.js"></script>
-    <script src="~/JS/Notifications/RealTime/client.js"></script>
-    <script src="~/JS/Notifications/RealTime/factory.js"></script>
-    <script src="~/JS/Notifications/RealTime/stateTracker.js"></script>
-    <script src="~/JS/Notifications/RealTime/Sources/hybridSource.js"></script>
-    <script src="~/JS/Notifications/RealTime/Sources/crossTabReplicatedSource.js"></script>
     <script src="~/JS/utilities/CrossTabCommunication/Kingmaker.js"></script>
     <script src="~/JS/utilities/CrossTabCommunication/PubSub.js"></script>
     <script src="~/JS/Notifications/AuthenticationNotificationsHandler.js"></script>
@@ -1028,7 +1010,7 @@
                     });
                 </script>
                
-    <div ng-modules="robloxApp, notificationStream" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
+    <div ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
                 'isPhone': library.isPhone, 
                 'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
         <div notification-content></div>
@@ -1194,37 +1176,6 @@
             };
         </script>
     </div>
-    <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation>
-        <div id=modal-dialog class=modal-dialog>
-            <div class=modal-content>
-                <div class=modal-header><button type=button class=close data-dismiss=modal> <span aria-hidden=true><span class=icon-close></span></span><span class=sr-only>Close</span> </button>
-                    <h5 class=modal-title></h5>
-                </div>
-                <div class=modal-body>
-                    <div class=modal-top-body>
-                        <div class=modal-message></div>
-                        <div class="modal-image-container roblox-item-image" data-image-size=medium data-no-overlays data-no-click><img class=modal-thumb alt="generic image"></div>
-                        <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
-                    </div>
-                    <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
-                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
-                </div>
-                <div class="modal-footer text-footer"></div>
-            </div>
-        </div>
-        <script>
-            Roblox = Roblox || {};
-            Roblox.Resources = Roblox.Resources || {};
-            Roblox.Resources.Dialog = {
-                yes: "Yes",
-                No: "No",
-                OK: "OK",
-                Confirm: "Confirm",
-                Cancel: "Cancel",
-                Agree: "Agree"
-            };
-        </script>
-    </div>
     <script>
         var Roblox = Roblox || {};
         Roblox.jsConsoleEnabled = false;
@@ -1256,7 +1207,6 @@
             });
         });
     </script>
-    <script src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script src="~/JS/leancore/BootstrapNamespacing.js"></script>
     <script src="~/JS/leancore/libs/underscore-min.js"></script>
     <script src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
@@ -1276,9 +1226,6 @@
     <script src="~/JS/DeveloperConsoleWarning.js"></script>
     <script src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
     <script src="~/JS/jquery.ba-postmessage.min.js"></script>
-    <script src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script src="~/JS/leancore/Navigation.js"></script>
-    <script src="~/JS/Reference/widget.js"></script>
     <script src="~/JS/CookieUpgrader.js"></script>
     <script src="~/JS/Game/GamePlayEvents.js"></script>
     <script src="~/JS/leancore/RobloxBaseInit.js"></script>
@@ -1302,7 +1249,6 @@
     <script src="~/JS/3D/tween.js"></script>
     <script src="~/JS/3D/RobloxOrbitControls.js"></script>
     <script src="~/JS/Linkify.js"></script>
-    <script src="~/JS/CookieUpgrader.js"></script>
     <script src="~/JS/utilities/stringFormat.js"></script>
     <script src="~/JS/Tracking/SignupTrackingScript.js"></script>
     <script src="~/JS/Tracking/AsyncGoogleOnScript.js"></script>
@@ -1315,33 +1261,19 @@
     <script src="~/JS/ProtocolHandlerClientInterface.js"></script>
     <script src="~/JS/GameLaunchAdRefresher.js"></script>
     <script src="~/JS/Interstitial.js"></script>
-    <script src="~/JS/angular/angular.min.js"></script>
-    <script src="~/JS/angular/angular-sanitize.min.js"></script>
-    <script src="~/JS/angular/angular-ui-router.min.js"></script>
-    <script src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
-    <script src="~/JS/angular/angular.ng-modules.js"></script>
     <script src="~/JS/angular/angular.audio.js"></script>
     <script src="~/JS/angular/angular-elastic.js"></script>
-    <script src="~/JS/viewapp/app.js"></script>
-    <script src="~/JS/viewapp/common/services/robloxService.js"></script>
-    <script src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
-    <script src="~/JS/viewapp/common/services/eventStreamService.js"></script>
     <script src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
-    <script src="~/JS/viewapp/common/services/httpService.js"></script>
-    <script src="~/JS/viewapp/common/services/hybridService.js"></script>
     <script src="~/JS/viewapp/common/services/imagesService.js"></script>
     <script src="~/JS/viewapp/common/services/localStorageService.js"></script>
     <script src="~/JS/viewapp/common/services/numericCodeService.js"></script>
     <script src="~/JS/viewapp/common/services/realtimeService.js"></script>
     <script src="~/JS/viewapp/common/services/retryService.js"></script>
-    <script src="~/JS/viewapp/common/services/urlService.js"></script>
-    <script src="~/JS/viewapp/common/services/userService.js"></script>
     <script src="~/JS/viewapp/common/services/performanceService.js"></script>
     <script src="~/JS/viewapp/common/constants/keyCode.js"></script>
     <script src="~/JS/viewapp/common/constants/callBackTypes.js"></script>
     <script src="~/JS/viewapp/common/constants/deviceTypes.js"></script>
     <script src="~/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
-    <script src="~/JS/viewapp/common/filters.js"></script>
     <script src="~/JS/viewapp/common/helpers.js"></script>
     <script src="~/JS/viewapp/common/filters/abbreviate.js"></script>
     <script src="~/JS/viewapp/common/filters/capitalize.js"></script>
@@ -1373,33 +1305,9 @@
     <script src="~/JS/viewapp/widgets/modal/constants/modalOptions.js"></script>
     <script src="~/JS/viewapp/widgets/modal/services/modalService.js"></script>
     <script src="~/JS/viewapp/widgets/modal/controllers/modalController.js"></script>
-    <div ng-modules=baseTemplateApp>
-        <script src="~/JS/base_splitApps___6cf279c31f4ada936211ecbc4aed6fff_m.js"></script>
-    </div>
-    <div ng-modules=chatAppHtmlTemplateApp>
-    </div>
-    <div ng-modules=pageTemplateApp>
-        <script src="~/JS/page_splitApps___9efbdd8c00dc7339bd109d5ddd805a6e_m.js"></script>
-    </div>
-    <script src="~/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/constants/layoutLibrary.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/constants/signalR.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
-    <script src="~/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
+    <script src="~/JS/base_splitApps___6cf279c31f4ada936211ecbc4aed6fff_m.js"></script>
+    <script>angular.module('chatAppHtmlTemplateApp', []);</script>
+    <script src="~/JS/page_splitApps___9efbdd8c00dc7339bd109d5ddd805a6e_m.js"></script>
     <script>
         Roblox.config.externalResources = [];
         Roblox.config.paths['Pages.Catalog'] = 'https://js.rbxcdn.com/8d6821a4eed971155a4829a1e43336f4.js.gzip';
@@ -1530,7 +1438,6 @@
     <script src="~/JS/GenericConfirmation.js"></script>
     <script src="~/JS/TosModalCheck.js"></script>
     <script src="~/JS/AbuseReport/AbuseReportDispatcher.js"></script>
-    <script src="~/JS/leancore/Navigation.js"></script>
     <script>
         var _comscore = _comscore || [];
         _comscore.push({

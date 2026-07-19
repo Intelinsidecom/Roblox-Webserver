@@ -55,11 +55,19 @@ namespace ControlPanel.Functions
             }
         }
         
+        public string MembershipType { get; set; }
+
         public string MembershipText
         {
             get
             {
-                return "Free";
+                return MembershipType switch
+                {
+                    "BuildersClub" => "Builders Club",
+                    "TurboBuildersClub" => "Turbo Builders Club",
+                    "OutrageousBuildersClub" => "Outrageous Builders Club",
+                    _ => "Free"
+                };
             }
         }
     }
@@ -114,6 +122,16 @@ namespace ControlPanel.Functions
                                 catch (Exception thumbEx)
                                 {
                                     ConsoleWindow.Instance?.WriteError($"[Thumbnail Debug] Failed to get dynamic thumbnails: {thumbEx.Message}");
+                                }
+
+                                try
+                                {
+                                    userData.MembershipType = await UserQueries.GetMembershipTypeAsync(connectionString, userId);
+                                }
+                                catch (Exception memEx)
+                                {
+                                    ConsoleWindow.Instance?.WriteError($"[Membership Debug] Failed to get membership type: {memEx.Message}");
+                                    userData.MembershipType = "None";
                                 }
                                 
                                 return userData;
@@ -223,6 +241,28 @@ namespace ControlPanel.Functions
             {
                 ConsoleWindow.Instance?.WriteError($"Error creating user: {ex.Message}");
                 return (0, false, ex.Message);
+            }
+        }
+
+        public async Task<bool> SetMembershipAsync(long userId, short membershipStatus)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    await connection.OpenAsync();
+                    using var command = new NpgsqlCommand(
+                        "UPDATE users SET membership_status = @status WHERE user_id = @userId", connection);
+                    command.Parameters.AddWithValue("@status", membershipStatus);
+                    command.Parameters.AddWithValue("@userId", userId);
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                ConsoleWindow.Instance?.WriteError($"Error setting membership for user {userId}: {ex.Message}");
+                return false;
             }
         }
 

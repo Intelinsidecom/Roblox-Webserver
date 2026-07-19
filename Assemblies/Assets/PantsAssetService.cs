@@ -40,6 +40,7 @@ namespace Assets
             string thumbnailBaseUrl,
             string? publicAssetBaseUrl,
             string? arbiterBaseUrl,
+            bool bypassLimits = false,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -62,7 +63,7 @@ namespace Assets
                 using (var input = new MemoryStream(fileBytes))
                 using (var image = new Bitmap(input))
                 {
-                    if (image.Width != 585 || image.Height != 559)
+                    if (!bypassLimits && (image.Width != 585 || image.Height != 559))
                         throw new ArgumentException("Pants image must be exactly 585x559 pixels.", nameof(fileBytes));
                 }
             }

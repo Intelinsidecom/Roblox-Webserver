@@ -1,8 +1,9 @@
 @model Assemblies.Common.DevelopTabViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     Layout = null;
     var items = Model?.Audios ?? new List<Assemblies.Common.DevelopItem>();
-    var fallbackThumb = "/images/audio.png";
+    var fallbackThumb = Configuration["AudioThumbnailUrl"] ?? Configuration["DefaultThumbnailUrl"] ?? "/images/audio.png";
 }
 <style>
     .MediaPlayerControls {

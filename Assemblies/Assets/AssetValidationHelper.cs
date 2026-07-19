@@ -226,12 +226,12 @@ public static class AssetValidationHelper
         }
     }
 
-    public static (bool IsValid, string? ErrorMessage) ValidateMeshContent(byte[] fileBytes)
+    public static (bool IsValid, string? ErrorMessage) ValidateMeshContent(byte[] fileBytes, bool bypassLimits = false)
     {
         if (fileBytes == null || fileBytes.Length == 0)
             return (false, "File content is empty.");
 
-        if (fileBytes.Length > 50 * 1024 * 1024)
+        if (!bypassLimits && fileBytes.Length > 50 * 1024 * 1024)
             return (false, "Mesh file exceeds maximum allowed size of 50 MB.");
 
         if (fileBytes.Length < 4)

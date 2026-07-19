@@ -271,6 +271,7 @@ namespace RobloxWebserver.Controllers
                     thumbnailBaseUrl ?? string.Empty,
                     _configuration["Assets:PublicBaseUrl"],
                     arbiterBaseUrl,
+                    false,
                     cancellationToken).ConfigureAwait(false);
             }
             catch (ArgumentException ex)
@@ -339,6 +340,7 @@ namespace RobloxWebserver.Controllers
                     thumbnailBaseUrl ?? string.Empty,
                     _configuration["Assets:PublicBaseUrl"],
                     arbiterBaseUrl,
+                    false,
                     cancellationToken).ConfigureAwait(false);
             }
             catch (ArgumentException ex)

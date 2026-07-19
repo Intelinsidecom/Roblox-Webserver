@@ -62,6 +62,7 @@ public class DevelopTabController : Controller
         [FromQuery] int? category = null,
         [FromQuery] int? sortType = null,
         [FromQuery] string[]? genres = null,
+        [FromQuery] string? keyword = null,
         [FromQuery] int pageNumber = 1,
         CancellationToken cancellationToken = default)
     {
@@ -86,7 +87,8 @@ public class DevelopTabController : Controller
 
         var vm = await _tabService.BuildAsync(userId, nameClaim, view, showPublicOnly,
             groupId: null, category: category, sortType: sortType,
-            genres: genreList, pageNumber: pageNumber, cancellationToken: cancellationToken).ConfigureAwait(false);
+            genres: genreList, keyword: keyword,
+            pageNumber: pageNumber, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         return PartialView($"~/Views/Develop/Tabs/{view}.cshtml", vm);
     }

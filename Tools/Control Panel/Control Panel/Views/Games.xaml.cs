@@ -750,6 +750,17 @@ namespace Control_Panel
             GameServersTabButton.Foreground = (System.Windows.Media.Brush)Application.Current.Resources["Foreground"];
         }
 
+        private void CreatePlaceButton_Click(object sender, RoutedEventArgs e)
+        {
+            var createWindow = new PlaceCreateWindow();
+            createWindow.Owner = Window.GetWindow(this);
+            createWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (createWindow.ShowDialog() == true)
+            {
+                _ = LoadGamesAsync();
+            }
+        }
+
         private void InitializePlaceholders()
         {
             SetPlaceholder(GameSearchTextBox);

@@ -1215,7 +1215,7 @@ namespace Assets
                 11 => $"{thumbnailUrl}/asset/shirt.png",
                 12 => $"{thumbnailUrl}/asset/pants.png",
                 38 => _configuration["PluginThumbnailUrl"] ?? "/images/plugin.png",
-                _ => $"{thumbnailUrl}/asset/default.png"
+                _ => _configuration["DefaultThumbnailUrl"] ?? $"{thumbnailUrl}/asset/default.png"
             };
         }
 

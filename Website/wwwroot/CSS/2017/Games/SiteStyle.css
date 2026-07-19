@@ -8068,6 +8068,24 @@ button.close {
     color: #B8B8B8;
 }
 
+.protocol-handler-container {
+    display: none;
+    position: relative;
+    z-index: 11000;
+}
+
+.ph-modal-popup {
+    background-color: #fff;
+    min-height: 259px;
+    width: 399px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 
 .modal-col-3:before,
 .modal-col-3:after {

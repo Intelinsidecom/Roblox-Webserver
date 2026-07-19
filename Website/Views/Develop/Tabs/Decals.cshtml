@@ -1,8 +1,9 @@
 @model Assemblies.Common.DevelopTabViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     Layout = null;
     var items = Model?.Decals ?? new List<Assemblies.Common.DevelopItem>();
-    var fallbackThumb = "/images/b35fdfe2c7856872c3695871e2efbe18.png";
+    var fallbackThumb = Configuration["DefaultThumbnailUrl"] ?? "/images/default.png";
 }
 <div class="items-container-inner">
     <h1 class="title" style="margin-top:0 !important;margin-bottom:15px">Create Decal</h1>

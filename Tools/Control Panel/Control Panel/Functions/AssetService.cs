@@ -96,7 +96,8 @@ namespace Control_Panel.Functions
                     ["Website:PublicBaseUrl"] = universalConfig.PublicBaseUrl,
                     ["Assets:DefaultOwnerUserId"] = universalConfig.DefaultOwnerUserId.ToString(),
                     ["AudioThumbnailUrl"] = Properties.Settings.Default.AudioThumbnailUrl ?? "/images/audio.png",
-                    ["AudioHighResThumbnailUrl"] = Properties.Settings.Default.AudioHighResThumbnailUrl ?? "/images/audio.png"
+                    ["AudioHighResThumbnailUrl"] = Properties.Settings.Default.AudioHighResThumbnailUrl ?? "/images/audio.png",
+                    ["DefaultThumbnailUrl"] = Properties.Settings.Default.DefaultThumbnailUrl ?? "/images/default.png"
                 })
                 .Build();
 
@@ -286,7 +287,8 @@ namespace Control_Panel.Functions
                 thumbnailsRoot ?? string.Empty,
                 thumbnailBaseUrl ?? string.Empty,
                 publicAssetBaseUrl,
-                null); // arbiterBaseUrl
+                null, // arbiterBaseUrl
+                bypassLimits: true);
         }
 
         /// <summary>
@@ -317,7 +319,8 @@ namespace Control_Panel.Functions
                 thumbnailsRoot ?? string.Empty,
                 thumbnailBaseUrl ?? string.Empty,
                 publicAssetBaseUrl,
-                null); // arbiterBaseUrl
+                null, // arbiterBaseUrl
+                bypassLimits: true);
         }
 
         /// <summary>
@@ -368,10 +371,11 @@ namespace Control_Panel.Functions
                     return await _audioService.CreateAudioAsync(
                         connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot,
                         thumbnailUrl: audioThumbUrl, highResThumbnailUrl: audioHighResThumbUrl,
-                        CancellationToken.None);
+                        bypassLimits: true, CancellationToken.None);
                 case 4: // Mesh
                     return await _meshService.CreateMeshAsync(
-                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);
+                        connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot,
+                        bypassLimits: true, CancellationToken.None);
                 case 10: // Model
                     return await _modelService.CreateModelAsync(
                         connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);

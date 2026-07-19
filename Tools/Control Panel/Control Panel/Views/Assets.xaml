@@ -32,13 +32,58 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
-                                    <Border Grid.Row="0" Background="{DynamicResource Background}" CornerRadius="4,4,0,0">
-                                        <Image Source="{Binding ThumbnailUrl}" 
-                                               Stretch="Uniform" 
-                                               VerticalAlignment="Center" 
-                                               HorizontalAlignment="Center"
-                                               Margin="5">
-                                        </Image>
+                                    <Border Grid.Row="0" Background="{DynamicResource Background}" CornerRadius="4,4,0,0" ClipToBounds="True">
+                                        <Grid>
+                                            <Image Source="{Binding ThumbnailUrl}" 
+                                                   Stretch="Uniform" 
+                                                   VerticalAlignment="Center" 
+                                                   HorizontalAlignment="Center"
+                                                   Margin="5"
+                                                   ImageFailed="CatalogThumbnailImageFailed">
+                                            </Image>
+                                            <Border x:Name="AudioPlayButton"
+                                                    Width="30" Height="30"
+                                                    CornerRadius="15"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Bottom"
+                                                    Margin="0,0,8,8"
+                                                    Cursor="Hand"
+                                                    MouseLeftButtonDown="AudioPlayButton_Click"
+                                                    ToolTip="Play Audio">
+                                                <TextBlock x:Name="AudioPlayIcon" 
+                                                           FontSize="12"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           Margin="2,0,0,0"
+                                                           Text="&#x25B6;">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="&#x25B6;"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                    <Setter Property="Text" Value="&#x23F8;"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Setter Property="Background" Value="#80000000"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsAudio}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                <Setter Property="Background" Value="#CC4CAF50"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </Grid>
                                     </Border>
                                     <TextBlock Grid.Row="1" 
                                                Text="{Binding Name}" 
@@ -498,6 +543,13 @@
                                                  Height="30" Margin="0,0,0,10"
                                                  Padding="4,2,8,0" FontSize="14"
                                                  ToolTip="Default high-resolution thumbnail URL for audio assets."/>
+                                        <TextBlock Text="Default Thumbnail URL:" Style="{StaticResource LabelText}" 
+                                                   Foreground="{DynamicResource Foreground}" Margin="0,0,0,5"/>
+                                        <TextBox x:Name="DefaultThumbnailUrlTextBox" 
+                                                 Style="{StaticResource ModernTextBox}" 
+                                                 Height="30" Margin="0,0,0,10"
+                                                 Padding="4,2,8,0" FontSize="14"
+                                                 ToolTip="Fallback thumbnail URL used when an asset has no thumbnail or fails to fetch."/>
                                     </StackPanel>
                                 </Border>
                                 <Border Background="{DynamicResource Background}" BorderBrush="{DynamicResource SubtleText}" 
@@ -644,8 +696,52 @@
                                                                     </Style>
                                                                 </Border.Style>
                                                                 <StackPanel>
-                                                                    <Border Width="100" Height="100" Margin="10" Background="{DynamicResource Background}" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                                        <Image Source="{Binding ThumbnailUrl}" Stretch="Uniform"/>
+                                                                    <Border Width="100" Height="100" Margin="10" Background="{DynamicResource Background}" HorizontalAlignment="Center" VerticalAlignment="Center" ClipToBounds="True">
+                                                                        <Grid>
+                                                                            <Image Source="{Binding ThumbnailUrl}" Stretch="Uniform" ImageFailed="CatalogThumbnailImageFailed"/>
+                                                                            <Border x:Name="SearchAudioPlayButton"
+                                                                                    Width="24" Height="24"
+                                                                                    CornerRadius="12"
+                                                                                    HorizontalAlignment="Right"
+                                                                                    VerticalAlignment="Bottom"
+                                                                                    Margin="0,0,4,4"
+                                                                                    Cursor="Hand"
+                                                                                    MouseLeftButtonDown="AudioPlayButton_Click"
+                                                                                    ToolTip="Play Audio">
+                                                                                <TextBlock 
+                                                                                           FontSize="10"
+                                                                                           Foreground="White"
+                                                                                           HorizontalAlignment="Center"
+                                                                                           VerticalAlignment="Center"
+                                                                                           Margin="2,0,0,0"
+                                                                                           Text="&#x25B6;">
+                                                                                    <TextBlock.Style>
+                                                                                        <Style TargetType="TextBlock">
+                                                                                            <Setter Property="Text" Value="&#x25B6;"/>
+                                                                                            <Style.Triggers>
+                                                                                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                                                    <Setter Property="Text" Value="&#x23F8;"/>
+                                                                                                </DataTrigger>
+                                                                                            </Style.Triggers>
+                                                                                        </Style>
+                                                                                    </TextBlock.Style>
+                                                                                </TextBlock>
+                                                                                <Border.Style>
+                                                                                    <Style TargetType="Border">
+                                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                        <Setter Property="Background" Value="#80000000"/>
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding IsAudio}" Value="True">
+                                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                                            </DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                                                                <Setter Property="Background" Value="#CC4CAF50"/>
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Border.Style>
+                                                                            </Border>
+                                                                        </Grid>
                                                                     </Border>
                                                                     <TextBlock Text="{Binding Name}" 
                                                                                TextWrapping="Wrap" TextAlignment="Left"

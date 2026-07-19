@@ -63,7 +63,7 @@ namespace RobloxWebserver.Controllers
             var slug = ToSlug(asset.Name);
             var catalogUrl = $"/catalog/{asset.AssetId}/{slug}";
             var profileUrl = $"/users/{asset.OwnerUserId}/profile";
-            var thumbnailUrl = !string.IsNullOrWhiteSpace(asset.ThumbnailUrl) ? asset.ThumbnailUrl : "/images/RobloxLogo.png";
+            var thumbnailUrl = !string.IsNullOrWhiteSpace(asset.ThumbnailUrl) ? asset.ThumbnailUrl : (_configuration["DefaultThumbnailUrl"] ?? "/images/default.png");
             var description = !string.IsNullOrWhiteSpace(asset.Description) ? System.Net.WebUtility.HtmlEncode(asset.Description) : "";
             var name = System.Net.WebUtility.HtmlEncode(asset.Name);
             var creatorEncoded = System.Net.WebUtility.HtmlEncode(creatorName);

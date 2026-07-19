@@ -25,6 +25,7 @@ namespace Assets
             string cdnAssetsRoot,
             string? thumbnailUrl = null,
             string? highResThumbnailUrl = null,
+            bool bypassLimits = false,
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -38,7 +39,7 @@ namespace Assets
             if (string.IsNullOrWhiteSpace(cdnAssetsRoot))
                 throw new ArgumentException("cdnAssetsRoot is required", nameof(cdnAssetsRoot));
 
-            ValidateAudioFile(fileBytes);
+            ValidateAudioFile(fileBytes, bypassLimits);
 
             string contentHash;
             using (var sha = SHA256.Create())
@@ -82,35 +83,41 @@ namespace Assets
             return audioAssetId;
         }
 
-        private static void ValidateAudioFile(byte[] fileBytes)
+        private static void ValidateAudioFile(byte[] fileBytes, bool bypassLimits)
         {
-            if (fileBytes.Length > MaxFileSize)
-                throw new ArgumentException($"Audio file exceeds maximum size of 8.0 MB (actual: {fileBytes.Length / (1024.0 * 1024.0):F1} MB).");
+            if (!bypassLimits)
+            {
+                if (fileBytes.Length > MaxFileSize)
+                    throw new ArgumentException($"Audio file exceeds maximum size of 8.0 MB (actual: {fileBytes.Length / (1024.0 * 1024.0):F1} MB).");
+            }
 
             var extension = GetFileExtension(fileBytes);
 
-            var tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + extension);
-            try
+            if (!bypassLimits)
             {
-                System.IO.File.WriteAllBytes(tempPath, fileBytes);
+                var tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + extension);
+                try
+                {
+                    System.IO.File.WriteAllBytes(tempPath, fileBytes);
 
-                using var file = TagLib.File.Create(tempPath);
+                    using var file = TagLib.File.Create(tempPath);
 
-                if (file.Properties.Duration > MaxDuration)
-                    throw new ArgumentException($"Audio duration exceeds maximum of 2 minutes (actual: {file.Properties.Duration:mm\\:ss}).");
-            }
-            catch (ArgumentException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Audio file validation failed: {ex.Message}");
-            }
-            finally
-            {
-                if (System.IO.File.Exists(tempPath))
-                    System.IO.File.Delete(tempPath);
+                    if (file.Properties.Duration > MaxDuration)
+                        throw new ArgumentException($"Audio duration exceeds maximum of 2 minutes (actual: {file.Properties.Duration:mm\\:ss}).");
+                }
+                catch (ArgumentException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Audio file validation failed: {ex.Message}");
+                }
+                finally
+                {
+                    if (System.IO.File.Exists(tempPath))
+                        System.IO.File.Delete(tempPath);
+                }
             }
         }
 
