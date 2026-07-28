@@ -241,7 +241,8 @@ public static class GamesRepository
         await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
 
         const string sql = @"SELECT u.universe_id, u.name, u.creator_user_id, u.place_ids, u.privacy_level, u.Studio_Access_To_APIs, u.root_place_id, 
-                                    COALESCE(u.visit_count, 0) as visit_count
+                                    COALESCE(u.visit_count, 0) as visit_count,
+                                    u.team_create_enabled
                                FROM universes u
                                WHERE u.universe_id = @universeId";
 
@@ -265,11 +266,32 @@ public static class GamesRepository
                 Studio_Access_To_APIs = reader.IsDBNull(5) ? false : reader.GetBoolean(5),
                 VisitCount = reader.GetInt32(7),
                 PlayingCount = 0,
-                Description = null
+                Description = null,
+                TeamCreateEnabled = reader.IsDBNull(8) ? false : reader.GetBoolean(8)
             };
         }
         
         return null;
+    }
+
+    public static async Task<bool> SetTeamCreateEnabledAsync(string connectionString, long universeId, bool enabled, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"UPDATE universes SET team_create_enabled = @enabled WHERE universe_id = @universeId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+        cmd.Parameters.AddWithValue("enabled", enabled);
+
+        var rows = await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        return rows > 0;
     }
 
     public static async Task<UniverseInfo?> GetUniverseStatsAsync(string connectionString, long universeId, CancellationToken cancellationToken = default)

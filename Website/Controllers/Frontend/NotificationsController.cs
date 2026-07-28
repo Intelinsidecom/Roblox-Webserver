@@ -61,7 +61,7 @@ public class NotificationsController : ControllerBase
                 "PrivateMessageReceived", "UserAddedToPrivateServerWhiteList",
                 "ConversationUniverseChanged", "TeamCreateInvite", "GameUpdate",
                 "DeveloperMetricsAvailable", "CommentOnAsset", "AssetPurchased",
-                "AssetFavorited"
+                "AssetFavorited", "TradeRequestReceived"
             }
         };
 

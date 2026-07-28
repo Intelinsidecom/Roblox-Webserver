@@ -21,6 +21,7 @@ namespace RCCArbiter
         private readonly Timer _cleanupTimer;
         private readonly Timer _inactivityTimer;
         private readonly Timer _zeroPlayerKillTimer;
+        private readonly Timer _rccHealthTimer;
         private readonly TimeSpan _rccKeepAliveDuration = TimeSpan.FromSeconds(10);
 
         public class GameServerInfo
@@ -70,7 +71,10 @@ namespace RCCArbiter
             _cleanupTimer = new Timer(state => CleanupExpiredServers(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             _inactivityTimer = new Timer(state => CleanupInactiveServers(), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             _zeroPlayerKillTimer = new Timer(state => CleanupZeroPlayerServers(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            _rccHealthTimer = new Timer(state => CheckRccHealth(), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
         }
+
+        public GameServerRccManager GetRccManager() => _rccManager;
 
         public void UpdateRccUrl(string newRccUrl)
         {
@@ -294,7 +298,9 @@ namespace RCCArbiter
         {
             try
             {
-                using var client = new RCCClient(_rccUrl);
+                var dedicatedRccUrl = _rccManager.GetGameServerUrl(gameId);
+                var urlToUse = !string.IsNullOrWhiteSpace(dedicatedRccUrl) ? dedicatedRccUrl : _rccUrl;
+                using var client = new RCCClient(urlToUse);
                 client.RenewLease(gameId, additionalSeconds);
 
                 lock (_serversLock)
@@ -571,6 +577,18 @@ namespace RCCArbiter
                 }
             }
 
+            foreach (var gameId in zeroPlayerServers)
+            {
+                try
+                {
+                    Console.WriteLine($"[ZeroPlayer] Auto-killing zero-player server {gameId}");
+                    KillZeroPlayerServer(gameId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ZeroPlayer] Error killing zero-player server {gameId}: {ex.Message}");
+                }
+            }
         }
 
 
@@ -648,11 +666,42 @@ namespace RCCArbiter
             CleanupInactiveServers();
         }
 
+        /// <summary>
+        /// Periodically check if dedicated RCC instances for game servers are alive.
+        /// If unreachable, increment failure count and destroy after 3 failures.
+        /// </summary>
+        private void CheckRccHealth()
+        {
+            List<string> gameIds;
+            lock (_serversLock)
+            {
+                gameIds = _activeServers.Keys.ToList();
+            }
+
+            foreach (var gameId in gameIds)
+            {
+                var dedicatedRccUrl = _rccManager.GetGameServerUrl(gameId);
+                if (string.IsNullOrWhiteSpace(dedicatedRccUrl))
+                    continue;
+
+                try
+                {
+                    using var client = new RCCClient(dedicatedRccUrl);
+                    client.GetVersion();
+                }
+                catch
+                {
+                    RecordFailedReport(gameId);
+                }
+            }
+        }
+
         public void Dispose()
         {
             _cleanupTimer?.Dispose();
             _inactivityTimer?.Dispose();
             _zeroPlayerKillTimer?.Dispose();
+            _rccHealthTimer?.Dispose();
             _rccManager?.Dispose();
         }
 

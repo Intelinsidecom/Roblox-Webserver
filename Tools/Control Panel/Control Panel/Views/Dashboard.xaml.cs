@@ -169,20 +169,9 @@ namespace Control_Panel
             {
                 WebsiteStatusText.Foreground = new SolidColorBrush(Colors.Red);
             }
-            if (_dashboardData.FrontendActiveUsers > 0 || !string.IsNullOrEmpty(_dashboardData.FrontendUserError))
-            {
-                ActiveUsersText.Text = string.IsNullOrEmpty(_dashboardData.FrontendUserError) 
-                    ? _dashboardData.FrontendActiveUsers.ToString()
-                    : $"Error: {_dashboardData.FrontendUserError}";
-                ActiveUsersText.Foreground = string.IsNullOrEmpty(_dashboardData.FrontendUserError)
-                    ? new SolidColorBrush(Colors.Gray)
-                    : new SolidColorBrush(Colors.Red);
-            }
-            else
-            {
-                ActiveUsersText.Text = _dashboardData.ActiveUsers.ToString();
-                ActiveUsersText.Foreground = new SolidColorBrush(Colors.Gray);
-            }
+
+            OnlineUsersText.Text = _dashboardData.OnlineUsers.ToString();
+            OnlineUsersText.Foreground = new SolidColorBrush(Colors.Gray);
         }
         
         private void InitializeRefreshTimer()
@@ -206,14 +195,14 @@ namespace Control_Panel
             RCCStatusText.Text = "Checking...";
             RCCVersionText.Text = "Checking...";
             WebsiteStatusText.Text = "Checking...";
-            ActiveUsersText.Text = "Checking...";
+            OnlineUsersText.Text = "Checking...";
             var neutralColor = new SolidColorBrush(Colors.Gray);
             ServerHealthText.Foreground = neutralColor;
             DatabaseSizeText.Foreground = neutralColor;
             RCCStatusText.Foreground = neutralColor;
             RCCVersionText.Foreground = neutralColor;
             WebsiteStatusText.Foreground = neutralColor;
-            ActiveUsersText.Foreground = neutralColor;
+            OnlineUsersText.Foreground = neutralColor;
         }
         
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)

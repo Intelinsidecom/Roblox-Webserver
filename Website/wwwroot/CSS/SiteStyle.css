@@ -6092,10 +6092,24 @@ textarea.form-control {
     margin: 0;
 }
 
+body > .modal-dialog[modal-window] {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1050;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    margin: 0;
+}
+
 @media(max-width:767px) {
     .modal-dialog {
         min-width: 296px;
         width: 100%;
+    }
+    body > .modal-dialog[modal-window] {
+        max-height: 90vh;
+        overflow-y: auto;
     }
 }
 

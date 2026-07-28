@@ -49,7 +49,7 @@ public class ThumbnailsController : ControllerBase
     }
 
     [HttpGet("item-thumbnails")]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> ItemThumbnails([FromQuery] string? jsoncallback, [FromQuery(Name = "params")] string? rawParams)
     {
         var results = new List<object?>();
@@ -563,6 +563,33 @@ public class ThumbnailsController : ControllerBase
         }
 
         return Redirect(fullUrl);
+    }
+
+    [HttpGet("asset-thumbnail/image")]
+    public async Task<IActionResult> AssetThumbnailImage([FromQuery] long assetId, [FromQuery] int? width, [FromQuery] int? height, CancellationToken cancellationToken = default)
+    {
+        if (assetId <= 0) return NotFound();
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Redirect("/images/default.png");
+
+        await using var conn = new NpgsqlConnection(connStr);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        await using var cmd = new NpgsqlCommand("SELECT thumbnail_url FROM assets WHERE asset_id = @assetId", conn);
+        cmd.Parameters.AddWithValue("assetId", assetId);
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+
+        var thumbnailUrl = result?.ToString();
+        if (!string.IsNullOrWhiteSpace(thumbnailUrl))
+        {
+            if (!thumbnailUrl.StartsWith("http://") && !thumbnailUrl.StartsWith("https://") && !thumbnailUrl.StartsWith("/"))
+                thumbnailUrl = "https://" + thumbnailUrl;
+            return Redirect(thumbnailUrl);
+        }
+
+        return Redirect("/images/default.png");
     }
 
     [HttpGet("game-thumbnails/json")]

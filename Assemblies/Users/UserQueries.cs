@@ -85,7 +85,9 @@ namespace Users
                        current_place_id,
                        status_text,
                        profile_collectables,
-                       user_created
+                       user_created,
+                       in_studio,
+                       last_activity
                 from users
                 where user_id = @id", conn);
             cmd.Parameters.AddWithValue("id", userId);
@@ -114,7 +116,9 @@ namespace Users
                 ["currentPlaceId"] = reader.IsDBNull(15) ? (long?)null : reader.GetInt64(15),
                 ["statusText"] = reader.IsDBNull(16) ? null : reader.GetString(16),
                 ["profileCollectables"] = reader.IsDBNull(17) ? null : (int[]?)reader.GetValue(17),
-                ["userCreated"] = reader.IsDBNull(18) ? null : reader.GetDateTime(18)
+                ["userCreated"] = reader.IsDBNull(18) ? null : reader.GetDateTime(18),
+                ["inStudio"] = reader.GetBoolean(19),
+                ["lastActivity"] = reader.IsDBNull(20) ? (DateTime?)null : reader.GetDateTime(20)
             };
         }
 
@@ -307,9 +311,9 @@ namespace Users
             return result == null || result is DBNull ? 0 : Convert.ToInt64(result);
         }
 
-        public static async Task<List<UserSearchResult>> SearchUsersByKeywordAsync(string connectionString, string keyword, int offset, int limit, CancellationToken cancellationToken = default)
+        public static async Task<List<UserSearchEntry>> SearchUsersByKeywordAsync(string connectionString, string keyword, int offset, int limit, CancellationToken cancellationToken = default)
         {
-            var results = new List<UserSearchResult>();
+            var results = new List<UserSearchEntry>();
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException("connectionString is required", nameof(connectionString));
             if (string.IsNullOrWhiteSpace(keyword))
@@ -331,7 +335,7 @@ namespace Users
             await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                results.Add(new UserSearchResult
+                results.Add(new UserSearchEntry
                 {
                     UserId = reader.GetInt64(0),
                     Username = reader.GetString(1)
@@ -340,10 +344,10 @@ namespace Users
             return results;
         }
     }
-}
 
-public class UserSearchResult
-{
-    public long UserId { get; set; }
-    public string Username { get; set; } = "";
+    public class UserSearchEntry
+    {
+        public long UserId { get; set; }
+        public string Username { get; set; } = "";
+    }
 }

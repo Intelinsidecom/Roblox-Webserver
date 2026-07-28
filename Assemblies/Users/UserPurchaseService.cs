@@ -128,8 +128,10 @@ namespace Users
                         }
 
                         const string insertSql = @"insert into user_assets (user_id, asset_id)
-values (@uid, @aid)
-on conflict (user_id, asset_id) do nothing;";
+select @uid, @aid
+where not exists (
+    select 1 from user_assets where user_id = @uid and asset_id = @aid
+);";
                         using (var insCmd = new NpgsqlCommand(insertSql, conn, tx))
                         {
                             insCmd.Parameters.AddWithValue("uid", userId);

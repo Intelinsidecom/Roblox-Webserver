@@ -16,6 +16,7 @@ public sealed class UniverseInfo
     public DateTime? CreatedAt { get; set; }
     public int Upvotes { get; set; }
     public int Downvotes { get; set; }
+    public bool TeamCreateEnabled { get; set; } = false;
 }
 
 public sealed class PlaceSettingsData

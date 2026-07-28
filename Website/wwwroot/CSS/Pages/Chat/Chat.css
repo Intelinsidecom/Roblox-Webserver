@@ -4,7 +4,7 @@
 .ngsb-wrap .ngsb-scrollbar .ngsb-thumb-pos .ngsb-thumb {
 	background-color: rgba(117, 117, 117, 0.5);
 	opacity: .5;
-	filter: alpha(opacity=50);
+filter: alpha(opacity=50);
 	width: 6px;
 	border-radius: 3px;
 	margin: 0 0 0 6px;
@@ -19,7 +19,7 @@
 .ngsb-wrap .ngsb-scrollbar .ngsb-thumb-pos:active .ngsb-thumb {
 	background-color: rgba(117, 117, 117, 0.75);
 	opacity: .75;
-	filter: alpha(opacity=75);
+filter: alpha(opacity=75);
 }
 
 .rbx-left-col {

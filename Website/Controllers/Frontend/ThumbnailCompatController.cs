@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Thumbnails;
@@ -64,9 +65,12 @@ public class ThumbnailCompatController : ControllerBase
         return Content(html, "text/html");
     }
 
-    // GET /thumbnail/avatar-headshot?userId=123
+    // GET /thumbnail/avatar-headshot?userId=123&width=100&height=100
     [HttpGet("avatar-headshot")]
-    public async Task<IActionResult> AvatarHeadshot([FromQuery] long userId)
+    public async Task<IActionResult> AvatarHeadshot(
+        [FromQuery] long userId,
+        [FromQuery] int? width,
+        [FromQuery] int? height)
     {
         if (userId <= 0)
             return BadRequest(new { error = "userId is required" });
@@ -83,7 +87,6 @@ public class ThumbnailCompatController : ControllerBase
             var (found, url) = await TryGetThumbnailUrlAsync(userId);
             if (!found)
             {
-                // Render synchronously and persist
                 var save = await _thumbnailService.RenderAvatarAsync("headshot", userId);
                 var baseUrl = _configuration["Thumbnails:ThumbnailUrl"];
                 if (string.IsNullOrWhiteSpace(baseUrl))
@@ -96,6 +99,25 @@ public class ThumbnailCompatController : ControllerBase
                 await PersistThumbnailUrlAsync(userId, fullUrl);
                 return Ok(new { Final = true, Url = fullUrl });
             }
+
+            if (width.HasValue && height.HasValue && !string.IsNullOrWhiteSpace(url))
+            {
+                var outputDir = _configuration["Thumbnails:OutputDirectory"]
+                    ?? Path.Combine(AppContext.BaseDirectory, "thumbnails");
+                var fileName = Path.GetFileNameWithoutExtension(new Uri(url).AbsolutePath);
+                var derivedPath = await ThumbnailDerivatives.EnsureDerivedAsync(
+                    outputDir, fileName, "headshot", width.Value, height.Value, "png");
+                var derivedFileName = Path.GetFileName(derivedPath);
+                var cdnBase = _configuration["Thumbnails:ThumbnailUrl"];
+                if (string.IsNullOrWhiteSpace(cdnBase))
+                {
+                    var scheme = string.IsNullOrWhiteSpace(Request.Scheme) ? "http" : Request.Scheme;
+                    var host = Request.Host.HasValue ? Request.Host.Value : "localhost";
+                    cdnBase = $"{scheme}://{host}/";
+                }
+                url = CombineUrl(cdnBase, derivedFileName);
+            }
+
             return Ok(new { Final = true, Url = url });
         }
         catch (Exception ex)

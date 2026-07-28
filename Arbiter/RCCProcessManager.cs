@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 
 namespace RCCArbiter
@@ -20,6 +21,9 @@ namespace RCCArbiter
         private readonly string _workingDirectory;
         private readonly bool _separateWindow;
         private bool _forceSeparateWindow;
+        private Timer? _healthWatchdog;
+        private readonly object _watchdogLock = new();
+        private bool _disposed;
 
         public RCCProcessManager(IConfiguration configuration, string configSection = "Rendering")
         {
@@ -64,6 +68,52 @@ namespace RCCArbiter
         {
             get => _forceSeparateWindow;
             set => _forceSeparateWindow = value;
+        }
+
+        /// <summary>
+        /// Enable health watchdog that auto-restarts the process if it dies
+        /// </summary>
+        public void EnableAutoRestart(TimeSpan? checkInterval = null)
+        {
+            var interval = checkInterval ?? TimeSpan.FromSeconds(15);
+            lock (_watchdogLock)
+            {
+                _healthWatchdog?.Dispose();
+                _healthWatchdog = new Timer(HealthWatchdogCallback, null, interval, interval);
+            }
+        }
+
+        /// <summary>
+        /// Disable the health watchdog
+        /// </summary>
+        public void DisableAutoRestart()
+        {
+            lock (_watchdogLock)
+            {
+                _healthWatchdog?.Dispose();
+                _healthWatchdog = null;
+            }
+        }
+
+        private void HealthWatchdogCallback(object? state)
+        {
+            if (_disposed)
+                return;
+
+            if (!IsRunning)
+            {
+                Console.WriteLine($"[Watchdog] RCC ({_year}) on port {_port} is dead, restarting...");
+                try
+                {
+                    Stop();
+                    Start();
+                    Console.WriteLine($"[Watchdog] RCC ({_year}) restarted successfully on port {_port}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Watchdog] Failed to restart RCC ({_year}): {ex.Message}");
+                }
+            }
         }
 
         /// <summary>
@@ -250,6 +300,12 @@ namespace RCCArbiter
 
         public void Dispose()
         {
+            _disposed = true;
+            lock (_watchdogLock)
+            {
+                _healthWatchdog?.Dispose();
+                _healthWatchdog = null;
+            }
             Stop();
             PortManager.ReleasePort(_port);
         }

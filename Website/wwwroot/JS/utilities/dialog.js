@@ -1,7 +1,7 @@
 typeof Roblox=="undefined" &&(Roblox= {}),
 typeof Roblox.Dialog=="undefined" &&(Roblox.Dialog=function() {
         function tt(f) {
-            var k, o, v, p, e, b; n.isOpen= !0, k= {
+            if(n.isOpen) return; var k, o, v, p, e, b; n.isOpen= !0, k= {
                 titleText:"", bodyContent:"", footerText:"", acceptText:Roblox.Resources.Dialog.yes, declineText:Roblox.Resources.Dialog.No, acceptColor:r, declineColor:u, xToCancel: !1, onAccept:function() {
                     return !1
                 }
@@ -85,7 +85,7 @@ typeof Roblox.Dialog=="undefined" &&(Roblox.Dialog=function() {
     }
 
     function it(n, t) {
-        var i=$(".modal-body"); n?(i.find(".modal-btns").hide(), i.find(".modal-processing").show()):(i.find(".modal-btns").show(), i.find(".modal-processing").hide()), typeof t !="undefined" &&t !=="" &&$.modal.close("." +t)
+        var i=$(".modal-body"); n?(i.find(".modal-btns").hide(), i.find(".modal-processing").show()):(i.find(".modal-btns").show(), i.find(".modal-processing").hide()), typeof t !="undefined" &&t !=="" && l()
     }
 
     var v="btn-primary-md", r="btn-secondary-md", u="btn-control-md", f="btn-primary-md disabled", e="btn-secondary-md disabled", o="btn-control-md disabled", nt="btn-none", s=".modal-btns #confirm-btn", h=".modal-btns #decline-btn", g="#modal-checkbox-input", n= {

@@ -6,6 +6,7 @@ end
 end
 ifSeleniumThenSetCookie("SeleniumTest1", "Inside the visit lua script")
 pcall(function() game:SetPlaceID(%2%) end)
+pcall(function() game:SetUniverseId(%5%) end)
 pcall(function() visit:SetUploadUrl("%4%") end)
 visit = game:GetService("Visit")
 local message = Instance.new("Message")

@@ -1,6 +1,6 @@
 // ~/viewapp/common/providers/languageResourceProvider.js
 "use strict";
-robloxApp.provider("languageResource", function() {
+angular.module("robloxApp").provider("languageResource", function() {
     var i = {},
         n = {},
         t, r = new Roblox.Intl,
@@ -25,7 +25,10 @@ robloxApp.provider("languageResource", function() {
     }, this.$get = ["$log", function() {
         return {
             get: u ? e : f,
-            intl: r
+            intl: r,
+            setLanguageKeysFromFile: function(n) {
+                n && typeof n == "object" && !Array.isArray(n) && angular.extend(i, n)
+            }
         }
     }]
 });

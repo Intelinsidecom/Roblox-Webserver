@@ -105,7 +105,7 @@ Roblox.BootstrapWidgets = function() {
     }
 
     function y() {
-        $('[data-toggle="scrollbar"]').mCustomScrollbar({
+        $('[data-toggle="scrollbar"]').not('[data-mcs-init]').attr('data-mcs-init', '1').mCustomScrollbar({
             autoHideScrollbar: !1,
             autoExpandScrollbar: !1,
             scrollInertia: 0,

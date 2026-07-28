@@ -87,6 +87,16 @@ robloxAppService.factory("httpService", ["$http", "$q", "$log", function(n, t, i
             if (!n) return !1;
             var i = s(n, t);
             return u(i)
+        },
+        buildBatchPromises: function(r, o, l, a, c) {
+            if (!o || 0 === o.length) return t.when([]);
+            for (var h = [], p = 0; p < o.length; p += l) h.push(o.slice(p, p + l));
+            var d = this;
+            return t.all(h.map(function(n) {
+                var t = {};
+                t[a] = n;
+                return c && c.toUpperCase() === "POST" ? d.httpPost(r, t) : d.httpGet(r, t)
+            }))
         }
     }
 }]);

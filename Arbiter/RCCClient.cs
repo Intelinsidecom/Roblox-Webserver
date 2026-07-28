@@ -11,6 +11,7 @@ namespace RCCArbiter
     {
         private readonly ChannelFactory<IRCCServiceSoap> _channelFactory;
         private IRCCServiceSoap? _channel;
+        private readonly object _channelLock = new();
         private readonly string _serviceUrl;
 
         public RCCClient(string serviceUrl)
@@ -58,11 +59,25 @@ namespace RCCArbiter
         {
             get
             {
-                if (_channel == null)
+                lock (_channelLock)
                 {
-                    _channel = _channelFactory.CreateChannel();
+                    if (_channel != null)
+                    {
+                        if (_channel is IClientChannel clientChannel &&
+                            clientChannel.State == CommunicationState.Faulted)
+                        {
+                            try { clientChannel.Abort(); } catch { }
+                            _channel = null;
+                        }
+                    }
+
+                    if (_channel == null)
+                    {
+                        _channel = _channelFactory.CreateChannel();
+                    }
+
+                    return _channel;
                 }
-                return _channel;
             }
         }
 
@@ -210,23 +225,28 @@ namespace RCCArbiter
 
         public void Dispose()
         {
-            if (_channel is IClientChannel clientChannel)
+            lock (_channelLock)
             {
-                try
+                if (_channel is IClientChannel clientChannel)
                 {
-                    if (clientChannel.State == CommunicationState.Faulted)
+                    try
+                    {
+                        if (clientChannel.State == CommunicationState.Faulted)
+                        {
+                            clientChannel.Abort();
+                        }
+                        else
+                        {
+                            clientChannel.Close();
+                        }
+                    }
+                    catch
                     {
                         clientChannel.Abort();
                     }
-                    else
-                    {
-                        clientChannel.Close();
-                    }
                 }
-                catch
-                {
-                    clientChannel.Abort();
-                }
+
+                _channel = null;
             }
 
             _channelFactory?.Close();

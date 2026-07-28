@@ -1,0 +1,5144 @@
+﻿/* dist/css/chat.css */
+@-webkit-keyframes blink-dialog {
+    0% {
+        background-color: #0074bd
+    }
+
+    to {
+        background-color: #00a2ff
+    }
+}
+
+@-moz-keyframes blink-dialog {
+    0% {
+        background-color: #0074bd
+    }
+
+    to {
+        background-color: #00a2ff
+    }
+}
+
+@-ms-keyframes blink-dialog {
+    0% {
+        background-color: #0074bd
+    }
+
+    to {
+        background-color: #00a2ff
+    }
+}
+
+@-o-keyframes blink-dialog {
+    0% {
+        background-color: #0074bd
+    }
+
+    to {
+        background-color: #00a2ff
+    }
+}
+
+@keyframes blink-dialog {
+    0% {
+        background-color: #0074bd
+    }
+
+    to {
+        background-color: #00a2ff
+    }
+}
+
+@-webkit-keyframes blink-collapsed-dialog {
+    0% {
+        background-color: #fff
+    }
+
+    to {
+        background-color: #f2f2f2
+    }
+}
+
+@-moz-keyframes blink-collapsed-dialog {
+    0% {
+        background-color: #fff
+    }
+
+    to {
+        background-color: #f2f2f2
+    }
+}
+
+@-ms-keyframes blink-collapsed-dialog {
+    0% {
+        background-color: #fff
+    }
+
+    to {
+        background-color: #f2f2f2
+    }
+}
+
+@-o-keyframes blink-collapsed-dialog {
+    0% {
+        background-color: #fff
+    }
+
+    to {
+        background-color: #f2f2f2
+    }
+}
+
+@keyframes blink-collapsed-dialog {
+    0% {
+        background-color: #fff
+    }
+
+    to {
+        background-color: #f2f2f2
+    }
+}
+
+	#chat-container h4 {
+    font-size: 21px;
+    font-weight: 400
+}
+
+@media (max-width:767px) {
+	#chat-container h4 {
+        font-size: 18px
+    }
+}
+
+	#chat-container .text-date-hint {
+    font-size: 10px;
+    font-weight: 400;
+    color: #b8b8b8
+}
+
+	#chat-container .chat-main .btn-control-md,
+	#chat-container .group-dialog .group-name-editor .group-name-input,
+	#chat-container .group-dialog .group-name-editor .group-name-save,
+	#chat-container .group-dialog .play-together-game-editor .group-name-input,
+	#chat-container .group-dialog .play-together-game-editor .group-name-save {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .chat-container {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: 300
+}
+
+	#chat-container .chat-container .chat-search-input {
+    font-weight: 300
+}
+
+	#chat-container .chat-container .btn-control-xs,
+	#chat-container .chat-container .chat-search-input {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .chat-container .font-bold,
+	#chat-container .chat-container .font-bold:active,
+	#chat-container .chat-container .font-bold:link,
+	#chat-container .chat-container .font-bold:visited {
+    font-weight: 500
+}
+
+	#chat-container .chat-container .chat-friend-list .chat-friend .chat-avatar-groups,
+	#chat-container .chat-container .chat-header .font-bold,
+	#chat-container .chat-container .chat-header .notification-red,
+	#chat-container .chat-container .chat-windows-header .chat-header-label,
+	#chat-container .chat-container .chat-windows-header .chat-header-title {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .chat-container .chat-friend-list .chat-friend .chat-avatar-groups {
+    padding: 0
+}
+
+	#chat-container .chat-container .chat-friend-avatar,
+	#chat-container .chat-container .chat-friend-list .chat-friend-info,
+	#chat-container .chat-container .chat-friend-list .chat-friend-info .chat-brief-timestamp {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .chat-container .chat-friend-avatar img {
+    vertical-align: top
+}
+
+	#chat-container .tooltip,
+	#chat-container .tooltip .tooltip-inner {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .tooltip .tooltip-inner {
+    max-width: 150px;
+    min-width: 50px;
+    padding: 6px
+}
+
+	#chat-container .dialog-container {
+    line-height: 1.3em
+}
+
+	#chat-container .dialog-container .dialog-header .chat-header-label,
+	#chat-container .dialog-container .dialog-header .dialog-header-title,
+	#chat-container .dialog-container .dialog-message-container .dialog-message,
+	#chat-container .dialog-container .dialog-message-container .link-card-container,
+	#chat-container .dialog-container .dialog-message-container .link-card-description,
+	#chat-container .dialog-container .dialog-message-container .link-card-details,
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message-avatar-link {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details .link-card-description {
+    margin: 0
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-friends {
+    padding: 0
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container,
+	#chat-container .dialog-container .dialog-report-container {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container h4,
+	#chat-container .dialog-container .dialog-report-container h4 {
+    display: block
+}
+
+	#chat-container .dialog-container .dialog-input {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+    font-weight: 300
+}
+
+	#chat-container .dialog-container a.text-link {
+    font-weight: 400
+}
+
+	#chat-container .dialog-main .dialog-banner,
+	#chat-container .dialog-main .dialog-banner .group-member,
+	#chat-container .dialog-main .dialog-message-container .dialog-message,
+	#chat-container .dialog-main .dialog-message-container.message-inbound .dialog-message,
+	#chat-container .dialog-main .group-member-plus,
+	#chat-container .dialogs-minimize-container,
+	#chat-container .dialogs-minimize-container .minimize-item .minimize-title {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .textarea {
+    line-height: inherit
+}
+
+	#chat-container .details-container .details-input-container,
+	#chat-container .details-container .details-label {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .details-container .details-input {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .create-chat-container .select-friends-btns {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .create-chat-container .select-friends-btns .select-friends-cancel,
+	#chat-container .create-chat-container .select-friends-btns .select-friends-save {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .details-header-container .details-input,
+	#chat-container .details-header-container .details-input-container,
+	#chat-container .details-header-container .details-label,
+	#chat-container .details-header-container .details-title {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .details-header-container .details-input {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .checkbox label:before,
+	#chat-container .details-btns,
+	#chat-container .details-btns-fixed,
+	#chat-container .details-dialog .chat-header-label.details-dialog-title,
+	#chat-container .details-members-container .add-friends-option .add-friends-cirle-container,
+	#chat-container .details-members-container .add-friends-option .add-friends-icon,
+	#chat-container .details-members-container .add-friends-option .add-friends-label,
+	#chat-container .friends-selected-list .friends-selected-mask {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .details-btns-fixed button,
+	#chat-container .details-btns button {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .participant-list-container .dropdown-menu li a,
+	#chat-container .participant-list-container .dropdown-menu li a:hover,
+	#chat-container .participant-list-container .dropdown-menu li a:visited {
+    color: #191919
+}
+
+	#chat-container .participant-list-action a,
+	#chat-container .participant-list-action a:hover,
+	#chat-container .participant-list-action a:visited {
+    color: #00a2ff
+}
+
+	#chat-container .chat-conversation-universe,
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body,
+	#chat-container .conversation-title-editor-container .conversation-title-editor-textarea {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .chat-conversation-universe {
+    line-height: 0
+}
+
+	#chat-container .active-game-container a.game-link,
+	#chat-container .active-game-container a.game-link:active,
+	#chat-container .active-game-container a.game-link:focus,
+	#chat-container .active-game-container a.game-link:hover,
+	#chat-container .pinned-game-container a.game-link,
+	#chat-container .pinned-game-container a.game-link:active,
+	#chat-container .pinned-game-container a.game-link:focus,
+	#chat-container .pinned-game-container a.game-link:hover {
+    color: #191919
+}
+
+	#chat-container .active-game-container .game-details,
+	#chat-container .pinned-game-container .game-details {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .recommended-game-container .game-name,
+	#chat-container .recommended-game-container .game-name:active,
+	#chat-container .recommended-game-container .game-name:focus,
+	#chat-container .recommended-game-container .game-name:hover {
+    color: #191919
+}
+
+	#chat-container .game-item-container .game-name {
+    height: auto
+}
+
+	#chat-container .game-item-container .game-info ul {
+    padding: 0
+}
+
+	#chat-container .game-item-container .game-btn {
+    font-family: HCo Gotham SSm, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif
+}
+
+	#chat-container .game-list-in-dialog,
+	#chat-container .game-list-per-conversation {
+    width: 260px
+}
+
+	#chat-container .game-list-container ul {
+    padding: 0
+}
+
+	#chat-container .icon-chat-add-friends,
+	#chat-container .icon-chat-arrow-right,
+	#chat-container .icon-chat-back,
+	#chat-container .icon-chat-close-black,
+	#chat-container .icon-chat-close-white,
+	#chat-container .icon-chat-error,
+	#chat-container .icon-chat-friends,
+	#chat-container .icon-chat-group-create,
+	#chat-container .icon-chat-group-label,
+	#chat-container .icon-chat-group-name,
+	#chat-container .icon-chat-info-black,
+	#chat-container .icon-chat-info-white,
+	#chat-container .icon-chat-more-dialogs,
+	#chat-container .icon-chat-more-options,
+	#chat-container .icon-chat-notification,
+	#chat-container .icon-chat-notification-mute,
+	#chat-container .icon-chat-party-label-black,
+	#chat-container .icon-chat-party-label-white,
+	#chat-container .icon-chat-pin,
+	#chat-container .icon-chat-pinned,
+	#chat-container .icon-chat-place-favorite,
+	#chat-container .icon-chat-place-my,
+	#chat-container .icon-chat-place-popular,
+	#chat-container .icon-chat-place-recent,
+	#chat-container .icon-chat-place-recommended,
+	#chat-container .icon-chat-place-vip,
+	#chat-container .icon-chat-play-together,
+	#chat-container .icon-chat-resend,
+	#chat-container .icon-chat-search,
+	#chat-container .icon-chat-search-cancel,
+	#chat-container .icon-chat-search-white,
+	#chat-container .icon-chat-selected,
+	#chat-container .icon-chat-set-place,
+	#chat-container .icon-chat-unpin,
+	#chat-container .icon-default-chat {
+    background-image: url(https://images.rbxcdn.com/f92c923752d604488e498a03ec687117-chat_02142018.svg);
+    background-repeat: no-repeat;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    vertical-align: middle
+}
+
+	#chat-container .icon-chat-add-friends:hover,
+	#chat-container .icon-chat-arrow-right:hover,
+	#chat-container .icon-chat-back:hover,
+	#chat-container .icon-chat-close-black:hover,
+	#chat-container .icon-chat-close-white:hover,
+	#chat-container .icon-chat-error:hover,
+	#chat-container .icon-chat-friends:hover,
+	#chat-container .icon-chat-group-create:hover,
+	#chat-container .icon-chat-group-label:hover,
+	#chat-container .icon-chat-group-name:hover,
+	#chat-container .icon-chat-info-black:hover,
+	#chat-container .icon-chat-info-white:hover,
+	#chat-container .icon-chat-more-dialogs:hover,
+	#chat-container .icon-chat-more-options:hover,
+	#chat-container .icon-chat-notification-mute:hover,
+	#chat-container .icon-chat-notification:hover,
+	#chat-container .icon-chat-party-label-black:hover,
+	#chat-container .icon-chat-party-label-white:hover,
+	#chat-container .icon-chat-pin:hover,
+	#chat-container .icon-chat-pinned:hover,
+	#chat-container .icon-chat-place-favorite:hover,
+	#chat-container .icon-chat-place-my:hover,
+	#chat-container .icon-chat-place-popular:hover,
+	#chat-container .icon-chat-place-recent:hover,
+	#chat-container .icon-chat-place-recommended:hover,
+	#chat-container .icon-chat-place-vip:hover,
+	#chat-container .icon-chat-play-together:hover,
+	#chat-container .icon-chat-resend:hover,
+	#chat-container .icon-chat-search-cancel:hover,
+	#chat-container .icon-chat-search-white:hover,
+	#chat-container .icon-chat-search:hover,
+	#chat-container .icon-chat-selected:hover,
+	#chat-container .icon-chat-set-place:hover,
+	#chat-container .icon-chat-unpin:hover,
+	#chat-container .icon-default-chat:hover {
+    cursor: pointer
+}
+
+	#chat-container .dark-theme .icon-chat-add-friends,
+	#chat-container .dark-theme .icon-chat-arrow-right,
+	#chat-container .dark-theme .icon-chat-back,
+	#chat-container .dark-theme .icon-chat-close-black,
+	#chat-container .dark-theme .icon-chat-close-white,
+	#chat-container .dark-theme .icon-chat-error,
+	#chat-container .dark-theme .icon-chat-friends,
+	#chat-container .dark-theme .icon-chat-group-create,
+	#chat-container .dark-theme .icon-chat-group-label,
+	#chat-container .dark-theme .icon-chat-group-name,
+	#chat-container .dark-theme .icon-chat-info-black,
+	#chat-container .dark-theme .icon-chat-info-white,
+	#chat-container .dark-theme .icon-chat-more-dialogs,
+	#chat-container .dark-theme .icon-chat-more-options,
+	#chat-container .dark-theme .icon-chat-notification,
+	#chat-container .dark-theme .icon-chat-notification-mute,
+	#chat-container .dark-theme .icon-chat-party-label-black,
+	#chat-container .dark-theme .icon-chat-party-label-white,
+	#chat-container .dark-theme .icon-chat-pin,
+	#chat-container .dark-theme .icon-chat-pinned,
+	#chat-container .dark-theme .icon-chat-place-favorite,
+	#chat-container .dark-theme .icon-chat-place-my,
+	#chat-container .dark-theme .icon-chat-place-popular,
+	#chat-container .dark-theme .icon-chat-place-recent,
+	#chat-container .dark-theme .icon-chat-place-recommended,
+	#chat-container .dark-theme .icon-chat-place-vip,
+	#chat-container .dark-theme .icon-chat-play-together,
+	#chat-container .dark-theme .icon-chat-resend,
+	#chat-container .dark-theme .icon-chat-search,
+	#chat-container .dark-theme .icon-chat-search-cancel,
+	#chat-container .dark-theme .icon-chat-search-white,
+	#chat-container .dark-theme .icon-chat-selected,
+	#chat-container .dark-theme .icon-chat-set-place,
+	#chat-container .dark-theme .icon-chat-unpin,
+	#chat-container .dark-theme .icon-default-chat {
+    background-image: url(https://images.rbxcdn.com/8c909ef1da0768134a66b16325271909-chat_dark_09272018.svg)
+}
+
+	#chat-container .light-theme .icon-chat-add-friends,
+	#chat-container .light-theme .icon-chat-arrow-right,
+	#chat-container .light-theme .icon-chat-back,
+	#chat-container .light-theme .icon-chat-close-black,
+	#chat-container .light-theme .icon-chat-close-white,
+	#chat-container .light-theme .icon-chat-error,
+	#chat-container .light-theme .icon-chat-friends,
+	#chat-container .light-theme .icon-chat-group-create,
+	#chat-container .light-theme .icon-chat-group-label,
+	#chat-container .light-theme .icon-chat-group-name,
+	#chat-container .light-theme .icon-chat-info-black,
+	#chat-container .light-theme .icon-chat-info-white,
+	#chat-container .light-theme .icon-chat-more-dialogs,
+	#chat-container .light-theme .icon-chat-more-options,
+	#chat-container .light-theme .icon-chat-notification,
+	#chat-container .light-theme .icon-chat-notification-mute,
+	#chat-container .light-theme .icon-chat-party-label-black,
+	#chat-container .light-theme .icon-chat-party-label-white,
+	#chat-container .light-theme .icon-chat-pin,
+	#chat-container .light-theme .icon-chat-pinned,
+	#chat-container .light-theme .icon-chat-place-favorite,
+	#chat-container .light-theme .icon-chat-place-my,
+	#chat-container .light-theme .icon-chat-place-popular,
+	#chat-container .light-theme .icon-chat-place-recent,
+	#chat-container .light-theme .icon-chat-place-recommended,
+	#chat-container .light-theme .icon-chat-place-vip,
+	#chat-container .light-theme .icon-chat-play-together,
+	#chat-container .light-theme .icon-chat-resend,
+	#chat-container .light-theme .icon-chat-search,
+	#chat-container .light-theme .icon-chat-search-cancel,
+	#chat-container .light-theme .icon-chat-search-white,
+	#chat-container .light-theme .icon-chat-selected,
+	#chat-container .light-theme .icon-chat-set-place,
+	#chat-container .light-theme .icon-chat-unpin,
+	#chat-container .light-theme .icon-default-chat {
+    background-image: url(https://images.rbxcdn.com/036deabcd045247396e624b327af811f-chat_light_10232018.svg)
+}
+
+	#chat-container .icon-chat-group-create {
+    background-position: 0 0
+}
+
+	#chat-container .icon-chat-group-create:hover,
+	#chat-container a:hover .icon-chat-group-create,
+	#chat-container button:hover .icon-chat-group-create {
+    background-position: -20px 0
+}
+
+	#chat-container .icon-chat-search {
+    background-position: 0 -20px
+}
+
+	#chat-container .icon-chat-search-cancel {
+    background-position: 0 -40px
+}
+
+	#chat-container .icon-chat-search-cancel:hover,
+	#chat-container a:hover .icon-chat-search-cancel,
+	#chat-container button:hover .icon-chat-search-cancel {
+    background-position: -20px -40px
+}
+
+	#chat-container .icon-chat-party-label-white {
+    background-position: 0 -60px
+}
+
+	#chat-container .icon-chat-party-label-white:hover,
+	#chat-container a:hover .icon-chat-party-label-white,
+	#chat-container button:hover .icon-chat-party-label-white {
+    background-position: -20px -60px
+}
+
+	#chat-container .icon-chat-party-label-black {
+    background-position: 0 -80px
+}
+
+	#chat-container .icon-chat-party-label-black:hover,
+	#chat-container a:hover .icon-chat-party-label-black,
+	#chat-container button:hover .icon-chat-party-label-black {
+    background-position: -20px -80px
+}
+
+	#chat-container .icon-chat-info-white {
+    background-position: 0 -100px
+}
+
+	#chat-container .icon-chat-info-white:hover,
+	#chat-container a:hover .icon-chat-info-white,
+	#chat-container button:hover .icon-chat-info-white {
+    background-position: -20px -100px
+}
+
+	#chat-container .icon-chat-info-black {
+    background-position: 0 -120px
+}
+
+	#chat-container .icon-chat-info-black:hover,
+	#chat-container a:hover .icon-chat-info-black,
+	#chat-container button:hover .icon-chat-info-black {
+    background-position: -20px -120px
+}
+
+	#chat-container .icon-chat-close-white {
+    background-position: 0 -140px
+}
+
+	#chat-container .icon-chat-close-black {
+    background-position: -20px -140px
+}
+
+	#chat-container .icon-chat-back {
+    background-position: 0 -160px
+}
+
+	#chat-container .icon-chat-more-dialogs {
+    background-position: 0 -180px
+}
+
+	#chat-container .icon-chat-more-dialogs:hover,
+	#chat-container a:hover .icon-chat-more-dialogs,
+	#chat-container button:hover .icon-chat-more-dialogs {
+    background-position: -20px -180px
+}
+
+	#chat-container .icon-chat-group-name {
+    background-position: 0 -200px
+}
+
+	#chat-container .icon-chat-group-label {
+    background-position: 0 -220px
+}
+
+	#chat-container .icon-chat-more-options {
+    background-position: 0 -240px
+}
+
+	#chat-container .icon-chat-more-options:hover,
+	#chat-container a:hover .icon-chat-more-options,
+	#chat-container button:hover .icon-chat-more-options {
+    background-position: -20px -240px
+}
+
+	#chat-container .icon-chat-add-friends {
+    background-position: 0 -260px
+}
+
+	#chat-container .icon-chat-add-friends:hover,
+	#chat-container a:hover .icon-chat-add-friends,
+	#chat-container button:hover .icon-chat-add-friends {
+    background-position: -20px -260px
+}
+
+	#chat-container .icon-chat-selected {
+    background-position: 0 -280px
+}
+
+	#chat-container .icon-chat-notification {
+    background-position: 0 -300px
+}
+
+	#chat-container .icon-chat-error {
+    background-position: 0 -320px
+}
+
+	#chat-container .icon-chat-notification-mute {
+    background-position: 0 -340px
+}
+
+	#chat-container .icon-chat-arrow-right {
+    background-position: 0 -360px
+}
+
+	#chat-container .icon-chat-set-place {
+    background-position: 0 -380px
+}
+
+	#chat-container .icon-chat-play-together {
+    background-position: 0 -400px
+}
+
+	#chat-container .icon-chat-search-white {
+    background-position: 0 -420px
+}
+
+	#chat-container .icon-chat-place-recent {
+    background-position: 0 -440px
+}
+
+	#chat-container .icon-chat-place-recent:hover,
+	#chat-container a:hover .icon-chat-place-recent,
+	#chat-container button:hover .icon-chat-place-recent {
+    background-position: -20px -440px
+}
+
+	#chat-container .icon-chat-place-favorite {
+    background-position: 0 -460px
+}
+
+	#chat-container .icon-chat-place-favorite:hover,
+	#chat-container a:hover .icon-chat-place-favorite,
+	#chat-container button:hover .icon-chat-place-favorite {
+    background-position: -20px -460px
+}
+
+	#chat-container .icon-chat-place-popular {
+    background-position: 0 -480px
+}
+
+	#chat-container .icon-chat-place-popular:hover,
+	#chat-container a:hover .icon-chat-place-popular,
+	#chat-container button:hover .icon-chat-place-popular {
+    background-position: -20px -480px
+}
+
+	#chat-container .icon-chat-place-recommended {
+    background-position: 0 -500px
+}
+
+	#chat-container .icon-chat-place-recommended:hover,
+	#chat-container a:hover .icon-chat-place-recommended,
+	#chat-container button:hover .icon-chat-place-recommended {
+    background-position: -20px -500px
+}
+
+	#chat-container .icon-chat-place-my {
+    background-position: 0 -520px
+}
+
+	#chat-container .icon-chat-place-my:hover,
+	#chat-container a:hover .icon-chat-place-my,
+	#chat-container button:hover .icon-chat-place-my {
+    background-position: -20px -520px
+}
+
+	#chat-container .icon-chat-place-vip {
+    background-position: 0 -540px
+}
+
+	#chat-container .icon-chat-place-vip:hover,
+	#chat-container a:hover .icon-chat-place-vip,
+	#chat-container button:hover .icon-chat-place-vip {
+    background-position: -20px -540px
+}
+
+	#chat-container .icon-chat-friends {
+    background-position: 0 -560px
+}
+
+	#chat-container .icon-chat-resend {
+    background-position: 0 -580px
+}
+
+	#chat-container .icon-chat-pin {
+    background-position: 0 -600px
+}
+
+	#chat-container .icon-chat-pin:hover,
+	#chat-container .icon-chat-pinned,
+	#chat-container a:hover .icon-chat-pin,
+	#chat-container button:hover .icon-chat-pin {
+    background-position: -20px -600px
+}
+
+	#chat-container .icon-chat-unpin {
+    background-position: 0 -620px
+}
+
+	#chat-container .icon-chat-unpin:hover,
+	#chat-container a:hover .icon-chat-unpin,
+	#chat-container button:hover .icon-chat-unpin {
+    background-position: -20px -620px
+}
+
+	#chat-container .chat-windows-header {
+    background-color: #00a2ff;
+    color: #fff
+}
+
+	#chat-container .chat-windows-header.light-theme {
+    background-color: #d8dbde;
+    color: #393b3d
+}
+
+	#chat-container .chat-windows-header.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .chat-windows-header {
+    background-color: #d8dbde;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .chat-windows-header.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-windows-header.dark-theme {
+    background-color: #18191b;
+    color: #fff
+}
+
+	#chat-container .chat-windows-header.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .chat-windows-header {
+    background-color: #18191b;
+    color: #fff
+}
+
+	#chat-container .dark-theme .chat-windows-header.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-windows-header {
+    height: 32px
+}
+
+	#chat-container .chat-windows-header:after,
+	#chat-container .chat-windows-header:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .chat-windows-header:after {
+    clear: both
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-windows-header {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0
+    }
+}
+
+	#chat-container .chat-windows-header .chat-header-back {
+    width: 20px;
+    float: left;
+    margin: 4px 6px 0 8px
+}
+
+	#chat-container .chat-windows-header .chat-header-title {
+    padding: 0 6px
+}
+
+	#chat-container .chat-friend-list .chat-friend-info .chat-windows-header .chat-brief-timestamp.font-bold,
+	#chat-container .chat-friend-list .chat-friend-info .chat-windows-header .chat-friend-message.font-bold,
+	#chat-container .chat-windows-header .chat-friend-list .chat-friend-info .chat-brief-timestamp.font-bold,
+	#chat-container .chat-windows-header .chat-friend-list .chat-friend-info .chat-friend-message.font-bold,
+	#chat-container .chat-windows-header .chat-header-title,
+	#chat-container .chat-windows-header .font-caption-header {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    line-height: 14px
+}
+
+	#chat-container .chat-windows-header .chat-header-label {
+    width: 84%;
+    width: calc(100% - 46px);
+    float: left;
+    padding: 8px 6px 5px
+}
+
+	#chat-container .chat-windows-header .chat-header-label:after,
+	#chat-container .chat-windows-header .chat-header-label:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .chat-windows-header .chat-header-label:after {
+    clear: both
+}
+
+	#chat-container .chat-windows-header .chat-header-label span {
+    float: left
+}
+
+	#chat-container .chat-windows-header .chat-header-action {
+    float: right;
+    padding: 6px 12px 6px 0
+}
+
+	#chat-container .chat-windows-header .chat-header-action:after,
+	#chat-container .chat-windows-header .chat-header-action:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .chat-windows-header .chat-header-action:after {
+    clear: both
+}
+
+	#chat-container .chat-windows-header .chat-header-action .dialog-header-active-game,
+	#chat-container .chat-windows-header .chat-header-action span[class^=icon] {
+    float: right;
+    margin-left: 6px
+}
+
+	#chat-container .chat-windows-header .chat-header-action .dialog-header-active-game .dialog-header-active-game-image,
+	#chat-container .chat-windows-header .chat-header-action span[class^=icon] .dialog-header-active-game-image {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+
+	#chat-container .chat-windows-header span[class^=icon]:hover {
+    cursor: pointer
+}
+
+	#chat-container .dialog-container {
+    background-color: #fff
+}
+
+	#chat-container .dialog-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .dialog-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialog-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialog-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dialog-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialog-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialog-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-body {
+    background-color: #f5f5f5
+}
+
+	#chat-container .dialog-container .dialog-body.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .dialog-container .dialog-body.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialog-container .dialog-body {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialog-container .dialog-body.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-body.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-body.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-body {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-body.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-header {
+    background-color: #00a2ff;
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-header.light-theme {
+    background-color: #d8dbde;
+    color: #393b3d
+}
+
+	#chat-container .dialog-container .dialog-header.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialog-container .dialog-header {
+    background-color: #d8dbde;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialog-container .dialog-header.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-header.dark-theme {
+    background-color: #18191b;
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-header.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-header {
+    background-color: #18191b;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-header.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message {
+    background-color: #00a2ff;
+    border: 1px solid #00a2ff;
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message.message-is-sending {
+    background-color: #99daff;
+    border: 1px solid #99daff
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle.message-is-sending:after,
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle.message-is-sending:before {
+    border-color: transparent transparent transparent #99daff
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:after,
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:before {
+    border-color: transparent transparent transparent #00a2ff
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .link-card-container.dialog-triangle:after,
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-color: transparent transparent transparent #e3e3e3
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message-avatar-link {
+    border: 1px solid #e3e3e3
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message {
+    background-color: #fff;
+    color: #191919;
+    border: 1px solid #e3e3e3
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-triangle:before {
+    border-color: transparent #e3e3e3 transparent transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-triangle:after {
+    border-color: transparent #fff transparent transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message-author {
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-color: transparent #e3e3e3 transparent transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:after {
+    border-color: transparent #fff transparent transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container .indicated-message-bubble {
+    background-color: #e3e3e3;
+    color: #757575
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-triangle:before {
+    border-color: transparent #e3e3e3 transparent transparent
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-triangle:after {
+    border-color: transparent #fff transparent transparent
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container {
+    background-color: rgba(0, 0, 0, .1);
+    border-color: rgba(0, 0, 0, .1);
+    color: #767879
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container::-moz-placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300;
+    opacity: 1
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container:-ms-input-placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container::-webkit-input-placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container::placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container[disabled],
+	#chat-container .light-theme .dialog-container .dialog-input-container[readonly] {
+    opacity: .5
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container:focus {
+    background-color: #d8dbde;
+    border-color: #d8dbde
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container.rbx-placeholder {
+    color: rgba(0, 0, 0, .3)
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container {
+    background-color: rgba(0, 0, 0, .7);
+    border-color: rgba(0, 0, 0, .7);
+    color: #bdbebe
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container::-moz-placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300;
+    opacity: 1
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container:-ms-input-placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container::-webkit-input-placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container::placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container[disabled],
+	#chat-container .dark-theme .dialog-container .dialog-input-container[readonly] {
+    opacity: .5
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container:focus {
+    background-color: #18191b;
+    border-color: #18191b
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container.rbx-placeholder {
+    color: hsla(0, 0%, 100%, .3)
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input {
+    background-color: rgba(0, 0, 0, .1);
+    border-color: rgba(0, 0, 0, .1);
+    color: #767879
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input::-moz-placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300;
+    opacity: 1
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input:-ms-input-placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input::-webkit-input-placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input::placeholder {
+    color: rgba(0, 0, 0, .3);
+    font-weight: 300
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input[disabled],
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input[readonly] {
+    opacity: .5
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input:focus {
+    background-color: #d8dbde;
+    border-color: #d8dbde
+}
+
+	#chat-container .light-theme .dialog-container .dialog-input-container .dialog-input.rbx-placeholder {
+    color: rgba(0, 0, 0, .3)
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input {
+    background-color: rgba(0, 0, 0, .7);
+    border-color: rgba(0, 0, 0, .7);
+    color: #bdbebe
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input::-moz-placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300;
+    opacity: 1
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input:-ms-input-placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input::-webkit-input-placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input::placeholder {
+    color: hsla(0, 0%, 100%, .3);
+    font-weight: 300
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input[disabled],
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input[readonly] {
+    opacity: .5
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input:focus {
+    background-color: #18191b;
+    border-color: #18191b
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-input-container .dialog-input.rbx-placeholder {
+    color: hsla(0, 0%, 100%, .3)
+}
+
+	#chat-container .dialog-container .dialog-report-container {
+    background-color: hsla(0, 0%, 100%, .85)
+}
+
+	#chat-container .dialog-container .dialog-report-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .dialog-container .dialog-report-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialog-container .dialog-report-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialog-container .dialog-report-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-report-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-report-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-report-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-report-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container {
+    background-color: hsla(0, 0%, 100%, .85)
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialog-container .confirm-negative-action-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialog-container .confirm-negative-action-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialog-container .confirm-negative-action-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialog-container .confirm-negative-action-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -ms-transform: none;
+    position: fixed;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    bottom: 0;
+    box-shadow: 0 1px 4px rgba(25, 25, 25, .75);
+    height: 360px;
+    width: 260px;
+    visibility: hidden;
+    z-index: 1040
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+        width: 100%;
+        height: auto;
+        right: 0;
+        top: 0;
+        left: 0
+    }
+
+	#chat-container .dialog-container.collapsed {
+        top: auto;
+        right: auto;
+        left: 0
+    }
+}
+
+	#chat-container .dialog-container.collapsed {
+    height: 32px;
+    width: 160px
+}
+
+	#chat-container .dialog-container.collapsed .dialog-header.hover .dialog-header-title {
+    padding: 0
+}
+
+	#chat-container .dialog-container.collapsed .dialog-header.hover .chat-header-label {
+    width: 78%;
+    width: calc(100% - 34px)
+}
+
+	#chat-container .dialog-container.collapsed .dialog-header.hover .chat-header-action {
+    display: block
+}
+
+	#chat-container .dialog-container.collapsed .dialog-header.hover .game-list-in-dialog,
+	#chat-container .dialog-container.collapsed .dialog-header.hover .tooltip {
+    visibility: hidden
+}
+
+	#chat-container .dialog-container.collapsed .dialog-header .dialog-header-title {
+    padding: 0
+}
+
+	#chat-container .dialog-container.collapsed .dialog-header .chat-header-label {
+    width: 100%
+}
+
+	#chat-container .dialog-container.collapsed .chat-windows-header.hover .chat-header-label {
+    width: 78%;
+    width: calc(100% - 34px)
+}
+
+	#chat-container .dialog-container.collapsed .chat-windows-header.hover .chat-header-action {
+    display: block;
+    padding-right: 8px
+}
+
+	#chat-container .dialog-container.collapsed .chat-windows-header.hover .game-list-in-dialog {
+    visibility: hidden
+}
+
+	#chat-container .dialog-container.collapsed .chat-windows-header .chat-header-label {
+    width: 100%
+}
+
+	#chat-container .dialog-container.collapsed .chat-windows-header .chat-header-action,
+	#chat-container .dialog-container.collapsed .chat-windows-header .chat-header-back {
+    display: none
+}
+
+@media (max-width:543px) {
+
+	#chat-container .dialog-container.collapsed .dialog-body,
+	#chat-container .dialog-container.collapsed.group-has-banner .dialog-body {
+        height: 0
+    }
+}
+
+	#chat-container .dialog-container.collapsed .chat-header-action,
+	#chat-container .dialog-container.collapsed .details-btns-fixed {
+    display: none
+}
+
+	#chat-container .dialog-container.dialog-visible {
+    visibility: visible
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container.dialog-visible .dialog-main {
+        height: 100%
+    }
+}
+
+	#chat-container .dialog-container.active .dialog-header,
+	#chat-container .dialog-container.active .dialog-header .dialog-header-title {
+    -webkit-animation: blink-dialog .5s infinite alternate;
+    -o-animation: blink-dialog .5s alternate infinite;
+    animation: blink-dialog .5s infinite alternate
+}
+
+	#chat-container .dialog-container.active.collapsed .dialog-header .dialog-header-title:after,
+	#chat-container .dialog-container.active .dialog-header .dialog-header-title:after,
+	#chat-container .dialog-container.collapsed.active .dialog-header .dialog-header-title:after {
+    background-image: none
+}
+
+	#chat-container .dialog-container.active .dialog-header {
+    background-color: #00a2ff
+}
+
+	#chat-container .dialog-container.active .dialog-header .dialog-header-title,
+	#chat-container .dialog-container.active .dialog-header .dialog-header-title a,
+	#chat-container .dialog-container.active .dialog-header .dialog-header-title a:focus,
+	#chat-container .dialog-container.active .dialog-header .dialog-header-title a:hover {
+    color: #fff
+}
+
+	#chat-container .dialog-container.group-has-banner .dialog-body {
+    height: 256px
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container.group-has-banner .dialog-body {
+        height: 80%;
+        height: calc(100% - 104px);
+        top: 72px
+    }
+}
+
+	#chat-container .dialog-container .dialog-main {
+    position: relative
+}
+
+	#chat-container .dialog-container .dialog-header {
+    box-shadow: 0 1px 0 rgba(25, 25, 25, .3);
+    position: relative;
+    z-index: 2020
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container .dialog-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1042
+    }
+}
+
+	#chat-container .dialog-container .dialog-header .chat-header-label {
+    width: 66%;
+    width: calc(100% - 86px);
+    padding: 8px 0 5px 8px
+}
+
+	#chat-container .dialog-container .dialog-header .chat-header-label:hover {
+    cursor: pointer
+}
+
+	#chat-container .dialog-container .dialog-header .dialog-header-title {
+    width: 100%
+}
+
+	#chat-container .dialog-container .dialog-header .dialog-header-title a,
+	#chat-container .dialog-container .dialog-header .dialog-header-title a:focus,
+	#chat-container .dialog-container .dialog-header .dialog-header-title a:hover {
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-header .dialog-header-title a:hover {
+    text-decoration: underline
+}
+
+	#chat-container .dialog-container .dialog-header .dialog-header-title .dialog-header-toggle {
+    display: inline-block
+}
+
+	#chat-container .dialog-container .dialog-header .chat-header-action {
+    padding-right: 8px
+}
+
+	#chat-container .dialog-container .dialog-header .dialog-header-active-game .dialog-header-active-game-image {
+    border: 1px solid #fff;
+    border-radius: 3px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+    margin: 0
+}
+
+	#chat-container .dialog-container .place-players-container {
+    height: 102px
+}
+
+	#chat-container .dialog-container .dialog-body {
+    height: 296px;
+    overflow: auto;
+    position: relative;
+    width: 100%
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container .dialog-body {
+        height: 88%;
+        height: calc(100% - 52px);
+        position: fixed;
+        top: 32px;
+        bottom: 0;
+        left: 0
+    }
+}
+
+	#chat-container .dialog-container .dialog-body .mCustomScrollBox {
+    visibility: hidden
+}
+
+	#chat-container .dialog-container .dialog-body .mCustomScrollBox.dialog-visible {
+    bottom: 0;
+    height: auto;
+    max-height: 100%;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    visibility: visible
+}
+
+	#chat-container .dialog-container .dialog-body .dialog-messages {
+    padding: 9px 0
+}
+
+	#chat-container .dialog-container .dialog-message-container {
+    margin-bottom: 2px
+}
+
+	#chat-container .dialog-container .dialog-message-container:after,
+	#chat-container .dialog-container .dialog-message-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialog-container .dialog-message-container:after {
+    clear: both
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message-body {
+    float: left
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message-body {
+    max-width: 70%;
+    max-width: calc(100% - 80px);
+    float: right
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message-body .dialog-message {
+    max-width: 100%
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message {
+    border-radius: 10px;
+    padding: 6px 8px;
+    position: relative;
+    margin: 0 8px 0 0;
+    float: right;
+    word-wrap: break-word
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message span {
+    display: block;
+    margin: 0
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message span.message-piece {
+    display: inline-block;
+    max-width: 100%
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message .text-name,
+	#chat-container .dialog-container .dialog-message-container .dialog-message .text-name:active,
+	#chat-container .dialog-container .dialog-message-container .dialog-message .text-name:link,
+	#chat-container .dialog-container .dialog-message-container .dialog-message .text-name:visited {
+    font-weight: 400
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message .icon-chat-resend {
+    position: absolute;
+    top: 6px;
+    left: -26px
+}
+
+	#chat-container .dialog-container .dialog-message-container:not(.message-inbound) .dialog-message {
+    max-width: 92%;
+    max-width: calc(100% - 8px);
+    margin-left: 8px
+}
+
+	#chat-container .dialog-container .dialog-message-container:not(.message-inbound) .dialog-message .text-link,
+	#chat-container .dialog-container .dialog-message-container:not(.message-inbound) .dialog-message .text-link:active,
+	#chat-container .dialog-container .dialog-message-container:not(.message-inbound) .dialog-message .text-link:link,
+	#chat-container .dialog-container .dialog-message-container:not(.message-inbound) .dialog-message .text-link:visited {
+    color: #fff;
+    text-decoration: underline
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message-content {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px
+}
+
+	#chat-container .dialog-container .dialog-message-container .text-date-hint {
+    text-align: center;
+    margin: 0 0 6px
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master {
+    margin-top: 21px
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-message {
+    border-top-right-radius: 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle {
+    position: relative
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:after,
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:before {
+    border-style: solid;
+    content: "";
+    width: 0;
+    height: 0;
+    left: 100%;
+    position: absolute
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:before {
+    border-width: 0 0 4px 4px;
+    top: -1px
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:after {
+    border-width: 0 0 2px 2px;
+    top: 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .dialog-message-avatar-link {
+    visibility: visible
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-message-avatar-link {
+    visibility: hidden
+}
+
+	#chat-container .dialog-container .dialog-message-container .dialog-sending {
+    float: right;
+    padding: 3px 12px 0 0;
+    width: 100%;
+    text-align: right;
+    line-height: 12px
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound.message-cluster-master .dialog-message {
+    border-top-left-radius: 0;
+    border-top-right-radius: 10px
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message-avatar-link {
+    float: left;
+    height: 28px;
+    margin: 0 8px;
+    width: 28px;
+    display: block
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-message {
+    float: left
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-triangle:after,
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-triangle:before {
+    left: auto;
+    right: 100%
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-triangle:before {
+    border-width: 0 4px 4px 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-triangle:after {
+    border-width: 0 2px 2px 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .dialog-sending {
+    text-align: left;
+    float: left;
+    margin: 6px 0 0 12px
+}
+
+	#chat-container .dialog-container .dialog-message-container.system-message {
+    margin: 10px auto 1px;
+    text-align: center
+}
+
+	#chat-container .dialog-container .dialog-message-container .indicated-message {
+    text-align: center;
+    margin: 0 0 9px
+}
+
+	#chat-container .dialog-container .dialog-message-container .indicated-message-bubble {
+    max-width: 90%;
+    max-width: calc(100% - 32px);
+    border-radius: 3px;
+    line-height: 12px;
+    padding: 3px 6px
+}
+
+	#chat-container .dialog-container .typing-indicator {
+    margin: 6px 8px 0 0
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-message-avatar-link {
+    visibility: visible
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-triangle {
+    border-top-left-radius: 0;
+    border-top-right-radius: 10px;
+    position: relative
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-triangle:after,
+	#chat-container .dialog-container .typing-indicator .dialog-triangle:before {
+    border-style: solid;
+    content: "";
+    width: 0;
+    height: 0;
+    left: auto;
+    right: 100%;
+    position: absolute
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-triangle:before {
+    border-width: 0 4px 4px 0;
+    top: -1px
+}
+
+	#chat-container .dialog-container .typing-indicator .dialog-triangle:after {
+    border-width: 0 2px 2px 0;
+    top: 0
+}
+
+	#chat-container .dialog-container .dialog-input-container {
+    height: 32px;
+    max-height: 80px;
+    min-height: 32px;
+    position: relative;
+    padding: 0
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container .dialog-input-container {
+        position: absolute;
+        bottom: 0;
+        width: 100%
+    }
+}
+
+	#chat-container .dialog-container .dialog-input-container.disabled {
+    background-color: #f2f2f2
+}
+
+	#chat-container .dialog-container .dialog-input-container .dialog-input {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-weight: 400;
+    color: #191919;
+    resize: none;
+    overflow: hidden;
+    border: 0;
+    width: 100%;
+    max-height: 72px;
+    min-height: 32px;
+    margin: 0;
+    padding: 0 10px;
+    line-height: 14px
+}
+
+	#chat-container .dialog-container .dialog-input-container .dialog-input:focus {
+    outline: none
+}
+
+	#chat-container .dialog-container .dialog-input-container .dialog-input:disabled {
+    background-color: #f2f2f2
+}
+
+	#chat-container .dialog-container .dialog-input-container .icon-chat-enter {
+    position: absolute;
+    right: 6px;
+    bottom: 6px
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container .dialog-input-container .icon-chat-enter {
+        display: none
+    }
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container,
+	#chat-container .dialog-container .dialog-report-container {
+    bottom: 0;
+    height: 360px;
+    padding: 50% 0;
+    position: absolute;
+    top: 0;
+    width: 260px;
+    z-index: 1040;
+    text-align: center
+}
+
+@media (max-width:543px) {
+
+	#chat-container .dialog-container .confirm-negative-action-container,
+	#chat-container .dialog-container .dialog-report-container {
+        width: 100%;
+        height: 100%
+    }
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container .dialog-report-content,
+	#chat-container .dialog-container .dialog-report-container .dialog-report-content {
+    width: 180px;
+    margin: 0 auto
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container h4,
+	#chat-container .dialog-container .dialog-report-container h4 {
+    margin-bottom: 12px
+}
+
+	#chat-container .dialog-container .confirm-negative-action-container .btn-alert-xs,
+	#chat-container .dialog-container .confirm-negative-action-container .btn-primary-xs,
+	#chat-container .dialog-container .dialog-report-container .btn-alert-xs,
+	#chat-container .dialog-container .dialog-report-container .btn-primary-xs {
+    margin-right: 10px
+}
+
+	#chat-container .dialog-container .chat-friend-list {
+    max-height: 296px
+}
+
+	#chat-container .dialog-container .chat-friend-list .chat-friend-select .chat-friend-info .chat-friend-name {
+    float: none
+}
+
+	#chat-container .dialog-container .friends-invite-btn,
+	#chat-container .dialog-container .group-select-friends {
+    display: none
+}
+
+	#chat-container .dialog-container .group-select-container {
+    padding: 6px
+}
+
+	#chat-container .dialog-container .group-select-container .group-select {
+    margin-bottom: 3px
+}
+
+	#chat-container .dialog-container .group-select-container .group-select:after,
+	#chat-container .dialog-container .group-select-container .group-select:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialog-container .group-select-container .group-select:after {
+    clear: both
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-friends {
+    display: inline-block;
+    float: left
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-friends:after,
+	#chat-container .dialog-container .group-select-container .group-select-friends:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-friends:after {
+    clear: both
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-friend {
+    background-color: #b8b8b8;
+    border-radius: 4px;
+    float: left;
+    line-height: 1em;
+    margin: 3px 6px 3px 0;
+    padding: 3px 6px
+}
+
+	#chat-container .dialog-container .group-select-container .chat-search-input {
+    display: inline-block;
+    float: left;
+    height: 26px;
+    padding: 0 6px;
+    width: auto
+}
+
+	#chat-container .dialog-container .group-select-container .chat-search-input:focus {
+    outline: 0 none
+}
+
+	#chat-container .dialog-container .group-select-container .btn-secondary-xs {
+    display: block;
+    width: 100%
+}
+
+	#chat-container .dialog-container .group-select-container .icon-chat-close-black {
+    background-position: -14px -98px;
+    background-size: 28px auto;
+    display: inline-block;
+    height: 14px;
+    width: 14px;
+    position: relative;
+    top: 0;
+    right: 0;
+    vertical-align: top
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-cancel {
+    margin-left: 6px
+}
+
+	#chat-container .dialog-container .group-select-container .group-select-cancel:hover {
+    cursor: pointer
+}
+
+	#chat-container .dialog-container .chat-friend-list {
+    width: 260px
+}
+
+@media (max-width:543px) {
+	#chat-container .dialog-container .chat-friend-list {
+        width: 100%;
+        max-height: 100%
+    }
+}
+
+@media (max-width:543px) {
+	#chat-container .group-dialog .dialog-header {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 1042
+    }
+}
+
+	#chat-container .group-dialog .dialog-message-container.message-inbound .dialog-message-author {
+    width: 100%;
+    color: #757575;
+    line-height: 12px;
+    margin-bottom: 2px
+}
+
+	#chat-container .group-dialog .dialog-message-container.message-inbound .dialog-message-author:after,
+	#chat-container .group-dialog .dialog-message-container.message-inbound .dialog-message-author:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .group-dialog .dialog-message-container.message-inbound .dialog-message-author:after {
+    clear: both
+}
+
+	#chat-container .group-dialog .dialog-message-container.message-inbound .dialog-message-author span {
+    float: left
+}
+
+	#chat-container .group-dialog .dialog-message-container.message-inbound .dialog-message-author .typing {
+    background-size: 14px auto;
+    width: 14px;
+    height: 4px;
+    margin: 8px 0 0 3px
+}
+
+@media (max-width:543px) {
+	#chat-container .group-dialog .dialog-body {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%
+    }
+}
+
+	#chat-container .group-dialog .chat-loading.loading-top {
+    top: 72px
+}
+
+	#chat-container .group-name-editor,
+	#chat-container .play-together-game-editor {
+    height: 32px;
+    width: 100%;
+    background-color: #fff;
+    position: relative;
+    z-index: 1060
+}
+
+	#chat-container .group-name-editor:after,
+	#chat-container .group-name-editor:before,
+	#chat-container .play-together-game-editor:after,
+	#chat-container .play-together-game-editor:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .group-name-editor:after,
+	#chat-container .play-together-game-editor:after {
+    clear: both
+}
+
+@media (max-width:543px) {
+
+	#chat-container .group-name-editor,
+	#chat-container .play-together-game-editor {
+        position: absolute;
+        top: 32px
+    }
+}
+
+	#chat-container .group-name-editor .group-name-input,
+	#chat-container .play-together-game-editor .group-name-input {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 70%;
+    width: calc(100% - 72px);
+    border: 0;
+    float: left;
+    font-size: 12px;
+    padding: 7px 5px
+}
+
+	#chat-container .group-name-editor .group-name-input:focus,
+	#chat-container .play-together-game-editor .group-name-input:focus {
+    border-color: transparent;
+    outline: 0
+}
+
+	#chat-container .group-name-editor .group-name-cancel,
+	#chat-container .group-name-editor .group-name-save,
+	#chat-container .play-together-game-editor .group-name-cancel,
+	#chat-container .play-together-game-editor .group-name-save {
+    float: right
+}
+
+	#chat-container .group-name-editor .group-name-save,
+	#chat-container .play-together-game-editor .group-name-save {
+    margin: 4px 6px 0 0
+}
+
+	#chat-container .group-name-editor .group-name-cancel,
+	#chat-container .play-together-game-editor .group-name-cancel {
+    margin: 6px 6px 0 0
+}
+
+	#chat-container .group-name-editor .group-name-cancel:hover,
+	#chat-container .play-together-game-editor .group-name-cancel:hover {
+    cursor: pointer
+}
+
+	#chat-container .play-together-game-editor {
+    position: absolute
+}
+
+	#chat-container .group-create-container:after,
+	#chat-container .group-create-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .group-create-container:after {
+    clear: both
+}
+
+	#chat-container .group-create-container .font-bold {
+    margin-right: 6px
+}
+
+	#chat-container .group-create-container .fold-bold,
+	#chat-container .group-create-container .icon-chat-arrow-left {
+    float: left
+}
+
+@media (max-width:543px) {
+	#chat-container .group-create-container .chat-friends-container {
+        height: 80%;
+        height: calc(100% - 32px);
+        bottom: 0;
+        position: fixed;
+        width: 100%;
+        z-index: 1040
+    }
+}
+
+	#chat-container .group-create-container .chat-header-create-group {
+    width: 88%;
+    width: calc(100% - 26px)
+}
+
+	#chat-container .group-create-container .chat-header-title:hover {
+    cursor: pointer
+}
+
+	#chat-container .group-friends-container .chat-windows-header .icon-chat-arrow-left,
+	#chat-container .group-members-container .chat-windows-header .icon-chat-arrow-left {
+    float: left
+}
+
+	#chat-container .group-friends-container .font-bold,
+	#chat-container .group-members-container .font-bold {
+    margin: 0 6px 0 0
+}
+
+	#chat-container .group-members-container .chat-friend-list {
+    max-height: 328px
+}
+
+	#chat-container .group-members-container .chat-friend-list .chat-friend-container:hover {
+    cursor: default
+}
+
+	#chat-container .group-members-container .chat-friend-list .chat-friend-avatar {
+    height: 30px;
+    width: 30px
+}
+
+	#chat-container .group-members-container .chat-friend-list .chat-friend-avatar:hover {
+    cursor: default
+}
+
+	#chat-container .group-members-container .chat-friend-list .chat-friend-info {
+    width: 50%;
+    width: calc(100% - 118px);
+    min-height: 30px
+}
+
+	#chat-container .group-members-container .chat-friend-list .chat-friend-info .chat-friend-name {
+    margin-top: 0;
+    margin-bottom: 3px;
+    width: 100%
+}
+
+	#chat-container .group-members-container .chat-friend-list .chat-friend .chat-avatar {
+    height: 28px;
+    width: 28px
+}
+
+	#chat-container .group-members-container .group-member-action {
+    float: right;
+    width: 52px;
+    padding: 0
+}
+
+	#chat-container .group-members-container .group-member-action:after,
+	#chat-container .group-members-container .group-member-action:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .group-members-container .group-member-action:after {
+    clear: both
+}
+
+	#chat-container .group-members-container .group-member-action span[class^=icon] {
+    float: right;
+    margin-right: 6px
+}
+
+	#chat-container .group-members-container .group-member-action span[class^=icon]:hover {
+    cursor: pointer
+}
+
+	#chat-container .dialog-container .group-overload {
+    color: #f68802
+}
+
+	#chat-container .chat-friends-container .chat-search .chat-search-input {
+    padding-left: 6px
+}
+
+	#chat-container .create-chat-container:after,
+	#chat-container .create-chat-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .create-chat-container:after {
+    clear: both
+}
+
+	#chat-container .create-chat-container .chat-header-create-group {
+    margin: 0 12px 0 8px
+}
+
+	#chat-container .select-friends-container {
+    height: 60%;
+    height: calc(100% - 114px);
+    position: relative
+}
+
+	#chat-container .select-friends-container .friends-selected-list {
+    padding: 6px 3px
+}
+
+	#chat-container .select-friends-container .friends-selected-list:after,
+	#chat-container .select-friends-container .friends-selected-list:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .select-friends-container .friends-selected-list:after {
+    clear: both
+}
+
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item {
+    float: left;
+    height: 32px;
+    width: 32px;
+    position: relative;
+    margin: 0 3px
+}
+
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item:hover {
+    cursor: default
+}
+
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item:hover .friends-selected-mask,
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item:hover .icon-chat-close-white {
+    display: block
+}
+
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item .friends-selected-mask {
+    background-color: #191919;
+    background-color: rgba(25, 25, 25, .2);
+    position: absolute;
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    display: none;
+    height: 32px;
+    width: 32px;
+    padding: 6px
+}
+
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item .friends-selected-mask,
+	#chat-container .select-friends-container .friends-selected-list .friends-selected-item .icon-chat-close-white {
+    display: none
+}
+
+	#chat-container .select-friends-container .select-friends-list {
+    height: 80%;
+    height: calc(100% - 32px);
+    width: 260px;
+    overflow: auto
+}
+
+	#chat-container .select-friends-header {
+    min-height: 31px;
+    height: auto
+}
+
+	#chat-container .select-friends-header .select-friends-search {
+    padding: 0 8px 0 0;
+    position: relative
+}
+
+	#chat-container .select-friends-header .select-friends-search .select-friends-input {
+    min-height: 31px
+}
+
+	#chat-container .select-friends-header .select-friends-search .select-friends-count {
+    position: absolute;
+    right: 8px;
+    bottom: 4px
+}
+
+	#chat-container .details-container {
+    background-color: #f5f5f5
+}
+
+	#chat-container .details-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .details-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .details-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .details-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .details-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .details-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .details-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-container {
+    width: 100%
+}
+
+	#chat-container .details-container .toast-container {
+    bottom: 72px
+}
+
+	#chat-container .details-dialog-container {
+    position: relative;
+    height: 100%
+}
+
+	#chat-container .details-dialog .chat-header-label:hover {
+    cursor: pointer
+}
+
+	#chat-container .details-dialog .chat-header-label.details-dialog-title {
+    width: 72%;
+    width: calc(100% - 72px)
+}
+
+	#chat-container .details-general-label,
+	#chat-container .details-members-label {
+    line-height: 12px
+}
+
+	#chat-container .details-general-label {
+    padding: 6px 12px
+}
+
+	#chat-container .details-members-label {
+    padding: 6px 12px 4px
+}
+
+	#chat-container .details-btns {
+    background-color: #f2f2f2
+}
+
+	#chat-container .details-btns.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .details-btns.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .details-btns {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .details-btns.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-btns.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .details-btns.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .details-btns {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .details-btns.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-btns {
+    margin: 0 8px 12px
+}
+
+	#chat-container .details-btns-fixed {
+    background-color: #f2f2f2
+}
+
+	#chat-container .details-btns-fixed.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .details-btns-fixed.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .details-btns-fixed {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .details-btns-fixed.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-btns-fixed.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .details-btns-fixed.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .details-btns-fixed {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .details-btns-fixed.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm {
+    background-color: #393b3d;
+    border-color: #393b3d;
+    color: #f2f4f5;
+    border-radius: 8px
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm:link {
+    color: #f2f4f5
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm:focus,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm:hover {
+    background-color: #393b3d;
+    border-color: #393b3d;
+    color: #f2f4f5
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm:focus {
+    outline: none
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm.active,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm:active {
+    background-color: #393b3d;
+    color: #f2f4f5
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm:visited {
+    color: #f2f4f5
+}
+
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm.disabled,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm.disabled.active,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm.disabled:active,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm.disabled:focus,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm.disabled:hover,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm[disabled],
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm[disabled].active,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm[disabled]:active,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm[disabled]:focus,
+	#chat-container .light-theme .details-btns-fixed .btn-secondary-sm[disabled]:hover {
+    background-color: #393b3d;
+    border-color: #393b3d;
+    color: #f2f4f5;
+    opacity: .5
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm {
+    background-color: #fff;
+    border-color: #fff;
+    color: #232527;
+    border-radius: 8px
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm:link {
+    color: #232527
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm:focus,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: #232527
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm:focus {
+    outline: none
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm.active,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm:active {
+    background-color: #fff;
+    color: #232527
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm:visited {
+    color: #232527
+}
+
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm.disabled,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm.disabled.active,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm.disabled:active,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm.disabled:focus,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm.disabled:hover,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm[disabled],
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm[disabled].active,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm[disabled]:active,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm[disabled]:focus,
+	#chat-container .dark-theme .details-btns-fixed .btn-secondary-sm[disabled]:hover {
+    background-color: #fff;
+    border-color: #fff;
+    color: #232527;
+    opacity: .5
+}
+
+	#chat-container .light-theme .touch .details-btns-fixed .btn-secondary-sm.active,
+	#chat-container .light-theme .touch .details-btns-fixed .btn-secondary-sm:active,
+	#chat-container .light-theme .touch .details-btns-fixed .btn-secondary-sm:focus,
+	#chat-container .light-theme .touch .details-btns-fixed .btn-secondary-sm:hover,
+	#chat-container .light-theme .touch .details-btns-fixed .btn-secondary-sm:visited {
+    color: #f2f4f5;
+    background-color: #393b3d;
+    border-color: #393b3d
+}
+
+	#chat-container .dark-theme .touch .details-btns-fixed .btn-secondary-sm.active,
+	#chat-container .dark-theme .touch .details-btns-fixed .btn-secondary-sm:active,
+	#chat-container .dark-theme .touch .details-btns-fixed .btn-secondary-sm:focus,
+	#chat-container .dark-theme .touch .details-btns-fixed .btn-secondary-sm:hover,
+	#chat-container .dark-theme .touch .details-btns-fixed .btn-secondary-sm:visited {
+    color: #232527;
+    background-color: #fff;
+    border-color: #fff
+}
+
+	#chat-container .details-btns-fixed {
+    bottom: 0;
+    height: 48px;
+    left: 0;
+    padding: 8px;
+    position: absolute;
+    width: 100%
+}
+
+	#chat-container .details-btns-fixed:after,
+	#chat-container .details-btns-fixed:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .details-btns-fixed:after {
+    clear: both
+}
+
+	#chat-container .details-btns-fixed .details-btn-cancel,
+	#chat-container .details-btns-fixed .details-btn-save {
+    width: 49%;
+    width: calc(50% - 4px);
+    float: left
+}
+
+	#chat-container .details-btns-fixed .details-btn-cancel {
+    margin-right: 4px
+}
+
+	#chat-container .details-btns-fixed .details-btn-save {
+    margin-left: 4px
+}
+
+	#chat-container .details-header-container {
+    background-color: #fff
+}
+
+	#chat-container .details-header-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .details-header-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .details-header-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .details-header-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-header-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .details-header-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .details-header-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .details-header-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-header-container {
+    position: relative
+}
+
+	#chat-container .details-header-container:after,
+	#chat-container .details-header-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .details-header-container:after {
+    clear: both
+}
+
+	#chat-container .details-header-container .details-input-container,
+	#chat-container .details-header-container .details-label,
+	#chat-container .details-header-container .details-title {
+    float: left
+}
+
+	#chat-container .details-header-container .details-label {
+    width: 48px;
+    padding: 5px 0 0 14px
+}
+
+	#chat-container .details-header-container .details-input-container,
+	#chat-container .details-header-container .details-title {
+    width: 80%;
+    width: calc(100% - 48px)
+}
+
+	#chat-container .details-header-container .details-title {
+    padding: 6px 8px 0 0
+}
+
+	#chat-container .details-header-container .details-input {
+    border: 0;
+    outline: 0 none;
+    width: 100%
+}
+
+	#chat-container .details-header-container .set-game-save {
+    position: absolute;
+    top: 5px;
+    right: 8px
+}
+
+	#chat-container .details-scrollbar {
+    height: 328px;
+    overflow: auto
+}
+
+	#chat-container .friends-list-container {
+    background-color: #fff
+}
+
+	#chat-container .friends-list-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .friends-list-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .friends-list-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .friends-list-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .friends-list-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .friends-list-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .friends-list-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .friends-list-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .friends-list-container .friend-container {
+    color: #767879
+}
+
+	#chat-container .light-theme .friends-list-container .friend-container:hover {
+    background-color: #bdbebe;
+    box-shadow: none;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .friends-list-container .friend-container.active,
+	#chat-container .light-theme .friends-list-container .friend-container:active {
+    box-shadow: none;
+    background-color: #bdbebe
+}
+
+	#chat-container .dark-theme .friends-list-container .friend-container {
+    color: #bdbebe
+}
+
+	#chat-container .dark-theme .friends-list-container .friend-container:hover {
+    background-color: #656668;
+    box-shadow: none;
+    color: #fff
+}
+
+	#chat-container .dark-theme .friends-list-container .friend-container.active,
+	#chat-container .dark-theme .friends-list-container .friend-container:active {
+    box-shadow: none;
+    background-color: #656668
+}
+
+	#chat-container .friends-list-container {
+    padding: 0
+}
+
+	#chat-container .friends-list-container .friend-container:after,
+	#chat-container .friends-list-container .friend-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .friends-list-container .friend-container:after {
+    clear: both
+}
+
+	#chat-container .friends-list-container .friend-container:hover {
+    background-color: #f2f2f2;
+    cursor: pointer
+}
+
+	#chat-container .friends-list-container .friend-container .friend-avatar,
+	#chat-container .friends-list-container .friend-container .friend-info-action {
+    float: left
+}
+
+	#chat-container .friends-list-container .friend-container .friend-avatar {
+    height: 32px;
+    width: 32px;
+    margin: 8px
+}
+
+	#chat-container .friends-list-container .friend-container .friend-avatar:hover {
+    cursor: pointer
+}
+
+	#chat-container .friends-list-container .friend-container .friend-avatar .avatar-status {
+    width: 6px;
+    height: 6px
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info-action {
+    width: 70%;
+    width: calc(100% - 48px);
+    min-height: 32px;
+    padding: 8px 0
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info-action:after,
+	#chat-container .friends-list-container .friend-container .friend-info-action:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info-action:after {
+    clear: both
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info-action .friend-action,
+	#chat-container .friends-list-container .friend-container .friend-info-action .friend-info {
+    float: left
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info {
+    width: 80%;
+    width: calc(100% - 36px)
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info .friend-name {
+    line-height: 14px;
+    margin: 0 0 2px
+}
+
+	#chat-container .friends-list-container .friend-container .friend-info .friend-status {
+    line-height: 12px;
+    margin: 0
+}
+
+	#chat-container .friends-list-container .friend-container .friend-action {
+    position: relative
+}
+
+	#chat-container .friends-list-container .friend-container .friend-action:hover {
+    cursor: pointer
+}
+
+	#chat-container .friends-list-container .friend-container .friend-action .friend-action-more-option {
+    padding: 6px 0 3px 12px
+}
+
+	#chat-container .friends-list-container .friend-container .friend-action .friend-menu {
+    position: absolute;
+    bottom: 106px;
+    right: 106px
+}
+
+	#chat-container .friends-list-container .friend-container .friend-action .friend-menu.three-items {
+    bottom: 146px
+}
+
+	#chat-container .friends-list-container .friend-container .friend-action .friend-menu .dropdown-menu {
+    display: block;
+    box-shadow: 0 1px 4px 0 rgba(25, 25, 25, .3);
+    width: auto
+}
+
+	#chat-container .friends-list-container .friend-container .checkbox {
+    width: 24px;
+    margin: 6px 0 0
+}
+
+	#chat-container .friends-list-container .friend-container .icon-chat-more-options {
+    background-position: 0 -168px;
+    background-size: 28px auto;
+    width: 14px;
+    height: 14px;
+    margin: 0
+}
+
+	#chat-container .details-members-container .add-friends-option {
+    background-color: #fff
+}
+
+	#chat-container .details-members-container .add-friends-option.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .details-members-container .add-friends-option.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .details-members-container .add-friends-option {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .details-members-container .add-friends-option.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-members-container .add-friends-option.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .details-members-container .add-friends-option.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .details-members-container .add-friends-option {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .details-members-container .add-friends-option.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .details-members-container {
+    margin: 0 0 12px
+}
+
+	#chat-container .details-members-container .add-friends-option:after,
+	#chat-container .details-members-container .add-friends-option:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .details-members-container .add-friends-option:after {
+    clear: both
+}
+
+	#chat-container .details-members-container .add-friends-option:hover {
+    cursor: pointer
+}
+
+	#chat-container .details-members-container .add-friends-option .add-friends-icon,
+	#chat-container .details-members-container .add-friends-option .add-friends-label {
+    float: left
+}
+
+	#chat-container .details-members-container .add-friends-option .add-friends-icon {
+    width: 48px;
+    height: 48px;
+    padding: 8px
+}
+
+	#chat-container .details-members-container .add-friends-option .add-friends-cirle-container {
+    border: 1px solid #00a2ff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    padding: 3px 0 0 5px
+}
+
+	#chat-container .details-members-container .add-friends-option .add-friends-cirle-container:hover {
+    background-color: #00a2ff
+}
+
+	#chat-container .details-members-container .add-friends-option .add-friends-cirle-container:hover .icon-chat-add-friends {
+    background-position: -20px -260px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px
+}
+
+	#chat-container .details-members-container .add-friends-option .add-friends-label {
+    width: 80%;
+    width: calc(100% - 48px);
+    height: 48px;
+    line-height: 14px;
+    padding: 17px 0 0
+}
+
+	#chat-container .add-friends-container {
+    height: 360px;
+    display: block
+}
+
+	#chat-container .add-friends-container .select-friends-container {
+    height: 328px
+}
+
+	#chat-container .add-friends-container .select-friends-container .select-friends-list {
+    height: 248px;
+    position: relative
+}
+
+	#chat-container .participant-list .friend-info-action:hover {
+    cursor: default
+}
+
+	#chat-container .participant-list .participant-list-action {
+    padding: 4px 8px
+}
+
+	#chat-container .details-confirmation-container {
+    height: 360px
+}
+
+	#chat-container .details-confirmation-container .details-negative-confirmation-body {
+    height: 328px;
+    text-align: center
+}
+
+	#chat-container .details-confirmation-container .details-negative-confirmation-body .details-negative-confirmation-text {
+    display: inline-block;
+    margin: 50% auto
+}
+
+	#chat-container .details-confirmation-container .confirm-negative-action-container {
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    padding: 0
+}
+
+	#chat-container .conversation-title-container {
+    height: 48px
+}
+
+	#chat-container .conversation-title-container:after,
+	#chat-container .conversation-title-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .conversation-title-container:after {
+    clear: both
+}
+
+	#chat-container .conversation-title-container .conversation-title-label,
+	#chat-container .conversation-title-container .icon-chat-arrow-right {
+    float: left
+}
+
+	#chat-container .conversation-title-container .icon-chat-group-name {
+    margin-left: 6px
+}
+
+	#chat-container .conversation-title-container .details-label {
+    padding: 8px 0 0 8px
+}
+
+	#chat-container .conversation-title-container .details-label .card-plain {
+    width: 32px;
+    height: 32px
+}
+
+	#chat-container .conversation-title-container .conversation-title-content {
+    height: 32px;
+    padding: 14px 8px 0 0
+}
+
+	#chat-container .conversation-title-container .conversation-title-content:hover {
+    cursor: pointer
+}
+
+	#chat-container .conversation-title-container .conversation-title-label {
+    width: calc(100% - 14px)
+}
+
+	#chat-container .conversation-title-container .conversation-title-input {
+    height: 31px
+}
+
+	#chat-container .conversation-title-container .icon-chat-arrow-right {
+    background-position: 0 -252px;
+    background-size: 28px auto;
+    width: 14px;
+    height: 14px;
+    margin: 4px 0 0
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body {
+    background-color: #fff
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .conversation-title-editor-container .conversation-title-editor-body {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .conversation-title-editor-container .conversation-title-editor-body.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .conversation-title-editor-container .conversation-title-editor-body {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .conversation-title-editor-container .conversation-title-editor-body.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-body {
+    padding: 8px
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-content {
+    position: relative;
+    padding: 12px 0 13px
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-content .conversation-title-editor-textarea {
+    line-height: 14px;
+    height: auto;
+    width: 100%;
+    padding: 8px 12px;
+    resize: none;
+    max-height: 104px;
+    overflow: hidden
+}
+
+	#chat-container .conversation-title-editor-container .conversation-title-editor-content .conversation-title-editor-count {
+    position: absolute;
+    bottom: 0;
+    right: 0
+}
+
+	#chat-container .place-players-container:after,
+	#chat-container .place-players-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .place-players-container:after {
+    clear: both
+}
+
+	#chat-container .place-players-container .place-thumbnail {
+    float: left;
+    border-radius: 3px;
+    width: 90px;
+    height: 90px
+}
+
+	#chat-container .place-players-container .place-info-container {
+    width: "64%";
+    width: calc(100% - 90px);
+    float: left;
+    padding: 0 0 0 6px
+}
+
+	#chat-container .place-players-container .place-info-container .place-info {
+    height: 45px
+}
+
+	#chat-container .place-players-container .players-action:after,
+	#chat-container .place-players-container .players-action:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .place-players-container .players-action:after {
+    clear: both
+}
+
+	#chat-container .place-players-container .players-action .play-place-btn {
+    margin-top: 21px
+}
+
+	#chat-container .place-players-container .players {
+    float: left;
+    padding: 6px
+}
+
+	#chat-container .place-players-container .players:after,
+	#chat-container .place-players-container .players:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .place-players-container .players:after {
+    clear: both
+}
+
+	#chat-container .place-players-container .group-member {
+    float: left;
+    display: inline-block
+}
+
+	#chat-container .set-place-container:after,
+	#chat-container .set-place-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .set-place-container:after {
+    clear: both
+}
+
+	#chat-container .set-place-container .set-place-icon {
+    float: left;
+    border: 1px solid #00a2ff;
+    border-radius: 3px;
+    padding: 2px 5px 3px
+}
+
+	#chat-container .set-place-container .set-place-label {
+    float: left;
+    margin: 5px 6px
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-container {
+    background-color: #fff
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-container.light-theme {
+    background-color: #f2f4f5;
+    color: #393b3d
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialog-container .dialog-message-container .link-card-container {
+    background-color: #f2f4f5;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialog-container .dialog-message-container .link-card-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-container.dark-theme {
+    background-color: #232527;
+    color: #fff
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-message-container .link-card-container {
+    background-color: #232527;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialog-container .dialog-message-container .link-card-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-cluster-master .link-card-container {
+    border-top-right-radius: 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container {
+    border-top-left-radius: 0;
+    border-top-right-radius: 10px
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-width: 0 4px 4px 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:after {
+    border-width: 0 2px 2px 0
+}
+
+	#chat-container .dialog-container .dialog-message-container.message-inbound .link-card-container {
+    float: left
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-msg-wrap {
+    margin: 0 0 2px
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-msg-wrap:after,
+	#chat-container .dialog-container .dialog-message-container .link-card-msg-wrap:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-msg-wrap:after {
+    clear: both
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container {
+    padding: 0 0 0 8px
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container:after,
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container:after {
+    clear: both
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container .link-card-title {
+    width: 75%;
+    width: calc(100% - 24px);
+    float: left;
+    line-height: 14px;
+    min-height: 14px;
+    margin: 6px 0 0
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container .link-card-pin-icon {
+    background-position: 0 -480px;
+    float: left;
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+    margin: 6px 8px 0 0
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-top-container .link-card-pin-icon:hover {
+    background-position: -16px -480px
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-container {
+    border-radius: 10px;
+    position: relative;
+    border: 1px solid #e3e3e3;
+    float: right;
+    width: 172px;
+    padding: 0 0 6px;
+    margin: 0 8px 0 0
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details {
+    padding: 6px 8px
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details:after,
+	#chat-container .dialog-container .dialog-message-container .link-card-details:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details:after {
+    clear: both
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details .link-card-description,
+	#chat-container .dialog-container .dialog-message-container .link-card-details .link-card-thumb {
+    float: left
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details .link-card-thumb {
+    border-radius: 3px;
+    width: 48px;
+    height: 48px;
+    word-break: break-all
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-details .link-card-description {
+    overflow: hidden;
+    position: relative;
+    line-height: 12px;
+    max-height: 36px;
+    width: 74%;
+    width: calc(100% - 48px);
+    padding: 0 0 0 6px
+}
+
+	#chat-container .dialog-container .dialog-message-container .link-card-btn {
+    width: 91%;
+    width: calc(100% - 16px);
+    display: inline-block;
+    height: 24px;
+    margin: 0 8px
+}
+
+	#chat-container .dialog-container .dialog-message-container .game-non-available {
+    text-align: center
+}
+
+	#chat-container .game-list-per-conversation {
+    background-color: #f5f5f5
+}
+
+	#chat-container .game-list-per-conversation.light-theme {
+    background-color: #f2f4f5;
+    color: #393b3d
+}
+
+	#chat-container .game-list-per-conversation.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .game-list-per-conversation {
+    background-color: #f2f4f5;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .game-list-per-conversation.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-list-per-conversation.dark-theme {
+    background-color: #232527;
+    color: #fff
+}
+
+	#chat-container .game-list-per-conversation.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .game-list-per-conversation {
+    background-color: #232527;
+    color: #fff
+}
+
+	#chat-container .dark-theme .game-list-per-conversation.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-list-in-dialog {
+    background-color: #f5f5f5
+}
+
+	#chat-container .game-list-in-dialog.light-theme {
+    background-color: #f2f4f5;
+    color: #393b3d
+}
+
+	#chat-container .game-list-in-dialog.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .game-list-in-dialog {
+    background-color: #f2f4f5;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .game-list-in-dialog.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-list-in-dialog.dark-theme {
+    background-color: #232527;
+    color: #fff
+}
+
+	#chat-container .game-list-in-dialog.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .game-list-in-dialog {
+    background-color: #232527;
+    color: #fff
+}
+
+	#chat-container .dark-theme .game-list-in-dialog.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu {
+    background-color: #fff
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .game-list-in-dialog .game-list-container .active-game-toggle-menu {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .game-list-in-dialog .game-list-container .active-game-toggle-menu.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .game-list-in-dialog .game-list-container .active-game-toggle-menu {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .game-list-in-dialog .game-list-container .active-game-toggle-menu.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-item-container {
+    background-color: #fff
+}
+
+	#chat-container .game-item-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .game-item-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .game-item-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .game-item-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-item-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .game-item-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .game-item-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .game-item-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .game-list-in-dialog .pinned-game-container:hover {
+    background-color: #f2f2f2
+}
+
+	#chat-container .light-theme .game-list-in-dialog .pinned-game-container:hover {
+    background-color: #bdbebe
+}
+
+	#chat-container .dark-theme .game-list-in-dialog .pinned-game-container:hover {
+    background-color: #656668
+}
+
+	#chat-container .active-game-container:hover {
+    background-color: #f2f2f2
+}
+
+	#chat-container .light-theme .active-game-container:hover {
+    background-color: #bdbebe
+}
+
+	#chat-container .dark-theme .active-game-container:hover {
+    background-color: #656668
+}
+
+	#chat-container .recommended-game-container:hover {
+    background-color: #f2f2f2
+}
+
+	#chat-container .light-theme .recommended-game-container:hover {
+    background-color: #bdbebe
+}
+
+	#chat-container .dark-theme .recommended-game-container:hover {
+    background-color: #656668
+}
+
+	#chat-container .game-list-per-conversation {
+    margin: -6px 0 0
+}
+
+	#chat-container .game-list-in-dialog {
+    margin: 6px 0 0 60px;
+    max-height: 328px
+}
+
+	#chat-container .game-list-in-dialog .game-list-container.has-pin-game-above.overflow {
+    height: 208px
+}
+
+	#chat-container .game-list-in-dialog .game-list-container.overflow {
+    height: 304px
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-list {
+    z-index: 0;
+    overflow: auto
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu {
+    display: block;
+    position: relative;
+    width: 100%;
+    text-align: center;
+    z-index: 10
+}
+
+	#chat-container .game-list-in-dialog .game-list-container .active-game-toggle-menu .toggle-menu-text {
+    margin: 6px 0;
+    line-height: 10px
+}
+
+	#chat-container .game-list-in-dialog .pinned-game-container .pinned-game-details {
+    position: relative
+}
+
+	#chat-container .game-list-in-dialog .pinned-game-container .pinned-game-details .icon-chat-unpin {
+    background-position: 0 -496px;
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    position: absolute;
+    top: 8px;
+    right: 8px
+}
+
+	#chat-container .game-list-in-dialog .pinned-game-container .pinned-game-details .icon-chat-unpin:hover {
+    background-position: -16px -496px
+}
+
+	#chat-container .game-item-container {
+    border-radius: 4px;
+    width: 260px
+}
+
+	#chat-container .game-item-container:after,
+	#chat-container .game-item-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .game-item-container:after {
+    clear: both
+}
+
+	#chat-container .game-item-container .game-details,
+	#chat-container .game-item-container .game-icon {
+    float: left
+}
+
+	#chat-container .game-item-container .game-icon {
+    border-radius: 3px;
+    margin: 8px;
+    word-break: break-all
+}
+
+	#chat-container .game-item-container .game-details {
+    padding: 0 0 8px
+}
+
+	#chat-container .game-item-container .game-details .icon-chat-party-label-white {
+    background-position: 0 -36px;
+    background-size: 24px auto;
+    width: 12px;
+    height: 12px
+}
+
+	#chat-container .game-item-container .game-info {
+    margin: 16px 8px 0 0
+}
+
+	#chat-container .game-item-container .game-info:after,
+	#chat-container .game-item-container .game-info:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .game-item-container .game-info:after {
+    clear: both
+}
+
+	#chat-container .game-item-container .game-info .game-players {
+    float: left
+}
+
+	#chat-container .game-item-container .game-info .game-players:after,
+	#chat-container .game-item-container .game-info .game-players:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .game-item-container .game-info .game-players:after {
+    clear: both
+}
+
+	#chat-container .game-item-container .game-info .game-players .game-player {
+    float: left;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    margin: 0 3px 0 0
+}
+
+	#chat-container .game-item-container .game-info .game-players .game-player .game-player-avatar {
+    width: 24px;
+    height: 24px
+}
+
+	#chat-container .game-item-container .game-info .game-players .game-player .game-player-presence {
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 6px;
+    height: 6px
+}
+
+	#chat-container .game-item-container .game-info .game-players .game-player-plus {
+    float: left;
+    position: relative;
+    text-align: center;
+    padding: 3px 5px
+}
+
+	#chat-container .game-item-container .game-info .game-btn,
+	#chat-container .game-item-container .game-info .game-non-available {
+    float: right
+}
+
+	#chat-container .game-item-container .game-name {
+    margin: 3px 8px 0 0
+}
+
+	#chat-container .chat-header-action .pinned-game-container {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0
+}
+
+	#chat-container .pinned-game-container {
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px
+}
+
+	#chat-container .pinned-game-container.has-active-game {
+    border-bottom: 1px solid #e3e3e3
+}
+
+	#chat-container .pinned-game-container .game-icon {
+    width: 72px;
+    height: 72px
+}
+
+	#chat-container .pinned-game-container .pinned-game-header {
+    margin: 8px 0 0
+}
+
+	#chat-container .pinned-game-container .pinned-game-details {
+    width: 68%;
+    width: calc(100% - 88px)
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header:after,
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header:after {
+    clear: both
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header .pinned-game-icon {
+    cursor: default
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header .pinned-game-icon,
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header .pinned-game-label {
+    float: left
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-header .icon-chat-pin {
+    margin: 2px 0 0
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .icon-chat-unpin {
+    display: none
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .icon-chat-pin {
+    background-position: 0 -360px;
+    background-size: 24px auto;
+    width: 12px;
+    height: 12px
+}
+
+	#chat-container .pinned-game-container .pinned-game-details .pinned-game-label {
+    line-height: 12px;
+    margin: 0 0 0 3px
+}
+
+	#chat-container .game-list-container {
+    position: relative
+}
+
+	#chat-container .game-list-container.has-pin-game-above {
+    border-top: 1px solid #e3e3e3;
+    margin: 6px 0 0
+}
+
+	#chat-container .game-list-container .active-game-toggle-menu {
+    display: none
+}
+
+	#chat-container .active-game-container:hover .game-name {
+    width: 90%;
+    width: calc(100% - 24px);
+    float: left
+}
+
+	#chat-container .active-game-container:hover .active-game-pin-icon {
+    float: right;
+    display: inline-block
+}
+
+	#chat-container .active-game-container:last-child .active-game-details {
+    border-bottom: none
+}
+
+	#chat-container .active-game-container .game-icon {
+    width: 48px;
+    height: 48px
+}
+
+	#chat-container .active-game-container .game-name {
+    margin: 6px 0 0
+}
+
+	#chat-container .active-game-container .active-game-details {
+    width: 75%;
+    width: calc(100% - 64px)
+}
+
+	#chat-container .active-game-container .game-info {
+    margin: 8px 8px 0 0
+}
+
+	#chat-container .active-game-container .game-title-container:after,
+	#chat-container .active-game-container .game-title-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .active-game-container .game-title-container:after {
+    clear: both
+}
+
+	#chat-container .active-game-container .active-game-pin-icon {
+    background-position: 0 -480px;
+    background-size: 32px auto;
+    display: none;
+    width: 16px;
+    height: 16px;
+    margin: 6px 8px 0 0
+}
+
+	#chat-container .active-game-container .active-game-pin-icon:hover {
+    background-position: -16px -480px
+}
+
+	#chat-container .recommended-game-container .game-icon {
+    width: 48px;
+    height: 48px
+}
+
+	#chat-container .recommended-game-container .game-name {
+    margin: 6px 0 0
+}
+
+	#chat-container .recommended-game-container .recommended-game-details {
+    width: 75%;
+    width: calc(100% - 64px)
+}
+
+	#chat-container .recommended-game-container .recommended-game-details .game-name {
+    width: 98%;
+    width: calc(100% - 8px);
+    display: inline-block
+}
+
+	#chat-container .recommended-game-container .recommended-game-info {
+    margin-top: -12px
+}
+
+	#chat-container .popover.bottom.game-list-in-dialog>.arrow {
+    left: 184px;
+    margin: 2px 0 0
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .dialog-message {
+    background-color: #bdbebe;
+    border: 1px solid #bdbebe;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .dialog-message.message-is-sending {
+    background-color: #767879;
+    border: 1px solid #767879
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle.message-is-sending:after,
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle.message-is-sending:before {
+    border-color: transparent transparent transparent #767879
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:after,
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:before {
+    border-color: transparent transparent transparent #bdbebe
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .link-card-container.dialog-triangle:after,
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-color: transparent transparent transparent #eaedef
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-message-avatar-link {
+    border: 1px solid #eaedef
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-message {
+    background-color: #eaedef;
+    color: #393b3d;
+    border: 1px solid #eaedef
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-triangle:before {
+    border-width: 0 4px 4px 0;
+    border-color: transparent #eaedef transparent transparent
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-triangle:after {
+    border-width: 0 2px 2px 0;
+    border-color: transparent #eaedef transparent transparent
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-message-author {
+    color: #fff
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:after,
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-color: transparent #eaedef transparent transparent
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .indicated-message-bubble {
+    background-color: #fff;
+    color: rgba(0, 0, 0, .3)
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .typing-indicator .dialog-triangle:after,
+	#chat-container .light-theme .dialogs .dialog-container .typing-indicator .dialog-triangle:before {
+    border-color: transparent #eaedef transparent transparent
+}
+
+	#chat-container .light-theme .dialogs .dialog-container.active .dialog-header {
+    animation: none;
+    background-color: #bdbebe
+}
+
+	#chat-container .light-theme .dialogs .dialog-container.active .dialog-header .dialog-header-title {
+    animation: none
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-header .dialog-header-active-game .dialog-header-active-game-image {
+    border: none;
+    border-radius: 0
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .link-card-container {
+    border-color: #f2f4f5
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .link-card-container.dialog-triangle:after,
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .link-card-container.dialog-triangle:before {
+    border-color: transparent transparent transparent #f2f4f5
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .link-card-details .link-card-description {
+    color: #767879
+}
+
+	#chat-container .light-theme .dialogs .dialog-container .dialog-message-container .link-card-details .link-card-description:after {
+    background-color: #f2f4f5
+}
+
+	#chat-container .light-theme .dialogs .popover.bottom.game-list-in-dialog:hover>.arrow,
+	#chat-container .light-theme .dialogs .popover.bottom.game-list-in-dialog:hover>.arrow:after {
+    border-bottom-color: #bdbebe
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .dialog-message {
+    background-color: #656668;
+    border: 1px solid #656668;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .dialog-message.message-is-sending {
+    background-color: #bdbebe;
+    border: 1px solid #bdbebe
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle.message-is-sending:after,
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle.message-is-sending:before {
+    border-color: transparent transparent transparent #bdbebe
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:after,
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .dialog-triangle:before {
+    border-color: transparent transparent transparent #656668
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .link-card-container.dialog-triangle:after,
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-color: transparent transparent transparent #1f2123
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-message-avatar-link {
+    border: 1px solid #1f2123
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-message {
+    background-color: #1f2123;
+    color: #fff;
+    border: 1px solid #1f2123
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-triangle:before {
+    border-width: 0 4px 4px 0;
+    border-color: transparent #1f2123 transparent transparent
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-triangle:after {
+    border-width: 0 2px 2px 0;
+    border-color: transparent #1f2123 transparent transparent
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound .dialog-message-author {
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:after,
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container.message-inbound.message-cluster-master .link-card-container.dialog-triangle:before {
+    border-color: transparent #1f2123 transparent transparent
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .indicated-message-bubble {
+    background-color: #393b3d;
+    color: hsla(0, 0%, 100%, .3)
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .typing-indicator .dialog-triangle:after,
+	#chat-container .dark-theme .dialogs .dialog-container .typing-indicator .dialog-triangle:before {
+    border-color: transparent #1f2123 transparent transparent
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container.active .dialog-header {
+    animation: none;
+    background-color: #656668
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container.active .dialog-header .dialog-header-title {
+    animation: none
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-header .dialog-header-active-game .dialog-header-active-game-image {
+    border: none;
+    border-radius: 0
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .link-card-container {
+    border-color: #232527
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .link-card-container.dialog-triangle:after,
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .link-card-container.dialog-triangle:before {
+    border-color: transparent transparent transparent #232527
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .link-card-details .link-card-description {
+    color: #bdbebe
+}
+
+	#chat-container .dark-theme .dialogs .dialog-container .dialog-message-container .link-card-details .link-card-description:after {
+    background-color: #232527
+}
+
+	#chat-container .dark-theme .dialogs .popover.bottom.game-list-in-dialog:hover>.arrow,
+	#chat-container .dark-theme .dialogs .popover.bottom.game-list-in-dialog:hover>.arrow:after {
+    border-bottom-color: #656668
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-conversation-universe .universe-image {
+    border-radius: 0
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-info .chat-brief-timestamp.unread,
+	#chat-container .light-theme .chat-friend-list .chat-friend-info .chat-friend-message.unread {
+    color: #393b3d
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-conversation-universe .universe-image {
+    border-radius: 0
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-info .chat-brief-timestamp.unread,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-info .chat-friend-message.unread {
+    color: #fff
+}
+
+	#chat-container .light-theme .friends-list-container .friend-container:hover {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .friends-list-container .friend-container .friend-info .friend-status {
+    color: #767879
+}
+
+	#chat-container .dark-theme .friends-list-container .friend-container:hover {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .friends-list-container .friend-container .friend-info .friend-status {
+    color: #bdbebe
+}
+
+	#chat-container .light-theme .create-chat-container .details-header-container,
+	#chat-container .light-theme .select-friends-container .details-header-container {
+    background-color: rgba(0, 0, 0, .3)
+}
+
+	#chat-container .dark-theme .create-chat-container .details-header-container,
+	#chat-container .dark-theme .select-friends-container .details-header-container {
+    background-color: #000
+}
+
+	#chat-container .light-theme .details-members-container .add-friends-option .add-friends-cirle-container {
+    color: #393b3d
+}
+
+	#chat-container .light-theme .details-members-container .add-friends-option .add-friends-cirle-container:hover {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .details-members-container .add-friends-option .add-friends-cirle-container {
+    color: #fff
+}
+
+	#chat-container .dark-theme .details-members-container .add-friends-option .add-friends-cirle-container:hover {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .toast-container .toast-content {
+    background-color: rgba(216, 219, 222, .9)
+}
+
+	#chat-container .dark-theme .toast-container .toast-content {
+    background-color: rgba(0, 0, 0, .7)
+}
+
+	#chat-container .light-theme .participant-list-container .dropdown-menu li a,
+	#chat-container .light-theme .participant-list-container .dropdown-menu li a:visited {
+    color: #bdbebe
+}
+
+	#chat-container .light-theme .participant-list-container .dropdown-menu li a:hover {
+    color: rgba(0, 0, 0, .3)
+}
+
+	#chat-container .dark-theme .participant-list-container .dropdown-menu li a,
+	#chat-container .dark-theme .participant-list-container .dropdown-menu li a:visited {
+    color: #656668
+}
+
+	#chat-container .dark-theme .participant-list-container .dropdown-menu li a:hover {
+    color: hsla(0, 0%, 100%, .3)
+}
+
+	#chat-container .dark-theme .game-item-container .game-icon,
+	#chat-container .light-theme .game-item-container .game-icon {
+    border-radius: 0
+}
+
+	#chat-container .dark-theme .chat-search,
+	#chat-container .light-theme .chat-search {
+    border-bottom: 0
+}
+
+	#chat-container .dark-theme .game-list-container.has-pin-game-above,
+	#chat-container .light-theme .game-list-container.has-pin-game-above {
+    border-top: 0
+}
+
+	#chat-container .dark-theme .pinned-game-container.has-active-game,
+	#chat-container .light-theme .pinned-game-container.has-active-game {
+    border-bottom: 0
+}
+
+	#chat-container .light-theme .active-game-container a.game-link,
+	#chat-container .light-theme .active-game-container a.game-link:active,
+	#chat-container .light-theme .active-game-container a.game-link:focus,
+	#chat-container .light-theme .active-game-container a.game-link:hover,
+	#chat-container .light-theme .pinned-game-container a.game-link,
+	#chat-container .light-theme .pinned-game-container a.game-link:active,
+	#chat-container .light-theme .pinned-game-container a.game-link:focus,
+	#chat-container .light-theme .pinned-game-container a.game-link:hover {
+    color: #393b3d
+}
+
+	#chat-container .dark-theme .active-game-container a.game-link,
+	#chat-container .dark-theme .active-game-container a.game-link:active,
+	#chat-container .dark-theme .active-game-container a.game-link:focus,
+	#chat-container .dark-theme .active-game-container a.game-link:hover,
+	#chat-container .dark-theme .pinned-game-container a.game-link,
+	#chat-container .dark-theme .pinned-game-container a.game-link:active,
+	#chat-container .dark-theme .pinned-game-container a.game-link:focus,
+	#chat-container .dark-theme .pinned-game-container a.game-link:hover {
+    color: #fff
+}
+
+	#chat-container .light-theme .recommended-game-container .game-name,
+	#chat-container .light-theme .recommended-game-container .game-name:active,
+	#chat-container .light-theme .recommended-game-container .game-name:focus,
+	#chat-container .light-theme .recommended-game-container .game-name:hover {
+    color: #393b3d
+}
+
+	#chat-container .dark-theme .recommended-game-container .game-name,
+	#chat-container .dark-theme .recommended-game-container .game-name:active,
+	#chat-container .dark-theme .recommended-game-container .game-name:focus,
+	#chat-container .dark-theme .recommended-game-container .game-name:hover {
+    color: #fff
+}
+
+	#chat-container .gotham-font .chat-friend-list .chat-friend-info .chat-friend-name {
+    width: 67%;
+    width: calc(100% - 70px)
+}
+
+	#chat-container .gotham-font .chat-friend-list .chat-friend-info .chat-brief-timestamp {
+    width: 70px;
+    padding: 0;
+    margin: 2px 0 0
+}
+
+	#chat-container .gotham-font.chat-container .btn-control-xs,
+	#chat-container .gotham-font .chat-container .btn-control-xs,
+	#chat-container .gotham-font.chat-container .chat-search-input,
+	#chat-container .gotham-font .chat-container .chat-search-input,
+	#chat-container .gotham-font .chat-main .btn-control-md,
+	#chat-container .gotham-font .create-chat-container .select-friends-btns .select-friends-cancel,
+	#chat-container .gotham-font .create-chat-container .select-friends-btns .select-friends-save,
+	#chat-container .gotham-font .details-btns-fixed button,
+	#chat-container .gotham-font .details-btns button,
+	#chat-container .gotham-font .details-container .details-input,
+	#chat-container .gotham-font .details-header-container .details-input,
+	#chat-container .gotham-font .dialog-container .dialog-input,
+	#chat-container .gotham-font .game-item-container .game-btn,
+	#chat-container .gotham-font .group-dialog .group-name-editor .group-name-input,
+	#chat-container .gotham-font .group-dialog .group-name-editor .group-name-save,
+	#chat-container .gotham-font .group-dialog .play-together-game-editor .group-name-input,
+	#chat-container .gotham-font .group-dialog .play-together-game-editor .group-name-save {
+    font-family: HCo Gotham SSm
+}
+
+	#chat-container .gotham-font.chat-container .chat-friend-message.font-bold,
+	#chat-container .gotham-font .chat-container .chat-friend-message.font-bold,
+	#chat-container .gotham-font.chat-container .chat-friend-message.font-bold:active,
+	#chat-container .gotham-font .chat-container .chat-friend-message.font-bold:active,
+	#chat-container .gotham-font.chat-container .chat-friend-message.font-bold:focus,
+	#chat-container .gotham-font .chat-container .chat-friend-message.font-bold:focus,
+	#chat-container .gotham-font.chat-container .chat-friend-message.font-bold:hover,
+	#chat-container .gotham-font .chat-container .chat-friend-message.font-bold:hover,
+	#chat-container .gotham-font.chat-container .chat-friend-message.font-bold:link,
+	#chat-container .gotham-font .chat-container .chat-friend-message.font-bold:link,
+	#chat-container .gotham-font.chat-container .chat-friend-message.font-bold:visited,
+	#chat-container .gotham-font .chat-container .chat-friend-message.font-bold:visited,
+	#chat-container .gotham-font.chat-container .font-bold,
+	#chat-container .gotham-font .chat-container .font-bold,
+	#chat-container .gotham-font.chat-container .font-bold:active,
+	#chat-container .gotham-font .chat-container .font-bold:active,
+	#chat-container .gotham-font.chat-container .font-bold:link,
+	#chat-container .gotham-font .chat-container .font-bold:link,
+	#chat-container .gotham-font.chat-container .font-bold:visited,
+	#chat-container .gotham-font .chat-container .font-bold:visited {
+    font-weight: 700
+}
+
+	#chat-container .gotham-font .game-item-container .game-btn,
+	#chat-container .gotham-font .game-list-container .game-btn {
+    padding: 7px;
+    font-size: 16px;
+    line-height: 100%;
+    border-radius: 3px;
+    border-radius: 8px
+}
+
+	#chat-container .gotham-font .game-item-container .game-info {
+    margin-top: 6px
+}
+
+	#chat-container .gotham-font .game-item-container .recommended-game-info {
+    margin-top: -18px
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-container {
+        display: none
+    }
+}
+
+	#chat-container .chat-container .mCSB_inside .mCSB_container {
+    margin: 0
+}
+
+	#chat-container .chat-container .chat-header-label {
+    width: 72%;
+    width: calc(100% - 72px)
+}
+
+	#chat-container .chat-container.collapsed .chat-main {
+    height: 32px
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-container.collapsed .chat-main {
+        top: auto;
+        left: auto
+    }
+}
+
+	#chat-container .chat-container.collapsed .chat-main .logo-tagline-chat {
+    display: none
+}
+
+	#chat-container .chat-container.collapsed .chat-header {
+    position: relative;
+    height: 32px;
+    top: auto
+}
+
+	#chat-container .chat-container.collapsed .chat-header .chat-header-label {
+    width: 90%;
+    width: calc(100% - 40px)
+}
+
+	#chat-container .chat-container.collapsed .chat-header .chat-header-title {
+    width: auto;
+    height: 32px
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-container.collapsed .chat-body {
+        bottom: auto;
+        position: relative
+    }
+}
+
+	#chat-container .tooltip-inner {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    max-width: 150px;
+    min-width: 50px
+}
+
+	#chat-container .chat-main {
+    background-color: #fff
+}
+
+	#chat-container .chat-main.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .chat-main.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .chat-main {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .chat-main.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-main.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .chat-main.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .chat-main {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .chat-main.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-main .chat-header {
+    background-color: #00a2ff
+}
+
+	#chat-container .chat-main .chat-header.light-theme {
+    background-color: #bdbebe
+}
+
+	#chat-container .chat-main .chat-header.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .chat-main .chat-header {
+    background-color: #bdbebe
+}
+
+	#chat-container .light-theme .chat-main .chat-header.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-main .chat-header.dark-theme {
+    background-color: #656668
+}
+
+	#chat-container .chat-main .chat-header.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .chat-main .chat-header {
+    background-color: #656668
+}
+
+	#chat-container .dark-theme .chat-main .chat-header.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-main {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -ms-transform: none;
+    position: fixed;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    box-shadow: 0 1px 3px hsla(0, 0%, 58.8%, .74);
+    bottom: 0;
+    right: 6px;
+    z-index: 1040;
+    width: 280px;
+    height: 360px
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-main {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+        width: 100%;
+        height: 100%;
+        right: 0;
+        top: 0;
+        left: 0
+    }
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-main .chat-header {
+        position: absolute;
+        width: 100%;
+        top: 0
+    }
+}
+
+	#chat-container .chat-main .chat-header:hover {
+    cursor: pointer
+}
+
+	#chat-container .chat-main .chat-header .notification-red {
+    float: right;
+    line-height: 1em;
+    border-radius: 50%;
+    padding: 3px 6px;
+    min-width: 18px;
+    text-align: center;
+    margin: 3px 0 0
+}
+
+	#chat-container .chat-main .chat-body {
+    height: 328px;
+    position: relative
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-main .chat-body {
+        height: 80%;
+        height: calc(100% - 32px);
+        bottom: 0;
+        position: fixed;
+        width: 100%
+    }
+
+	#chat-container .chat-main .chat-body.touch {
+        height: 36%;
+        height: calc(50% - 32px);
+        bottom: 0;
+        top: auto
+    }
+}
+
+	#chat-container .chat-main .btn-control-md {
+    display: block;
+    margin: 6px auto
+}
+
+@media (max-width:543px) {
+	#chat-container .chat-main .btn-control-md {
+        width: 95%;
+        width: calc(100% - 24px);
+        margin: 6px 12px
+    }
+}
+
+	#chat-container .chat-search {
+    position: relative
+}
+
+	#chat-container .chat-search .chat-search-input {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: none;
+    width: 100%;
+    height: 31px;
+    padding: 6px 12px 6px 34px;
+    line-height: 14px
+}
+
+	#chat-container .chat-search .icon-chat-search {
+    background-position: 0 -16px;
+    left: 12px
+}
+
+	#chat-container .chat-search .icon-chat-search,
+	#chat-container .chat-search .icon-chat-search-cancel {
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: 8px
+}
+
+	#chat-container .chat-search .icon-chat-search-cancel {
+    background-position: 0 -32px;
+    display: none;
+    right: 12px
+}
+
+	#chat-container .chat-search .icon-chat-search-cancel:hover {
+    background-position: -16px -32px
+}
+
+	#chat-container .chat-search.chat-search-focus .icon-chat-search-cancel {
+    display: block
+}
+
+	#chat-container .chat-search.chat-search-focus .icon-chat-search-cancel:hover {
+    cursor: pointer
+}
+
+	#chat-container .chat-main-empty .chat-disconnect {
+    background-color: #fff
+}
+
+	#chat-container .chat-main-empty .chat-disconnect.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .chat-main-empty .chat-disconnect.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .chat-main-empty .chat-disconnect {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .chat-main-empty .chat-disconnect.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-main-empty .chat-disconnect.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .chat-main-empty .chat-disconnect.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .chat-main-empty .chat-disconnect {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .chat-main-empty .chat-disconnect.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .chat-main-empty .chat-disconnect {
+    height: 100%;
+    padding-top: 68px
+}
+
+	#chat-container .chat-main-empty .chat-disconnect p {
+    margin: 12px 15%
+}
+
+	#chat-container .chat-main-empty .chat-disconnect .text-link:hover {
+    cursor: pointer
+}
+
+	#chat-container .chat-main-empty .chat-disconnect .logo-tagline-chat {
+    right: 25%;
+    right: calc(50% - 61px);
+    width: 122px;
+    height: 32px;
+    background-size: auto 32px;
+    position: absolute;
+    bottom: 12px
+}
+
+	#chat-container .chat-friend-list .chat-friend-container.active,
+	#chat-container .chat-friend-list .chat-friend-container:focus,
+	#chat-container .chat-friend-list .chat-friend-container:hover {
+    background-color: #f2f2f2
+}
+
+	#chat-container .chat-friend-list .chat-friend-container[disabled],
+	#chat-container .chat-friend-list .chat-friend-container[readonly] {
+    box-shadow: none
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-container {
+    color: #767879
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-container:hover {
+    background-color: #bdbebe;
+    box-shadow: none;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-container.active,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container:active {
+    box-shadow: none;
+    background-color: #bdbebe
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container {
+    color: #bdbebe
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container:hover {
+    background-color: #656668;
+    box-shadow: none;
+    color: #fff
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container.active,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container:active {
+    box-shadow: none;
+    background-color: #656668
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read.text,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read .text,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read.text,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read .text,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read.text-label,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read .text-label,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read.text-label,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read .text-label,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read.text-link,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.read .text-link,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read.text-link,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .read .text-link {
+    color: rgba(0, 0, 0, .5)
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read.text,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read .text,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read.text,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read .text,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read.text-label,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read .text-label,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read.text-label,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read .text-label,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read.text-link,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.read .text-link,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read.text-link,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .read .text-link {
+    color: hsla(0, 0%, 100%, .7)
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.unread,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .unread {
+    color: #393b3d
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info.secondary.unread,
+	#chat-container .light-theme .chat-friend-list .chat-friend-container .chat-friend-info .secondary.unread {
+    color: #767879
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.unread,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .unread {
+    color: #fff
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info.secondary.unread,
+	#chat-container .dark-theme .chat-friend-list .chat-friend-container .chat-friend-info .secondary.unread {
+    color: #bdbebe
+}
+
+	#chat-container .chat-friend-list {
+    max-height: 296px;
+    height: 100%;
+    width: 280px;
+    overflow: auto
+}
+
+	#chat-container .chat-friend-list .chat-friends {
+    margin: 0;
+    padding: 0
+}
+
+	#chat-container .chat-friend-list .chat-friend-container {
+    padding: 8px 0 0 12px
+}
+
+	#chat-container .chat-friend-list .chat-friend-container:after,
+	#chat-container .chat-friend-list .chat-friend-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .chat-friend-list .chat-friend-container:after {
+    clear: both
+}
+
+	#chat-container .chat-friend-list .chat-friend-container:hover {
+    cursor: pointer
+}
+
+	#chat-container .chat-friend-list .chat-friend-container .chat-friend-avatar,
+	#chat-container .chat-friend-list .chat-friend-container .chat-friend-info {
+    float: left
+}
+
+	#chat-container .chat-friend-list .chat-friend-container .avatar-headshot-sm .avatar-status {
+    width: 8px;
+    height: 8px
+}
+
+	#chat-container .chat-friend-list .chat-friend-avatar {
+    position: relative;
+    width: 32px;
+    height: 32px
+}
+
+	#chat-container .chat-friend-list .chat-friend-avatar:hover {
+    cursor: pointer
+}
+
+	#chat-container .chat-friend-list .chat-avatar-groups {
+    text-align: center;
+    position: relative;
+    width: 32px;
+    height: 32px
+}
+
+	#chat-container .chat-friend-list .chat-friend-info {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    width: 82%;
+    width: calc(100% - 44px);
+    margin-left: 12px;
+    min-height: 41px;
+    padding: 0 12px 8px 0
+}
+
+	#chat-container .chat-friend-list .chat-friend-info.has-universe {
+    width: 60%;
+    width: calc(100% - 100px)
+}
+
+	#chat-container .chat-friend-list .chat-friend-info.has-universe .chat-friend-name {
+    width: 100%
+}
+
+	#chat-container .chat-friend-list .chat-friend-info .chat-friend-info-top:after,
+	#chat-container .chat-friend-list .chat-friend-info .chat-friend-info-top:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .chat-friend-list .chat-friend-info .chat-friend-info-top:after {
+    clear: both
+}
+
+	#chat-container .chat-friend-list .chat-friend-info .chat-friend-name {
+    width: 66%;
+    width: calc(100% - 72px);
+    float: left;
+    line-height: 14px;
+    margin: 0 0 2px
+}
+
+	#chat-container .chat-friend-list .chat-friend-info .chat-brief-timestamp {
+    float: right;
+    line-height: 12px;
+    margin: 3px 0 0;
+    padding: 0 0 0 5px;
+    text-align: right;
+    width: 72px
+}
+
+	#chat-container .chat-friend-list .chat-friend-info .chat-friend-message {
+    height: 14px;
+    line-height: 14px;
+    margin: 2px 0 0
+}
+
+	#chat-container .chat-friend-list .chat-friend-info span {
+    display: block;
+    margin: 0
+}
+
+	#chat-container .chat-friend-list .chat-conversation-universe {
+    float: left;
+    width: 56px;
+    height: 41px
+}
+
+	#chat-container .chat-friend-list .chat-conversation-universe .universe-link {
+    border-radius: 3px
+}
+
+	#chat-container .chat-friend-list .chat-conversation-universe .universe-image.album {
+    border: 1px solid #fff
+}
+
+	#chat-container .light-theme .chat-friend-list .chat-conversation-universe .universe-image.album {
+    border-color: #bdbebe
+}
+
+	#chat-container .dark-theme .chat-friend-list .chat-conversation-universe .universe-image.album {
+    border-color: #656668
+}
+
+	#chat-container .chat-friend-list .chat-conversation-universe .universe-image {
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    margin: 0 12px 8px
+}
+
+	#chat-container .chat-disconnect {
+    text-align: center;
+    padding-top: 20%
+}
+
+	#chat-container .chat-disconnect p {
+    margin: 12px 18%
+}
+
+	#chat-container .chat-disconnect img {
+    height: 16px
+}
+
+	#chat-container .chat-disconnect .icon-chat-friends {
+    background-position: 0 -1344px;
+    background-size: 96px auto;
+    width: 48px;
+    height: 48px
+}
+
+	#chat-container .chat-loading {
+    height: 28px;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    z-index: 1000
+}
+
+	#chat-container .chat-loading img {
+    height: 14px
+}
+
+	#chat-container .chat-loading.loading-top {
+    top: 32px
+}
+
+	#chat-container .chat-loading.loading-bottom {
+    bottom: 0
+}
+
+	#chat-container .dialogs-minimize {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -ms-transform: none;
+    position: fixed;
+    bottom: 0;
+    z-index: 1040;
+    width: 200px;
+    height: 32px
+}
+
+	#chat-container .dialogs-minimize .arrow {
+    visibility: hidden
+}
+
+	#chat-container .dialogs-minimize-container {
+    background-color: #fff
+}
+
+	#chat-container .dialogs-minimize-container.light-theme {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .dialogs-minimize-container.light-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .light-theme .dialogs-minimize-container {
+    background-color: #fff;
+    color: #393b3d
+}
+
+	#chat-container .light-theme .dialogs-minimize-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialogs-minimize-container.dark-theme {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dialogs-minimize-container.dark-theme.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dark-theme .dialogs-minimize-container {
+    background-color: #393b3d;
+    color: #fff
+}
+
+	#chat-container .dark-theme .dialogs-minimize-container.remove-panel {
+    background-color: transparent
+}
+
+	#chat-container .dialogs-minimize-container {
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    z-index: 1040;
+    padding: 6px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 54px;
+    height: 32px
+}
+
+	#chat-container .dialogs-minimize-container:after,
+	#chat-container .dialogs-minimize-container:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .dialogs-minimize-container:after {
+    clear: both
+}
+
+	#chat-container .dialogs-minimize-container:hover {
+    cursor: pointer
+}
+
+	#chat-container .dialogs-minimize-container .icon-chat-minimize {
+    float: left
+}
+
+	#chat-container .dialogs-minimize-container .minimize-count {
+    float: right
+}
+
+	#chat-container .minimize-list {
+    width: 200px
+}
+
+	#chat-container .light-theme .minimize-item {
+    color: #767879
+}
+
+	#chat-container .light-theme .minimize-item:hover {
+    color: #393b3d
+}
+
+	#chat-container .light-theme .minimize-item.active,
+	#chat-container .light-theme .minimize-item:active,
+	#chat-container .light-theme .minimize-item:hover {
+    background-color: #bdbebe;
+    box-shadow: none
+}
+
+	#chat-container .dark-theme .minimize-item {
+    color: #bdbebe
+}
+
+	#chat-container .dark-theme .minimize-item:hover {
+    color: #fff
+}
+
+	#chat-container .dark-theme .minimize-item.active,
+	#chat-container .dark-theme .minimize-item:active,
+	#chat-container .dark-theme .minimize-item:hover {
+    background-color: #656668;
+    box-shadow: none
+}
+
+	#chat-container .minimize-item:after,
+	#chat-container .minimize-item:before {
+    content: " ";
+    display: table
+}
+
+	#chat-container .minimize-item:after {
+    clear: both
+}
+
+	#chat-container .minimize-item:hover {
+    cursor: pointer
+}
+
+	#chat-container .minimize-item .minimize-title {
+    width: 84%;
+    width: calc(100% - 32px);
+    float: left
+}
+
+	#chat-container .minimize-item .icon-chat-close-black {
+    float: right;
+    margin: 10px 0 0
+}

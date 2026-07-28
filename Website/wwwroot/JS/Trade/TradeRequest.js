@@ -34,13 +34,14 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.Trade == "undefined
                     for (g = a - r.OfferList.length, k = 0; k < g; k++) i = l.clone(), f += i.html();
                 $(c).html(f), o++
             }
-            at(u.StatusType, u.IsActive)
+            var isOutbound = Number(rt) === u.SenderID;
+            at(u.StatusType, u.IsActive, isOutbound)
         }
     }
 
-    function at(t, i) {
+    function at(t, i, isOutbound) {
         var c, f, e, h;
-        n.find(".ViewButtonContainer").toggle(!i), n.find(".ActionButtonContainer").toggle(i), n.find(".ReviewButtonContainer").hide(), c = "Trade with ", f = {
+        n.find(".ViewButtonContainer").toggle(!i || isOutbound), n.find(".ActionButtonContainer").toggle(i && !isOutbound), n.find(".ReviewButtonContainer").hide(), c = "Trade with ", f = {
             wouldHaveGiven: "ITEMS YOU WOULD HAVE GIVEN",
             wouldHaveReceived: "ITEMS YOU WOULD HAVE RECEIVED",
             gave: "ITEMS YOU GAVE",
@@ -50,7 +51,7 @@ typeof Roblox == "undefined" && (Roblox = {}), typeof Roblox.Trade == "undefined
         }, n.find("p.TradeRequestText .TradePartnerName").attr("href", "/users/" + o + "/profile").text(s), e = n.find("p.TradeRequestText .TradeStatusText"), h = n.find("p.TradeExpiration");
         switch (t) {
             case "Open":
-                e.text("has been opened."), n.find(".ReviewButtonContainer").toggle(!i), n.find(".ViewButtonContainer").hide(), u.text(f.willGive), r.text(f.willReceive), h.show();
+                e.text("has been opened."), n.find(".ReviewButtonContainer").toggle(!i), isOutbound || n.find(".ViewButtonContainer").hide(), u.text(f.willGive), r.text(f.willReceive), h.show();
                 break;
             case "Finished":
                 u.text(f.gave), r.text(f.received), e.text("was completed!"), h.hide();

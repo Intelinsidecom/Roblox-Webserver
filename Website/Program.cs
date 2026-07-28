@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Api.Data;
+using RobloxWebserver.Data;
 using System.Security.Claims;
 using Npgsql;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -59,7 +59,7 @@ builder.Services.AddAntiforgery(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("Default"),
-        npgsql => npgsql.MigrationsAssembly("Api")
+        npgsql => npgsql.MigrationsAssembly("RobloxWebserver")
     )
 );
 // Thumbnails service
@@ -89,6 +89,13 @@ builder.Services.AddSingleton<Games.TokenService>();
 builder.Services.AddHostedService<TokenCleanupService>();
 builder.Services.AddSingleton<GamePresenceService>();
 builder.Services.AddHostedService<GamePresenceCleanupService>();
+
+// Add Presence tracking
+builder.Services.AddSingleton<PresenceTracker>();
+builder.Services.AddHostedService<PresenceUpdateService>();
+
+// Add Chat typing tracker
+builder.Services.AddSingleton<TypingTracker>();
 
 // Add Limited Items expiry service
 builder.Services.AddHostedService<Economy.LimitedExpiryService>();
@@ -139,6 +146,8 @@ app.UseForwardedHeaders();
 // Commented out HTTPS redirection to allow HTTP for development
 
 // app.UseHttpsRedirection();
+
+app.UseWebSockets();
 
 app.UseWebOptimizer();
 
@@ -216,7 +225,7 @@ app.Use(async (context, next) =>
                 context.User = new ClaimsPrincipal(identity);
             }
         }
-        catch (Exception ex) { Console.WriteLine($"[AUTH] Error during auth: {ex.Message}"); }
+        catch { }
     }
     else
     {
@@ -229,6 +238,8 @@ app.Use(async (context, next) =>
 });
 if (enableRequestLogging)
 app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
+app.UseMiddleware<PresenceMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,0 +1,620 @@
+
+@{ Layout = "_Layout"; }
+<!DOCTYPE html>
+<!--[if IE 8]><html class="ie8" ng-app="robloxApp"><![endif]-->
+<!--[if gt IE 8]><!-->
+<html>
+<!--<![endif]-->
+<head data-machine-id="WEB907">
+    <!-- MachineID: WEB907 -->
+    <title>Messages - Roblox</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="~/CSS/2017/Base/CSS/jquery.mCustomScrollbar.css">
+<link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
+<link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
+        
+<link rel="stylesheet" href="/CSS/Pages/Messages/Message.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/PushNotificationRegistration.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+
+    <style>
+        @@media(min-width:600px) {
+            #navContent .container {
+                padding-left: 30px !important;
+            }
+        }
+        @@media(min-width:1200px) {
+            #navContent .container {
+                padding-left: 80px !important;
+            }
+        }
+</style>
+
+    <script type='text/javascript' src='//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js'></script>
+<script type='text/javascript'>window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")</script>
+<script type='text/javascript' src='//ajax.aspnetcdn.com/ajax/jquery.migrate/jquery-migrate-1.2.1.min.js'></script>
+<script type='text/javascript'>window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
+
+
+    <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
+    <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="/JS/roblox.js"></script>
+    <script type="text/javascript" src="/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/JS/utilities/performance.js"></script>
+    <script type="text/javascript" src="/JS/RobloxCookies.js"></script>
+    <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
+    <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+    <script type="text/javascript" src="/JS/services/userService.js"></script>
+    
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<script type="text/javascript">
+        $(function () {
+            Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+        });
+    </script>
+
+
+
+    
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script type="text/javascript">
+if (typeof(Roblox) === "undefined") { Roblox = {}; }
+Roblox.Endpoints = Roblox.Endpoints || {};
+Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+</script>
+
+    <script>
+    Roblox = Roblox || {};
+    Roblox.AbuseReportPVMeta = {
+        desktopEnabled: true,
+        phoneEnabled: false,
+        inAppEnabled: false,
+        inApp: false
+    };
+</script>
+    
+</head>
+<body id="rbx-body"
+      class=""
+      data-performance-relative-value="0.005"
+      data-internal-page-name="Messages"
+      data-send-event-percentage="0">
+<div id="roblox-linkify" data-enabled="true" data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags="gm" data-as-http-regex="((wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.roblox\.com|robloxlabs\.com)"></div>
+
+<div id="image-retry-data"
+     data-image-retry-max-times="10"
+     data-image-retry-timer="1500"
+     data-ga-logging-percent="10">
+</div>
+<div id="http-retry-data"
+     data-http-retry-max-timeout="0"
+     data-http-retry-base-timeout="0"
+     data-http-retry-max-times="5">
+</div>
+        <div id="TosAgreementInfo"
+             data-terms-check-needed="False">
+        </div>
+
+
+
+
+<div id="fb-root"></div>
+
+<div id="wrap" class="wrap no-gutter-ads logged-in"
+     data-gutter-ads-enabled="false">
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    (function () {
+        if (Roblox && Roblox.Performance) {
+            Roblox.Performance.setPerformanceMark("navigation_end");
+        }
+    })();
+</script>
+
+    <div class="container-main  
+                 
+                
+                
+                
+                ">
+            <script type="text/javascript">
+                if (top.location != self.location) {
+                    top.location = self.location.href;
+                }
+            </script>
+
+    
+
+            <div class="content ">
+
+                </div>
+                <script type="text/javascript">
+        var Roblox = Roblox || {};
+        Roblox.messagesModel = {};
+        Roblox.messagesModel = {
+            totalAnnouncements : 0,
+            totalUnreadMessages : 0,
+            maxPrivateMessageLength : "9000",
+            minimumAdRefreshInterval: "1000",
+            lastAdRefresh: new Date(),
+            adminIconUrl: "/images/Logo/admin_icon_11222016.svg"
+        };
+
+        (function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/v2/stream-notifications/unread-count", false);
+            xhr.withCredentials = true;
+            try {
+                xhr.send();
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    Roblox.messagesModel.totalAnnouncements = data.unreadNotifications || 0;
+                }
+            } catch (e) {}
+        })();
+
+        (function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/messages/api/unread-messages-summary", false);
+            xhr.withCredentials = true;
+            try {
+                xhr.send();
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    Roblox.messagesModel.totalUnreadMessages = data.count || 0;
+                }
+            } catch (e) {}
+        })();
+
+        Roblox.websiteTemplates = {
+            avatarTemplate : "common-thumbnail",
+            tabsTemplate : "common-tabs",
+            messagesNavTemplate: "messages-nav",
+            messagesListTemplate:  "messages-list",
+            messagesBodyTemplate: "messages-detail",
+            messageTemplate: "messages-tab",
+            notificationTemplate: "notification-tab"
+        };
+        Roblox.websiteLinks = {
+            GetFormattedMessagesJsonLink: "/messages/api/get-messages",
+            GetFormattedNotificationsJsonLink: "/notifications/api/get-notifications",
+            ArchiveMessagesLink: "/messages/api/archive-messages",
+            UnarchiveMessagesLink: "/messages/api/unarchive-messages",
+            MarkMessagesReadLink: "/messages/api/mark-messages-read",
+            MarkMessagesUnreadLink: "/messages/api/mark-messages-unread",
+            SendMessageJsonResultLink: "/messages/api/send-message",
+            GetMyUnreadMessagesCountLink: "/messages/api/unread-messages-summary",
+            GetMessageDetailByIdLink: "/messages/api/get-message/"
+        };
+        Roblox.messageDefaults = {
+            robloxUserId: 1,
+            robloxUserName: "ROBLOX",
+            robloxUserThumbnail: "https://t6.rbxcdn.com/15bccd771afdb062fc92219d3a258ccb",
+            robloxUserAbsoluteUrl: "https://www.roblox.com/users/1/profile/"
+        };
+    </script>
+    <div ng-modules="robloxApp, messages" class="messages-container">
+            <h1>Messages</h1>
+        
+        
+        
+        
+        
+        
+        
+        <div class="rbx-tabs-horizontal roblox-messages-container" ng-controller="messagesController">
+            <div rbx-tabs></div>
+            <ui-view class="ab-content rbx-tab-content tab-active"></ui-view><!-- ng-controller="messagesContentController"-->
+        </div>
+    </div>
+
+
+</div>
+<!--[if IE 7]><input type="hidden" id="ie7"><![endif]-->
+
+            
+        </div>
+            </div> 
+</div> 
+
+<div ng-modules="robloxApp, notificationStream"
+     ng-controller="notificationStreamController"
+     class="roblox-popover-content manual bottom"
+     data-hidden-class-name="invisible"
+     id="notification-stream"
+     data-isNotificationContentOpen="{{layout.isNotificationContentOpen}}"
+     ng-class="{'inApp': library.inApp,
+                'isPhone': library.isPhone, 
+                'invisible': !library.inApp && !layout.isNotificationContentOpen}">
+    <div notification-content></div>
+        
+        
+        
+        
+</div>
+    <script type="text/javascript">
+        var Roblox = Roblox || {};
+        Roblox.Party = {};
+        Roblox.Party.SetGoogleAnalyticsCallback = function () {
+            RobloxLaunch._GoogleAnalyticsCallback = function() { var isInsideRobloxIDE = 'website'; if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; };GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin'); if (typeof Roblox.GamePlayEvents != 'undefined') { Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId); }  }; 
+        };
+
+    </script>
+
+
+<!-- chat-container now provided by Chat partial in _Layout.cshtml -->
+
+    <script type="text/javascript">function urchinTracker() {}</script>
+
+
+    <div id="videoPrerollPanel" style="display:none">
+        <div id="videoPrerollTitleDiv">
+            Gameplay sponsored by:
+        </div>
+        <div id="content">
+            <video id="contentElement" style="width:0; height:0;" />
+        </div>
+        <div id="videoPrerollMainDiv"></div>
+        <div id="videoPrerollCompanionAd">
+        </div>
+        <div id="videoPrerollLoadingDiv">
+            Loading <span id="videoPrerollLoadingPercent">0%</span> - <span id="videoPrerollMadStatus" class="MadStatusField">Starting game...</span><span id="videoPrerollMadStatusBackBuffer" class="MadStatusBackBuffer"></span>
+            <div id="videoPrerollLoadingBar">
+                <div id="videoPrerollLoadingBarCompleted">
+                </div>
+            </div>
+        </div>
+        <div id="videoPrerollJoinBC">
+            <span>Get more with Builders Club!</span>
+            <a href="/premium/membership?ctx=preroll" target="_blank" class="btn-medium btn-primary" id="videoPrerollJoinBCButton">Join Builders Club</a>
+        </div>
+    </div>   
+        <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var videoPreRollDFP = Roblox.VideoPreRollDFP;
+            if (videoPreRollDFP) {
+                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
+                videoPreRollDFP.showVideoPreRoll = true;
+                videoPreRollDFP.loadingBarMaxTime = 33000;
+                videoPreRollDFP.videoLoadingTimeout = 11000;
+                videoPreRollDFP.videoPlayingTimeout = 41000;
+                videoPreRollDFP.videoLogNote = "";
+                videoPreRollDFP.logsEnabled = true;
+                videoPreRollDFP.excludedPlaceIds = "32373412";
+                videoPreRollDFP.adUnit = "/1015347/VideoPreroll";
+                videoPreRollDFP.adTime = 15;
+                videoPreRollDFP.isSwfPreloaderEnabled = false;
+                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
+                videoPreRollDFP.isAgeTargetingEnabled = true;
+                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
+                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
+                customTargeting.userAge = "27";
+                customTargeting.userAgeOrSegment = "27";
+                customTargeting.userGender = "Male";
+                customTargeting.gameGenres = "";
+                customTargeting.environment = "Production";
+                customTargeting.adTime = "15";
+                customTargeting.PLVU = true;
+                $(videoPreRollDFP.checkEligibility);
+            }
+        });
+    </script>                                                     
+
+
+
+<script type="text/javascript" src="/JS/EventTracker.js"></script>
+<script type="text/javascript" src="/JS/ClientInstaller.js"></script>
+<script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
+<script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
+
+<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
+    <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+    <div class="Title"></div>
+    <div class="GenericModalBody">
+        <div class="TopBody">
+            <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays data-no-click>
+                <img class="GenericModalImage" alt="generic image" />
+            </div>
+            <div class="Message"></div>
+        </div>
+        <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+            <a href id="roblox-confirm-btn"><span></span></a>
+            <a href id="roblox-decline-btn"><span></span></a>
+        </div>
+        <div class="ConfirmationModalFooter">
+        
+        </div>  
+    </div>  
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+        
+        //<sl:translate>
+        Roblox.Resources.GenericConfirmation = {
+            yes: "Yes",
+            No: "No",
+            Confirm: "Confirm",
+            Cancel: "Cancel"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+<div id="modal-confirmation" class="modal-confirmation" data-modal-type="confirmation">
+    <div id="modal-dialog"  class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true"><span class="icon-close"></span></span><span class="sr-only">Close</span>
+                </button>
+                <h5 class="modal-title"></h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-top-body">
+                    <div class="modal-message"></div>
+                    <div class="modal-image-container roblox-item-image" data-image-size="medium" data-no-overlays data-no-click>
+                        <img class="modal-thumb" alt="generic image"/>
+                    </div>
+                    <div class="modal-checkbox checkbox">
+                        <input id="modal-checkbox-input" type="checkbox"/>
+                        <label for="modal-checkbox-input"></label>
+                    </div>
+                </div>
+                <div class="modal-btns">
+                    <a href id="confirm-btn"><span></span></a>
+                    <a href id="decline-btn"><span></span></a>
+                </div>
+                <div class="loading modal-processing">
+                    <img class="loading-default" src='/images/4bed93c91f909002b1f17f05c0ce13d1.gif' alt="Processing..." />
+                </div>
+            </div>
+            <div class="modal-footer text-footer">
+
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+
+        //<sl:translate>
+        Roblox.Resources.Dialog = {
+            yes: "Yes",
+            No: "No",
+            OK: "OK",
+            Confirm: "Confirm",
+            Cancel: "Cancel",
+            Agree: "Agree"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.jsConsoleEnabled = false;
+</script>
+
+
+    <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="/JS/leancore/libs/underscore-min.js"></script>
+    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="/JS/utilities/deviceFeatureDetection.js"></script>
+    <script type="text/javascript" src="/JS/utilities/lazyLoad.js"></script>
+    <script type="text/javascript" src="/JS/utilities/urlParser.js"></script>
+    <script type="text/javascript" src="/JS/utilities/ExponentialBackoff.js"></script>
+    <script type="text/javascript" src="/JS/utilities/ExponentialBackoffSpecification.js"></script>
+    <script type="text/javascript" src="/JS/XsrfToken.js"></script>
+    <script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="/JS/Reference/widget.js"></script>
+    <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="/JS/json2.min.js"></script>
+    <script type="text/javascript" src="/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="/JS/extensions/AnimatedThumbnails.js"></script>
+    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
+    <script type="text/javascript" src="/JS/3D/three.js"></script>
+    <script type="text/javascript" src="/JS/3D/MTLLoader.js"></script>
+    <script type="text/javascript" src="/JS/3D/OBJMTLLoader.js"></script>
+    <script type="text/javascript" src="/JS/3D/tween.js"></script>
+    <script type="text/javascript" src="/JS/3D/RobloxOrbitControls.js"></script>
+    <script type="text/javascript" src="/JS/Linkify.js"></script>
+    <script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="/JS/VideoPreRollDFP.js"></script>
+    <script type="text/javascript" src="/JS/CharacterSelect.js"></script>
+    <script type="text/javascript" src="/JS/MadStatus.js"></script>
+    <script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="/JS/GameLauncher.js"></script>
+    <script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
+
+
+
+    <script type="text/javascript" src="/JS/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular.ng-modules.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular.audio.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular-elastic.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/app.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/robloxService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/chatDispatchService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/eventStreamService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/httpService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/hybridService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/imagesService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/localStorageService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/numericCodeService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/realtimeService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/retryService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/urlService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/userService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/performanceService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/keyCode.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/callBackTypes.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/deviceTypes.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/helpers.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/abbreviate.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/capitalize.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/firstLetter.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/getPercentage.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/htmlToPlainText.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/isEmpty.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/orderList.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/parseTimeStamp.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/positive.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/reverse.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/startsWith.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/autoResizeDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/blurDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/clickOutsideDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/enterEscapeShiftDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/focusDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/focusMeDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/formValidationDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/imageRetryWithLazyLoadDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/inputMaxLength.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/keyPressEnterDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/keyPressEscapeDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/numbersOnlyDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/onFinishRenderDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/phoneDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/directives/switcherDirective.js"></script>
+
+    <div ng-modules="baseTemplateApp">
+        <script type="text/javascript" src="/js/base_splitApps___29d0d828b10d9553443e4d5e9e2cc728_m.js"></script>
+    </div>
+    <div ng-modules="pageTemplateApp">
+        <script type="text/javascript" src="/js/page_splitApps___6bb5caceb7100bf43a762e49ad35c679_m.js"></script>
+    </div>
+
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/constants/layoutLibrary.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/constants/signalR.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
+
+
+
+<script>
+    Roblox.XsrfToken.setToken('ZBiF+JCaP3O/');
+</script>
+
+    <script>
+        $(function () {
+            Roblox.DeveloperConsoleWarning.showWarning();
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+        });
+    </script>
+
+
+
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
+
+    Roblox.UpsellAdModal.Resources = {
+        //<sl:translate>
+        title: "Remove Ads Like This",
+        body: "Builders Club members do not see external ads like these.",
+        accept: "Upgrade Now",
+        decline: "No, thanks"
+        //</sl:translate>
+    };
+</script>
+
+<script type="text/javascript" src="/JS/DataPager.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/messages.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/constants/tabs.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/constants/moduleState.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/services/messagesService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/controllers/messagesController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/controllers/messagesContentController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesTabsDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesNavDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesListDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesDetailDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesAvatarDirective.js"></script>
+<script type="text/javascript" src="/JS/utilities/popover.js"></script>
+<script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
+<script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+<script type="text/javascript" src="/JS/utilities/dialog.js"></script>
+<script type="text/javascript" src="/JS/cookieLawNotice.js"></script>
+<script type="text/javascript" src="/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+
+    <script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
+
+    <script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
+
+
+</body>
+</html>

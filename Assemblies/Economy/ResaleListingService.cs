@@ -153,8 +153,8 @@ namespace Economy
 
                 if (assetId > 0)
                 {
-                    const string restoreSql = @"INSERT INTO user_assets (user_id, asset_id) VALUES (@userId, @assetId)
-                                                ON CONFLICT (user_id, asset_id) DO NOTHING";
+                    const string restoreSql = @"INSERT INTO user_assets (user_id, asset_id) SELECT @userId, @assetId
+                                                WHERE NOT EXISTS (SELECT 1 FROM user_assets WHERE user_id = @userId AND asset_id = @assetId)";
                     using var restoreCmd = new NpgsqlCommand(restoreSql, conn, useTx);
                     restoreCmd.Parameters.AddWithValue("userId", userId);
                     restoreCmd.Parameters.AddWithValue("assetId", assetId);
@@ -265,8 +265,8 @@ namespace Economy
                 }
 
                 using (var insertCmd = new NpgsqlCommand(
-                    @"INSERT INTO user_assets (user_id, asset_id) VALUES (@uid, @assetId)
-                      ON CONFLICT (user_id, asset_id) DO NOTHING", conn, tx))
+                    @"INSERT INTO user_assets (user_id, asset_id) SELECT @uid, @assetId
+                      WHERE NOT EXISTS (SELECT 1 FROM user_assets WHERE user_id = @uid AND asset_id = @assetId)", conn, tx))
                 {
                     insertCmd.Parameters.AddWithValue("uid", buyerUserId);
                     insertCmd.Parameters.AddWithValue("assetId", assetId);

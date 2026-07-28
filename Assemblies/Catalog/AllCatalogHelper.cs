@@ -111,7 +111,7 @@ namespace RobloxWebserver.Assemblies.Catalog
 from assets a
 join users u on u.user_id = a.owner_user_id
 where coalesce(a.asset_image, false) = false
-  and (a.on_sale = true or a.is_copying_allowed = true)
+  and (a.on_sale = true or a.is_copying_allowed = true or a.limited_unique = true or (a.limited_quantity is not null and a.limited_quantity > 0))
   and (a.is_place = false or a.is_place is null)";
 
                 if (category.HasValue)

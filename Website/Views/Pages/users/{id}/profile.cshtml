@@ -169,31 +169,32 @@
                                     followersCount: @ViewBag.FollowersCount,
                                     followingsCount: @ViewBag.FollowingsCount,
                                     acceptFriendRequestUrl: "/api/friends/acceptfriendrequest",
-                                    incomingFriendRequestId: 0,
-                                    areFriends: false,
-                                    maySendFriendInvitation: false,
-                                    mayFollow: false,
-                                    canBeFollowed: false,
-                                    isBlockButtonVisible: false,
+                                    incomingFriendRequestId: @ViewBag.IncomingFriendRequestId,
+                                    areFriends: @(ViewBag.AreFriends ? "true" : "false"),
+                                    maySendFriendInvitation: @(ViewBag.MaySendFriendInvitation ? "true" : "false"),
+                                    mayFollow: @(ViewBag.MayFollow ? "true" : "false"),
+                                    canBeFollowed: @(ViewBag.CanBeFollowed ? "true" : "false"),
+                                    inGame: @(ViewBag.InGame ? "true" : "false"),
+                                    isBlockButtonVisible: @(ViewBag.IsBlockButtonVisible ? "true" : "false"),
                                     isMoreBtnVisible: true,
                                     friendUrl: "/users/@ViewBag.ProfileUserId/friends#!/friends",
-                                    incomingFriendRequestPending: false,
-                                    friendRequestPending: false,
+                                    incomingFriendRequestPending: @(ViewBag.IncomingFriendRequestPending ? "true" : "false"),
+                                    friendRequestPending: @(ViewBag.FriendRequestPending ? "true" : "false"),
                                     sendFriendRequestUrl: "/api/friends/sendfriendrequest",
                                     removeFriendRequestUrl: "/api/friends/removefriend",
-                                    isFollowing: false,
+                                    isFollowing: @(ViewBag.IsFollowing ? "true" : "false"),
                                     followUrl: "/user/follow",
                                     unFollowUrl: "/api/user/unfollow",
                                     messageUrl: "/messages/compose?recipientId=@ViewBag.ProfileUserId",
-                                    canPm: @(ViewBag.ProfileCanPm ? "true" : "false"),
-                                    canMessage: @(ViewBag.ProfileCanPm ? "true" : "false"),
+                                    canPm: true,
+                                    canMessage: true,
                                     canChat: @(ViewBag.ProfileCanChat ? "true" : "false"),
                                     canTrade: @(ViewBag.ProfileCanTrade && ViewBag.CurrentUserCanTrade ? "true" : "false"),
                                     subscriptionType: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ProfileSubscriptionType)),
                                     membershipStatus: @ViewBag.ProfileMembershipStatus,
                                     profileVisibility: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ProfileVisibility)),
                                     getFollowScript: "Roblox.GameLauncher.followPlayerIntoGame(@ViewBag.ProfileUserId);",
-                                    isVieweeBlocked: false,
+                                    isVieweeBlocked: @(ViewBag.IsVieweeBlocked ? "true" : "false"),
                                     mayImpersonate: false,
                                     impersonateUrl: "",
                                     mayUpdateStatus: @(ViewBag.IsOwnProfile ? "true" : "false"),
@@ -220,7 +221,7 @@
                                 });
                             </script>
                             <div class=profile-header-top>
-                                <div class="avatar avatar-headshot-lg card-plain profile-avatar-image"><span class="avatar-card-link avatar-image-link"> <img alt="@userName" class="avatar-card-image profile-avatar-thumb" ng-src="{{ '@ViewBag.HeadshotThumbnailUrl' }}" src="@ViewBag.HeadshotThumbnailUrl" thumbnail="{&#34;Final&#34;:true,&#34;Url&#34;:&#34;@ViewBag.HeadshotThumbnailUrl&#34;,&#34;RetryUrl&#34;:null,&#34;UserId&#34;:@ViewBag.ProfileUserId,&#34;EndpointType&#34;:&#34;Avatar&#34;}" image-retry> </span>
+                                <div class="avatar avatar-headshot-lg card-plain profile-avatar-image"><span class="avatar-card-link avatar-image-link"> <img alt="@userName" class="avatar-card-image profile-avatar-thumb" ng-src="{{ '@ViewBag.HeadshotThumbnailUrl' }}" src="@ViewBag.HeadshotThumbnailUrl" thumbnail="{&#34;Final&#34;:@(ViewBag.HeadshotFinal ? "true" : "false"),&#34;Url&#34;:&#34;@ViewBag.HeadshotThumbnailUrl&#34;,&#34;RetryUrl&#34;:@ViewBag.HeadshotRetryJson,&#34;UserId&#34;:@ViewBag.ProfileUserId,&#34;EndpointType&#34;:&#34;Avatar&#34;}" image-retry> </span>
                                     <script>
                                         $("img.profile-avatar-thumb").on('load', function() {
                                             if (Roblox && Roblox.Performance) {
@@ -231,6 +232,14 @@
                                     @if ((bool)(ViewBag.InGame ?? false))
                                     {
                                         <div ng-non-bindable><a href="/games/refer?PlaceId=@ViewBag.GamePlaceId&amp;Position=0&amp;PageType=Profile" class="avatar-status game"><span class="icon-game profile-avatar-status" title="Playing @ViewBag.GameName"></span></a></div>
+                                    }
+                                    else if ((bool)(ViewBag.InStudio ?? false))
+                                    {
+                                        <div ng-non-bindable><span class="avatar-status studio"><span class="icon-studio profile-avatar-status" title="Active in Studio"></span></span></div>
+                                    }
+                                    else if ((bool)(ViewBag.IsOnline ?? false))
+                                    {
+                                        <div ng-non-bindable><span class="avatar-status online"><span class="icon-online profile-avatar-status" title="Online"></span></span></div>
                                     }
                                 </div>
                                 <div class=header-caption>
@@ -254,7 +263,7 @@
                                         </ul>
                                         <div captcha captcha-model=captchaSetting captcha-type=captchaSetting.captchaType on-captcha-success=captchaSetting.successCB on-captcha-error=captchaSetting.errorCB></div>
                                         <ul class="details-actions desktop-action" ng-if="!profileHeaderLayout.isOwnProfile">
-                                            <li class=btn-friends ng-if=!profileHeaderLayout.areFriends ng-cloak><button ng-if=profileHeaderLayout.incomingFriendRequestPending ng-cloak class=btn-control-md data-target-url=/api/friends/acceptfriendrequest data-friend-request-id=0 data-target-user-id=@ViewBag.ProfileUserId data-friends-url=/users/@ViewBag.ProfileUserId/friends#!/friends ng-click=acceptFriendRequest()> Accept </button> <button ng-if="!profileHeaderLayout.incomingFriendRequestPending
+                                            <li class=btn-friends ng-if=!profileHeaderLayout.areFriends ng-cloak><button ng-if=profileHeaderLayout.incomingFriendRequestPending ng-cloak class=btn-control-md data-target-url=/api/friends/acceptfriendrequest data-friend-request-id=@ViewBag.IncomingFriendRequestId data-target-user-id=@ViewBag.ProfileUserId data-friends-url=/users/@ViewBag.ProfileUserId/friends#!/friends ng-click=acceptFriendRequest()> Accept </button> <button ng-if="!profileHeaderLayout.incomingFriendRequestPending
                                                 &amp;&amp; profileHeaderLayout.maySendFriendInvitation" ng-cloak class=btn-control-md ng-click=sendFriendRequest()> Add Friend </button> <button ng-if="!profileHeaderLayout.incomingFriendRequestPending
                                             &amp;&amp; !profileHeaderLayout.maySendFriendInvitation
                                             &amp;&amp; profileHeaderLayout.friendRequestPending" ng-cloak class="btn-control-md disabled"> Pending </button> <button ng-if="!profileHeaderLayout.incomingFriendRequestPending
@@ -263,10 +272,10 @@
                                             <li class=btn-friends ng-if=profileHeaderLayout.areFriends ng-cloak><button class=btn-control-md id=unfriend-btn data-target-url=/api/friends/removefriend data-target-user-id=@ViewBag.ProfileUserId ng-mouseenter="hover = true" ng-mouseleave="hover =false" ng-class="{'btn-unfollow': hover}" ng-click=removeFriend()> Unfriend </button>
                                             <li class=btn-messages id=profile-message-btn><button class=btn-control-md ng-disabled=!profileHeaderLayout.enableMessageBtn ng-show=profileHeaderLayout.showMessageBtn ng-click=sendMessage() ng-cloak> Message </button>
                                             <li class=btn-messages id=profile-chat-btn ng-show=profileHeaderLayout.showChatBtn><button class=btn-control-md ng-click=chat() ng-cloak> Chat </button>
-                                            <li class=btn-join-game ng-if=profileHeaderLayout.canBeFollowed><button class="profile-join-game btn-primary-md" ng-cloak> Join Game </button>
+                                             <li class=btn-join-game ng-if="profileHeaderLayout.canBeFollowed &amp;&amp; profileHeaderLayout.inGame"><button class="profile-join-game btn-primary-md" ng-cloak> Join Game </button>
                                         </ul>
-                                        <ul class="details-actions mobile-action" ng-if="!profileHeaderLayout.isOwnProfile" ng-class="{'three-item-list': profileHeaderLayout.canBeFollowed}">
-                                            <li class=btn-friends ng-if=!profileHeaderLayout.areFriends ng-cloak><a ng-if=profileHeaderLayout.incomingFriendRequestPending ng-cloak data-target-url=/api/friends/acceptfriendrequest data-friend-request-id=0 data-target-user-id=@ViewBag.ProfileUserId data-friends-url=/users/@ViewBag.ProfileUserId/friends#!/friends class=action-add-friend ng-click=acceptFriendRequest()>
+                                        <ul class="details-actions mobile-action" ng-if="!profileHeaderLayout.isOwnProfile" ng-class="{'three-item-list': profileHeaderLayout.canBeFollowed &amp;&amp; profileHeaderLayout.inGame}">
+                                            <li class=btn-friends ng-if=!profileHeaderLayout.areFriends ng-cloak><a ng-if=profileHeaderLayout.incomingFriendRequestPending ng-cloak data-target-url=/api/friends/acceptfriendrequest data-friend-request-id=@ViewBag.IncomingFriendRequestId data-target-user-id=@ViewBag.ProfileUserId data-friends-url=/users/@ViewBag.ProfileUserId/friends#!/friends class=action-add-friend ng-click=acceptFriendRequest()>
                                                     <div class=icon-accept-friend></div>
                                                     <div class="text-label small">Accept</div>
                                                 </a> <a ng-if="!profileHeaderLayout.incomingFriendRequestPending
@@ -301,7 +310,7 @@
                                                     <div class=icon-start-chat></div>
                                                     <div class="text-label small">Chat</div>
                                                 </div>
-                                            <li class="btn-join-game last-icon" ng-if=profileHeaderLayout.canBeFollowed><a class="profile-join-game action-join-game" ng-cloak>
+                                             <li class="btn-join-game last-icon" ng-if="profileHeaderLayout.canBeFollowed &amp;&amp; profileHeaderLayout.inGame"><a class="profile-join-game action-join-game" ng-cloak>
                                                     <div class=icon-join-game></div>
                                                     <div class="text-label small">Join Game</div>
                                                 </a>
@@ -463,7 +472,11 @@
                                         <h3>Currently Wearing</h3>
                                     </div>
                                     <div class="col-sm-6 section-content profile-avatar-left">
-                                        <div id=UserAvatar class=thumbnail-holder data-reset-enabled-every-page data-3d-thumbs-enabled data-url="/thumbnail/user-avatar?userId=@ViewBag.ProfileUserId&amp;thumbnailFormatId=124&amp;width=300&amp;height=300" style=width:300px;height:300px><span class=thumbnail-span data-3d-url="/avatar-thumbnail-3d/json?userId=@ViewBag.ProfileUserId" data-orig-retry-url="/avatar-thumbnail/json?userId=@ViewBag.ProfileUserId&amp;width=352&amp;height=352&amp;format=png"><img alt=@userName src="@ViewBag.AvatarThumbnailUrl"></span> <span class="enable-three-dee btn-control btn-control-small">3D</span></div>
+                                        @{
+                                            var avatarRetryUrl = $"/avatar-thumbnail/json?userId={ViewBag.ProfileUserId}&width=352&height=352&format=png";
+                                            var cacheBuster = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                                        }
+                                        <div id=UserAvatar class=thumbnail-holder data-reset-enabled-every-page data-3d-thumbs-enabled data-url="/thumbnail/user-avatar?userId=@ViewBag.ProfileUserId&amp;thumbnailFormatId=124&amp;width=300&amp;height=300" style=width:300px;height:300px><span class=thumbnail-span data-3d-url="/avatar-thumbnail-3d/json?userId=@ViewBag.ProfileUserId" data-orig-retry-url="@avatarRetryUrl" data-retry-url="@(avatarRetryUrl)&_=@cacheBuster"><img alt=@userName src="@ViewBag.AvatarThumbnailUrl"></span> <span class="enable-three-dee btn-control btn-control-small">3D</span></div>
                                     </div>
                                     <div class="col-sm-6 section-content profile-avatar-right">
                                         <div class=profile-avatar-mask>
@@ -717,15 +730,7 @@
             };
         };
     </script>
-    <div id=chat-container class="chat chat-container" ng-modules="robloxApp" ng-cloak>
-        <div chat-bar></div>
-        <div id=dialogs class=dialogs>
-            <div dialog id={{chatLayoutId}} dialog-data=chatUserDict[chatLayoutId] chat-library=chatLibrary close-dialog=closeDialog(chatLayoutId) send-invite=sendInvite(chatLayoutId) ng-repeat="chatLayoutId in chatLibrary.layoutIdList"></div>
-            <div dialog id={{newGroup.layoutId}} dialog-data=newGroup chat-library=chatLibrary close-dialog="closeDialog('newGroup')" send-invite=sendInvite(newGroup.layoutId) ng-if=newGroup></div>
-            <div id=dialogs-minimize class=dialogs-minimize dialog-minimize chat-library=chatLibrary></div>
-            <div class=chat-placeholder chat-placeholder></div>
-        </div>
-    </div>
+    <!-- chat-container now provided by Chat partial in _Layout.cshtml -->
     <script>
         function urchinTracker() {}
     </script>
@@ -1116,6 +1121,15 @@
     angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
 </script>
 <script type="text/javascript" src="/JS/viewapp/pages/profile/profile.js"></script>
+<script>
+    angular.module("profile").run(["$templateCache", function(t) {
+        var tmpl = '<div tabindex="-1" role="dialog" class="modal fade" ng-class="{in: animate}" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)">' +
+            '<div class="modal-dialog" ng-class="{\'modal-sm\': size == \'sm\', \'modal-lg\': size == \'lg\'}">' +
+            '<div class="modal-content" modal-transclude></div></div></div>';
+        t.put("template/modal/window.html", tmpl);
+        t.put("/viewapp/common/template/modal/window.html", tmpl);
+    }]);
+</script>
 <script type="text/javascript">
     angular.module("ui.bootstrap.compat").config(["$provide", function(n) {
             n.decorator("modalBackdropDirective", ["$delegate", function(n) {

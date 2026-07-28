@@ -1,6 +1,8 @@
 // ~/viewapp/app.js
 "use strict";
-var robloxApp = angular.module("robloxApp", ["ngSanitize", "ui.router", "robloxApp.services", "robloxApp.filters", "templateApp"]).config(["$httpProvider", function(n) {
+var robloxApp = (function() {
+    try { return angular.module("robloxApp"); } catch(e) { return null; }
+})() || angular.module("robloxApp", ["ngSanitize", "ui.router", "robloxApp.services", "robloxApp.filters", "templateApp"]).config(["$httpProvider", function(n) {
     var r = "X-CSRF-TOKEN",
         u = 403,
         t = angular.element("#http-retry-data"),

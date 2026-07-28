@@ -124,11 +124,21 @@ namespace Games
         /// <summary>
         /// Updates user's client status (for the /client-status polling mechanism)
         /// </summary>
-        public Task UpdateUserClientStatusAsync(long userId, string status)
+        public async Task UpdateUserClientStatusAsync(long userId, string status)
         {
             try
             {
-                return Task.CompletedTask;
+                if (string.IsNullOrWhiteSpace(_connectionString) || userId <= 0)
+                    return;
+
+                await using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                using var cmd = new NpgsqlCommand(@"
+                    UPDATE users SET last_activity = NOW()
+                    WHERE user_id = @userId", conn);
+                cmd.Parameters.AddWithValue("userId", userId);
+                await cmd.ExecuteNonQueryAsync();
             }
             catch (Exception ex)
             {
@@ -359,6 +369,66 @@ namespace Games
                 throw new InvalidOperationException($"Failed to get active player count for place {placeId}: {ex.Message}", ex);
             }
         }
+
+        /// <summary>
+        /// Gets a paginated list of players in a place with user info (usernames).
+        /// Uses LIMIT/OFFSET for efficient large result sets.
+        /// </summary>
+        public async Task<(int TotalCount, List<GamePresenceWithUser> Players)> GetPlayersInPlacePaginatedAsync(
+            long placeId, int startRow = 0, int maxRows = 10)
+        {
+            var players = new List<GamePresenceWithUser>();
+
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                // Get total count first
+                using var countCmd = new NpgsqlCommand(@"
+                    SELECT COUNT(*) FROM game_presence 
+                    WHERE placeid = @placeId 
+                    AND (last_ping + INTERVAL '30 seconds') > NOW()", conn);
+                countCmd.Parameters.AddWithValue("placeId", placeId);
+                var totalCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync() ?? 0);
+
+                // Get paginated results with user info joined
+                using var cmd = new NpgsqlCommand(@"
+                    SELECT gp.uid, gp.placeid, gp.jobid, gp.created_at, gp.updated_at,
+                           u.user_name
+                    FROM game_presence gp
+                    LEFT JOIN users u ON u.user_id = gp.uid
+                    WHERE gp.placeid = @placeId
+                    AND (gp.last_ping + INTERVAL '30 seconds') > NOW()
+                    ORDER BY gp.created_at DESC
+                    LIMIT @limit OFFSET @offset", conn);
+
+                cmd.Parameters.AddWithValue("placeId", placeId);
+                cmd.Parameters.AddWithValue("limit", maxRows);
+                cmd.Parameters.AddWithValue("offset", startRow);
+
+                using var reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var jobId = reader.IsDBNull(2) ? string.Empty : reader.GetString(2);
+                    players.Add(new GamePresenceWithUser
+                    {
+                        UserId = reader.GetInt64(0),
+                        PlaceId = reader.GetInt64(1),
+                        JobId = jobId,
+                        CreatedAt = reader.GetDateTime(3),
+                        UpdatedAt = reader.GetDateTime(4),
+                        UserName = reader.IsDBNull(5) ? "" : reader.GetString(5)
+                    });
+                }
+
+                return (totalCount, players);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to get paginated players for place {placeId}: {ex.Message}", ex);
+            }
+        }
     }
 
     public class GamePresenceInfo
@@ -369,5 +439,15 @@ namespace Games
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsInGame { get; set; }
+    }
+
+    public class GamePresenceWithUser
+    {
+        public long UserId { get; set; }
+        public long PlaceId { get; set; }
+        public string JobId { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public string UserName { get; set; } = string.Empty;
     }
 }

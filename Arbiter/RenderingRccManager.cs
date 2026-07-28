@@ -69,6 +69,16 @@ namespace RCCArbiter
         {
             lock (_lock)
             {
+                // Prune dead instances
+                for (int idx = _instances.Count - 1; idx >= 0; idx--)
+                {
+                    if (!_instances[idx].Proc.IsRunning)
+                    {
+                        try { _instances[idx].Proc.Dispose(); } catch { }
+                        _instances.RemoveAt(idx);
+                    }
+                }
+
                 // Choose least loaded instance below threshold
                 Instance? best = null;
                 foreach (var i in _instances)
@@ -83,6 +93,7 @@ namespace RCCArbiter
                     int port = FindFreePort();
                     var proc = new RCCProcessManager(_config, "Rendering", port);
                     proc.Start();
+                    proc.EnableAutoRestart();
                     best = new Instance { Proc = proc, Load = 0, LastUsedUtc = DateTime.UtcNow };
                     _instances.Add(best);
                 }

@@ -203,6 +203,68 @@ namespace RobloxWebserver.Controllers
             });
         }
 
+        [HttpGet("messages/compose")]
+        public async Task<IActionResult> Compose([FromQuery] long? recipientId)
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+                return Redirect("/");
+
+            var (isValid, currentUserId) = AuthenticationHelper.GetCurrentUserId(User);
+            if (!isValid || currentUserId <= 0)
+                return Redirect("/");
+
+            if (recipientId == null || recipientId <= 0)
+                return Redirect("/my/messages");
+
+            if (recipientId.Value == currentUserId)
+                return Redirect("/my/messages");
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Redirect("/my/messages");
+
+            bool recipientExists;
+            try
+            {
+                recipientExists = await UserQueries.UserExistsAsync(connStr, recipientId.Value);
+            }
+            catch
+            {
+                return Redirect("/my/messages");
+            }
+
+            if (!recipientExists)
+                return Redirect("/my/messages");
+
+            string recipientUserName = "";
+            try
+            {
+                recipientUserName = await UserQueries.GetUserNameByIdAsync(connStr, recipientId.Value) ?? "";
+            }
+            catch { }
+
+            long robux = 0, tix = 0;
+            try
+            {
+                robux = await UserQueries.GetCurrencyByIdAsync(connStr, currentUserId, "robux");
+                tix = await UserQueries.GetCurrencyByIdAsync(connStr, currentUserId, "tix");
+            }
+            catch { }
+
+            ViewBag.CurrentUserId = currentUserId;
+            ViewBag.RecipientId = recipientId.Value;
+            ViewBag.RecipientUserName = recipientUserName;
+            ViewBag.Robux = robux;
+            ViewBag.Tix = tix;
+
+            const string viewPath = "~/Views/Pages/messages/compose.cshtml";
+            var viewResult = _viewEngine.GetView(null, viewPath, true);
+            if (!viewResult.Success)
+                return NotFound();
+
+            return View(viewPath);
+        }
+
         [HttpGet("My/{*path}")]
         public IActionResult Route(string? path)
         {

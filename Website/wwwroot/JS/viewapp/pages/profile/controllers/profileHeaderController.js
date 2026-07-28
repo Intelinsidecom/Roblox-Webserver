@@ -75,7 +75,7 @@ profile.controller("profileHeaderController", ["$scope", "profileService", "robl
     });
     n.follow = function() {
         n.profileHeaderLayout.userId ? t.follow(n.profileHeaderLayout.followUrl, n.profileHeaderLayout.profileUserId).then(function(t) {
-            t && t.success ? (n.profileHeaderLayout.isFollowing = !0, n.profileHeaderLayout.followersCount = parseInt(n.profileHeaderLayout.followersCount) + 1) : (n.profileHeaderLayout.hasError = !0, n.profileHeaderLayout.errorMsg = t.message ? t.message : "")
+            t && t.success ? (n.profileHeaderLayout.isFollowing = !0, n.profileHeaderLayout.followersCount = parseInt(n.profileHeaderLayout.followersCount) + 1, Roblox.BootstrapWidgets.ToggleSystemMessage($(".alert-success"), 100, 2e3, "Now following " + (n.profileHeaderLayout.profileUserName || ""))) : (n.profileHeaderLayout.hasError = !0, n.profileHeaderLayout.errorMsg = t.message ? t.message : "")
         }, function(t) {
             t && t.message === "Captcha" ? (n.captchaSetting.successCB = n.follow, n.captchaSetting.captchaType = o.types.follow, n.captchaSetting.isActivated = !0) : (n.profileHeaderLayout.hasError = !0, n.profileHeaderLayout.errorMsg = "Sending acceptFriendRequest is failed!")
         }) : window.location = s

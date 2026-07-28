@@ -1,0 +1,1 @@
+<ul class="nav nav-tabs" ng-init=currentStatus.activeTab><li class=rbx-tab ng-repeat="tab in tabs|orderBy:tab.id" ng-class="{'active':currentStatus.activeTab==tab.name}" ng-click=onClickTab(tab)><a class=rbx-tab-heading ui-sref={{tab.name}}><span class=text-lead>{{tab.label}}</span> <span class=notification-red ng-show=tab.count>{{tab.count}}</span></a></ul>

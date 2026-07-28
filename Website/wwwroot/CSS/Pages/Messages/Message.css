@@ -1,0 +1,1327 @@
+/* ~/CSS/Pages/Messages/Message.css */
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    line-height: 1em;
+    margin: 0;
+    padding: 5px 0;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: 400;
+}
+
+@media(max-width:767px) {
+    h1 {
+        font-size: 30px;
+    }
+}
+
+h2 {
+    font-size: 30px;
+    font-weight: 400;
+}
+
+@media(max-width:767px) {
+    h2 {
+        font-size: 24px;
+    }
+}
+
+h3 {
+    font-size: 24px;
+    font-weight: 300;
+}
+
+@media(max-width:767px) {
+    h3 {
+        font-size: 21px;
+    }
+}
+
+h4 {
+    font-size: 21px;
+    font-weight: 400;
+}
+
+@media(max-width:767px) {
+    h4 {
+        font-size: 18px;
+    }
+}
+
+h5 {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+@media(max-width:767px) {
+    h5 {
+        font-size: 16px;
+    }
+}
+
+div {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.3em;
+}
+
+@media(max-width:767px) {
+    div {
+        font-size: 14px;
+        font-weight: 400;
+    }
+}
+
+p,
+.text-description {
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -o-hyphens: auto;
+    hyphens: auto;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.5em;
+}
+
+.font-bold,
+.font-bold:link,
+.font-bold:visited,
+.font-bold:active,
+strong,
+strong:link,
+strong:visited,
+strong:active {
+    font-weight: 600;
+}
+
+.small,
+.small-oneline {
+    color: #191919;
+}
+
+.small,
+.small:link,
+.small:visited,
+.small:active,
+.small-oneline,
+.small-oneline:link,
+.small-oneline:visited,
+.small-oneline:active {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.small-oneline {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.xsmall {
+    color: #191919;
+}
+
+.xsmall,
+.xsmall:link,
+.xsmall:visited,
+.xsmall:active {
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.xxsmall {
+    color: #191919;
+}
+
+.xxsmall,
+.xxsmall:link,
+.xxsmall:visited,
+.xxsmall:active {
+    font-size: 10px;
+    font-weight: 400;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-link,
+.message-detail a,
+.text-link:link,
+.message-detail a:link,
+.text-link:hover,
+.message-detail a:hover,
+.text-link:visited,
+.message-detail a:visited,
+.text-link:active,
+.message-detail a:active {
+    color: #00A2FF;
+}
+
+.text-link:hover,
+.message-detail a:hover,
+.text-link:focus,
+.message-detail a:focus {
+    text-decoration: underline;
+}
+
+.text-link-secondary {
+    color: #757575;
+}
+
+.text-link-secondary.active,
+.text-link-secondary:hover {
+    color: #00A2FF;
+}
+
+.text-name {
+    font-weight: 400;
+}
+
+.text-name,
+.text-name:link,
+.text-name:hover,
+.text-name:visited,
+.text-name:active {
+    color: #00A2FF;
+}
+
+.text-name:hover,
+.text-name:focus {
+    text-decoration: underline;
+}
+
+.text-name.small,
+.text-name.small:link,
+.text-name.small:visited,
+.text-name.small:active,
+.text-name.xsmall,
+.text-name.xsmall:link,
+.text-name.xsmall:visited,
+.text-name.xsmall:active,
+.text-name.xxsmall,
+.text-name.xxsmall:link,
+.text-name.xxsmall:visited,
+.text-name.xxsmall:active {
+    color: #00A2FF;
+}
+
+.text-secondary {
+    font-size: 12px;
+    font-weight: 400;
+    color: #757575;
+}
+
+.text-lead {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.text-label {
+    color: #B8B8B8;
+    font-weight: 400;
+}
+
+.text-report-ads,
+.text-report-ads:link,
+.text-report-ads:visited,
+.text-report-ads:active {
+    font-size: 12px;
+    font-weight: 400;
+    color: #B8B8B8;
+}
+
+.text-report-ads:hover {
+    color: #D86868;
+}
+
+.text-report-ads:hover,
+.text-report-ads:focus {
+    text-decoration: underline;
+}
+
+.text-report,
+.text-report:link,
+.text-report:hover,
+.text-report:visited,
+.text-report:active {
+    font-size: 14px;
+    font-weight: 400;
+    color: #D86868;
+}
+
+.text-report:hover,
+.text-report:focus {
+    text-decoration: underline;
+}
+
+.text-warning {
+    color: #F68802;
+}
+
+.text-error {
+    font-size: 12px;
+    font-weight: 400;
+    color: #D86868;
+}
+
+.text-secondary {
+    font-size: 12px;
+    font-weight: 400;
+    color: #757575;
+}
+
+.text-pastname {
+    font-size: 14px;
+    font-weight: 400;
+    color: #B8B8B8;
+}
+
+.text-date-hint {
+    font-size: 12px;
+    font-weight: 400;
+    color: #B8B8B8;
+}
+
+.text-footer-nav,
+.text-footer-nav:link,
+.text-footer-nav:visited,
+.text-footer-nav:active {
+    color: #B8B8B8;
+    font-size: 21px;
+    font-weight: 300;
+}
+
+@media(max-width:767px) {
+
+    .text-footer-nav,
+    .text-footer-nav:link,
+    .text-footer-nav:visited,
+    .text-footer-nav:active {
+        font-size: 18px;
+    }
+}
+
+.text-footer-nav:hover,
+.text-footer-nav:focus {
+    color: #191919;
+    font-size: 21px;
+    font-weight: 300;
+}
+
+@media(max-width:767px) {
+
+    .text-footer-nav:hover,
+    .text-footer-nav:focus {
+        font-size: 18px;
+    }
+}
+
+.text-footer {
+    font-size: 12px;
+    font-weight: 400;
+    color: #B8B8B8;
+}
+
+@media(max-width:767px) {
+    .text-footer {
+        font-size: 10px;
+    }
+}
+
+.text-robux {
+    color: #02b757;
+    font-weight: 400;
+}
+
+.text-tooltips {
+    color: #F2F2F2;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.text-robux-lg {
+    color: #02b757;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.text-subject {
+    font-weight: 400;
+}
+
+.text-overflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-roblox {
+    text-transform: capitalize;
+}
+
+.para-overflow {
+    line-height: 1.5em;
+    position: relative;
+    overflow: hidden;
+    white-space: normal;
+}
+
+.para-overflow:after {
+    background-color: #fff;
+    content: "...";
+    height: 24;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 32;
+}
+
+.para-overflow-toggle {
+    line-height: 1.5em;
+    position: relative;
+    overflow: hidden;
+    white-space: normal;
+}
+
+.para-overflow-toggle:after {
+    background-color: #fff;
+    content: "...";
+    height: 24;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 80px;
+}
+
+.para-overflow-toggle.para-overflow-toggle-off {
+    overflow: auto;
+}
+
+.para-overflow-toggle.para-overflow-toggle-off:after {
+    content: "";
+    width: 80px;
+}
+
+.para-overflow-toggle.para-overflow-page-loading {
+    overflow: hidden;
+}
+
+.para-overflow-toggle.para-overflow-page-loading:after {
+    content: "";
+}
+
+.para-overflow-toggle .toggle-para {
+    color: #00A2FF;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: none;
+}
+
+.para-overflow-toggle .toggle-para:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.strike-through {
+    text-decoration: line-through;
+}
+
+.content {
+    max-width: 1154px;
+}
+
+.messages-nav {
+    margin: 12px 0;
+}
+
+.messageDivider .roblox-system-image {
+    float: left;
+    margin-right: 12px;
+}
+
+@media(max-width:767px) {
+    .messageDivider .roblox-system-image {
+        display: none;
+    }
+}
+
+.messageDivider .roblox-system-image img {
+    width: 36px;
+    height: 36px;
+    margin: 5px 6px 0 6px;
+}
+
+.rbx-tab-heading {
+    height: 40px;
+}
+
+.system-card-image img {
+    width: 36px;
+    height: 36px;
+    margin: 5px 0 0 6px;
+}
+
+.messages-container {
+    float: left;
+    max-width: 970px;
+    padding: 0 15px;
+    width: 100%;
+}
+
+@media(max-width:1174px) {
+    .messages-container {
+        float: none;
+        margin: 0 auto;
+    }
+}
+
+.messages-container h1 {
+    margin-bottom: 12px;
+}
+
+.messages-container .rbx-tab {
+    width: 25%;
+}
+
+.messages-container .success-block {
+    margin: 0 0 18px;
+}
+
+.messages-container .success-block .navigationsuccess a {
+    vertical-align: middle;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+.messages-container .success-block .navigationsuccess a .icon-left {
+    background-position: 0 -420px;
+}
+
+.messages-container .new-message .new-message-content:before,
+.messages-container .new-message .new-message-content:after {
+    content: " ";
+    display: table;
+}
+
+.messages-container .new-message .new-message-content:after {
+    clear: both;
+}
+
+.messages-container .new-message .new-message-content .row {
+    border: 1px solid #B8B8B8;
+    border-radius: 3px;
+    padding: 9px 12px;
+    overflow: hidden;
+    line-height: 1.3em;
+    margin-bottom: 18px;
+}
+
+.messages-container .new-message .new-message-content .row .text-label {
+    float: left;
+    margin-right: 5px;
+}
+
+.messages-container .new-message .new-message-content .row .message-title {
+    overflow: hidden;
+}
+
+.messages-container .new-message .new-message-content .row .input-block {
+    overflow: hidden;
+}
+
+.messages-container .new-message .new-message-content .row .input-block input {
+    width: 100%;
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    outline: none;
+}
+
+.messages-container .new-message .new-message-content .message-content {
+    padding: 0;
+    background: none;
+    margin-bottom: 18px;
+}
+
+.messages-container .new-message .new-message-content .message-content .messages-reply-box {
+    border: 1px solid #B8B8B8;
+    border-radius: 3px;
+    display: block;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    line-height: 1em;
+    outline: none;
+    height: 200px;
+}
+
+.messages-container .new-message .new-message-content .new-message-footer {
+    width: 100%;
+}
+
+.messages-container .new-message .new-message-content .new-message-footer:before,
+.messages-container .new-message .new-message-content .new-message-footer:after {
+    content: " ";
+    display: table;
+}
+
+.messages-container .new-message .new-message-content .new-message-footer:after {
+    clear: both;
+}
+
+.messages-container .new-message .new-message-content .new-message-footer .action-buttons {
+    float: right;
+    width: 303px;
+    text-align: right;
+}
+
+@media(max-width:543px) {
+    .messages-container .new-message .new-message-content .new-message-footer .action-buttons {
+        text-align: center;
+        display: block;
+        width: 100%;
+        float: none;
+    }
+}
+
+.messages-container .new-message .new-message-content .new-message-footer .action-buttons .send-btn {
+    margin-left: 15px;
+    float: right;
+}
+
+@media(max-width:543px) {
+    .messages-container .new-message .new-message-content .new-message-footer .action-buttons .send-btn {
+        float: none;
+        width: 100%;
+        margin: 0 0 5px 0;
+    }
+}
+
+.messages-container .new-message .new-message-content .new-message-footer .action-buttons .text-link,
+.messages-container .new-message .new-message-content .new-message-footer .action-buttons .message-detail a,
+.message-detail .messages-container .new-message .new-message-content .new-message-footer .action-buttons a {
+    padding-top: 8px;
+    font-weight: 400;
+    display: inline-block;
+}
+
+@media(max-width:543px) {
+
+    .messages-container .new-message .new-message-content .new-message-footer .action-buttons .text-link,
+    .messages-container .new-message .new-message-content .new-message-footer .action-buttons .message-detail a,
+    .message-detail .messages-container .new-message .new-message-content .new-message-footer .action-buttons a {
+        display: block;
+    }
+}
+
+.messages-container .new-message .new-message-content .new-message-footer .action-buttons #send-message-captcha {
+    width: 303px;
+    margin-bottom: 12px;
+}
+
+@media(max-width:543px) {
+    .messages-container .new-message .new-message-content .new-message-footer .action-buttons #send-message-captcha {
+        margin: 12px auto;
+    }
+}
+
+.messages-container .new-message .new-message-content .new-message-footer .text-warning {
+    float: left;
+    width: 65%;
+}
+
+@media screen and (max-width:991px) {
+    .messages-container .new-message .new-message-content .new-message-footer .text-warning {
+        float: none;
+        width: 50%;
+    }
+}
+
+@media screen and (max-width:543px) {
+    .messages-container .new-message .new-message-content .new-message-footer .text-warning {
+        float: none;
+        display: block;
+        width: 100%;
+    }
+}
+
+.message-summary-content {
+    color: #B8B8B8;
+    margin: 3px 0 0;
+}
+
+@media(max-width:767px) {
+
+    .message-summary-content .subject,
+    .message-summary-content .text-preview {
+        display: block;
+    }
+}
+
+.message-summary-content .subject {
+    color: #191919;
+}
+
+@media(max-width:767px) {
+    .message-summary-content .subject {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        height: 20px;
+    }
+}
+
+.message-summary-content .text-preview {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 18px;
+    padding: 0 5px;
+}
+
+.message-summary-content .text-preview:before {
+    content: '- ';
+}
+
+@media(max-width:767px) {
+    .message-summary-content .text-preview {
+        padding: 0;
+        width: 100%;
+    }
+
+    .message-summary-content .text-preview:before,
+    .message-summary-content .text-preview:after {
+        content: " ";
+        display: table;
+    }
+
+    .message-summary-content .text-preview:after {
+        clear: both;
+    }
+
+    .message-summary-content .text-preview:before {
+        display: none;
+    }
+}
+
+.rbx-tabs-horizontal .nav-tabs {
+    overflow: hidden;
+    margin-bottom: 9px;
+}
+
+.rbx-tab-content {
+    margin: 0;
+}
+
+.robloxInvisibility {
+    display: none;
+}
+
+.inbox-buttons {
+    padding: 0 0 0 15px;
+}
+
+.inbox-buttons .roblox-messages-btns {
+    overflow: hidden;
+}
+
+.inbox-buttons .roblox-messages-btns #roblox-archive-btn {
+    float: left;
+    margin-right: 12px;
+}
+
+.inbox-buttons .roblox-messages-btns .pagination-container {
+    float: right;
+    margin: 0;
+}
+
+.inbox-buttons .roblox-messages-btns .pagination-container span.page {
+    margin-left: 9px;
+    vertical-align: middle;
+}
+
+.inbox-buttons .roblox-messages-btns .pagination-container button {
+    padding: 5px;
+    margin-left: 6px;
+}
+
+.inbox-buttons .roblox-message-large-btn {
+    float: left;
+    margin-right: 6px;
+}
+
+.message-actions {
+    float: left;
+    height: 32px;
+}
+
+.message-actions .messageCheckbox {
+    vertical-align: middle;
+    margin: 0 48px 0 15px;
+    float: left;
+    line-height: 30px;
+}
+
+.message-actions .messageCheckbox input {
+    margin: 10px 15px 0 0;
+}
+
+.message-actions .messageCheckbox label {
+    padding-left: 36px;
+}
+
+.message-actions .btn-control-sm {
+    margin-right: 12px;
+}
+
+.messages {
+    margin: 9px 0;
+}
+
+.messages.notifications-list {
+    margin-top: 18px;
+}
+
+.messages .messageDivider {
+    overflow: hidden;
+    position: relative;
+    border-top: 1px solid #E3E3E3;
+    background: #F2F2F2;
+    padding: 9px 15px;
+}
+
+.messages .messageDivider.message-news,
+.messages .messageDivider.news-body {
+    background: #fff;
+}
+
+.messages .messageDivider .news-body a,
+.messages .messageDivider .news-body a:link,
+.messages .messageDivider .news-body a:hover,
+.messages .messageDivider .news-body a:visited,
+.messages .messageDivider .news-body a:active {
+    color: #00A2FF;
+}
+
+.messages .messageDivider.opened {
+    height: auto;
+}
+
+.messages .messageDivider.unread {
+    background-color: #fff;
+}
+
+.messages .messageDivider.unread .message-summary-body .subject {
+    color: #191919;
+    font-weight: 600;
+}
+
+.messages .messageDivider:hover {
+    cursor: pointer;
+    box-shadow: 4px 0 0 0 #00A2FF inset;
+}
+
+.messages .messageDivider:hover .news-body {
+    box-shadow: none;
+}
+
+.messages .messageDivider .messageCheckbox {
+    float: left;
+    margin: 14px 12px 0 0;
+}
+
+.messages .messageDivider .avatar {
+    float: left;
+    margin-right: 12px;
+    box-shadow: none;
+    border: 1px solid #ddd;
+}
+
+@media screen and (max-width:767px) {
+    .messages .messageDivider .avatar {
+        display: none;
+    }
+}
+
+.messages .messageDivider .roblox-message-summary {
+    width: 85%;
+    width: calc(100% - 92px);
+    position: relative;
+    float: left;
+}
+
+@media(max-width:991px) {
+    .messages .messageDivider .roblox-message-summary {
+        width: 84%;
+        width: calc(100% - 104px);
+    }
+}
+
+@media(max-width:767px) {
+    .messages .messageDivider .roblox-message-summary {
+        width: 90%;
+        width: calc(100% - 44px);
+    }
+}
+
+@media(max-width:543px) {
+    .messages .messageDivider .roblox-message-summary {
+        width: 84%;
+        width: calc(100% - 44px);
+    }
+}
+
+.messages .messageDivider .roblox-message-summary .message-summary-body .message-summary-username {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    padding: 3px 120px 0 0;
+}
+
+.messages .messageDivider .message-summary-date {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.messages .messageDivider .roblox-message-title {
+    padding-bottom: 9px;
+}
+
+.messages .messageDivider .roblox-message-title .roblox-message-subject {
+    padding-top: 4px;
+    display: block;
+}
+
+.messages .news-body {
+    margin-top: 6px;
+    text-align: left;
+    padding: 15px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.inbox-buttons {
+    padding: 0;
+    overflow: hidden;
+}
+
+.inbox-buttons .message-detail-mark-archive {
+    color: #191919;
+    float: left;
+    margin-right: 6px;
+}
+
+.inbox-buttons .roblox-message-back-btn {
+    padding: 5px;
+    margin: 0 12px 0 0;
+    float: left;
+}
+
+.inbox-buttons .roblox-message-back-btn span {
+    width: 20px;
+    height: 20px;
+    background-size: 40px auto;
+    background-position: 0 -300px;
+}
+
+.inbox-buttons .navigation-buttons {
+    float: right;
+}
+
+.inbox-buttons .navigation-buttons button {
+    width: 90px;
+    margin: 0 0 0 12px;
+    color: #191919;
+}
+
+.inbox-buttons .navigation-buttons button .icon {
+    display: none;
+}
+
+.message-detail {
+    background: #fff;
+    padding: 15px;
+    position: relative;
+    margin: 9px 0;
+    word-break: break-word;
+}
+
+.message-detail .roblox-send-message-subject {
+    margin-bottom: 12px;
+    margin-right: 80px;
+}
+
+.message-detail .roblox-send-message-subject:before,
+.message-detail .roblox-send-message-subject:after {
+    content: " ";
+    display: table;
+}
+
+.message-detail .roblox-send-message-subject:after {
+    clear: both;
+}
+
+.message-detail .roblox-send-message-subject h3 {
+    line-height: 1em;
+    font-weight: 400;
+    font-size: 21px;
+    margin: -12px 0 6px 0;
+}
+
+.message-detail .roblox-send-message-subject .sender {
+    float: left;
+    margin-right: 12px;
+}
+
+.message-detail .roblox-send-message-subject .roblox-send-message-content {
+    padding-top: 4px;
+}
+
+.message-detail .roblox-send-message-subject .roblox-send-message-content .roblox-sender-link .date {
+    display: block;
+}
+
+.message-detail .message-body {
+    line-height: 1.5em;
+    font-weight: 400;
+}
+
+.message-detail .message-body .text-message {
+    color: #191919;
+    font-size: 14px;
+    line-height: 1.5em;
+    font-weight: 400;
+}
+
+.message-detail .roblox-abuse-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.message-reply {
+    background: #fff;
+    padding: 15px 0;
+}
+
+.message-reply .messages-reply-box {
+    border: 1px solid #B8B8B8;
+    border-radius: 3px;
+    display: block;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 12px;
+    line-height: 1em;
+    outline: none;
+    height: 200px;
+    margin-bottom: 15px;
+}
+
+.message-reply .message-reply-footer {
+    overflow: hidden;
+}
+
+.message-reply .message-reply-footer .roblox-sendMessage-action {
+    float: right;
+}
+
+@media screen and (max-width:767px) {
+    .message-reply .message-reply-footer .roblox-sendMessage-action {
+        float: none;
+    }
+
+    .message-reply .message-reply-footer .roblox-sendMessage-action .btn-primary-sm {
+        width: 100%;
+    }
+}
+
+.message-reply .message-reply-footer .include-previous-message {
+    float: right;
+    padding: 5px 12px;
+}
+
+@media screen and (max-width:767px) {
+    .message-reply .message-reply-footer .include-previous-message {
+        width: 100%;
+        float: none;
+        padding: 12px 0;
+    }
+}
+
+.message-reply .message-reply-footer .text-warning {
+    width: 57%;
+    padding-top: 5px;
+    display: block;
+    overflow: hidden;
+    float: left;
+    line-height: 1.3em;
+}
+
+@media screen and (max-width:767px) {
+    .message-reply .message-reply-footer .text-warning {
+        width: 100%;
+        float: none;
+    }
+}
+
+.additional-navigation {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 5px;
+    z-index: 11;
+}
+
+.additional-navigation a {
+    float: right;
+    clear: right;
+    color: #fff;
+    background: #B8B8B8;
+    font-size: 12px;
+    line-height: 1em;
+    padding: 3px;
+    margin-top: 5px;
+}
+
+.action-panel {
+    display: none;
+}
+
+@media(max-width:767px) {
+    .bottom-nav .message-actions .messageCheckbox {
+        display: none;
+    }
+
+    .bottom-nav .message-actions .action-buttons {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #fff;
+        padding: 12px;
+        left: 0;
+    }
+
+    .bottom-nav .message-actions .action-buttons .btn-control-sm {
+        padding: 4px 4px;
+        font-size: 14px;
+        line-height: 100%;
+        border-radius: 3px;
+    }
+}
+
+@media(max-width:767px) and (max-width:543px) {
+
+    .bottom-nav .message-actions .action-buttons .btn-control-sm.roblox-archiveButton,
+    .bottom-nav .message-actions .action-buttons .btn-control-sm.roblox-moveToInboxButton {
+        width: 100%;
+    }
+
+    .bottom-nav .message-actions .action-buttons .btn-control-sm.roblox-markAsReadInbox,
+    .bottom-nav .message-actions .action-buttons .btn-control-sm.roblox-markAsUnreadInbox {
+        float: left;
+        margin: 12px 0 0;
+        width: 48%;
+    }
+
+    .bottom-nav .message-actions .action-buttons .btn-control-sm.roblox-markAsReadInbox {
+        margin-right: 2%;
+    }
+
+    .bottom-nav .message-actions .action-buttons .btn-control-sm.roblox-markAsUnreadInbox {
+        margin-left: 2%;
+    }
+}
+
+@media(max-width:767px) {
+    .bottom-nav .pager {
+        display: none;
+    }
+}
+
+@media screen and (max-width:767px) {
+    .top-nav .action-buttons {
+        display: none;
+    }
+
+    .bottom-nav .pager {
+        display: none;
+    }
+
+    .alert-success {
+        font-size: 14px;
+    }
+
+    .alert-warning {
+        font-size: 14px;
+    }
+
+    .action-panel {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #fff;
+        border-top: 1px solid #E3E3E3;
+        padding: 10px;
+        z-index: 10;
+    }
+
+    .action-panel button {
+        color: #191919;
+        margin-left: 10px;
+    }
+
+    .action-panel button:hover {
+        background-color: #F2F2F2;
+    }
+
+    .messages-container #newmessage .new-message-content .content textarea {
+        height: 120px;
+    }
+
+    .inbox-buttons .navigation-buttons button {
+        width: auto;
+        padding: 5px;
+        margin: 0 0 0 9px;
+    }
+
+    .inbox-buttons .navigation-buttons button .text {
+        display: none;
+    }
+
+    .inbox-buttons .navigation-buttons button .icon {
+        display: block;
+        width: 20px;
+        height: 20px;
+        background-size: 40px auto;
+    }
+
+    .inbox-buttons .navigation-buttons button .icon.icon-back {
+        @get-icon("generic", 38, "20x20");
+    }
+
+    .inbox-buttons .navigation-buttons button .icon.icon-next {
+        @get-icon("generic", 36, "20x20");
+    }
+
+    .message-reply .message-reply-footer .holder:before,
+    .message-reply .message-reply-footer .holder:after {
+        content: " ";
+        display: table;
+    }
+
+    .message-reply .message-reply-footer .holder:after {
+        clear: both;
+    }
+
+    .new-message-footer .holder {
+        padding-top: 5px;
+    }
+
+    .new-message-footer .holder:before,
+    .new-message-footer .holder:after {
+        content: " ";
+        display: table;
+    }
+
+    .new-message-footer .holder:after {
+        clear: both;
+    }
+
+    .container-footer {
+        z-index: -1;
+    }
+}
+
+@media screen and (max-width:543px) {
+    .new-message-back {
+        position: absolute;
+    }
+
+    .action-panel button {
+        float: left;
+        letter-spacing: 0;
+        width: 48%;
+        margin: 5px 1%;
+    }
+
+    .action-panel button:first-child {
+        width: 98%;
+    }
+
+    .password-warning {
+        width: 100%;
+    }
+
+    .messages .messageDivider {
+        height: auto;
+    }
+
+    .messageCheckbox #messageCheckbox {
+        overflow: hidden;
+        width: 0;
+    }
+
+    .message-actions .messageCheckbox {
+        margin-right: 0;
+    }
+
+    .message-actions .messageCheckbox input {
+        margin: 10px 8px 0 14px;
+    }
+
+    .message-actions .messageCheckbox .label-text {
+        display: none;
+    }
+
+    .message-reply textarea {
+        height: 120px;
+    }
+
+    .messages-container h1 {
+        float: left;
+    }
+
+    .messages-container .messages-nav {
+        margin: 7px 0;
+        float: right;
+    }
+}

@@ -101,7 +101,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
+                                        <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
@@ -109,11 +109,10 @@
                                                Style="{StaticResource LabelText}" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                     <TextBlock x:Name="WebsiteStatusText" Grid.Column="1" Grid.Row="0" Text="Checking..." 
                                                Style="{StaticResource LabelText}" Foreground="Gray" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Active Users:" 
+                                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Online Users:" 
                                                Style="{StaticResource LabelText}" FontWeight="Bold" Margin="0,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="ActiveUsersText" Grid.Column="1" Grid.Row="1" Text="Checking..." 
-                                               Style="{StaticResource LabelText}" Foreground="Gray" Margin="5,2,0,0" HorizontalAlignment="Left"
-                                               TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="OnlineUsersText" Grid.Column="1" Grid.Row="1" Text="Checking..." 
+                                               Style="{StaticResource LabelText}" Foreground="Gray" Margin="5,2,0,0" HorizontalAlignment="Left"/>
                                 </Grid>
                                 <TextBlock Text="Frontend Service Metrics." 
                                            Style="{StaticResource DashboardSectionDescription}"/>

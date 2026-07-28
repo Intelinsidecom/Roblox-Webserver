@@ -19,7 +19,26 @@ namespace RobloxWebserver.Controllers
                 return Redirect("/inventory");
             return View("~/Views/Pages/Index.cshtml");
         }
-        
+
+        [HttpGet("users/friends")]
+        public IActionResult FriendsAuth()
+        {
+            if (User?.Identity?.IsAuthenticated == true)
+                return Redirect("/friends");
+            return View("~/Views/Pages/Index.cshtml");
+        }
+
+        [HttpGet("friends")]
+        public IActionResult FriendsRedirect()
+        {
+            if (User?.Identity?.IsAuthenticated == false)
+                return Redirect("/");
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+                return Redirect("/");
+            return Redirect($"/users/{userId}/friends");
+        }
+
         [HttpGet("/Trade")]
         public IActionResult Trade()
         {

@@ -51,7 +51,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style> -->
+    <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>
     <!-- i did this since games page needs extra care, that means full frontend rework in css will be needed, yikes -->
 
         @if (ViewContext.HttpContext.Request.Path.Value.Contains("/404"))
@@ -114,6 +114,7 @@
     <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
     <script type="text/javascript" src="~/JS/templateApp.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
@@ -124,6 +125,7 @@
     <script type="text/javascript" src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/filters/translate.js"></script>
     <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
     <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
@@ -213,13 +215,18 @@
     <script type="text/javascript" src="~/JS/Notifications/RealTime/stateTracker.js"></script>
     <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Notifications_NotificationStreamResources_en_us_standard.js"></script>
 
-    <script type="text/javascript" src="~/JS/dist/js/notificationStream.bundle.min.js"></script>
+    @* <script type="text/javascript" src="~/JS/dist/js/notificationStream.bundle.min.js"></script> *@
 
 
 
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <link rel="stylesheet" href="/CSS/dist/css/chat.css">
+    }
     @RenderSection("Head", required: false)
 </head>
 <body class="@(isApp && User.Identity.IsAuthenticated ? "no-header-nav" : "")">
+    <div id="wrap" style="display:none" data-gutter-ads-enabled="false"></div>
     @if (!(isApp && User.Identity.IsAuthenticated))
     {
         <partial name="_Header" />
@@ -233,12 +240,14 @@
         long.TryParse(userId, out parsedUserId);
 
         string? userNameFromDb = null;
+        int pendingRequestCount = 0;
         if (parsedUserId > 0)
         {
             var connStr = Configuration.GetConnectionString("Default");
             if (!string.IsNullOrWhiteSpace(connStr))
             {
                 userNameFromDb = Users.UserQueries.GetUserNameByIdAsync(connStr, parsedUserId).GetAwaiter().GetResult();
+                pendingRequestCount = Users.UserQueries.GetPendingFriendRequestCountAsync(connStr, parsedUserId).GetAwaiter().GetResult();
             }
         }
 
@@ -271,7 +280,7 @@
                     <li>
                         <a href="/friends" id="nav-friends" data-count="0">
                             <span class="icon-nav-friends"></span><span>Friends</span>
-                            <span class="notification-blue hide" title="0">0</span>
+                            <span class="notification-blue @(pendingRequestCount > 0 ? "" : "hide")" title="@pendingRequestCount">@pendingRequestCount</span>
                         </a>
                     </li>
                     <li>
@@ -342,15 +351,13 @@
             }
         </style>
     }
-
-    <div id="navContent">
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
-        </div>
+<div id="navContent">
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
-
+</div>
 
 <div id=push-notification-registrar-settings data-notificationshost=https://freblx.xyz data-reregistrationinterval=0 data-registrationpath=register-firefox data-shoulddeliveryendpointbesentduringregistration=True data-platformtype=FirefoxOnDesktop></div>
     <div id=push-notification-registration-ui-settings data-noncontextualpromptallowed=true data-promptonfriendrequestsentenabled=true data-promptonprivatemessagesentenabled=false data-promptintervals=[604800000,1209600000,2419200000] data-notificationsdomain=https://notifications.roblox.com data-userid=62022330></div>
@@ -453,27 +460,16 @@
     </div>
 </script>
 
-<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle=confirmation style=display:none><a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
-        <div class=Title></div>
-        <div class=GenericModalBody>
-            <div class=TopBody>
-                <div class="ImageContainer roblox-item-image" data-image-size=small data-no-overlays data-no-click><img class=GenericModalImage alt="generic image"></div>
-                <div class=Message></div>
-            </div>
-            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer"><a href="" id=roblox-confirm-btn><span></span></a> <a href="" id=roblox-decline-btn><span></span></a></div>
-            <div class=ConfirmationModalFooter></div>
-        </div>
-        <script>
-            Roblox = Roblox || {};
-            Roblox.Resources = Roblox.Resources || {};
-            Roblox.Resources.GenericConfirmation = {
-                yes: "Yes",
-                No: "No",
-                Confirm: "Confirm",
-                Cancel: "Cancel"
-            };
-        </script>
-    </div>
+    <script>
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+        Roblox.Resources.GenericConfirmation = {
+            yes: "Yes",
+            No: "No",
+            Confirm: "Confirm",
+            Cancel: "Cancel"
+        };
+    </script>
     <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation style="display:none">
         <div id=modal-dialog class=modal-dialog>
             <div class=modal-content>
@@ -512,6 +508,7 @@
     {
         <partial name="_Footer" />
     }
+
     <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
     <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
 

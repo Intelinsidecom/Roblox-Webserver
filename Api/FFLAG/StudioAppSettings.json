@@ -20,6 +20,7 @@
     "FFlagStudioNativeStartPage": "True",
     "FFlagStudioNativeLoginPageABTest": "True",
     "FFlagStudioFixStuckOnLoginScreen": "True",
+    "FFlagTeamCreateCheckInvalidUniverse": "False",
     "DFFlagAllowHideHudShortcut": "False",
     "DFFlagAllowHttpServiceInTeamCreate": "True",
     "DFFlagAllowHumanoidDecalTransparency": "True",

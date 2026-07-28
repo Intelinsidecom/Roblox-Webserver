@@ -179,9 +179,18 @@ namespace Website.Controllers.Client
         private async Task<IActionResult> HandleRequestGame(long placeId, string requestType, string? providedJobId, int? providedServerPort, string requestId)
         {
             long userId = await GetCurrentUserIdAsync();
-            if (userId > 0 && !await UserCanAccessPlaceAsync(userId, placeId))
+            if (userId > 0)
             {
-                return Ok(new PlaceLauncherResponse { status = 3, message = "Access denied" });
+                if (!await UserCanAccessPlaceAsync(userId, placeId))
+                {
+                    return Ok(new PlaceLauncherResponse { status = 3, message = "Access denied" });
+                }
+
+                var existingPresence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
+                if (existingPresence != null && existingPresence.IsInGame)
+                {
+                    return Ok(new PlaceLauncherResponse { status = 3, message = "User is already in a game" });
+                }
             }
 
             string gameId;
@@ -271,26 +280,75 @@ namespace Website.Controllers.Client
 
             var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
             var sessionId = Guid.NewGuid().ToString("N");
-            var gameId = $"CloudEdit-{sessionId}";
 
-            var (userName, _) = await GetUserInfoAsync(userId);
+            string gameId;
+            int serverPort;
 
-            return Ok(new
+            var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+            var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+            var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+
+            try
             {
-                status = 2,
-                settings = new
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(30);
+                var response = await httpClient.GetAsync(
+                    $"{arbiterUrl}/api/gameservers/start-cloudedit?placeId={placeId}&maxPlayers=10&baseUrl={Uri.EscapeDataString(baseUrl)}&universeId={universeId}");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    GameId = gameId,
-                    PlaceId = (int)placeId,
-                    UniverseId = universeId,
-                    SessionId = sessionId,
-                    MachineAddress = "127.0.0.1",
-                    ServerPort = 0,
-                    ClientTicket = "",
-                    UserName = userName,
-                    CharacterAppearance = ""
+                    var json = await response.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+                    var startResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(json, options);
+
+                    if (startResponse != null 
+                        && startResponse.TryGetValue("gameId", out var gameIdObj)
+                        && startResponse.TryGetValue("port", out var portObj))
+                    {
+                        gameId = gameIdObj.ToString();
+                        serverPort = portObj is JsonElement je ? je.GetInt32() : Convert.ToInt32(portObj);
+
+                        string ticketToken = "";
+                        if (userId != 0)
+                        {
+                            ticketToken = await _tokenService.CreateGameTicketAsync(userId, placeId, gameId);
+                        }
+
+                        var (userName, _) = await GetUserInfoAsync(userId);
+
+                        var machineAddress = "127.0.0.1";
+                        var localhostMode = _configuration.GetValue<bool>("LocalhostMode", true);
+                        if (!localhostMode)
+                        {
+                            machineAddress = _configuration["MachineAddress"] ?? "127.0.0.1";
+                        }
+
+                        return Ok(new
+                        {
+                            status = 2,
+                            settings = new
+                            {
+                                GameId = gameId,
+                                PlaceId = (int)placeId,
+                                UniverseId = universeId,
+                                SessionId = sessionId,
+                                MachineAddress = machineAddress,
+                                ServerPort = serverPort,
+                                ClientTicket = ticketToken,
+                                UserName = userName,
+                                CharacterAppearance = $"{baseUrl}/Asset/CharacterFetch.ashx?userId={userId}"
+                            }
+                        });
+                    }
                 }
-            });
+
+                return Ok(new PlaceLauncherResponse { status = 4, message = "Failed to start cloud edit server" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CloudEdit] Error starting cloud edit server: {ex.Message}");
+                return Ok(new PlaceLauncherResponse { status = 4, message = $"Error starting cloud edit server: {ex.Message}" });
+            }
         }
 
         [HttpGet("join.ashx")]
@@ -353,6 +411,12 @@ namespace Website.Controllers.Client
                     var claimVal = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
                     if (!string.IsNullOrEmpty(claimVal) && long.TryParse(claimVal, out userId) && userId > 0)
                     {
+                        var existingPresence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
+                        if (existingPresence != null && existingPresence.IsInGame)
+                        {
+                            return Content("User is already in a game", "text/plain");
+                        }
+
                         var userInfo = await GetUserInfoAsync(userId);
                         userName = userInfo.userName;
                         displayName = userInfo.displayName;

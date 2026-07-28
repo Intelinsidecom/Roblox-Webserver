@@ -736,13 +736,31 @@ ORDER BY created_at DESC";
             await conn.OpenAsync();
 
             const string sql = @"INSERT INTO user_assets (user_id, asset_id, created_at)
-                                 VALUES (@uid, @aid, now())
-                                 ON CONFLICT (user_id, asset_id) DO NOTHING";
+                                 SELECT @uid, @aid, now()
+                                 WHERE NOT EXISTS (
+                                     SELECT 1 FROM user_assets WHERE user_id = @uid AND asset_id = @aid
+                                 )";
 
             await using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("uid", userId);
             cmd.Parameters.AddWithValue("aid", request.assetId);
             await cmd.ExecuteNonQueryAsync();
+
+            using var limitCmd = new NpgsqlCommand(
+                "SELECT limited_unique FROM assets WHERE asset_id = @aid", conn);
+            limitCmd.Parameters.AddWithValue("aid", request.assetId);
+            var limitObj = await limitCmd.ExecuteScalarAsync();
+            if (limitObj is bool isLimitedUnique && isLimitedUnique)
+            {
+                var limitedService = new Economy.LimitedItemService();
+                await using var tx = await conn.BeginTransactionAsync();
+                try
+                {
+                    await limitedService.AssignSerialNumberAsync(conn, tx, request.assetId, userId);
+                    await tx.CommitAsync();
+                }
+                catch { await tx.RollbackAsync(); }
+            }
 
             return Ok(new { success = true });
         }

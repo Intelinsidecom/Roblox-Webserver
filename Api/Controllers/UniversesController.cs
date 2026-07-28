@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net.Http;
 using Games;
 using Common;
 using Api.Services;
+using Npgsql;
 
 namespace Api.Controllers
 {
@@ -56,7 +58,7 @@ namespace Api.Controllers
             {
                 var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
                 var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId);
-                return Ok(new { enabled = false /*universe != null*/ });
+                return Ok(new { enabled = universe?.TeamCreateEnabled == true });
             }
             catch
             {
@@ -67,13 +69,204 @@ namespace Api.Controllers
         [HttpPost("{universeId}/enablecloudedit")]
         public async Task<IActionResult> EnableCloudEdit(long universeId)
         {
-            return Ok(new { success = true });
+            var userId = await _currentUserService.GetUserIdAsync();
+            if (userId <= 0)
+            {
+                return Unauthorized(new { error = "Not authenticated" });
+            }
+
+            if (universeId <= 0)
+            {
+                return BadRequest(new { error = "Invalid universe ID" });
+            }
+
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId);
+                if (universe == null)
+                {
+                    return NotFound(new { error = "Universe not found" });
+                }
+
+                if (universe.CreatorUserId != userId)
+                {
+                    return StatusCode(403, new { error = "You do not own this universe" });
+                }
+
+                await GamesRepository.SetTeamCreateEnabledAsync(connectionString, universeId, true);
+                return Content("{}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
 
         [HttpPost("{universeId}/disablecloudedit")]
         public async Task<IActionResult> DisableCloudEdit(long universeId)
         {
-            return Ok(new { success = true });
+            var userId = await _currentUserService.GetUserIdAsync();
+            if (userId <= 0)
+            {
+                return Unauthorized(new { error = "Not authenticated" });
+            }
+
+            if (universeId <= 0)
+            {
+                return BadRequest(new { error = "Invalid universe ID" });
+            }
+
+            try
+            {
+                var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                var universe = await GamesRepository.GetUniverseAsync(connectionString, universeId);
+                if (universe == null)
+                {
+                    return NotFound(new { error = "Universe not found" });
+                }
+
+                if (universe.CreatorUserId != userId)
+                {
+                    return StatusCode(403, new { error = "You do not own this universe" });
+                }
+
+                await GamesRepository.SetTeamCreateEnabledAsync(connectionString, universeId, false);
+                return Content("{}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpGet("{universeId}/game-start-info")]
+        public IActionResult GetGameStartInfo(long universeId)
+        {
+            return Ok(new { r15Morphing = false });
+        }
+
+        [HttpGet("{universeId}/listcloudeditors")]
+        public async Task<IActionResult> ListCloudEditors(long universeId, [FromQuery] int page = 1)
+        {
+            if (universeId <= 0)
+            {
+                return BadRequest(new { error = "Invalid universe ID" });
+            }
+
+            try
+            {
+                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(5);
+
+                var response = await httpClient.GetAsync(
+                    $"{arbiterUrl}/api/cloudedit/sessions?universeId={universeId}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return Ok(new
+                    {
+                        data = new object[] { },
+                        total = 0,
+                        pageSize = 10,
+                        finalPage = true
+                    });
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                int totalEditors = root.TryGetProperty("totalEditors", out var totalProp) ? totalProp.GetInt32() : 0;
+
+                var editors = new List<object>();
+                if (root.TryGetProperty("editors", out var editorsArray))
+                {
+                    // Collect user IDs to look up usernames
+                    var userIds = new List<long>();
+                    foreach (var editor in editorsArray.EnumerateArray())
+                    {
+                        if (editor.TryGetProperty("userId", out var uidProp))
+                        {
+                            var uidStr = uidProp.GetString();
+                            if (long.TryParse(uidStr, out var uid) && uid > 0)
+                                userIds.Add(uid);
+                        }
+                    }
+
+                    // Batch lookup usernames
+                    var userNames = new Dictionary<long, string>();
+                    if (userIds.Count > 0)
+                    {
+                        try
+                        {
+                            var connectionString = DatabaseUtilities.GetConnectionString(_configuration);
+                            using var conn = new NpgsqlConnection(connectionString);
+                            await conn.OpenAsync();
+
+                            var paramsList = new List<string>();
+                            using var cmd = new NpgsqlCommand();
+                            for (int i = 0; i < userIds.Count; i++)
+                            {
+                                var paramName = $"@uid{i}";
+                                paramsList.Add(paramName);
+                                cmd.Parameters.AddWithValue(paramName, userIds[i]);
+                            }
+                            cmd.CommandText = $"SELECT user_id, user_name FROM users WHERE user_id IN ({string.Join(",", paramsList)})";
+                            cmd.Connection = conn;
+
+                            using var reader = await cmd.ExecuteReaderAsync();
+                            while (await reader.ReadAsync())
+                            {
+                                userNames[reader.GetInt64(0)] = reader.GetString(1);
+                            }
+                        }
+                        catch { }
+                    }
+
+                    foreach (var editor in editorsArray.EnumerateArray())
+                    {
+                        var uidStr = editor.TryGetProperty("userId", out var uidProp) ? uidProp.GetString() : "0";
+                        long.TryParse(uidStr, out var uid);
+
+                        editors.Add(new
+                        {
+                            userId = uid,
+                            userName = userNames.TryGetValue(uid, out var name) ? name : "",
+                            gameId = editor.TryGetProperty("gameId", out var gidProp) ? gidProp.GetString() : "",
+                            placeId = editor.TryGetProperty("placeId", out var pidProp) ? pidProp.GetInt32() : 0,
+                            startTime = editor.TryGetProperty("startTime", out var stProp) ? stProp.GetString() : ""
+                        });
+                    }
+                }
+
+                int pageSize = 10;
+                int startIdx = (page - 1) * pageSize;
+                var pagedEditors = editors.Skip(startIdx).Take(pageSize).ToList();
+                bool finalPage = (startIdx + pageSize) >= editors.Count;
+
+                return Ok(new
+                {
+                    data = pagedEditors,
+                    total = totalEditors,
+                    pageSize = pageSize,
+                    finalPage = finalPage
+                });
+            }
+            catch
+            {
+                return Ok(new
+                {
+                    data = new object[] { },
+                    total = 0,
+                    pageSize = 10,
+                    finalPage = true
+                });
+            }
         }
 
         [HttpGet("get-info")]

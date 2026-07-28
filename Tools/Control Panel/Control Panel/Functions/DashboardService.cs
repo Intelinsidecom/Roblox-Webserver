@@ -132,14 +132,13 @@ namespace ControlPanel.Functions
                     
                     data.ServerHealth = await CheckServerHealthAsync(conn);
                     data.IsHealthy = data.ServerHealth == "Healthy";
-                    data.ActiveUsers = await GetActiveUsersCountAsync(conn);
+                    data.OnlineUsers = await GetOnlineUsersCountAsync(conn);
                 }
             }
             catch (Exception ex)
             {
                 data.ServerHealth = "Error";
                 data.IsHealthy = false;
-                data.ActiveUsers = 0;
                 
                 try
                 {
@@ -400,13 +399,13 @@ namespace ControlPanel.Functions
             }
         }
 
-        private async Task<long> GetActiveUsersCountAsync(NpgsqlConnection conn)
+        private async Task<long> GetOnlineUsersCountAsync(NpgsqlConnection conn)
         {
             try
             {
                 string sql = @"
-                    SELECT COUNT(*) FROM users 
-                    WHERE last_activity > NOW() - INTERVAL '7 days'";
+                    SELECT COUNT(*) FROM users
+                    WHERE last_activity > NOW() - INTERVAL '5 minutes'";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
                     var result = await cmd.ExecuteScalarAsync();
@@ -616,7 +615,7 @@ namespace ControlPanel.Functions
         public string ServerHealth { get; set; } = "Unknown";
         public string ErrorMessage { get; set; }
         public DateTime LastUpdated { get; set; }
-        public long ActiveUsers { get; set; }
+        public long OnlineUsers { get; set; }
         public string ArbiterStatus { get; set; }
         public bool ArbiterIsRunning { get; set; }
         public string RccStatus { get; set; }

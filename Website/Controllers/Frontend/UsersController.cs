@@ -26,6 +26,46 @@ namespace Website.Controllers;
             public string Status { get; set; } = "";
         }
 
+    [Authorize]
+    [HttpPost("user/follow")]
+    public async Task<IActionResult> Follow(
+        [FromBody] FollowRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId <= 0 || request?.targetUserId == null || request.targetUserId <= 0)
+            return Json(new { success = false, message = "Invalid parameters" });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Json(new { success = false, message = "Database not configured" });
+
+        var result = await UserQueries.FollowUserAsync(
+            connStr, currentUserId, request.targetUserId.Value, cancellationToken).ConfigureAwait(false);
+
+        return Json(result);
+    }
+
+    [Authorize]
+    [HttpPost("api/user/unfollow")]
+    public async Task<IActionResult> Unfollow(
+        [FromBody] FollowRequest? request,
+        CancellationToken cancellationToken = default)
+    {
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId <= 0 || request?.targetUserId == null || request.targetUserId <= 0)
+            return Json(new { success = false });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Json(new { success = false });
+
+        var result = await UserQueries.UnfollowUserAsync(
+            connStr, currentUserId, request.targetUserId.Value, cancellationToken).ConfigureAwait(false);
+
+        return Json(result);
+    }
+
     [HttpGet("users/{id}/profile")]
     public async Task<IActionResult> Profile(long id)
     {
@@ -84,7 +124,15 @@ namespace Website.Controllers;
         var currentUserIsAnyBc = currentUserSubType == "BuildersClub" || currentUserSubType == "TurboBuildersClub" || currentUserSubType == "OutrageousBuildersClub" || currentMembershipStatus >= 1;
         var currentUserCanTrade = currentUserData?.GetValueOrDefault("canTrade") as bool? ?? false;
 
-        var friendsCount = profileData?.GetValueOrDefault("friendsCount") as int? ?? 0;
+        var friendsCount = 0;
+        if (!string.IsNullOrWhiteSpace(connStr) && id > 0)
+        {
+            try
+            {
+                friendsCount = await Users.UserQueries.GetFriendListTotalCountAsync(connStr, id, "AllFriends").ConfigureAwait(false);
+            }
+            catch { }
+        }
         var followersCount = profileData?.GetValueOrDefault("followersCount") as int? ?? 0;
         var followingsCount = profileData?.GetValueOrDefault("followingCount") as int? ?? 0;
         var headshotThumbnailUrl = profileData?.GetValueOrDefault("headshotThumbnailUrl") as string;
@@ -149,6 +197,40 @@ namespace Website.Controllers;
             }
         }
 
+        // Determine friendship/request/follow status between current user and profile user
+        var areFriends = false;
+        var friendRequestPending = false;
+        var incomingFriendRequestPending = false;
+        var incomingFriendRequestId = 0L;
+        var maySendFriendInvitation = false;
+        var isFollowing = false;
+        var mayFollow = false;
+        var canBeFollowed = false;
+
+        var isVieweeBlocked = false;
+
+        if (currentUserId > 0 && currentUserId != id && !string.IsNullOrWhiteSpace(connStr))
+        {
+            try
+            {
+                areFriends = await UserQueries.AreFriendsAsync(connStr, currentUserId, id).ConfigureAwait(false);
+                isFollowing = await UserQueries.IsFollowingAsync(connStr, currentUserId, id).ConfigureAwait(false);
+                var (hasPending, requestId, isIncoming) = await UserQueries.GetPendingFriendRequestAsync(connStr, currentUserId, id).ConfigureAwait(false);
+                friendRequestPending = hasPending && !isIncoming;
+                incomingFriendRequestPending = hasPending && isIncoming;
+                incomingFriendRequestId = hasPending && isIncoming ? requestId : 0;
+                isVieweeBlocked = await UserQueries.IsBlockedAsync(connStr, currentUserId, id).ConfigureAwait(false);
+            }
+            catch
+            {
+                // Defaults remain false
+            }
+
+            maySendFriendInvitation = !areFriends && !friendRequestPending && !incomingFriendRequestPending && !isVieweeBlocked;
+            canBeFollowed = profileVisibility != "private" && !isVieweeBlocked;
+            mayFollow = canBeFollowed;
+        }
+
         ViewBag.UserGames = userGames;
 
         ViewBag.ProfileUserId = id.ToString();
@@ -159,9 +241,19 @@ namespace Website.Controllers;
         ViewBag.FollowingsCount = followingsCount;
         ViewBag.IsOwnProfile = isOwnProfile;
         ViewBag.IsLoggedIn = isLoggedIn;
-        ViewBag.ProfileCanTrade = profileCanTrade && (isObc || isTbc);
+        ViewBag.ProfileCanTrade = isObc || isTbc;
         ViewBag.ProfileCanPm = profileCanPm;
         ViewBag.ProfileCanChat = profileCanChat;
+        ViewBag.AreFriends = areFriends;
+        ViewBag.FriendRequestPending = friendRequestPending;
+        ViewBag.IncomingFriendRequestPending = incomingFriendRequestPending;
+        ViewBag.IncomingFriendRequestId = incomingFriendRequestId;
+        ViewBag.MaySendFriendInvitation = maySendFriendInvitation;
+        ViewBag.IsBlockButtonVisible = isLoggedIn && !isOwnProfile;
+        ViewBag.IsVieweeBlocked = isVieweeBlocked;
+        ViewBag.IsFollowing = isFollowing;
+        ViewBag.MayFollow = mayFollow;
+        ViewBag.CanBeFollowed = canBeFollowed;
         ViewBag.ProfileVisibility = profileVisibility;
         ViewBag.ProfileDescription = profileDescription;
         ViewBag.ProfileSubscriptionType = profileSubType ?? "";
@@ -169,13 +261,25 @@ namespace Website.Controllers;
         ViewBag.IsOBC = isObc;
         ViewBag.IsTBC = isTbc;
         ViewBag.IsAnyBC = isAnyBc;
-        ViewBag.CurrentUserCanTrade = currentUserCanTrade && (currentUserIsObc || currentUserIsTbc);
-        ViewBag.HeadshotThumbnailUrl = headshotThumbnailUrl ?? "";
-        ViewBag.AvatarThumbnailUrl = avatarThumbnailUrl ?? "";
+        ViewBag.CurrentUserCanTrade = currentUserIsObc || currentUserIsTbc;
+        var defaultThumb = _configuration["Thumbnails:DefaultThumbnailUrl"];
+        if (string.IsNullOrWhiteSpace(defaultThumb)) defaultThumb = "/images/default.png";
+        var hasHeadshot = !string.IsNullOrWhiteSpace(headshotThumbnailUrl);
+        var hasAvatar = !string.IsNullOrWhiteSpace(avatarThumbnailUrl);
+        var profileUserId = ViewBag.ProfileUserId as string ?? id.ToString();
+        ViewBag.HeadshotThumbnailUrl = hasHeadshot ? headshotThumbnailUrl : defaultThumb;
+        ViewBag.HeadshotFinal = hasHeadshot;
+        ViewBag.HeadshotRetryJson = hasHeadshot ? "null" : $"\"/thumbnail/avatar-headshot?userId={profileUserId}\"";
+        ViewBag.AvatarThumbnailUrl = hasAvatar ? avatarThumbnailUrl : defaultThumb;
         ViewBag.InGame = inGame;
         ViewBag.CurrentPlaceId = currentPlaceId?.ToString() ?? "";
         ViewBag.GameName = gameName;
         ViewBag.GamePlaceId = currentPlaceId?.ToString() ?? "";
+        var inStudio = profileData?.GetValueOrDefault("inStudio") as bool? ?? false;
+        var lastActivity = profileData?.GetValueOrDefault("lastActivity") as DateTime?;
+        var isOnline = (DateTime.UtcNow - (lastActivity ?? DateTime.MinValue)).TotalMinutes < 5;
+        ViewBag.InStudio = inStudio;
+        ViewBag.IsOnline = isOnline;
         var profileCollectables = profileData?.GetValueOrDefault("profileCollectables") as int[];
         ViewBag.ProfileCollectables = profileCollectables ?? Array.Empty<int>();
         ViewBag.HasProfileCollectables = profileCollectables is { Length: > 0 };
@@ -628,4 +732,20 @@ where ua.user_id = @uid
             return new JsonResult(errorResponse);
         }
     }
+
+    private long GetCurrentUserId()
+    {
+        var idClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(idClaim))
+            return 0;
+        if (long.TryParse(idClaim, out var id))
+            return id;
+        return 0;
+    }
+
+    public class FollowRequest
+    {
+        public long? targetUserId { get; set; }
+    }
 }
+

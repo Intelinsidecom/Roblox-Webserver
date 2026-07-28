@@ -1,0 +1,230 @@
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
+
+    <script type="text/javascript">
+        var Roblox = Roblox || {};
+        Roblox.Chat = {
+            SoundFile: "/Chat/sound/chatsound.mp3"
+        };
+        Roblox.Party = {};
+        Roblox.Party.SetGoogleAnalyticsCallback = function () {
+            RobloxLaunch._GoogleAnalyticsCallback = function () {
+                var isInsideRobloxIDE = 'website';
+                if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; }
+                GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);
+                GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);
+                EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin');
+                if (typeof Roblox.GamePlayEvents != 'undefined') {
+                    Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId);
+                }
+            };
+        };
+    </script>
+
+     <div id="chat-container" class="chat chat-container"
+         ng-controller="chatController"
+         ng-class="{'collapsed': chatLibrary.chatLayout.collapsed,
+                    'inApp': chatLibrary.inApp,
+                    'tablet': chatLibrary.tabletInApp}"
+         ng-cloak
+         style="position:fixed; bottom:0; right:0; z-index:1000; visibility:hidden;">
+
+        <div id="chat-data-model"
+             class="hidden"
+             chat-data
+             chat-view-model="chatViewModel"
+             chat-library="chatLibrary"
+             data-userid="@userId"
+             data-domain="roblox.com"
+             data-gamespagelink="/games"
+             data-chatdomain=""
+             data-numberofmembersforpartychrome="6"
+             data-friendslistoutputcachedurationinseconds="10"
+             data-avatarheadshotsmultigetlimit="100"
+             data-userpresencemultigetlimit="100"
+             data-intervalofchangetitleforpartychrome="500"
+             data-spinner="/images/4bed93c91f909002b1f17f05c0ce13d1.gif"
+             data-notificationsdomain=""
+             data-devicetype="Computer"
+             data-inapp=false
+             data-togglechatbarenabled=true
+             data-localstorageenabledforchat=true
+             data-cleanpartyfromconversationenabled=false
+             data-parytchromedisplaytimestampinterval="300000"
+             data-initialconversationtodisplay=""
+             data-isclientsideurlparseenabled="true"
+             data-signalrdisconnectionresponseinmilliseconds="3000"
+             data-isnewexponentialbackoffforangularhttpretryenabled="true">
+        </div>
+
+        <div chat-bar></div>
+
+        <div id="dialogs"
+             class="dialogs"
+             ng-controller="dialogsController"
+             ng-hide="chatLibrary.chatLayout.isChatEnabledByPrivacySetting !== chatLibrary.chatLayout.chatEnabledByPrivacySettingTypes.enabled">
+
+            <div dialog
+                 id="{{chatLayoutId}}"
+                 dialog-data="chatUserDict[chatLayoutId]"
+                 chat-library="chatLibrary"
+                 close-dialog="closeDialog(chatLayoutId)"
+                 send-invite="sendInvite(chatLayoutId)"
+                 ng-repeat="chatLayoutId in chatLibrary.layoutIdList"></div>
+
+            <div dialog
+                 id="{{newGroup.layoutId}}"
+                 dialog-data="newGroup"
+                 chat-library="chatLibrary"
+                 close-dialog="closeDialog('newGroup')"
+                 send-invite="sendInvite(newGroup.layoutId)"
+                 ng-if="newGroup"></div>
+
+            <div id="dialogs-minimize"
+                 class="dialogs-minimize"
+                 dialog-minimize
+                 chat-library="chatLibrary">
+            </div>
+
+            <div class="chat-placeholder"
+                 chat-placeholder>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            $(function () {
+                $(document).on('Roblox.Chat.PartyInGame', function (event, args) {
+                    play_placeId = args.placeId;
+                });
+            });
+        </script>
+    </div>
+
+    <script type="text/javascript">
+        var robloxAppService = angular.module("robloxApp.services");
+        var robloxFilters = angular.module("robloxApp.filters");
+        var robloxApp = angular.module("robloxApp");
+        robloxApp.constant("keyCode", { enter: 13, esc: 27 });
+        robloxApp.directive("enterEscapeShift", ["keyCode", function(keyCode) {
+            return {
+                restrict: "A", link: function(scope, element, attrs) {
+                    element.bind("keydown keypress", function(event) {
+                        var which = event.keyCode || event.which;
+                        if (which !== keyCode.enter || event.shiftKey) return;
+                        event.preventDefault();
+                        scope.$apply(function() { scope.$eval(attrs.enterEscapeShift); });
+                    });
+                }
+            };
+        }]);
+        robloxApp.directive("focusMe", ["$timeout", function($timeout) {
+            return {
+                scope: { trigger: "@@focusMe" },
+                link: function(scope, element, attrs) {
+                    scope.$watch(function() { return attrs.focusMe; }, function(value) {
+                        if (value === "true") {
+                            $timeout(function() { element[0].focus(); });
+                        }
+                    });
+                }
+            };
+        }]);
+        robloxApp.directive("focusModel", function() {
+            return function(scope, element, attrs) {
+                var handler = function() {
+                    scope.$evalAsync(function() { scope.$eval(attrs.focusModel); });
+                };
+                element[0].addEventListener("focus", handler, true);
+            };
+        });
+        robloxApp.directive("inputMaxLength", function() {
+            return {
+                require: "ngModel", link: function(scope, element, attrs, ctrl) {
+                    var max = Number(attrs.inputMaxLength);
+                    ctrl.$parsers.push(function(value) {
+                        if (value && value.length > max) {
+                            var truncated = value.substring(0, max);
+                            ctrl.$setViewValue(truncated);
+                            ctrl.$render();
+                            return truncated;
+                        }
+                        return value;
+                    });
+                }
+            };
+        });
+        robloxApp.directive("onFinishRender", ["$timeout", function($timeout) {
+            return {
+                restrict: "A", link: function(scope, element, attrs) {
+                    if (scope.$last === true) {
+                        $timeout(function() { scope.$emit(attrs.onFinishRender); });
+                    }
+                }
+            };
+        }]);
+    </script>
+    @* Only load scripts not already included by _Layout.cshtml *@
+    <script type="text/javascript" src="/JS/viewapp/common/constants/keyCode.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/callBackTypes.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/constants/localStorageNames.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/cacheService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/imagesService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/localStorageService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/performanceService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/friendsInfoService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/services/playGameService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/common/filters/formatString.js"></script>
+    <script type="text/javascript">
+        var notificationStream;
+        try { notificationStream = angular.module("notificationStream"); } catch(e) { notificationStream = angular.module("notificationStream", ["robloxApp"]); }
+    </script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/services/layoutLibraryService.js"></script>
+    <script type="text/javascript" src="/JS/angular/angular-elastic.js"></script>
+    <script type="text/javascript" src="/JS/chat/ui-bootstrap-popover-only.js"></script>
+    <script type="text/javascript" src="/JS/chat/chat-modal-shim.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/modal/modal.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/modal/constants/modalOptions.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/modal/services/modalStringService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/widgets/modal/services/modalService.js"></script>
+    <script type="text/javascript" src="/JS/chat/chat-modal-controller.js"></script>
+    <script type="text/javascript" src="/JS/dist/js/legacyStyleGuide.bundle.min.js"></script>
+    <script type="text/javascript">
+        try { angular.module("toast"); } catch(e) { angular.module("toast", []); }
+    </script>
+    <script type="text/javascript" src="/JS/chat/chat-translations-en.js"></script>
+    <script type="text/javascript" src="/JS/chat/chat-translations-loader.js"></script>
+    <script type="text/javascript" src="/JS/chat/chat-template-cache.js"></script>
+    <script type="text/javascript" src="/JS/chat/chat.bundle.min.js"></script>
+    <script type="text/javascript">
+        var _chatJq = window.jQuery;
+        $(function () {
+            var el = document.getElementById('chat-container');
+            if (el) {
+                if (!angular.element(el).injector()) {
+                    try {
+                        angular.bootstrap(el, ['chat', 'chatAppTemplates']);
+                    } catch (e) {
+                        console.warn('Chat bootstrap fallback:', e);
+                    }
+                }
+                el.style.visibility = 'visible';
+            }
+        });
+        window.addEventListener('load', function () {
+            var leftCol = document.querySelector('.rbx-left-col');
+            var scrollbar = leftCol && leftCol.querySelector('[data-toggle="scrollbar"]');
+            if (scrollbar && _chatJq && _chatJq.fn.mCustomScrollbar) {
+                _chatJq(scrollbar).mCustomScrollbar('destroy');
+                _chatJq(scrollbar).mCustomScrollbar({
+                    autoHideScrollbar: false,
+                    autoExpandScrollbar: false,
+                    scrollInertia: 0,
+                    mouseWheel: { preventDefault: true }
+                });
+            }
+        });
+    </script>
+}

@@ -867,5 +867,6 @@
     "DFFlagRCCSupportCloudEdit": "True",
     "DFFlagScriptExecutionContextApi": "True",
 	"FFlagColor3FromRGB": "True",
-    "DFFlagColor3FromRGB": "True"
+    "DFFlagColor3FromRGB": "True",
+    "FFlagTeamCreateCheckInvalidUniverse": "False"
     }

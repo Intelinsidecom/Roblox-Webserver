@@ -176,9 +176,10 @@ Roblox.ItemPurchase = function(n, t, i) {
                 fieldValidationRequired: vt,
                 cssClass: "need-padding",
                 onOpenCallback: function() {
-                    $(".modal-confirmation .roblox-item-image").html("").attr("data-item-id", yt), Roblox.require("Widgets.ItemImage", function(n) {
-                        n.load($(".modal-confirmation .roblox-item-image"))
-                    })
+                    var container = $(".modal-confirmation .roblox-item-image");
+                    container.html("").attr("data-item-id", yt);
+                    var img = $("<img>").addClass("modal-thumb").attr("src", "/asset-thumbnail/image?assetId=" + yt);
+                    container.append($("<div>").css("position", "relative").css("overflow", "hidden").append(img));
                 }
             })
         }

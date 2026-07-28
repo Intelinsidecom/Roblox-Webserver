@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Games;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Api.Data;
+using RobloxWebserver.Data;
 using Assets;
 using System.IO;
 using System.Net.Http;
@@ -437,7 +437,7 @@ namespace Website.Controllers.Client
             var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl.Replace("://www.", "://data.").Replace("://assetgame.", "://data.");
             var uploadUrl = $"{dataBaseUrl}/Data/Upload.ashx?assetid={placeId}";
 
-            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {uploadUrl}";
+            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {uploadUrl}; %5% = {universeId}";
             var script = _scriptTemplateService.Render("edit", replacement);
 
             var data = "\r\n" + script;

@@ -49,7 +49,7 @@ namespace RobloxWebserver.Assemblies.Catalog
                 sqlBuilder.Append("from assets a ");
                 sqlBuilder.Append("join users u on u.user_id = a.owner_user_id ");
                 sqlBuilder.Append("where coalesce(a.asset_image, false) = false ");
-                sqlBuilder.Append("  and (a.on_sale = true or a.is_copying_allowed = true) ");
+                sqlBuilder.Append("  and (a.on_sale = true or a.is_copying_allowed = true or a.limited_unique = true or (a.limited_quantity is not null and a.limited_quantity > 0)) ");
                 sqlBuilder.Append("  and (a.is_place = false or a.is_place is null) ");
                 sqlBuilder.Append("  and (a.thumbnail_url is null or a.thumbnail_url not ilike '%image%') ");
                 sqlBuilder.Append("  and (a.name is null or a.name not ilike '%image%') ");

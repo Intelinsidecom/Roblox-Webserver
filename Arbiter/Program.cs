@@ -134,6 +134,8 @@ namespace RCCArbiter
         private static IConfiguration? _configuration;
         private static RCCProcessManager? _renderingRCC;
         private static RenderingRccManager? _renderMgr;
+        private static GameServerManager? _gameServerManager;
+        private static CloudEditManager? _cloudEditManager;
 
         static void Main(string[] args)
         {
@@ -160,6 +162,7 @@ namespace RCCArbiter
                     {
                         _renderingRCC = new RCCProcessManager(_configuration, "Rendering");
                         _renderingRCC.Start();
+                        _renderingRCC.EnableAutoRestart();
                         rccUrl = _renderingRCC.ServiceUrl;
                     }
                     catch (Exception ex)
@@ -193,6 +196,7 @@ namespace RCCArbiter
                 {
                     _renderingRCC = new RCCProcessManager(_configuration, "Rendering");
                     _renderingRCC.Start();
+                    _renderingRCC.EnableAutoRestart();
                     rccUrl = _renderingRCC.ServiceUrl;
                 }
                 catch (Exception ex)
@@ -549,6 +553,7 @@ namespace RCCArbiter
                             {
                                 _renderingRCC = new RCCProcessManager(_configuration, "Rendering");
                                 _renderingRCC.Start();
+                                _renderingRCC.EnableAutoRestart();
                             }
 
                             currentRccUrl = _renderingRCC.ServiceUrl;
@@ -866,6 +871,10 @@ namespace RCCArbiter
             }
 
             var gameServerManager = new GameServerManager(rccUrl, builder.Configuration);
+            _gameServerManager = gameServerManager;
+            var cloudEditRccManager = new CloudEditRccManager(builder.Configuration);
+            var cloudEditManager = new CloudEditManager(rccUrl, builder.Configuration, cloudEditRccManager);
+            _cloudEditManager = cloudEditManager;
             var reportCollectionTimer = new Timer(async _ => 
             {
                 try
@@ -995,6 +1004,73 @@ namespace RCCArbiter
                         
                         return Results.Ok(new { gameId = gameId, status = "started" });
                     }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/start-cloudedit", async (HttpRequest req) =>
+            {
+                try
+                {
+                    var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 15;
+                    var port = StartGameServerEndpoint.GenerateAvailablePort();
+                    var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
+                    var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.xyz";
+                    var universeId = int.TryParse(req.Query["universeId"], out var uid) ? uid : 0;
+
+                    var gameId = await cloudEditManager.StartCloudEditServerAsync(
+                        placeId,
+                        port,
+                        maxPlayers,
+                        baseUrl,
+                        universeId
+                    );
+
+                    return Results.Ok(new { gameId = gameId, port = port, status = "started" });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/cloudedit/sessions", (HttpRequest req) =>
+            {
+                try
+                {
+                    var universeId = int.TryParse(req.Query["universeId"], out var uid) ? uid : 0;
+
+                    if (universeId <= 0)
+                    {
+                        return Results.BadRequest(new { error = "universeId is required" });
+                    }
+
+                    var sessions = cloudEditManager.GetSessionsByUniverseId(universeId);
+                    var editors = new List<object>();
+
+                    foreach (var session in sessions)
+                    {
+                        foreach (var editorUserId in session.Editors)
+                        {
+                            editors.Add(new
+                            {
+                                userId = editorUserId,
+                                gameId = session.GameId,
+                                placeId = session.PlaceId,
+                                startTime = session.StartTime
+                            });
+                        }
+                    }
+
+                    return Results.Ok(new
+                    {
+                        universeId = universeId,
+                        totalEditors = editors.Count,
+                        editors = editors
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -1847,13 +1923,18 @@ namespace RCCArbiter
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            Console.WriteLine();
+            Console.WriteLine("Shutting down HTTP server...");
+
+            Program.GetGameServerManager()?.Dispose();
+            Program.GetCloudEditManager()?.Dispose();
+            Program.GetRenderingManager()?.Dispose();
+
             if (Program.GetRenderingRCC() != null)
             {
-                Console.WriteLine();
-                Console.WriteLine("Shutting down HTTP server...");
                 Program.GetRenderingRCC()?.Dispose();
             }
-            Program.GetRenderingManager()?.Dispose();
+
             return Task.CompletedTask;
         }
     }
@@ -1862,6 +1943,8 @@ namespace RCCArbiter
     {
         public static RCCProcessManager? GetRenderingRCC() => _renderingRCC;
         public static RenderingRccManager? GetRenderingManager() => _renderMgr;
+        public static GameServerManager? GetGameServerManager() => _gameServerManager;
+        public static CloudEditManager? GetCloudEditManager() => _cloudEditManager;
     }
 }
 

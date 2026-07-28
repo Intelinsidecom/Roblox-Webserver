@@ -1,4 +1,4 @@
-﻿@model RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel
+@model RobloxWebserver.Controllers.CatalogController.CatalogItemViewModel
 @{ Layout = "_Layout"; }
 
 @section Head {
@@ -107,11 +107,11 @@
                                 <div class=equipped-marker></div>@if (AssetTypeNames.Is3DSupported(Model.AssetTypeId)) {<span class="enable-three-dee three-dee-static-icon"></span>}
                                 @if (Model.IsLimitedUnique)
                                 {
-                                    <div class=asset-restriction-icon><span class=rbx-tooltip data-toggle=tooltip data-original-title="Serialized limited release, resellable."><span class=icon-label icon-limited-unique-label"></span></span></div>
+                                    <div class=asset-restriction-icon><span class=rbx-tooltip data-toggle=tooltip data-original-title="Serialized limited release, resellable."><span class="icon-label icon-limited-unique-label"></span></span></div>
                                 }
                                 else if (Model.IsLimited)
                                 {
-                                    <div class=asset-restriction-icon><span class=rbx-tooltip data-toggle=tooltip data-original-title="Limited release, resellable."><span class=icon-label icon-limited-label"></span></span></div>
+                                    <div class=asset-restriction-icon><span class=rbx-tooltip data-toggle=tooltip data-original-title="Limited release, resellable."><span class="icon-label icon-limited-label"></span></span></div>
                                 }
                             </div>
                             @if (Model.AssetTypeId == 3)
@@ -556,7 +556,7 @@
                 'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
         <div notification-content></div>
     </div>
-    <div id=chat-container class="chat chat-container" chat-base></div>
+    <!-- chat-container now provided by Chat partial in _Layout.cshtml -->
     <script>
         function urchinTracker() {}
     </script>
@@ -570,37 +570,7 @@
                 Cancel: "Cancel"
             };
         </script>
-    <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation>
-        <div id=modal-dialog class=modal-dialog>
-            <div class=modal-content>
-                <div class=modal-header><button type=button class=close data-dismiss=modal> <span aria-hidden=true><span class=icon-close></span></span><span class=sr-only>Close</span> </button>
-                    <h5 class=modal-title></h5>
-                </div>
-                <div class=modal-body>
-                    <div class=modal-top-body>
-                        <div class=modal-message></div>
-                        <div class="modal-image-container roblox-item-image" data-image-size=medium data-no-overlays data-no-click><img class=modal-thumb alt="generic image"></div>
-                        <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
-                    </div>
-                    <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
-                    <div class="loading modal-processing"><img class=loading-default src=/images/Loading.gif alt=Processing...></div>
-                </div>
-                <div class=modal-footer text-footer"></div>
-            </div>
-        </div>
-        <script>
-            Roblox = Roblox || {};
-            Roblox.Resources = Roblox.Resources || {};
-            Roblox.Resources.Dialog = {
-                yes: "Yes",
-                No: "No",
-                OK: "OK",
-                Confirm: "Confirm",
-                Cancel: "Cancel",
-                Agree: "Agree"
-            };
-        </script>
-    </div>
+
     <script>
         var Roblox = Roblox || {};
         Roblox.jsConsoleEnabled = false;
@@ -1032,9 +1002,7 @@
     <script type="text/javascript" src="/JS/viewapp/pages/recommendations/recommendations.js"></script>
     <script type="text/javascript" src="/JS/viewapp/pages/recommendations/controllers/recommendationsController.js"></script>
     <script type="text/javascript" src="/JS/viewapp/pages/recommendations/services/recommendationsPageService.js"></script>
-    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
-    <script type="text/javascript" src="/JS/utilities/dialog.js"></script>
-    <script type="text/javascript" src="/JS/NumberFormatting.js"></script>
+
     <script type="text/javascript" src="/JS/GenericModal.js"></script>
     <script type="text/javascript" src="/JS/Item/ItemPage.js"></script>
     <script type="text/javascript" src="/JS/HighCharts/highcharts.js"></script>

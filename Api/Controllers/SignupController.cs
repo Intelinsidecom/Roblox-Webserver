@@ -20,33 +20,46 @@ namespace Api.Controllers
         [HttpGet("is-username-valid")]
         public async Task<IActionResult> IsUsernameValid([FromQuery] string username, [FromServices] IConfiguration config)
         {
-            // Normalize
+            // Normalize input
             var name = username?.Trim();
 
-            // Basic checks based on Roblox-like requirements
             if (string.IsNullOrEmpty(name))
-                return Ok(new { IsValid = false, ErrorMessage = "UsernameInvalid" });
+            {
+                return Ok(new { IsValid = false, ErrorMessage = "" });
+            }
 
             if (name.Length < 3 || name.Length > 20)
-                return Ok(new { IsValid = false, ErrorMessage = "UsernameInvalid" });
-
-            // Only letters and digits; no symbols or spaces
-            if (!name.All(char.IsLetterOrDigit))
-                return Ok(new { IsValid = false, ErrorMessage = "UsernameInvalid" });
-
-            // Check if username already exists in database
-            var connString = config.GetConnectionString("Default");
-            if (!string.IsNullOrWhiteSpace(connString))
             {
-                try
+                return Ok(new { IsValid = false, ErrorMessage = "" });
+            }
+
+            if (!name.All(c => char.IsLetterOrDigit(c) || c == '_'))
+            {
+                return Ok(new { IsValid = false, ErrorMessage = "" });
+            }
+
+            if (name.StartsWith("_") || name.EndsWith("_") || name.Contains("__"))
+            {
+                return Ok(new { IsValid = false, ErrorMessage = "" });
+            }
+
+            var connString = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connString))
+            {
+                return Ok(new { IsValid = true, ErrorMessage = "" });
+            }
+
+            try
+            {
+                var exists = await UserQueries.UsernameExistsAsync(connString, name);
+                if (exists)
                 {
-                    var exists = await UserQueries.UsernameExistsAsync(connString, name);
-                    if (exists)
-                        return Ok(new { IsValid = false, ErrorMessage = "UsernameTaken" });
+                    return Ok(new { IsValid = false, ErrorMessage = "UsernameTaken" });
                 }
-                catch
-                {
-                }
+            }
+            catch
+            {
+                return StatusCode(500, new { IsValid = false });
             }
 
             return Ok(new { IsValid = true, ErrorMessage = "" });

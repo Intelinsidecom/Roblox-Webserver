@@ -75,7 +75,8 @@ FROM user_assets ua
 JOIN assets a ON a.asset_id = ua.asset_id
 JOIN users u ON u.user_id = ua.user_id
 LEFT JOIN asset_serials aser ON aser.asset_id = ua.asset_id AND aser.owner_user_id = ua.user_id
-WHERE ua.user_id = @userId";
+WHERE ua.user_id = @userId
+  AND (a.limited_unique = TRUE OR aser.serial_number IS NOT NULL)";
 
             if (assetType.HasValue)
             {
