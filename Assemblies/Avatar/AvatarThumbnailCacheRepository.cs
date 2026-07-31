@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
@@ -70,6 +71,57 @@ on conflict (config_hash) do update set
             cmd.Parameters.AddWithValue("hgt", height);
 
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task WipeUserCacheAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+
+            var configBuilder = new AvatarRenderConfigBuilder();
+
+            // Compute current config hashes for all render types/sizes the system uses
+            var configTasks = new[]
+            {
+                configBuilder.BuildAvatarRenderConfigAsync(connectionString, userId, "avatar", 420, 420, cancellationToken),
+                configBuilder.BuildAvatarRenderConfigAsync(connectionString, userId, "headshot", 352, 352, cancellationToken),
+                configBuilder.BuildAvatarRenderConfigAsync(connectionString, userId, "avatar3d", 352, 352, cancellationToken)
+            };
+
+            var configs = await Task.WhenAll(configTasks).ConfigureAwait(false);
+            var configHashes = configs.Select(c => c.configHash).Distinct().ToArray();
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using (var cmd = new NpgsqlCommand("delete from avatar_thumbnail_cache where config_hash = any(@hashes)", conn))
+            {
+                cmd.Parameters.AddWithValue("hashes", configHashes);
+                await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            using (var cmd = new NpgsqlCommand("delete from avatar_3d_cache where config_hash = any(@hashes)", conn))
+            {
+                cmd.Parameters.AddWithValue("hashes", configHashes);
+                await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            using (var cmd = new NpgsqlCommand(@"
+                update users
+                set avatar_render_urls     = (coalesce(avatar_render_urls, '{}'::jsonb) - 'headshot') - 'avatar',
+                    thumbnail_url          = null,
+                    avatar_thumbnail_url   = null,
+                    headshot_url           = null,
+                    headshot_thumbnail_url = null,
+                    avatar_state_hash      = null,
+                    last_avatar_thumbnail  = null
+                where user_id = @id", conn))
+            {
+                cmd.Parameters.AddWithValue("id", userId);
+                await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

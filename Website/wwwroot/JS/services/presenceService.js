@@ -17,12 +17,14 @@ Roblox.PresenceService = function () {
     function t() {
         if (Roblox && Roblox.RealTime) {
             var n = Roblox.RealTime.Factory.GetClient(),
-                t = Roblox.Constants.realTimeNotifications.presenceBulkNotifications.name,
-                i = Roblox.Constants.realTimeNotifications.presenceBulkNotifications.types;
+                t = Roblox.Constants && Roblox.Constants.realTimeNotifications && (Roblox.Constants.realTimeNotifications.presenceBulkNotifications || Roblox.Constants.realTimeNotifications.presenceNotifications);
+            if (!t) return;
+            var i = t.types,
+                r = [i.presenceChanged, i.presenceOnline, i.presenceOffline].filter(function (n) { return !!n; });
+            t = t.name;
             n.Subscribe(t, function (n) {
                 n.forEach(function (n) {
-                    switch (n.Type) {
-                    case i.presenceChanged:
+                    if (r.indexOf(n.Type) !== -1) {
                         var t = {
                             userIds: []
                         };

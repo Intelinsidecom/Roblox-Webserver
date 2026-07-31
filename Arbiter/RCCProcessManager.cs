@@ -23,6 +23,7 @@ namespace RCCArbiter
         private bool _forceSeparateWindow;
         private Timer? _healthWatchdog;
         private readonly object _watchdogLock = new();
+        private int _busyCount;
         private bool _disposed;
 
         public RCCProcessManager(IConfiguration configuration, string configSection = "Rendering")
@@ -64,6 +65,12 @@ namespace RCCArbiter
         public string ServiceUrl => $"http://localhost:{_port}";
         public bool IsRunning => _process != null && !_process.HasExited;
         
+        public int BusyCount => _busyCount;
+
+        public void IncrementBusy() => Interlocked.Increment(ref _busyCount);
+
+        public void DecrementBusy() => Interlocked.Decrement(ref _busyCount);
+
         public bool ForceSeparateWindow
         {
             get => _forceSeparateWindow;
@@ -102,6 +109,12 @@ namespace RCCArbiter
 
             if (!IsRunning)
             {
+                if (_busyCount > 0)
+                {
+                    Console.WriteLine($"[Watchdog] RCC ({_year}) on port {_port} is dead but has {_busyCount} active requests, skipping restart (will restart when requests drain)");
+                    return;
+                }
+
                 Console.WriteLine($"[Watchdog] RCC ({_year}) on port {_port} is dead, restarting...");
                 try
                 {
@@ -187,8 +200,15 @@ namespace RCCArbiter
         /// </summary>
         public void Stop()
         {
-            if (_process == null || _process.HasExited)
+            if (_process == null)
             {
+                return;
+            }
+
+            if (_process.HasExited)
+            {
+                _process.Dispose();
+                _process = null;
                 return;
             }
 

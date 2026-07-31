@@ -111,6 +111,7 @@ namespace Users
                     var friendUserId = reader.GetInt64(0);
                     var thumbnailUrl = reader.IsDBNull(2) ? "" : reader.GetString(2);
                     var presenceUniverseId = reader.IsDBNull(4) ? (long?)null : reader.GetInt64(4);
+                    var statusText = reader.IsDBNull(6) ? "" : reader.GetString(6);
                     var entry = new Dictionary<string, object?>
                     {
                         ["UserId"] = friendUserId,
@@ -133,7 +134,8 @@ namespace Users
                         ["FriendStatus"] = friendsType == "AllFriends" ? "Friend"
                             : friendsType == "FriendRequests" ? "FriendRequestReceived"
                             : "NotFriend",
-                        ["LastLocation"] = "",
+                        ["LastLocation"] = statusText,
+                        ["StatusText"] = statusText,
                         ["InGame"] = !reader.IsDBNull(5) && reader.GetBoolean(5),
                         ["InStudio"] = false,
                         ["AbsolutePlaceURL"] = presenceUniverseId.HasValue

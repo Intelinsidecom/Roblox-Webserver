@@ -50,6 +50,7 @@ namespace RCCArbiter
                 return null;
 
             var (inst, url) = EnsureInstance();
+            inst.Proc.IncrementBusy();
             Interlocked.Increment(ref inst.Load);
             inst.LastUsedUtc = DateTime.UtcNow;
 
@@ -91,6 +92,8 @@ namespace RCCArbiter
                 {
                     // Start a new instance on a free port
                     int port = FindFreePort();
+                    if (port < 0)
+                        throw new InvalidOperationException("No free ports available for RCC rendering instance");
                     var proc = new RCCProcessManager(_config, "Rendering", port);
                     proc.Start();
                     proc.EnableAutoRestart();
@@ -110,6 +113,7 @@ namespace RCCArbiter
         private void ReleaseInstance(Instance inst)
         {
             Interlocked.Decrement(ref inst.Load);
+            inst.Proc.DecrementBusy();
             inst.LastUsedUtc = DateTime.UtcNow;
         }
 

@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -227,10 +229,14 @@ namespace Control_Panel.Views
                 
                 var connectionString = DatabaseUtilities.GetConnectionString();
                 var success = await Users.UserQueries.ResetAvatarAsync(connectionString, _currentUser.UserId);
-                
+
                 if (success)
                 {
-                    await Thumbnails.ThumbnailQueries.ClearUserThumbnailUrlsAsync(connectionString, _currentUser.UserId);
+                    var cacheRepo = new Avatar.AvatarThumbnailCacheRepository();
+                    await cacheRepo.WipeUserCacheAsync(connectionString, _currentUser.UserId);
+
+                    // Clean up 3D avatar files on disk (model directories + map files)
+                    await ClearUser3DAvatarCacheAsync(connectionString, _currentUser.UserId);
                 }
                 
                 if (success)
@@ -253,6 +259,63 @@ namespace Control_Panel.Views
             }
         }
         
+        private async Task ClearUser3DAvatarCacheAsync(string connectionString, long userId)
+        {
+            try
+            {
+                var solutionRoot = DatabaseUtilities.GetSolutionRoot();
+                var websiteJsonPath = Path.Combine(solutionRoot, "Website", "appsettings.json");
+                string avatar3dDir;
+
+                if (File.Exists(websiteJsonPath))
+                {
+                    var json = File.ReadAllText(websiteJsonPath);
+                    var match = System.Text.RegularExpressions.Regex.Match(json,
+                        @"""Avatar3DDirectory""\s*:\s*""([^""]+)""");
+                    avatar3dDir = match.Success ? match.Groups[1].Value : null;
+                }
+                else
+                {
+                    avatar3dDir = null;
+                }
+
+                if (string.IsNullOrWhiteSpace(avatar3dDir))
+                    avatar3dDir = Path.Combine(solutionRoot, "CDN", "Assets", "3DAvatar");
+
+                var mapsDir = Path.Combine(avatar3dDir, "maps");
+                if (!Directory.Exists(mapsDir))
+                    return;
+
+                var mapFiles = Directory.GetFiles(mapsDir, $"{userId}_*.txt");
+                if (mapFiles.Length == 0)
+                    return;
+
+                var repo = new Avatar.Avatar3DThumbnailCacheRepository();
+
+                foreach (var mapFile in mapFiles)
+                {
+                    var modelHash = (await File.ReadAllTextAsync(mapFile)).Trim();
+                    if (string.IsNullOrWhiteSpace(modelHash))
+                        continue;
+
+                    // Delete from SQL cache
+                    await repo.DeleteByModelHashAsync(connectionString, modelHash);
+
+                    // Delete the 3D avatar directory from disk
+                    var avatarDir = Path.Combine(avatar3dDir, modelHash);
+                    if (Directory.Exists(avatarDir))
+                        Directory.Delete(avatarDir, recursive: true);
+
+                    // Delete the map file
+                    File.Delete(mapFile);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error clearing 3D avatar cache for user {userId}: {ex.Message}");
+            }
+        }
+
         private async void ResetPasswordButton_Click(object sender, RoutedEventArgs e)
         {
             if (_currentUser == null) return;

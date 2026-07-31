@@ -1086,4 +1086,118 @@ public static class GamesQueries
         public int GuestPlayers { get; set; }
         public List<string> PlayerNames { get; set; } = new();
     }
+
+    public static async Task<List<long>> GetFriendActivityUniverseIdsAsync(
+        long userId, string connectionString, int limit = 10,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString) || userId <= 0)
+            return new List<long>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"
+            WITH friend_visits AS (
+                SELECT unnest(u.visited_universes) AS universe_id
+                FROM user_friends uf
+                JOIN users u ON u.user_id = uf.friend_user_id
+                WHERE uf.user_id = @userId
+                AND u.visited_universes IS NOT NULL
+                AND array_length(u.visited_universes, 1) > 0
+            )
+            SELECT universe_id, COUNT(*) AS friend_count
+            FROM friend_visits
+            GROUP BY universe_id
+            ORDER BY friend_count DESC, universe_id
+            LIMIT @limit";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("userId", userId);
+        cmd.Parameters.AddWithValue("limit", limit);
+
+        var ids = new List<long>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            ids.Add(reader.GetInt64(0));
+
+        return ids;
+    }
+
+    public static async Task<List<long>> GetRecentlyVisitedUniverseIdsAsync(
+        long userId, string connectionString,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString) || userId <= 0)
+            return new List<long>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = "SELECT visited_universes FROM users WHERE user_id = @userId";
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("userId", userId);
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result is long[] ids ? ids.Take(10).ToList() : new List<long>();
+    }
+
+    public static async Task<List<long>> GetFavoritePlaceUniverseIdsAsync(
+        long userId, string connectionString,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString) || userId <= 0)
+            return new List<long>();
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = "SELECT favorites FROM users WHERE user_id = @userId";
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("userId", userId);
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+
+        var universeIds = new List<long>();
+        if (result is not string json || string.IsNullOrWhiteSpace(json))
+            return universeIds;
+
+        try
+        {
+            var placeIds = JsonSerializer.Deserialize<List<long>>(json);
+            if (placeIds == null || placeIds.Count == 0)
+                return universeIds;
+
+            foreach (var placeId in placeIds.Take(20))
+            {
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(
+                    connectionString, placeId, cancellationToken).ConfigureAwait(false);
+                if (universeId.HasValue)
+                    universeIds.Add(universeId.Value);
+            }
+        }
+        catch { }
+
+        return universeIds;
+    }
+
+    public static async Task<List<long>> GetFeaturedGameUniverseIdsAsync(
+        string connectionString,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        var sql = "SELECT universe_id FROM featured_games ORDER BY featured_game_id ASC LIMIT 4";
+        using var cmd = new NpgsqlCommand(sql, conn);
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+
+        var ids = new List<long>();
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            ids.Add(reader.GetInt64(0));
+        }
+        return ids;
+    }
 }

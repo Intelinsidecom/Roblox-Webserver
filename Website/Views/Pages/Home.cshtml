@@ -1,8 +1,1247 @@
-﻿@{ Layout = "_Layout"; }
+﻿@using System.Security.Claims
+@using Npgsql
+@using Games
+@{
+    Layout = "_Layout";
+    ViewBag.IncludeSharedCss = true;
+    ViewBag.IncludeSharedJs = true;
 
-<link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
+    if (!User.Identity.IsAuthenticated)
+    {
+        Context.Response.Redirect("/");
+        return;
+    }
 
-<div>
-</div>
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0";
 
-<h1>Temp Home Page</h1>
+    long parsedUserId;
+    long.TryParse(userId, out parsedUserId);
+
+    string userName = "User";
+    string userStatusText = "";
+    var feedEntries = new List<Users.FeedEntry>();
+    var friendsList = new List<Dictionary<string, object?>>();
+    int friendCount = 0;
+    var featuredGameIds = new List<long>();
+    var featuredGameEntries = new List<GamesQueries.GameEntry>();
+    var friendActivityGames = new List<long>();
+    var friendActivityGameEntries = new List<GamesQueries.GameEntry>();
+    var friendActivityLiveCounts = new Dictionary<long, int>();
+    if (parsedUserId > 0)
+    {
+        var connStr = Configuration.GetConnectionString("Default");
+        if (!string.IsNullOrWhiteSpace(connStr))
+        {
+            try
+            {
+                userName = Users.UserQueries.GetUserNameByIdAsync(connStr, parsedUserId).GetAwaiter().GetResult() ?? userName;
+                userStatusText = Users.UserQueries.GetUserStatusTextAsync(connStr, parsedUserId).GetAwaiter().GetResult() ?? "";
+                feedEntries = Users.UserQueries.GetFeedEntriesForUserAsync(connStr, parsedUserId, 20).GetAwaiter().GetResult();
+                friendsList = Users.UserQueries.GetFriendListAsync(connStr, parsedUserId, parsedUserId, 0, 10, "AllFriends").GetAwaiter().GetResult();
+                friendCount = friendsList.Count;
+                friendActivityGames = GamesQueries.GetFriendActivityUniverseIdsAsync(parsedUserId, connStr, 10).GetAwaiter().GetResult();
+                if (friendActivityGames.Count > 0)
+                {
+                    var arbiterUrl = Configuration["ArbiterUrl"] ?? "http://localhost:5000";
+                    friendActivityGameEntries = GamesQueries.GetGameEntriesByUniverseIdsAsync(friendActivityGames, connStr).GetAwaiter().GetResult();
+                    var ids = friendActivityGameEntries.Select(g => g.UniverseId).Distinct().ToList();
+                    friendActivityLiveCounts = GamesQueries.GetLivePlayerCountsForUniverseIdsAsync(ids, connStr, arbiterUrl).GetAwaiter().GetResult();
+                }
+                featuredGameIds = GamesQueries.GetFeaturedGameUniverseIdsAsync(connStr).GetAwaiter().GetResult();
+                if (featuredGameIds.Count == 0)
+                {
+                    var fallbackIds = Configuration.GetSection("FeaturedGames:UniverseIds").Get<long[]>();
+                    if (fallbackIds != null)
+                        featuredGameIds = fallbackIds.Take(4).ToList();
+                }
+                if (featuredGameIds.Count > 0)
+                {
+                    featuredGameEntries = GamesQueries.GetGameEntriesByUniverseIdsAsync(featuredGameIds, connStr).GetAwaiter().GetResult();
+                }
+            }
+            catch { }
+        }
+    }
+
+    if (string.IsNullOrEmpty(userName) || userName == "User")
+    {
+        userName = User.FindFirst("RobloxUsername")?.Value ?? User.FindFirst(ClaimTypes.Name)?.Value ?? User.Identity?.Name ?? "User";
+    }
+}
+<!DOCTYPE html><!--[if IE 8]><html class=ie8 ng-app=robloxApp><![endif]--> <!--[if gt IE 8]><!-->
+<html><!--<![endif]-->
+
+<head data-machine-id=WEB1426>
+    <title>Home - Roblox</title>
+    <meta http-equiv=X-UA-Compatible content="IE=edge,requiresActiveX=true">
+    <meta charset=UTF-8>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+
+    <meta name=user-data data-userid=@userId data-name=@userName data-isunder13=false>
+    <meta name=locale-data data-language-code=en-us data-language-name=English>
+    <script>
+        window.Roblox = window.Roblox || {};
+    </script>
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.I18nData = Roblox.I18nData || {};
+        Roblox.I18nData.isI18nEnabledForChat = false;
+    </script>
+    <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
+    </head>
+    <link rel="stylesheet" href="~/CSS/2017/Home/SiteStyle.css">
+<link rel="stylesheet" href="~/CSS/2017/Home/LeanBaseStyle.css">
+<link rel="stylesheet" href="~/CSS/2017/Home/Base/CSS/jquery.mCustomScrollbar.css">
+
+
+
+<link rel="stylesheet" href="/CSS/2017/Home/Base/CSS/Modals.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Base/CSS/PlaceLauncher.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Base/CSS/RevisedCharacterSelectModal.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Base/CSS/VideoPreRoll.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Base/CSS/Abp.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Legacy/Modal.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Fonts/SourceSansPro.css">
+
+
+
+<link rel="stylesheet" href="/CSS/2017/Home/Pages/Home/HomePage.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Pages/Shared/Friend.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Pages/Shared/DevEx.css">
+<link rel="stylesheet" href="/CSS/2017/Home/PartialViews/CardItem.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Pages/Upgrades/CreditCardExpiration.css">
+<link rel="stylesheet" href="/CSS/2017/Home/Pages/Widgets/ContactUpsell.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/PushNotificationRegistration.css">
+<link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+    <script src=//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js></script>
+    <script>
+        window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")
+    </script>
+    <script src=//ajax.aspnetcdn.com/ajax/jquery.migrate/jquery-migrate-1.2.1.min.js></script>
+    <script>
+        window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")
+    </script>
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.RealTimeSettings = Roblox.RealTimeSettings || {
+            NotificationsEndpoint: "https://realtime.roblox.com/",
+            NotificationsTestInterval: "5000",
+            MaxConnectionTime: "43200000",
+            IsStateTrackingEnabled: true,
+            IsEventPublishingEnabled: false,
+            IsDisconnectOnSlowConnectionDisabled: true,
+            IsSignalRClientTransportRestrictionEnabled: true,
+            IsLocalStorageInRealTimeEnabled: true,
+            UserId: "@userId"
+        }
+    </script>
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.WebApps = Roblox.WebApps || {};
+        Roblox.WebApps.Domains = {
+            chat: "https://chatsite.roblox.com"
+        }
+    </script>
+    <script type="text/javascript" src="~/JS/GPTAdScript.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
+    <script type="text/javascript" src="~/JS/roblox.js"></script>
+    <script type="text/javascript" src="~/JS/common/constants.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
+    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
+    <script type="text/javascript" src="~/JS/services/userService.js"></script>
+    <script type="text/javascript" src="~/JS/SignalR/jquery.signalr-2.2.0.js"></script>
+    <script type="text/javascript" src="~/JS/SignalR/SignalRAbortAsyncPatch-2.2.0.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/signalRConnectionWrapper.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/signalRSource.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/client.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/factory.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/stateTracker.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/hybridSource.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/crossTabReplicatedSource.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/CrossTabCommunication/Kingmaker.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/CrossTabCommunication/PubSub.js"></script>
+    <script type="text/javascript" src="~/JS/Notifications/AuthenticationNotificationsHandler.js"></script>
+    <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <script>
+        googletag.cmd.push(function() {
+            Roblox = Roblox || {};
+            Roblox.AdsHelper = Roblox.AdsHelper || {};
+            Roblox.AdsHelper.slots = [];
+            Roblox.AdsHelper.slots = Roblox.AdsHelper.slots || [];
+            Roblox.AdsHelper.slots.push({
+                slot: googletag.defineSlot("/1015347/Roblox_MyHome_Left_160x600", [160, 600], "3538383439323233").addService(googletag.pubads()),
+                id: "3538383439323233",
+                path: "/1015347/Roblox_MyHome_Left_160x600"
+            });
+            Roblox.AdsHelper.slots = Roblox.AdsHelper.slots || [];
+            Roblox.AdsHelper.slots.push({
+                slot: googletag.defineSlot("/1015347/Roblox_MyHome_Right_160x600", [160, 600], "3337383033333234").addService(googletag.pubads()),
+                id: "3337383033333234",
+                path: "/1015347/Roblox_MyHome_Right_160x600"
+            });
+            for (var key in Roblox.AdsHelper.slots) {
+                var slot = Roblox.AdsHelper.slots[key].slot;
+                var id = Roblox.AdsHelper.slots[key].id;
+                var path = Roblox.AdsHelper.slots[key].path;
+                if (slot.renderEnded != "undefined") {
+                    (function(slot, id) {
+                        slot.renderEndedOld = slot.renderEnded;
+                        slot.renderEnded = function() {
+                            slot.renderEndedOld();
+                            if ($('#' + id + '.gutter').css('display') == "none") {
+                                $(document).trigger("GuttersHidden");
+                            }
+                            if ($('#' + id + '.filmstrip').css('display') == "none") {
+                                $(document).trigger("FilmStripHidden");
+                            }
+                        };
+                    }(slot, id));
+                }
+            }
+            googletag.pubads().setTargeting("Age", ["50", "18AndOver"]);
+            googletag.pubads().setTargeting("A", ["50", "18AndOver"]);
+            googletag.pubads().setTargeting("Env", "Production");
+            googletag.pubads().setTargeting("Gender", "Male");
+            googletag.pubads().setTargeting("PLVU", "True");
+            googletag.pubads().enableSingleRequest();
+            googletag.pubads().collapseEmptyDivs();
+            googletag.enableServices();
+        });
+    </script>
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.AdsHelper = Roblox.AdsHelper || {};
+        Roblox.AdsLibrary = Roblox.AdsLibrary || {};
+        Roblox.AdsHelper.toggleAdsSlot = function(slotId, GPTRandomSlotIdentifier) {
+            var gutterAdsEnabled = false;
+            if (gutterAdsEnabled) {
+                googletag.display(GPTRandomSlotIdentifier);
+                return;
+            }
+            if (typeof slotId !== 'undefined' && slotId && slotId.length > 0) {
+                var slotElm = $("#" + slotId);
+                if (slotElm.is(":visible")) {
+                    googletag.display(GPTRandomSlotIdentifier);
+                } else {
+                    var adParam = Roblox.AdsLibrary.adsParameters[slotId];
+                    if (adParam) {
+                        adParam.template = slotElm.html();
+                        slotElm.empty();
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        $(function() {
+            Roblox.JSErrorTracker.initialize({
+                'suppressConsoleError': true
+            });
+        });
+    </script>
+    <script>
+        (function(a, b, c, d, e) {
+            function f() {
+                var a = b.createElement("script");
+                a.async = !0;
+                a.src = "//radar.cedexis.com/1/18551/radar.js";
+                b.body.appendChild(a)
+            }
+            /\bMSIE 6/i.test(a.navigator.userAgent) || (a[c] ? a[c](e, f, !1) : a[d] && a[d]("on" + e, f))
+        })
+        (window, document, "addEventListener", "attachEvent", "load");
+    </script><!--[if lt IE 9]><script src=//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script><script src=//oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
+    <script>
+        var _gaq = _gaq || [];
+        window.GoogleAnalyticsDisableRoblox2 = true;
+        _gaq.push(['b._setAccount', 'UA-486632-1']);
+        _gaq.push(['b._setCampSourceKey', 'rbx_source']);
+        _gaq.push(['b._setCampMediumKey', 'rbx_medium']);
+        _gaq.push(['b._setCampContentKey', 'rbx_campaign']);
+        _gaq.push(['b._setDomainName', 'roblox.com']);
+        _gaq.push(['b._setCustomVar', 1, 'Visitor', 'Member', 2]);
+        _gaq.push(['b._setPageGroup', 1, 'Home']);
+        _gaq.push(['b._trackPageview']);
+        _gaq.push(['c._setAccount', 'UA-26810151-2']);
+        _gaq.push(['c._setSampleRate', '1']);
+        _gaq.push(['c._setDomainName', 'roblox.com']);
+        _gaq.push(['c._setPageGroup', 1, 'Home']);
+        (function() {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+ 
+    <script>
+        if (typeof(Roblox) === "undefined") {
+            Roblox = {};
+        }
+        Roblox.Endpoints = Roblox.Endpoints || {};
+        Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
+        Roblox.Endpoints.Urls['/home/recently-visited-places'] = '/home/recently-visited-places';
+        Roblox.Endpoints.Urls['/user/favorites/places'] = '/user/favorites/places';
+    </script>
+    <script>
+        Roblox = Roblox || {};
+        Roblox.AbuseReportPVMeta = {
+            desktopEnabled: true,
+            phoneEnabled: false,
+            inAppEnabled: false,
+            inApp: false
+        };
+    </script>
+
+<body id=rbx-body data-performance-relative-value=0.005 data-internal-page-name=Home data-send-event-percentage=0.01>
+    <div id=roblox-linkify data-enabled=true data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags=gm data-as-http-regex=((wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.roblox\.com|robloxlabs\.com)></div>
+    <div id=image-retry-data data-image-retry-max-times=10 data-image-retry-timer=1500 data-ga-logging-percent=10></div>
+    <div id=http-retry-data data-http-retry-max-timeout=0 data-http-retry-base-timeout=0 data-http-retry-max-times=5></div>
+    <div id=TosAgreementInfo data-terms-check-needed=False></div>
+    <div id=fb-root></div>
+        <script>
+            var Roblox = Roblox || {};
+            (function() {
+                if (Roblox && Roblox.Performance) {
+                    Roblox.Performance.setPerformanceMark("navigation_end");
+                }
+            })();
+        </script>
+        <div class=container-main>
+            <script>
+                if (top.location != self.location) {
+                    top.location = self.location.href;
+                }
+            </script>
+            <div class=alert-container><noscript>
+                    <div>
+                        <div class=alert-info role=alert>Please enable Javascript to use all the features on this site.</div>
+                    </div>
+                </noscript></div>
+            <div class=content>
+                <div id=Skyscraper-Abp-Left class="abp abp-container left-abp">
+                    <div style=width:160px class="abp adp-gpt-container"><span id=3538383439323233 class="GPTAd skyscraper" data-js-adtype=gptAd data-ad-slot=Roblox_MyHome_Left_160x600> </span>
+                        <div class=ad-annotations style=width:160px><span class=ad-identification> <span class=ad-identification-text> <span class=ad-identification-text>Advertisement</span> </span> </span> <a class=BadAdButton href=/Ads/ReportAd.aspx title="click to report an offensive ad">Report</a></div>
+                        <script>
+                            $(function() {
+                                googletag.cmd.push(function() {
+                                    if (typeof Roblox.AdsHelper !== "undefined" && typeof Roblox.AdsHelper.toggleAdsSlot !== "undefined") {
+                                        Roblox.AdsHelper.toggleAdsSlot("Skyscraper-Abp-Left", "3538383439323233");
+                                    } else {
+                                        googletag.display("3538383439323233");
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+                <div id=HomeContainer class="row home-container" data-update-status-url=/home/updatestatus>
+                    <div class="col-xs-12 home-header"><a href=/users/@userId/profile class="avatar avatar-headshot-lg" data-retry-url="/headshot-thumbnail/json?userId=@(userId)&amp;width=150&amp;height=150&amp;format=Png"> <img alt=avatar src="/headshot-thumbnail/image?userId=@(userId)&amp;width=150&amp;height=150&amp;format=Png" id=home-avatar-thumb class=avatar-card-image> </a>
+                        <script>
+                            $("img#home-avatar-thumb").on('load', function() {
+                                if (Roblox && Roblox.Performance) {
+                                    Roblox.Performance.setPerformanceMark("head_avatar");
+                                }
+                            });
+                        </script>
+                        <div class="home-header-content non-bc">
+                            <h1><a href=/users/@userId/profile> Hello, @userName! </a></h1>
+                        </div>
+                    </div>
+@if (friendCount > 0) {
+                    <div class="col-xs-12 section home-friends">
+                        <div class=container-header>
+                            <h3>Friends (@friendCount)</h3><a href=/users/friends class="btn-secondary-xs btn-more btn-fixed-width">See All</a>
+                        </div>
+                        <div class=section-content>
+                            <ul class="hlist friend-list">
+@foreach (var f in friendsList) {
+    var fId = f["UserId"] as long? ?? 0;
+    var fName = f["Username"] as string ?? "";
+    var inGame = f["InGame"] is true;
+    var isOnline = f["IsOnline"] is true;
+    var placeUrl = f["AbsolutePlaceURL"] as string ?? "";
+    var statusText = f["StatusText"] as string ?? "";
+                                <li id=friend_@(fId) class="list-item friend">
+                                    <div class=avatar-container><a href=/users/@(fId)/profile class="avatar avatar-card-fullbody friend-link" title=@fName> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=@(fId)" data-orig-retry-url="/avatar-thumbnail/json?userId=@(fId)&amp;width=100&amp;height=100&amp;format=png"><img alt=@fName class=avatar-card-image src="/headshot-thumbnail/image?userId=@(fId)&amp;width=100&amp;height=100&amp;format=Png"></span> <span class="text-overflow friend-name">@fName</span> </a>@if (inGame && !string.IsNullOrEmpty(placeUrl)) {<a class="friend-status place-link" href="@placeUrl"><span class="avatar-status icon-game" title="Playing @statusText"></span></a>} else if (isOnline) {<span class="avatar-status friend-status icon-online" title=Online></span>}</div>
+                                </li>
+}                            </ul>
+                        </div>
+                    </div>
+}
+                    <div id=recently-visited-places class="col-xs-12 container-list home-games">
+                        <div id=recently-visited-places-header class=container-header>
+                            <h3>Recently Played</h3><a href="/games?sortFilter=6" class="btn-secondary-xs btn-more btn-fixed-width">See All</a>
+                        </div>
+                        <div id=recently-visited-places-list class=game-card-list>
+                            <div id=recently-visited-places-content-spinner class="loading-animated game-card-list-spinner">
+                                <div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div id=recently-visited-places-content></div>
+                        </div>
+                    </div>
+                    <div id=my-favorites-games class="col-xs-12 container-list home-games">
+                        <div id=my-favorites-games-header class=container-header>
+                            <h3>My Favorites</h3><a href=/users/@userId/favorites#!/places class="btn-secondary-xs btn-more btn-fixed-width">See All</a>
+                        </div>
+                        <div id=my-favorites-games-list class=game-card-list>
+                            <div id=my-favorites-games-content-spinner class="loading-animated game-card-list-spinner">
+                                <div>
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div id=my-favorites-games-content></div>
+                        </div>
+                    </div>
+                    <div id=game-item-card-template class=hidden>
+                        <li class="list-item game-card">
+                            <div class=game-card-container><a id=game-card-link href=gameCardLink class=game-card-link>
+                                    <div id=game-card-thumb-container class=game-card-thumb-container><img class=game-card-thumb alt=title thumbnail="" image-retry></div>
+                                    <div id=game-card-title class="text-overflow game-card-name" title=title></div>
+                                    <div id=game-card-name-secondary class=game-card-name-secondary></div>
+                                    <div class=game-card-vote>
+                                        <div class=vote-bar data-voting-processed=false>
+                                            <div class=vote-thumbs-up><span class=icon-like-gray-16x16></span></div>
+                                            <div id=vote-container class=vote-container data-upvotes=0 data-downvotes=0>
+                                                <div class=vote-background></div>
+                                                <div class=vote-percentage></div>
+                                                <div class=vote-mask>
+                                                    <div class="segment seg-1"></div>
+                                                    <div class="segment seg-2"></div>
+                                                    <div class="segment seg-3"></div>
+                                                    <div class="segment seg-4"></div>
+                                                </div>
+                                            </div>
+                                            <div class=vote-thumbs-down><span class=icon-dislike-gray-16x16></span></div>
+                                        </div>
+                                        <div class=vote-counts>
+                                            <div class=vote-down-count></div>
+                                            <div class=vote-up-count></div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class=game-card-footer>
+                                    <div class=creator><span class="text-label xsmall text-overflow" id=game-card-creator-by></span></div>
+                                </div>
+                            </div>
+                        </li>
+                    </div>
+                    @if (friendActivityGameEntries.Count > 0)
+                    {
+                        <div id=friend-activity class="col-xs-12 container-list home-games">
+                            <div class=container-header>
+                                <h3>Friend Activity</h3><a href="/games?sortFilter=17" class="btn-secondary-xs btn-more btn-fixed-width">See All</a>
+                            </div>
+                            <ul class="hlist game-cards">
+                                @foreach (var game in friendActivityGameEntries)
+                                {
+                                    var playerCount = friendActivityLiveCounts.TryGetValue(game.UniverseId, out var pc) ? pc : game.Playing;
+                                    <li class="list-item game-card">
+                                        <div class=game-card-container><a href="/games/@game.PlaceId" class=game-card-link>
+                                                <div class=game-card-thumb-container><img class=game-card-thumb src="@game.IconUrl" alt="@game.Name" thumbnail='{"Final":true,"Url":"@game.IconUrl","RetryUrl":null,"UserId":0,"EndpointType":"Avatar"}' image-retry></div>
+                                                <div class="text-overflow game-card-name" title="@game.Name" ng-non-bindable>@game.Name</div>
+                                                <div class=game-card-name-secondary>@playerCount Playing</div>
+                                                <div class=game-card-vote>
+                                                    <div class=vote-bar data-voting-processed=false>
+                                                        <div class=vote-thumbs-up><span class=icon-like-gray-16x16></span></div>
+                                                        <div class=vote-container data-upvotes=@game.UpVotes data-downvotes=@game.DownVotes>
+                                                            <div id=vote-background class=vote-background></div>
+                                                            <div class=vote-percentage></div>
+                                                            <div class=vote-mask>
+                                                                <div class="segment seg-1"></div>
+                                                                <div class="segment seg-2"></div>
+                                                                <div class="segment seg-3"></div>
+                                                                <div class="segment seg-4"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class=vote-thumbs-down><span class=icon-dislike-gray-16x16></span></div>
+                                                    </div>
+                                                    <div class=vote-counts>
+                                                        <div id=vote-down-count class=vote-down-count>@game.DownVotes</div>
+                                                        <div id=vote-up-count class=vote-up-count>@game.UpVotes</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <div class=game-card-footer>
+                                                <div class=creator><span class="text-label xsmall text-overflow"> By <a class=text-link href="/users/@game.CreatorUserId/profile" ng-non-bindable>@game.CreatorName</a> </span></div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    <div class="col-xs-12 col-sm-6 home-left-col">
+                        <div class=section>
+                            <div class=section-header>
+                                <h3>My Feed</h3>
+                            </div>
+                            <div class=section-content>
+                                <div class=form-horizontal id=statusForm role=form>
+                                    <div class=form-group><input class="form-control input-field" id=txtStatusMessage maxlength=254 placeholder="What are you up to?" value="@userStatusText">
+                                        <p class=form-control-label>Status update failed.
+                                    </div><a type=button class="btn-primary-md btn-fixed-width" id=shareButton>Share</a> <img id=loadingImage class=share-login alt=Sharing... src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif height=17 width=48>
+                                </div>
+@if (feedEntries.Count == 0)
+{
+                                <ul class="vlist feeds">
+@if (featuredGameEntries.Count > 0)
+{
+                                    <li id=gameFeed class="list-item feed-game" data-default-roblox-feed><a class=list-header href=/games> <span class=icon-games></span> </a>
+                                        <div class=list-body>
+                                            <h2>Play Games</h2>
+                                            <p class=list-content>Nearly all Roblox games are built by players like you. Here are some of our favorites:</p>
+                                            <ul id=FeaturedGamesContainer class=list-gallery>
+@foreach (var game in featuredGameEntries)
+{
+    var position = featuredGameEntries.IndexOf(game) + 1;
+                                                <li class=item-place><a href="/games/refer?pagetype=HomeFeed&amp;placeid=@game.PlaceId&amp;position=@position"><img src="@game.ThumbnailUrl" alt="@game.Name" class=default-feed-image> </a><p class="text-description text-overflow">@game.Name</p></li>
+}
+                                            </ul>
+                                        </div></li>
+}
+                                    <li class="list-item feed-creation" data-default-roblox-feed><a class=list-header href=/my/avatar> <span class=icon-charactercustomizer></span> </a>
+                                        <div class=list-body>
+                                            <h2>Customize Your Avatar</h2>
+                                            <p class=list-content>Visit the <a href=/my/avatar>Avatar Editor</a> to customize your character. Shop for clothing items in the <a href="/catalog/browse.aspx?CatalogContext=1&amp;Subcategory=1&amp;CreatorID=1&amp;CurrencyType=0&amp;pxMin=0&amp;pxMax=0&amp;SortType=4&amp;SortAggregation=3&amp;SortCurrency=0&amp;IncludeNotForSale=false&amp;LegendExpanded=true&amp;Category=1">Catalog</a>.</p><img class=feed-sample-avatars-image src=https://images.rbxcdn.com/dcc8386a64c5e9917a5c0cee9f9f166a.png alt="">
+                                        </div></li>
+                                    <li class="list-item feed-creation" data-default-roblox-feed><a class=list-header href=/develop> <span class=icon-develop></span> </a>
+                                        <div class=list-body>
+                                            <h2>Build Something</h2>
+                                            <p class=list-content>Builders will enjoy playing our multiplayer building game. Professional builders will want to check out Roblox Studio, our game development environment on your <a href=/develop>Develop page</a>.</p>
+                                        </div></li>
+                                    <li class="list-item feed-social" data-default-roblox-feed><a class=list-header href=/search/users> <span class=icon-friends></span> </a>
+                                        <div class=list-body>
+                                            <h2>Make Friends</h2>
+                                            <p class=list-content>Meet other players in-game and send them a friend request. If you miss your opportunity you can always send a request later by <a href=/search/users>searching</a> for their user profile.</p>
+                                        </div></li>
+                                </ul>
+}
+else
+{
+                                <ul class="vlist feeds">
+@foreach (var entry in feedEntries)
+{
+    var redirectUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/home";
+    var dateStr = entry.CreatedAt.ToString("MMM dd, yyyy") + " | " + entry.CreatedAt.ToString("h:mm tt");
+    if (entry.FeedType == 1 && entry.GroupId.HasValue)
+    {
+                                    <li class=list-item><a href="/My/Groups.aspx?gid=@entry.GroupId" class=list-header><img class=header-thumb src="@entry.GroupThumbUrl"></a>
+                                        <div class=list-body>
+                                            <p class=list-content><a href="/my/groups.aspx?gid=@entry.GroupId">@entry.GroupName</a></p>
+                                            <p class="feedtext linkify">"@entry.Message"</p>(posted by <a href=/users/@entry.PosterUserId/profile class=text-name>@entry.PosterUserName</a>) <span class="xsmall text-date-hint">@dateStr</span> <a href="/abusereport/Feed?id=@entry.FeedEntryId&amp;redirectUrl=@redirectUrl" class=abuse-report-modal> <span class=icon-report></span> </a>
+                                        </div></li>
+    }
+    else
+    {
+        var feedUserId = entry.PosterUserId ?? entry.UserId;
+        var feedUserName = !string.IsNullOrEmpty(entry.PosterUserName) ? entry.PosterUserName : entry.UserName;
+        var feedHeadshotUrl = !string.IsNullOrEmpty(entry.PosterHeadshotUrl) ? entry.PosterHeadshotUrl : entry.HeadshotUrl;
+                                    <li class=list-item><a href=/users/@feedUserId/profile class="avatar avatar-headshot-md list-header"> <img src="@feedHeadshotUrl" class=avatar-card-image> </a>
+                                        <div class=list-body>
+                                            <p class=list-content><a href=/users/@feedUserId/profile class=text-name>@feedUserName</a></p>
+                                            <p class="feedtext linkify">"@entry.Message"</p><span class="xsmall text-date-hint">@dateStr</span> <a href="/abusereport/Feed?id=@entry.FeedEntryId&amp;redirectUrl=@redirectUrl" class=abuse-report-modal> <span class=icon-report></span> </a>
+                                        </div></li>
+    }
+}
+                                </ul>
+}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    var Roblox = Roblox || {};
+                    Roblox.I18nData = Roblox.I18nData || {};
+                    Roblox.I18nData.isI18nEnabledOnGames = false;
+                </script>
+                <script>
+                    $(function() {
+                        var name = '@userName';
+                        var hashRegex = '^0000';
+                        var devType = 'Computer';
+                        if (Roblox && Roblox.Hashcash) {
+                            Roblox.Home.doProofOfWork(name, hashRegex, devType);
+                        }
+                    });
+                </script>
+                <div id=Skyscraper-Abp-Right class="abp abp-container right-abp">
+                    <div style=width:160px class="abp adp-gpt-container"><span id=3337383033333234 class="GPTAd skyscraper" data-js-adtype=gptAd data-ad-slot=Roblox_MyHome_Right_160x600> </span>
+                        <div class=ad-annotations style=width:160px><span class=ad-identification> <span class=ad-identification-text> <span class=ad-identification-text>Advertisement</span> </span> </span> <a class=BadAdButton href=/Ads/ReportAd.aspx title="click to report an offensive ad">Report</a></div>
+                        <script>
+                            $(function() {
+                                googletag.cmd.push(function() {
+                                    if (typeof Roblox.AdsHelper !== "undefined" && typeof Roblox.AdsHelper.toggleAdsSlot !== "undefined") {
+                                        Roblox.AdsHelper.toggleAdsSlot("Skyscraper-Abp-Right", "3337383033333234");
+                                    } else {
+                                        googletag.display("3337383033333234");
+                                    }
+                                });
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    <div ng-modules="robloxApp, notificationStream" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
+                'isPhone': library.isPhone, 
+                'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
+        <div notification-content></div>
+    </div>
+    <div id=chat-container class="chat chat-container" chat-base></div>
+    <script>
+        function urchinTracker() {}
+    </script>
+    <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=roblox-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
+        <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
+            <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
+            <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
+                <div id=Starting class="PlaceLauncherStatus MadStatusStarting" style=display:block>Starting Roblox...</div>
+                <div id=Waiting class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
+                <div id=StatusBackBuffer class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
+            </div>
+            <div style=text-align:center;margin-top:1em><input type=button class="Button CancelPlaceLauncherButton translate" value=Cancel></div>
+        </div>
+    </div>
+    <div id=ProtocolHandlerStartingDialog style=display:none class=protocol-handler-container>
+        <div class="modalPopup ph-modal-popup">
+            <div class=ph-modal-header></div>
+            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-areyouinstalleddialog-content>
+                <p class=larger-font-size>Roblox is now loading. Get ready to play!
+                <div class=ph-startingdialog-spinner-row><img src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif width=82 height=24></div>
+            </div>
+        </div>
+    </div>
+    <div id=ProtocolHandlerAreYouInstalled style=display:none class=protocol-handler-container>
+        <div class="modalPopup ph-modal-popup">
+            <div class=ph-modal-header><span class="icon-close simplemodal-close"></span></div>
+            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-areyouinstalleddialog-content>
+                <p class=larger-font-size>You're moments away from getting into the game!
+                <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button></div>
+                <div class=small><a href=https://en.help.roblox.com/hc/en-us/articles/204473560 class=text-name target=_blank>Click here for help</a></div>
+            </div>
+        </div>
+    </div>
+    <div id=ProtocolHandlerClickAlwaysAllowed class=ph-clickalwaysallowed style=display:none>
+        <p class=larger-font-size><span class=icon-moreinfo></span> Check <b>Remember my choice</b> and click <strong>OK</strong> in the dialog box above to join games faster in the future!
+    </div>
+    <div id=videoPrerollPanel style=display:none>
+        <div id=videoPrerollTitleDiv>Gameplay sponsored by:</div>
+        <div id=content><video id=contentElement style=width:0;height:0></div>
+        <div id=videoPrerollMainDiv></div>
+        <div id=videoPrerollCompanionAd></div>
+        <div id=videoPrerollLoadingDiv>Loading <span id=videoPrerollLoadingPercent>0%</span> - <span id=videoPrerollMadStatus class=MadStatusField>Starting game...</span><span id=videoPrerollMadStatusBackBuffer class=MadStatusBackBuffer></span>
+            <div id=videoPrerollLoadingBar>
+                <div id=videoPrerollLoadingBarCompleted></div>
+            </div>
+        </div>
+        <div id=videoPrerollJoinBC><span>Get more with Builders Club!</span> <a href="/premium/membership?ctx=preroll" target=_blank class="btn-medium btn-primary" id=videoPrerollJoinBCButton>Join Builders Club</a></div>
+    </div>
+    <script src=//imasdk.googleapis.com/js/sdkloader/ima3.js></script>
+    <script>
+        $(function() {
+            var videoPreRollDFP = Roblox.VideoPreRollDFP;
+            if (videoPreRollDFP) {
+                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
+                videoPreRollDFP.showVideoPreRoll = true;
+                videoPreRollDFP.loadingBarMaxTime = 48000;
+                videoPreRollDFP.videoLoadingTimeout = 11000;
+                videoPreRollDFP.videoPlayingTimeout = 41015;
+                videoPreRollDFP.videoLogNote = "";
+                videoPreRollDFP.logsEnabled = true;
+                videoPreRollDFP.excludedPlaceIds = "32373412";
+                videoPreRollDFP.adUnit = "/1015347/VideoPreroll";
+                videoPreRollDFP.adTime = 30;
+                videoPreRollDFP.isSwfPreloaderEnabled = false;
+                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
+                videoPreRollDFP.isAgeTargetingEnabled = true;
+                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
+                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
+                customTargeting.userAge = "50";
+                customTargeting.userAgeOrSegment = "50";
+                customTargeting.userGender = "Male";
+                customTargeting.gameGenres = "";
+                customTargeting.environment = "Production";
+                customTargeting.adTime = "30";
+                customTargeting.PLVU = true;
+                $(videoPreRollDFP.checkEligibility);
+            }
+        });
+    </script>
+    <div id=GuestModePrompt_BoyGirl class="Revised GuestModePromptModal" style=display:none>
+        <div class=simplemodal-close><a class="ImageButton closeBtnCircle_20h" style=cursor:pointer;margin-left:455px;top:7px;position:absolute></a></div>
+        <div class=Title>Choose Your Avatar</div>
+        <div style=min-height:275px;background-color:white>
+            <div style=clear:both;height:25px></div>
+            <div style=text-align:center>
+                <div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style=float:left;margin-left:45px></div>
+                <div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style=float:right;margin-right:45px></div>
+            </div>
+            <div style=clear:both;height:25px></div>
+            <div class=RevisedFooter>
+                <div style="width:200px;margin:10px auto 0 auto"><a href="/?returnUrl=https%3A%2F%2Fwww.roblox.com%2Fhome%3Fnl%3Dtrue">
+                        <div class=RevisedCharacterSelectSignup></div>
+                    </a> <a class=HaveAccount href="/newlogin?returnUrl=https%3A%2F%2Fwww.roblox.com%2Fhome%3Fnl%3Dtrue">I have an account</a></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function checkRobloxInstall() {
+            return RobloxLaunch.CheckRobloxInstall('/install/download.aspx');
+        }
+    </script>
+    <div id=InstallationInstructions class=style2016 style=display:none>
+        <div class=ph-installinstructions>
+            <div class=ph-modal-header><span class="icon-close-16x16 simplemodal-close"></span>
+                <h5 class=title>Thanks for playing ROBLOX</h5>
+            </div>
+            <div class=modal-content-container>
+                <div class=ph-installinstructions-body>
+                    <ul class=modal-col-5>
+                        <li class=step1-of-5>
+                            <h2>1</h2>
+                            <p class=larger-font-size>Click <strong>Save File</strong> when the download window pops up</p><img data-delaysrc=https://images.rbxcdn.com/635085abe343ceec97e5da00103cbd8d.png>
+                        <li class=2-of-5>
+                            <h2>2</h2>
+                            <p class=larger-font-size>Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p><img data-delaysrc=https://images.rbxcdn.com/4791f147e474426b284e7885b8f91635.png>
+                        <li class=step3-of-5>
+                            <h2>3</h2>
+                            <p class=larger-font-size>Click <strong>Run</strong></p><img data-delaysrc=https://images.rbxcdn.com/27e0e77ae7b5d726ca231c5d338fa473.png>
+                        <li class=step4-of-5>
+                            <h2>4</h2>
+                            <p class=larger-font-size>Once installed, click <strong>Play</strong> to join the action!
+                            <div class="VisitButton VisitButtonContinueGLI"><a class="btn btn-primary-lg disabled btn-full-width">Play</a></div>
+                        <li class=step5-of-5>
+                            <h2>5</h2>
+                            <p class=larger-font-size>Click <strong>Ok</strong> when the alert pops up</p><img data-delaysrc=https://images.rbxcdn.com/f024c63845c2f79d30ccebe2b2f5818d.png>
+                    </ul>
+                </div>
+            </div>
+            <div class=xsmall>The ROBLOX installer should download shortly. If it doesn’t, start the <a href=# class=text-link onclick="Roblox.ProtocolHandlerClientInterface.manualDownload();return false">download now.</a></div>
+        </div>
+    </div>
+    <div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>
+    <div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div><iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
+<script type='text/javascript' src='/JS/EventTracker.js'></script>
+<script type='text/javascript' src='/JS/ClientInstaller.js'></script>
+<script type='text/javascript' src='/JS/InstallationInstructions.js'></script>
+<script type='text/javascript' src='/JS/IEMetroInstructions.js'></script>
+    <script>
+        Roblox.Client._skip = null;
+        Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
+        Roblox.Client._installHost = 'setup.roblox.com';
+        Roblox.Client.ImplementsProxy = true;
+        Roblox.Client._silentModeEnabled = true;
+        Roblox.Client._bringAppToFrontEnabled = false;
+        Roblox.Client._currentPluginVersion = '';
+        Roblox.Client._eventStreamLoggingEnabled = true;
+        Roblox.Client._installSuccess = function() {
+            if (GoogleAnalyticsEvents) {
+                GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
+                GoogleAnalyticsEvents.FireEvent(['Plugin', 'Install Success']);
+                if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
+                    Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
+                }
+            }
+        }
+    </script>
+    <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle=confirmation style=display:none><a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+        <div class=Title></div>
+        <div class=GenericModalBody>
+            <div class=TopBody>
+                <div class="ImageContainer roblox-item-image" data-image-size=small data-no-overlays data-no-click><img class=GenericModalImage alt="generic image"></div>
+                <div class=Message></div>
+            </div>
+            <div class="ConfirmationModalButtonContainer GenericModalButtonContainer"><a href="" id=roblox-confirm-btn><span></span></a> <a href="" id=roblox-decline-btn><span></span></a></div>
+            <div class=ConfirmationModalFooter></div>
+        </div>
+        <script>
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+            Roblox.Resources.GenericConfirmation = {
+                yes: "Yes",
+                No: "No",
+                Confirm: "Confirm",
+                Cancel: "Cancel"
+            };
+        </script>
+    </div>
+    <div id=modal-confirmation class=modal-confirmation data-modal-type=confirmation>
+        <div id=modal-dialog class=modal-dialog>
+            <div class=modal-content>
+                <div class=modal-header><button type=button class=close data-dismiss=modal> <span aria-hidden=true><span class=icon-close></span></span><span class=sr-only>Close</span> </button>
+                    <h5 class=modal-title></h5>
+                </div>
+                <div class=modal-body>
+                    <div class=modal-top-body>
+                        <div class=modal-message></div>
+                        <div class="modal-image-container roblox-item-image" data-image-size=medium data-no-overlays data-no-click><img class=modal-thumb alt="generic image"></div>
+                        <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
+                    </div>
+                    <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
+                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
+                </div>
+                <div class="modal-footer text-footer"></div>
+            </div>
+        </div>
+        <script>
+            Roblox = Roblox || {};
+            Roblox.Resources = Roblox.Resources || {};
+            Roblox.Resources.Dialog = {
+                yes: "Yes",
+                No: "No",
+                OK: "OK",
+                Confirm: "Confirm",
+                Cancel: "Cancel",
+                Agree: "Agree"
+            };
+        </script>
+    </div>
+    <script>
+        Roblox = Roblox || {};
+        Roblox.ContactUpsellMeta = {
+            accountSettingsApiDomain: "https://accountsettings.roblox.com",
+            apiProxyDomain: "https://api.roblox.com",
+            codeLength: 6
+        };
+    </script>
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.jsConsoleEnabled = false;
+    </script>
+    <script>
+        $(function() {
+            Roblox.CookieUpgrader.domain = 'roblox.com';
+            Roblox.CookieUpgrader.upgrade("GuestData", {
+                expires: Roblox.CookieUpgrader.thirtyYearsFromNow
+            });
+            Roblox.CookieUpgrader.upgrade("RBXSource", {
+                expires: function(cookie) {
+                    return Roblox.CookieUpgrader.getExpirationFromCookieValue("rbx_acquisition_time", cookie);
+                }
+            });
+            Roblox.CookieUpgrader.upgrade("RBXViralAcquisition", {
+                expires: function(cookie) {
+                    return Roblox.CookieUpgrader.getExpirationFromCookieValue("time", cookie);
+                }
+            });
+            Roblox.CookieUpgrader.upgrade("RBXMarketing", {
+                expires: Roblox.CookieUpgrader.thirtyYearsFromNow
+            });
+            Roblox.CookieUpgrader.upgrade("RBXSessionTracker", {
+                expires: Roblox.CookieUpgrader.fourHoursFromNow
+            });
+            Roblox.CookieUpgrader.upgrade("RBXEventTrackerV2", {
+                expires: Roblox.CookieUpgrader.thirtyYearsFromNow
+            });
+        });
+    </script>
+    
+    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="~/JS/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="~/JS/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="~/JS/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/urlParser.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/touchMovementSensitivity.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/ExponentialBackoff.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/ExponentialBackoffSpecification.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/generalSubmitButton.js"></script>
+    <script type="text/javascript" src="~/JS/XsrfToken.js"></script>
+    <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
+    <script type="text/javascript" src="~/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="~/JS/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="~/JS/intl/intl-polyfill.min.js"></script>
+    <script type="text/javascript" src="~/JS/intl/polyfillLocales/en.js"></script>
+    <script type="text/javascript" src="~/JS/intl/polyfillLocales/es.js"></script>
+    <script type="text/javascript" src="~/JS/intl/intl.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/string.js"></script>
+    <script type="text/javascript" src="~/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="~/JS/json2.min.js"></script>
+    <script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="~/JS/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="~/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="~/JS/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="~/JS/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/extensions/AnimatedThumbnails.js"></script>
+    <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailSpinner.js"></script>
+    <script type="text/javascript" src="~/JS/3D/three.js"></script>
+    <script type="text/javascript" src="~/JS/3D/MTLLoader.js"></script>
+    <script type="text/javascript" src="~/JS/3D/OBJMTLLoader.js"></script>
+    <script type="text/javascript" src="~/JS/3D/tween.js"></script>
+    <script type="text/javascript" src="~/JS/3D/RobloxOrbitControls.js"></script>
+    <script type="text/javascript" src="~/JS/Linkify.js"></script>
+    <script type="text/javascript" src="~/JS/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/stringFormat.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="~/JS/VideoPreRollDFP.js"></script>
+    <script type="text/javascript" src="~/JS/CharacterSelect.js"></script>
+    <script type="text/javascript" src="~/JS/MadStatus.js"></script>
+    <script type="text/javascript" src="~/JS/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="~/JS/GameLauncher.js"></script>
+    <script type="text/javascript" src="~/JS/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="~/JS/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="~/JS/GameLaunchAdRefresher.js"></script>
+
+
+    <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular.audio.js"></script>
+    <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/cacheService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/imagesService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/localStorageService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/numericCodeService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/realtimeService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/retryService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/performanceService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/regexService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/constants/keyCode.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/constants/callBackTypes.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/constants/deviceTypes.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/helpers.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/abbreviate.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/capitalize.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/firstLetter.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/formatString.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/getPercentage.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/htmlToPlainText.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/isEmpty.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/orderList.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/parseTimeStamp.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/positive.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/reverse.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/startsWith.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/autoResizeDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/blurDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/clickOutsideDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/enterEscapeShiftDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/focusDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/focusMeDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/formValidationDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/imageRetryWithLazyLoadDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/inputMaxLength.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/keyPressEnterDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/keyPressEscapeDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/numbersOnlyDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/onFinishRenderDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/phoneDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/switcherDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/modal/modal.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/modal/services/modalStringService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/modal/constants/modalOptions.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/modal/services/modalService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/modal/controllers/modalController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/filters/translate.js"></script>
+
+
+    <div ng-modules=baseTemplateApp>
+        <script src="/JS/base_splitApps___c1d87a81e58553825d5d0871bedadd16_m.js"></script>
+    </div>
+    <div ng-modules=pageTemplateApp>
+        <script src="/JS/page_splitApps___cb561afaa225945cf32c7bdf30775aa4_m.js"></script>
+    </div>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/layoutLibraryService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/constants/signalR.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
+
+        Roblox.XsrfToken.setToken('I1wFAlPHOx06');
+    </script>
+    <script>
+        $(function() {
+            Roblox.DeveloperConsoleWarning.showWarning();
+        });
+    </script>
+    <script>
+        $(function() {
+            Roblox.JSErrorTracker.initialize({
+                'suppressConsoleError': true
+            });
+        });
+    </script>
+    <script>
+        $(function() {
+            function trackReturns() {
+                function dayDiff(d1, d2) {
+                    return Math.floor((d1 - d2) / 86400000);
+                }
+                if (!localStorage) {
+                    return false;
+                }
+                var cookieName = 'RBXReturn';
+                var cookieOptions = {
+                    expires: 9001
+                };
+                var cookieStr = localStorage.getItem(cookieName) || "";
+                var cookie = {};
+                try {
+                    cookie = JSON.parse(cookieStr);
+                } catch (ex) {}
+                try {
+                    if (typeof cookie.ts === "undefined" || isNaN(new Date(cookie.ts))) {
+                        localStorage.setItem(cookieName, JSON.stringify({
+                            ts: new Date().toDateString()
+                        }));
+                        return false;
+                    }
+                } catch (ex) {
+                    return false;
+                }
+                var daysSinceFirstVisit = dayDiff(new Date(), new Date(cookie.ts));
+                if (daysSinceFirstVisit == 1 && typeof cookie.odr === "undefined") {
+                    RobloxEventManager.triggerEvent('rbx_evt_odr', {});
+                    cookie.odr = 1;
+                }
+                if (daysSinceFirstVisit >= 1 && daysSinceFirstVisit <= 7 && typeof cookie.sdr === "undefined") {
+                    RobloxEventManager.triggerEvent('rbx_evt_sdr', {});
+                    cookie.sdr = 1;
+                }
+                try {
+                    localStorage.setItem(cookieName, JSON.stringify(cookie));
+                } catch (ex) {
+                    return false;
+                }
+            }
+            GoogleListener.init();
+            RobloxEventManager.initialize(true);
+            RobloxEventManager.triggerEvent('rbx_evt_pageview');
+            trackReturns();
+            RobloxEventManager._idleInterval = 450000;
+            RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_start');
+            RobloxEventManager.registerCookieStoreEvent('rbx_evt_ftp');
+            RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_success');
+            RobloxEventManager.registerCookieStoreEvent('rbx_evt_fmp');
+            RobloxEventManager.startMonitor();
+        });
+    </script>
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
+        Roblox.UpsellAdModal.Resources = {
+            title: "Remove Ads Like This",
+            body: "Builders Club members do not see external ads like these.",
+            accept: "Upgrade Now",
+            decline: "No, thanks"
+        };
+    </script>
+    <script type="text/javascript" src="~/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="~/JS/GenericModal.js"></script>
+    <script type="text/javascript" src="~/JS/Games/GameCards.js"></script>
+    <script type="text/javascript" src="~/JS/services/presenceService.js"></script>
+    <script type="text/javascript" src="~/JS/home/home.js"></script>
+    <script type="text/javascript" src="~/JS/Games/GameDetailReferral.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/robloxAds.js"></script>
+    <script type="text/javascript" src="~/JS/hashcash/hashcash.js"></script>
+    <script type="text/javascript" src="~/JS/StringTruncator.js"></script>
+    <script type="text/javascript" src="~/JS/VotingPanel.js"></script>
+    <script type="text/javascript" src="~/JS/GameItemCard.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/popover.js"></script>
+    <script type="text/javascript" src="~/JS/Navigation/ShopAmazon.js"></script>
+    <script type="text/javascript" src="~/JS/utilities/dialog.js"></script>
+    <script type="text/javascript" src="~/JS/Tracking/FormEvents.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/directives/toggleLoadingDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/formEvents.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formContext.js"></script>
+    <script type="text/javascript" src="~/JS/common/deviceMeta.js"></script>
+    <script type="text/javascript" src="~/JS/TosModalCheck.js"></script>
+    <script type="text/javascript" src="~/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+
+    <script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
+
+    <script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
+    <script>
+        $(function() {
+            $('[data-behavior="nav-notification"]').off('click.homeNav').on('click.homeNav', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('[data-behavior="left-col"]').toggleClass('nav-show');
+            });
+        });
+    </script>
+    <div id=push-notification-registrar-settings data-notificationshost=https://notifications.roblox.com data-reregistrationinterval=0 data-registrationpath=register-firefox data-shoulddeliveryendpointbesentduringregistration=True data-platformtype=FirefoxOnDesktop></div>
+    <div id=push-notification-registration-ui-settings data-noncontextualpromptallowed=true data-promptonfriendrequestsentenabled=true data-promptonprivatemessagesentenabled=false data-promptintervals=[604800000,1209600000,2419200000] data-notificationsdomain=https://notifications.roblox.com data-userid=@userId></div>
+    <script type=text/template id=push-notifications-initial-global-prompt-template>
+        <div class="push-notifications-global-prompt">
+        <div class="alert-info push-notifications-global-prompt-site-wide-body">
+            <div class="push-notifications-prompt-content">
+                <h5>
+                    <span class="push-notifications-prompt-text">
+                        Can we send you notifications on this computer?
+                    </span>
+                </h5>
+            </div>
+            <div class="push-notifications-prompt-actions">
+                <button type="button" class="btn-fixed-width btn-control-xs push-notifications-prompt-accept">Notify Me</button>
+                <span class="icon-close-white push-notifications-dismiss-prompt"></span>
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-permissions-prompt-template>
+        <div class="modal fade" id="push-notifications-permissions-prompt-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog rbx-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">
+                            <span class="icon-close"></span>
+                        </span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h5>Enable Desktop Push Notifications</h5>
+                </div>
+                <div class="modal-body">
+                        <div>
+                            Now just click <strong>Always Receive Notifications</strong> in your browser, and we'll start sending you push notifications!
+                        </div>
+                        <div class="push-notifications-permissions-prompt-instructional-image">
+                                <img width="380" height="250" src="https://static.rbxcdn.com/images/Notifications/push-permission-prompt-firefox-windows-20160701.png" />
+                        </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-permissions-disabled-instruction-template>
+        <div class="modal fade" id="push-notifications-permissions-disabled-instruction-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog rbx-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">
+                            <span class="icon-close"></span>
+                        </span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                    <h5>Turn Push Notifications Back On</h5>
+                </div>
+                <div class="instructions-body">
+                    <div class="reenable-step reenable-step1-of3">
+                        <h1>1</h1>
+                            <p class="larger-font-size push-notifications-modal-step-instruction">Click the green lock next to the URL bar to open up your site permissions.</p>
+                                <img width="270" height="139" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step1-firefox-windows-20160701.png" />
+                    </div>
+                    <div class="reenable-step reenable-step2-of3">
+                        <h1>2</h1>
+                            <p class="larger-font-size push-notifications-modal-step-instruction">Click the drop-down arrow next to Notifications in the <strong>Permissions</strong> tab.</p>
+                                <img width="270" height="142" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step2-firefox-windows-20160701.png" />
+                    </div>
+                    <div class="reenable-step reenable-step3-of3">
+                        <h1>3</h1>
+                            <p class="larger-font-size push-notifications-modal-step-instruction">Select <strong>Allow</strong> to turn notifications back on.</p>
+                                <img width="270" height="182" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step3-firefox-windows-20160701.png" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-successfully-enabled-template>
+        <div class="push-notifications-global-prompt">
+        <div class="alert-system-feedback">
+            <div class="alert alert-success">
+                Push notifications have been enabled!
+            </div>
+        </div>
+    </div>
+</script>
+    <script type=text/template id=push-notifications-successfully-disabled-template>
+        <div class="push-notifications-global-prompt">
+        <div class="alert-system-feedback">
+            <div class="alert alert-success">
+                Push notifications have been disabled.
+            </div>
+        </div>
+    </div>
+</script>
+    <script>
+        var _comscore = _comscore || [];
+        _comscore.push({
+            c1: "2",
+            c2: "6035605",
+            c3: "",
+            c4: "",
+            c15: "Over13"
+        });
+        (function() {
+            var s = document.createElement("script"),
+                el = document.getElementsByTagName("script")[0];
+            s.async = true;
+            s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
+            el.parentNode.insertBefore(s, el);
+        })();
+    </script><noscript><img src="http://b.scorecardresearch.com/p?c1=2&amp;c2=&amp;c3=&amp;c4=&amp;c5=&amp;c6=&amp;c15=&amp;cv=2.0&amp;cj=1"></noscript>

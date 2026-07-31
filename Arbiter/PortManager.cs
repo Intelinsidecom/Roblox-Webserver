@@ -33,7 +33,7 @@ namespace RCCArbiter
                 }
 
                 Console.WriteLine("No available ports found for RCC allocation");
-                return 0;
+                return -1;
             }
         }
 
@@ -54,7 +54,7 @@ namespace RCCArbiter
                 }
 
                 Console.WriteLine("No available ports found for game server allocation");
-                return 0;
+                return -1;
             }
         }
 

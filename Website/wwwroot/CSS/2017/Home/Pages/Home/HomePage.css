@@ -1,0 +1,742 @@
+/* ~/CSS/Pages/Home/HomePage.css */
+.form-inline {
+    position: static;
+}
+
+.icon-default-games,
+.icon-inventory,
+.icon-games,
+.icon-catalog,
+.icon-like,
+.icon-like.selected,
+.icon-dislike,
+.icon-dislike.selected,
+.icon-playaudio,
+.icon-copylocked,
+.icon-nocopylocked,
+.icon-publicserver,
+.icon-privateserver,
+.icon-allgears,
+.icon-partialgears,
+.icon-nogear,
+.icon-Melee,
+.icon-Ranged,
+.icon-PowerUp,
+.icon-Explosive,
+.icon-Musical,
+.icon-Navigation,
+.icon-Building,
+.icon-Social,
+.icon-Transport,
+.icon-experimental-white,
+.icon-experimental-gray2,
+.icon-experimental-gray1,
+.icon-experimental-black,
+.icon-share-game-to-chat,
+.feeds .icon-games {
+    background-image: url(/images/Shared/games_11272017.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-default-games-16x16,
+.icon-like-gray-16x16,
+.icon-like-gray-16x16.selected,
+.icon-dislike-gray-16x16,
+.icon-dislike-gray-16x16.selected {
+    background-image: url(/images/Shared/games_11272017.svg);
+    background-repeat: no-repeat;
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-inventory {
+    background-position: 0 0;
+}
+
+.icon-games {
+    background-position: 0 -28px;
+}
+
+.icon-catalog {
+    background-position: 0 -56px;
+}
+
+.icon-like {
+    background-position: 0 -84px;
+}
+
+.icon-like:hover {
+    background-position: -28px -84px;
+}
+
+button:hover .icon-like,
+a:hover .icon-like {
+    background-position: -28px -84px;
+}
+
+.icon-like.selected {
+    background-position: -28px -84px;
+}
+
+.icon-dislike {
+    background-position: 0 -112px;
+}
+
+.icon-dislike:hover {
+    background-position: -28px -112px;
+}
+
+button:hover .icon-dislike,
+a:hover .icon-dislike {
+    background-position: -28px -112px;
+}
+
+.icon-dislike.selected {
+    background-position: -28px -112px;
+}
+
+.icon-playaudio {
+    background-position: 0 -140px;
+}
+
+.icon-copylocked {
+    background-position: 0 -168px;
+}
+
+.icon-nocopylocked {
+    background-position: 0 -196px;
+}
+
+.icon-publicserver {
+    background-position: 0 -224px;
+}
+
+.icon-privateserver {
+    background-position: 0 -252px;
+}
+
+.icon-allgears {
+    background-position: 0 -280px;
+}
+
+.icon-partialgears {
+    background-position: 0 -308px;
+}
+
+.icon-nogear {
+    background-position: 0 -336px;
+}
+
+.icon-Melee {
+    background-position: 0 -364px;
+}
+
+.icon-Ranged {
+    background-position: 0 -392px;
+}
+
+.icon-PowerUp {
+    background-position: 0 -420px;
+}
+
+.icon-Explosive {
+    background-position: 0 -448px;
+}
+
+.icon-Musical {
+    background-position: 0 -476px;
+}
+
+.icon-Navigation {
+    background-position: 0 -504px;
+}
+
+.icon-Building {
+    background-position: 0 -532px;
+}
+
+.icon-Social {
+    background-position: 0 -560px;
+}
+
+.icon-Transport {
+    background-position: 0 -588px;
+}
+
+.icon-like-gray-16x16 {
+    background-position: 0 -352px;
+}
+
+.icon-like-gray-16x16:hover {
+    background-position: -16px -352px;
+}
+
+button:hover .icon-like-gray-16x16,
+a:hover .icon-like-gray-16x16 {
+    background-position: -16px -352px;
+}
+
+.icon-like-gray-16x16.selected {
+    background-position: -16px -352px;
+}
+
+.icon-dislike-gray-16x16 {
+    background-position: 0 -368px;
+}
+
+.icon-dislike-gray-16x16:hover {
+    background-position: -16px -368px;
+}
+
+button:hover .icon-dislike-gray-16x16,
+a:hover .icon-dislike-gray-16x16 {
+    background-position: -16px -368px;
+}
+
+.icon-dislike-gray-16x16.selected {
+    background-position: -16px -368px;
+}
+
+.icon-experimental-white {
+    background-position: 0 -672px;
+}
+
+.icon-experimental-gray2 {
+    background-position: -28px -672px;
+}
+
+.icon-experimental-gray1 {
+    background-position: 0 -700px;
+}
+
+.icon-experimental-black {
+    background-position: -28px -700px;
+}
+
+.icon-share-game-to-chat {
+    background-position: 0 -784px;
+}
+
+.icon-default-creation,
+.icon-profile,
+.icon-develop,
+.icon-charactercustomizer,
+.icon-place,
+.icon-shirt,
+.icon-tshirt,
+.icon-decal,
+.icon-pants,
+.icon-models,
+.icon-tutorial,
+.feeds .icon-develop,
+.feeds .icon-charactercustomizer {
+    background-image: url(/images/Shared/creation.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-profile {
+    background-position: 0 0;
+}
+
+.icon-develop {
+    background-position: 0 -28px;
+}
+
+.icon-charactercustomizer {
+    background-position: 0 -56px;
+}
+
+.icon-place {
+    background-position: 0 -84px;
+}
+
+.icon-shirt {
+    background-position: 0 -140px;
+}
+
+.icon-tshirt {
+    background-position: 0 -168px;
+}
+
+.icon-decal {
+    background-position: 0 -196px;
+}
+
+.icon-pants {
+    background-position: 0 -224px;
+}
+
+.icon-models {
+    background-position: 0 -252px;
+}
+
+.icon-tutorial {
+    background-position: 0 -280px;
+}
+
+.icon-default-social,
+.icon-message,
+.icon-addfriend,
+.icon-friends,
+.icon-group,
+.icon-forum,
+.icon-blog,
+.icon-trade,
+.icon-chat,
+.icon-share,
+.icon-acceptfriend,
+.feeds .icon-friends,
+.feeds .icon-forum {
+    background-image: url(/images/Shared/social_06282017.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-message {
+    background-position: 0 0;
+}
+
+.icon-addfriend {
+    background-position: 0 -28px;
+}
+
+.icon-friends {
+    background-position: 0 -56px;
+}
+
+.icon-group {
+    background-position: 0 -84px;
+}
+
+.icon-forum {
+    background-position: 0 -112px;
+}
+
+.icon-blog {
+    background-position: 0 -140px;
+}
+
+.icon-trade {
+    background-position: 0 -168px;
+}
+
+.icon-chat {
+    background-position: 0 -196px;
+}
+
+.icon-share {
+    background-position: 0 -224px;
+}
+
+.icon-share:hover {
+    background-position: -28px -224px;
+}
+
+button:hover .icon-share,
+a:hover .icon-share {
+    background-position: -28px -224px;
+}
+
+.icon-acceptfriend {
+    background-position: 0 -252px;
+}
+
+.home-container {
+    float: left;
+    max-width: 970px;
+}
+
+.content-no-ads .content {
+    max-width: 970px;
+}
+
+@media(max-width:1174px) {
+    .home-container {
+        float: none;
+        margin: 0 auto;
+    }
+}
+
+.home-header {
+    margin-bottom: 12px;
+}
+
+.home-header:before,
+.home-header:after {
+    content: " ";
+    display: table;
+}
+
+.home-header:after {
+    clear: both;
+}
+
+.home-header .avatar,
+.home-header .home-header-content {
+    float: left;
+}
+
+.home-header .avatar {
+    margin-right: 24px;
+}
+
+.home-header-content {
+    width: 75%;
+    width: calc(100% - 180px - 36px);
+    position: relative;
+}
+
+@media(max-width:991px) {
+    .home-header-content {
+        padding: 0 15px;
+    }
+}
+
+.home-header-content h1 {
+    margin: 36px 0 12px;
+}
+
+.non-bc h1 {
+    margin-top: 60px;
+}
+
+@media(max-width:991px) {
+    .home-header .avatar {
+        height: 120px;
+        width: 120px;
+    }
+
+    .home-header .avatar img {
+        height: 120px;
+        width: 120px;
+    }
+
+    .home-header-content {
+        width: 75%;
+        width: calc(100% - 120px - 36px);
+    }
+
+    .home-header-content h1 {
+        margin: 12px 0 6px;
+    }
+
+    .non-bc h1 {
+        margin-top: 36px;
+    }
+}
+
+@media(max-width:767px) {
+    .home-header .avatar {
+        display: none;
+    }
+
+    .home-header-content {
+        width: 100%;
+    }
+
+    .home-header-content:before,
+    .home-header-content:after {
+        content: " ";
+        display: table;
+    }
+
+    .home-header-content:after {
+        clear: both;
+    }
+
+    .home-header-content h1,
+    .home-header-content span[class^="icon"] {
+        float: left;
+        margin: 12px 0;
+    }
+
+    .home-header-content h1 {
+        max-width: 80%;
+        max-width: calc(100% - 52px - 12px);
+    }
+
+    .home-header-content span[class^="icon"] {
+        margin: 24px 0 0 12px;
+    }
+}
+
+@media(max-width:543px) {
+    .home-header-content {
+        width: 100%;
+    }
+
+    .home-header-content h1,
+    .home-header-content span[class^="icon"] {
+        float: none;
+        margin: 6px 0;
+    }
+
+    .home-header-content span[class^="icon"] {
+        float: left;
+    }
+}
+
+.home-left-col,
+.home-right-col {
+    float: right;
+}
+
+.home-left-col .section {
+    margin-right: 10px;
+}
+
+.home-left-col .checkbox {
+    margin: 0 0 16px;
+}
+
+.home-left-col .share-login {
+    display: none;
+    margin: 8px;
+}
+
+.home-left-col .list-gallery {
+    display: inline-block;
+    width: 100%;
+}
+
+.home-left-col .list-gallery li {
+    display: inline-block;
+    padding: 0 0 20px 0;
+    margin-right: 1%;
+}
+
+.home-left-col .list-gallery .item-place {
+    margin-right: 4px;
+    width: 20%;
+}
+
+.home-left-col .list-gallery .item-place a {
+    display: block;
+}
+
+.home-left-col .list-gallery .item-place img {
+    width: 100%;
+    height: auto;
+}
+
+.home-left-col .list-gallery .item-asset {
+    width: 23%;
+}
+
+.home-left-col .list-gallery .font-bold {
+    white-space: nowrap;
+    margin: 0;
+}
+
+@media(max-width:767px) {
+    .home-left-col .list-gallery li.item-place {
+        margin-right: 1%;
+        width: 48%;
+    }
+
+    .home-left-col .list-gallery li.item-place:nth-child(4) {
+        display: inline-block;
+    }
+
+    .home-left-col .list-gallery li.item-place img {
+        min-width: 150px;
+        min-height: 150px;
+    }
+}
+
+@media(max-width:543px) {
+    .home-left-col .list-gallery li.item-place {
+        width: 99%;
+    }
+
+    .home-left-col .list-gallery li.item-place:nth-child(4) {
+        display: none;
+    }
+
+    .home-left-col .list-gallery li.item-place img {
+        min-width: 60px;
+        min-height: 60px;
+    }
+}
+
+.home-left-col.col-sm-6 .item-place {
+    margin-right: 1%;
+    width: 48%;
+}
+
+.home-left-col.col-sm-6 .item-place img {
+    min-width: 150px;
+    min-height: 150px;
+}
+
+@media(max-width:991px) {
+    .home-left-col.col-sm-6 .item-place {
+        width: 99%;
+    }
+
+    .home-left-col.col-sm-6 .item-place:nth-child(4) {
+        display: none;
+    }
+}
+
+.home-right-col .section {
+    margin-left: 10px;
+}
+
+@media(max-width:767px) {
+
+    .home-left-col .section-content,
+    .home-right-col .section-content {
+        padding-bottom: 54px;
+    }
+
+    .home-left-col .section {
+        margin-right: 0;
+    }
+
+    .home-right-col .section {
+        margin-left: 0;
+    }
+}
+
+.blog-news .news {
+    margin: 6px 0;
+}
+
+.blog-news .news:before,
+.blog-news .news:after {
+    content: " ";
+    display: table;
+}
+
+.blog-news .news:after {
+    clear: both;
+}
+
+.blog-news .news .icon-page {
+    vertical-align: middle;
+}
+
+.blog-news .news span {
+    float: left;
+}
+
+.blog-news .news .news-link {
+    width: 100%;
+    padding-top: 3px;
+}
+
+.feeds .feed-game span[class^="icon"],
+.feeds .feed-creation span[class^="icon"],
+.feeds .feed-social span[class^="icon"] {
+    background-size: 200% auto;
+    width: 60px;
+    height: 60px;
+}
+
+.feeds .feed-game {
+    border-top: 2px solid #02b757;
+}
+
+.feeds .feed-creation {
+    border-top: 2px solid #F68802;
+}
+
+.feeds .feed-social {
+    border-top: 2px solid #00A2FF;
+}
+
+.feeds .icon-games {
+    background-position: 0 -60px;
+}
+
+.feeds .icon-develop {
+    background-position: 0 -60px;
+}
+
+.feeds .icon-charactercustomizer {
+    background-position: 0 -120px;
+}
+
+.feeds .icon-friends {
+    background-position: 0 -120px;
+}
+
+.feeds .icon-forum {
+    background-position: 0 -240px;
+}
+
+.feeds .feedtext {
+    word-break: break-word;
+    overflow: hidden;
+}
+
+.feeds .list-item a span {
+    display: block;
+}
+
+.connect-button {
+    margin-right: 15px;
+    float: left;
+    width: 78px;
+    height: 30px;
+    background-repeat: no-repeat;
+}
+
+.connect-button.facebook {
+    background-image: url("https://cdns3.gigya.com/gs/GetSprite.ashx?path=%2FHTMLLogin%2FFullLogo%2F%5Bfacebook%5D_30.png%7C78%2C30");
+}
+
+.connect-button:hover {
+    cursor: pointer;
+}
+
+.connect-button:focus {
+    cursor: pointer;
+}
+
+.nickname {
+    display: inline-block;
+    margin-right: 15px;
+    padding-top: 7px;
+    font-weight: bold;
+}
+
+.disconnect-link {
+    display: inline-block;
+    margin-right: 15px;
+    padding-top: 7px;
+    color: #00A2FF;
+}
+
+.disconnect-link:hover,
+.disconnect-link:focus {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.form-horizontal .form-control-label {
+    display: none;
+}
+
+.connect-facebook {
+    overflow: auto;
+    margin-bottom: 6px;
+}

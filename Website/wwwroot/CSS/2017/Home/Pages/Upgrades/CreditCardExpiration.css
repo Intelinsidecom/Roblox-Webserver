@@ -1,0 +1,14 @@
+/* ~/CSS/Pages/Upgrades/CreditCardExpiration.css */
+.credit-card-exp .modal-content .modal-footer {
+    padding-top: 0;
+}
+
+.credit-card-exp #credit-card-dont-remind {
+    font-weight: 300;
+}
+
+.credit-card-exp .credit-card-exp-date {
+    font-weight: 400;
+    display: block;
+    margin-bottom: 10px;
+}

@@ -477,6 +477,25 @@ namespace RobloxWebserver.Controllers
         }
 
         /// <summary>
+        /// Redirects /games/{id} to /games/{id}/{name}
+        /// </summary>
+        [HttpGet("{id:long}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetGameById(long id, CancellationToken cancellationToken = default)
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, id, cancellationToken);
+            if (!universeId.HasValue)
+                return NotFound();
+
+            var universe = await GamesRepository.GetUniverseAsync(connStr, universeId.Value, cancellationToken);
+            if (universe == null)
+                return NotFound();
+
+            return Redirect($"/games/{id}/{universe.Name}");
+        }
+
+        /// <summary>
         /// Returns the universe name page for a specific game/place
         /// </summary>
         [HttpGet("{id}/{name}")]

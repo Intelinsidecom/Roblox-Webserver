@@ -178,6 +178,21 @@ namespace Users
             return 0;
         }
 
+        public static async Task<string?> GetUserStatusTextAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                return null;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand("select status_text from users where user_id = @id", conn);
+            cmd.Parameters.AddWithValue("id", userId);
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result == null || result is DBNull ? null : Convert.ToString(result);
+        }
+
         public static async Task<bool> UpdateUserStatusTextAsync(string connectionString, long userId, string? statusText, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
