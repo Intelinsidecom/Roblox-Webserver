@@ -365,4 +365,58 @@ namespace Users
         public long UserId { get; set; }
         public string Username { get; set; } = "";
     }
+
+    public class AccountInfo
+    {
+        public long UserId { get; set; }
+        public string UserName { get; set; } = "";
+        public string? Email { get; set; }
+        public bool EmailVerified { get; set; }
+        public bool HasPassword { get; set; }
+        public string? PhoneNumber { get; set; }
+        public bool PhoneVerified { get; set; }
+        public bool TwoStepEnabled { get; set; }
+        public DateTime? UserCreated { get; set; }
+    }
+
+    public static partial class UserQueries
+    {
+        public static async Task<AccountInfo?> GetAccountInfoAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                return null;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(@"
+                select user_name, email, email_verified, password, phone_number, phone_verified,
+                       ""2sv_enabled"", user_created
+                from users
+                where user_id = @uid
+                limit 1", conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return null;
+
+            var password = reader.IsDBNull(3) ? null : reader.GetString(3);
+
+            return new AccountInfo
+            {
+                UserId = userId,
+                UserName = reader.IsDBNull(0) ? "" : reader.GetString(0),
+                Email = reader.IsDBNull(1) ? null : reader.GetString(1),
+                EmailVerified = !reader.IsDBNull(2) && reader.GetBoolean(2),
+                HasPassword = !string.IsNullOrEmpty(password),
+                PhoneNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
+                PhoneVerified = !reader.IsDBNull(5) && reader.GetBoolean(5),
+                TwoStepEnabled = !reader.IsDBNull(6) && reader.GetBoolean(6),
+                UserCreated = reader.IsDBNull(7) ? null : reader.GetDateTime(7)
+            };
+        }
+    }
 }

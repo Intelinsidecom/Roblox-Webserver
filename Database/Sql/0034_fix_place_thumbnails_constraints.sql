@@ -2,52 +2,26 @@
 -- Fix place_thumbnails constraints to allow multiple image thumbnails but limit video thumbnails
 -- Description: Removes the restrictive unique constraint and adds proper constraints
 -- Created: 2025-01-10
+--
+-- Fully idempotent: every prior name this script has ever used
+-- (uk_place_thumbnails_place_type, uk_place_thumbnails_video_only, and any
+-- underlying auto-named index from a UNIQUE constraint of the same name) is
+-- dropped before the final partial unique index is created.
 
--- First, drop the existing restrictive unique constraint
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 FROM information_schema.table_constraints 
-        WHERE constraint_name = 'uk_place_thumbnails_place_type' 
-        AND table_name = 'place_thumbnails'
-    ) THEN
-        ALTER TABLE place_thumbnails 
-            DROP CONSTRAINT uk_place_thumbnails_place_type;
-    END IF;
-END $$;
+-- 1. Drop the original restrictive unique constraint
+ALTER TABLE place_thumbnails DROP CONSTRAINT IF EXISTS uk_place_thumbnails_place_type;
 
--- Add a unique constraint that only applies to video thumbnails (allowing multiple images)
--- This ensures only one video per place but allows unlimited images
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.table_constraints 
-        WHERE constraint_name = 'uk_place_thumbnails_video_only' 
-        AND table_name = 'place_thumbnails'
-    ) THEN
-        ALTER TABLE place_thumbnails 
-            ADD CONSTRAINT uk_place_thumbnails_video_only 
-            UNIQUE (place_id, thumbnail_type) 
-            DEFERRABLE INITIALLY DEFERRED;
-    END IF;
-END $$;
+-- 2. Drop any intermediate UNIQUE constraint named uk_place_thumbnails_video_only
+--    (a constraint of the same name may have been left behind by an earlier run)
+ALTER TABLE place_thumbnails DROP CONSTRAINT IF EXISTS uk_place_thumbnails_video_only;
 
--- Actually, let's create a partial unique index for videos only instead
--- Drop the constraint if it was created
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1 FROM information_schema.table_constraints 
-        WHERE constraint_name = 'uk_place_thumbnails_video_only' 
-        AND table_name = 'place_thumbnails'
-    ) THEN
-        ALTER TABLE place_thumbnails 
-            DROP CONSTRAINT uk_place_thumbnails_video_only;
-    END IF;
-END $$;
+-- 3. Drop the index form too. CREATE UNIQUE INDEX ON ... UNIQUE (a,b) WHERE ...
+--    and ADD CONSTRAINT ... UNIQUE (a,b) both occupy the same namespace, and a
+--    previous run may have created either one with this name. Drop both safely.
+DROP INDEX IF EXISTS place_thumbnails.uk_place_thumbnails_video_only;
 
--- Create a partial unique index that only applies to video thumbnails
--- This allows multiple images but only one video per place
-CREATE UNIQUE INDEX IF NOT EXISTS uk_place_thumbnails_video_only 
-    ON place_thumbnails(place_id, thumbnail_type) 
+-- 4. Final desired state: partial unique index on (place_id) WHERE thumbnail_type='video'
+--    so only one video per place is allowed, but any number of images.
+CREATE UNIQUE INDEX IF NOT EXISTS uk_place_thumbnails_one_video_per_place
+    ON place_thumbnails (place_id)
     WHERE thumbnail_type = 'video';

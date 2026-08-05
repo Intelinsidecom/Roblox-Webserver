@@ -75,7 +75,8 @@ builder.Services.AddSingleton<Website.Services.DevelopTabService>();
 builder.Services.AddSingleton<ScriptTemplateService>();
 builder.Services.AddSingleton<XMLTemplateService>();
 builder.Services.AddSingleton<AssetMetadataRepository>();
-builder.Services.AddSingleton<ToolboxService>();
+            builder.Services.AddSingleton<ToolboxService>();
+            builder.Services.AddSingleton<Website.Services.EmailSender>();
 builder.Services.AddHostedService<ToolboxService>(sp => sp.GetRequiredService<ToolboxService>());
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<Assets.AssetService>();
@@ -261,7 +262,7 @@ app.MapControllerRoute(
     name: "pages",
     pattern: "{*path}",
     defaults: new { controller = "Pages", action = "Route" },
-    constraints: new { path = @"^(?!.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|gz|download)$).*" }
+    constraints: new { path = @"^(?!.*\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|map|gz|download|html)$).*" }
 );
 
 app.Run();

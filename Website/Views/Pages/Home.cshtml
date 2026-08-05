@@ -168,120 +168,6 @@
     <script type="text/javascript" src="~/JS/Notifications/AuthenticationNotificationsHandler.js"></script>
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script>
-        googletag.cmd.push(function() {
-            Roblox = Roblox || {};
-            Roblox.AdsHelper = Roblox.AdsHelper || {};
-            Roblox.AdsHelper.slots = [];
-            Roblox.AdsHelper.slots = Roblox.AdsHelper.slots || [];
-            Roblox.AdsHelper.slots.push({
-                slot: googletag.defineSlot("/1015347/Roblox_MyHome_Left_160x600", [160, 600], "3538383439323233").addService(googletag.pubads()),
-                id: "3538383439323233",
-                path: "/1015347/Roblox_MyHome_Left_160x600"
-            });
-            Roblox.AdsHelper.slots = Roblox.AdsHelper.slots || [];
-            Roblox.AdsHelper.slots.push({
-                slot: googletag.defineSlot("/1015347/Roblox_MyHome_Right_160x600", [160, 600], "3337383033333234").addService(googletag.pubads()),
-                id: "3337383033333234",
-                path: "/1015347/Roblox_MyHome_Right_160x600"
-            });
-            for (var key in Roblox.AdsHelper.slots) {
-                var slot = Roblox.AdsHelper.slots[key].slot;
-                var id = Roblox.AdsHelper.slots[key].id;
-                var path = Roblox.AdsHelper.slots[key].path;
-                if (slot.renderEnded != "undefined") {
-                    (function(slot, id) {
-                        slot.renderEndedOld = slot.renderEnded;
-                        slot.renderEnded = function() {
-                            slot.renderEndedOld();
-                            if ($('#' + id + '.gutter').css('display') == "none") {
-                                $(document).trigger("GuttersHidden");
-                            }
-                            if ($('#' + id + '.filmstrip').css('display') == "none") {
-                                $(document).trigger("FilmStripHidden");
-                            }
-                        };
-                    }(slot, id));
-                }
-            }
-            googletag.pubads().setTargeting("Age", ["50", "18AndOver"]);
-            googletag.pubads().setTargeting("A", ["50", "18AndOver"]);
-            googletag.pubads().setTargeting("Env", "Production");
-            googletag.pubads().setTargeting("Gender", "Male");
-            googletag.pubads().setTargeting("PLVU", "True");
-            googletag.pubads().enableSingleRequest();
-            googletag.pubads().collapseEmptyDivs();
-            googletag.enableServices();
-        });
-    </script>
-    <script>
-        var Roblox = Roblox || {};
-        Roblox.AdsHelper = Roblox.AdsHelper || {};
-        Roblox.AdsLibrary = Roblox.AdsLibrary || {};
-        Roblox.AdsHelper.toggleAdsSlot = function(slotId, GPTRandomSlotIdentifier) {
-            var gutterAdsEnabled = false;
-            if (gutterAdsEnabled) {
-                googletag.display(GPTRandomSlotIdentifier);
-                return;
-            }
-            if (typeof slotId !== 'undefined' && slotId && slotId.length > 0) {
-                var slotElm = $("#" + slotId);
-                if (slotElm.is(":visible")) {
-                    googletag.display(GPTRandomSlotIdentifier);
-                } else {
-                    var adParam = Roblox.AdsLibrary.adsParameters[slotId];
-                    if (adParam) {
-                        adParam.template = slotElm.html();
-                        slotElm.empty();
-                    }
-                }
-            }
-        }
-    </script>
-    <script>
-        $(function() {
-            Roblox.JSErrorTracker.initialize({
-                'suppressConsoleError': true
-            });
-        });
-    </script>
-    <script>
-        (function(a, b, c, d, e) {
-            function f() {
-                var a = b.createElement("script");
-                a.async = !0;
-                a.src = "//radar.cedexis.com/1/18551/radar.js";
-                b.body.appendChild(a)
-            }
-            /\bMSIE 6/i.test(a.navigator.userAgent) || (a[c] ? a[c](e, f, !1) : a[d] && a[d]("on" + e, f))
-        })
-        (window, document, "addEventListener", "attachEvent", "load");
-    </script><!--[if lt IE 9]><script src=//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script><script src=//oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
-    <script>
-        var _gaq = _gaq || [];
-        window.GoogleAnalyticsDisableRoblox2 = true;
-        _gaq.push(['b._setAccount', 'UA-486632-1']);
-        _gaq.push(['b._setCampSourceKey', 'rbx_source']);
-        _gaq.push(['b._setCampMediumKey', 'rbx_medium']);
-        _gaq.push(['b._setCampContentKey', 'rbx_campaign']);
-        _gaq.push(['b._setDomainName', 'roblox.com']);
-        _gaq.push(['b._setCustomVar', 1, 'Visitor', 'Member', 2]);
-        _gaq.push(['b._setPageGroup', 1, 'Home']);
-        _gaq.push(['b._trackPageview']);
-        _gaq.push(['c._setAccount', 'UA-26810151-2']);
-        _gaq.push(['c._setSampleRate', '1']);
-        _gaq.push(['c._setDomainName', 'roblox.com']);
-        _gaq.push(['c._setPageGroup', 1, 'Home']);
-        (function() {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
- 
-    <script>
         if (typeof(Roblox) === "undefined") {
             Roblox = {};
         }
@@ -493,7 +379,7 @@
                                 <div class=form-horizontal id=statusForm role=form>
                                     <div class=form-group><input class="form-control input-field" id=txtStatusMessage maxlength=254 placeholder="What are you up to?" value="@userStatusText">
                                         <p class=form-control-label>Status update failed.
-                                    </div><a type=button class="btn-primary-md btn-fixed-width" id=shareButton>Share</a> <img id=loadingImage class=share-login alt=Sharing... src=https://images.rbxcdn.com/ec4e85b0c4396cf753a06fade0a8d8af.gif height=17 width=48>
+                                    </div><a type=button class="btn-primary-md btn-fixed-width" id=shareButton>Share</a> <img id=loadingImage class=share-login alt=Sharing... src=/images/ec4e85b0c4396cf753a06fade0a8d8af.gif height=17 width=48>
                                 </div>
 @if (feedEntries.Count == 0)
 {
@@ -516,7 +402,7 @@
                                     <li class="list-item feed-creation" data-default-roblox-feed><a class=list-header href=/my/avatar> <span class=icon-charactercustomizer></span> </a>
                                         <div class=list-body>
                                             <h2>Customize Your Avatar</h2>
-                                            <p class=list-content>Visit the <a href=/my/avatar>Avatar Editor</a> to customize your character. Shop for clothing items in the <a href="/catalog/browse.aspx?CatalogContext=1&amp;Subcategory=1&amp;CreatorID=1&amp;CurrencyType=0&amp;pxMin=0&amp;pxMax=0&amp;SortType=4&amp;SortAggregation=3&amp;SortCurrency=0&amp;IncludeNotForSale=false&amp;LegendExpanded=true&amp;Category=1">Catalog</a>.</p><img class=feed-sample-avatars-image src=https://images.rbxcdn.com/dcc8386a64c5e9917a5c0cee9f9f166a.png alt="">
+                                            <p class=list-content>Visit the <a href=/my/avatar>Avatar Editor</a> to customize your character. Shop for clothing items in the <a href="/catalog/browse.aspx?CatalogContext=1&amp;Subcategory=1&amp;CreatorID=1&amp;CurrencyType=0&amp;pxMin=0&amp;pxMax=0&amp;SortType=4&amp;SortAggregation=3&amp;SortCurrency=0&amp;IncludeNotForSale=false&amp;LegendExpanded=true&amp;Category=1">Catalog</a>.</p><img class=feed-sample-avatars-image src=/images/dcc8386a64c5e9917a5c0cee9f9f166a.png alt="">
                                         </div></li>
                                     <li class="list-item feed-creation" data-default-roblox-feed><a class=list-header href=/develop> <span class=icon-develop></span> </a>
                                         <div class=list-body>
@@ -609,7 +495,7 @@ else
     </script>
     <div id=PlaceLauncherStatusPanel style=display:none;width:300px data-new-plugin-events-enabled=True data-event-stream-for-plugin-enabled=True data-event-stream-for-protocol-enabled=True data-is-game-launch-interface-enabled=True data-is-protocol-handler-launch-enabled=True data-is-user-logged-in=True data-os-name=Windows data-protocol-name-for-client=roblox-player data-protocol-name-for-studio=roblox-studio data-protocol-url-includes-launchtime=true data-protocol-detection-enabled=true data-protocol-version=1>
         <div class="modalPopup blueAndWhite PlaceLauncherModal" style=min-height:160px>
-            <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=https://images.rbxcdn.com/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
+            <div id=Spinner class=Spinner style="padding:20px 0"><img data-delaysrc=/images/e998fb4c03e8c2e30792f2f3436e9416.gif height=32 width=32 alt=Progress></div>
             <div id=status style="min-height:40px;text-align:center;margin:5px 20px">
                 <div id=Starting class="PlaceLauncherStatus MadStatusStarting" style=display:block>Starting Roblox...</div>
                 <div id=Waiting class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
@@ -621,17 +507,17 @@ else
     <div id=ProtocolHandlerStartingDialog style=display:none class=protocol-handler-container>
         <div class="modalPopup ph-modal-popup">
             <div class=ph-modal-header></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-logo-row><img src=/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=/images/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
             <div class=ph-areyouinstalleddialog-content>
                 <p class=larger-font-size>Roblox is now loading. Get ready to play!
-                <div class=ph-startingdialog-spinner-row><img src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif width=82 height=24></div>
+                <div class=ph-startingdialog-spinner-row><img src=/images/4bed93c91f909002b1f17f05c0ce13d1.gif width=82 height=24></div>
             </div>
         </div>
     </div>
     <div id=ProtocolHandlerAreYouInstalled style=display:none class=protocol-handler-container>
         <div class="modalPopup ph-modal-popup">
             <div class=ph-modal-header><span class="icon-close simplemodal-close"></span></div>
-            <div class=ph-logo-row><img src=https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
+            <div class=ph-logo-row><img src=/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip width=90 height=90 alt=R class=play-logo-image> <img src=/images/3da410727fa2670dcb4f31316643138a.svg.gzip width=90 height=90 alt=R class="studio-logo-image hidden"></div>
             <div class=ph-areyouinstalleddialog-content>
                 <p class=larger-font-size>You're moments away from getting into the game!
                 <div><button type=button class="btn btn-primary-md" id=ProtocolHandlerInstallButton> Download and Install Roblox </button></div>
@@ -717,20 +603,20 @@ else
                     <ul class=modal-col-5>
                         <li class=step1-of-5>
                             <h2>1</h2>
-                            <p class=larger-font-size>Click <strong>Save File</strong> when the download window pops up</p><img data-delaysrc=https://images.rbxcdn.com/635085abe343ceec97e5da00103cbd8d.png>
+                            <p class=larger-font-size>Click <strong>Save File</strong> when the download window pops up</p><img data-delaysrc=/images/635085abe343ceec97e5da00103cbd8d.png>
                         <li class=2-of-5>
                             <h2>2</h2>
-                            <p class=larger-font-size>Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p><img data-delaysrc=https://images.rbxcdn.com/4791f147e474426b284e7885b8f91635.png>
+                            <p class=larger-font-size>Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p><img data-delaysrc=/images/4791f147e474426b284e7885b8f91635.png>
                         <li class=step3-of-5>
                             <h2>3</h2>
-                            <p class=larger-font-size>Click <strong>Run</strong></p><img data-delaysrc=https://images.rbxcdn.com/27e0e77ae7b5d726ca231c5d338fa473.png>
+                            <p class=larger-font-size>Click <strong>Run</strong></p><img data-delaysrc=/images/27e0e77ae7b5d726ca231c5d338fa473.png>
                         <li class=step4-of-5>
                             <h2>4</h2>
                             <p class=larger-font-size>Once installed, click <strong>Play</strong> to join the action!
                             <div class="VisitButton VisitButtonContinueGLI"><a class="btn btn-primary-lg disabled btn-full-width">Play</a></div>
                         <li class=step5-of-5>
                             <h2>5</h2>
-                            <p class=larger-font-size>Click <strong>Ok</strong> when the alert pops up</p><img data-delaysrc=https://images.rbxcdn.com/f024c63845c2f79d30ccebe2b2f5818d.png>
+                            <p class=larger-font-size>Click <strong>Ok</strong> when the alert pops up</p><img data-delaysrc=/images/f024c63845c2f79d30ccebe2b2f5818d.png>
                     </ul>
                 </div>
             </div>
@@ -796,7 +682,7 @@ else
                         <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
                     </div>
                     <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
-                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
+                    <div class="loading modal-processing"><img class=loading-default src=/images/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
                 </div>
                 <div class="modal-footer text-footer"></div>
             </div>
@@ -818,7 +704,7 @@ else
         Roblox = Roblox || {};
         Roblox.ContactUpsellMeta = {
             accountSettingsApiDomain: "https://accountsettings.roblox.com",
-            apiProxyDomain: "https://api.roblox.com",
+            apiProxyDomain: "@Configuration["PublicAPIBaseUrl"]",
             codeLength: 6
         };
     </script>
@@ -826,34 +712,7 @@ else
         var Roblox = Roblox || {};
         Roblox.jsConsoleEnabled = false;
     </script>
-    <script>
-        $(function() {
-            Roblox.CookieUpgrader.domain = 'roblox.com';
-            Roblox.CookieUpgrader.upgrade("GuestData", {
-                expires: Roblox.CookieUpgrader.thirtyYearsFromNow
-            });
-            Roblox.CookieUpgrader.upgrade("RBXSource", {
-                expires: function(cookie) {
-                    return Roblox.CookieUpgrader.getExpirationFromCookieValue("rbx_acquisition_time", cookie);
-                }
-            });
-            Roblox.CookieUpgrader.upgrade("RBXViralAcquisition", {
-                expires: function(cookie) {
-                    return Roblox.CookieUpgrader.getExpirationFromCookieValue("time", cookie);
-                }
-            });
-            Roblox.CookieUpgrader.upgrade("RBXMarketing", {
-                expires: Roblox.CookieUpgrader.thirtyYearsFromNow
-            });
-            Roblox.CookieUpgrader.upgrade("RBXSessionTracker", {
-                expires: Roblox.CookieUpgrader.fourHoursFromNow
-            });
-            Roblox.CookieUpgrader.upgrade("RBXEventTrackerV2", {
-                expires: Roblox.CookieUpgrader.thirtyYearsFromNow
-            });
-        });
-    </script>
-    
+
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
     <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
@@ -1010,8 +869,6 @@ else
     <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
 
-        Roblox.XsrfToken.setToken('I1wFAlPHOx06');
-    </script>
     <script>
         $(function() {
             Roblox.DeveloperConsoleWarning.showWarning();
@@ -1022,61 +879,6 @@ else
             Roblox.JSErrorTracker.initialize({
                 'suppressConsoleError': true
             });
-        });
-    </script>
-    <script>
-        $(function() {
-            function trackReturns() {
-                function dayDiff(d1, d2) {
-                    return Math.floor((d1 - d2) / 86400000);
-                }
-                if (!localStorage) {
-                    return false;
-                }
-                var cookieName = 'RBXReturn';
-                var cookieOptions = {
-                    expires: 9001
-                };
-                var cookieStr = localStorage.getItem(cookieName) || "";
-                var cookie = {};
-                try {
-                    cookie = JSON.parse(cookieStr);
-                } catch (ex) {}
-                try {
-                    if (typeof cookie.ts === "undefined" || isNaN(new Date(cookie.ts))) {
-                        localStorage.setItem(cookieName, JSON.stringify({
-                            ts: new Date().toDateString()
-                        }));
-                        return false;
-                    }
-                } catch (ex) {
-                    return false;
-                }
-                var daysSinceFirstVisit = dayDiff(new Date(), new Date(cookie.ts));
-                if (daysSinceFirstVisit == 1 && typeof cookie.odr === "undefined") {
-                    RobloxEventManager.triggerEvent('rbx_evt_odr', {});
-                    cookie.odr = 1;
-                }
-                if (daysSinceFirstVisit >= 1 && daysSinceFirstVisit <= 7 && typeof cookie.sdr === "undefined") {
-                    RobloxEventManager.triggerEvent('rbx_evt_sdr', {});
-                    cookie.sdr = 1;
-                }
-                try {
-                    localStorage.setItem(cookieName, JSON.stringify(cookie));
-                } catch (ex) {
-                    return false;
-                }
-            }
-            GoogleListener.init();
-            RobloxEventManager.initialize(true);
-            RobloxEventManager.triggerEvent('rbx_evt_pageview');
-            trackReturns();
-            RobloxEventManager._idleInterval = 450000;
-            RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_start');
-            RobloxEventManager.registerCookieStoreEvent('rbx_evt_ftp');
-            RobloxEventManager.registerCookieStoreEvent('rbx_evt_initial_install_success');
-            RobloxEventManager.registerCookieStoreEvent('rbx_evt_fmp');
-            RobloxEventManager.startMonitor();
         });
     </script>
     <script>
@@ -1128,120 +930,3 @@ else
             });
         });
     </script>
-    <div id=push-notification-registrar-settings data-notificationshost=https://notifications.roblox.com data-reregistrationinterval=0 data-registrationpath=register-firefox data-shoulddeliveryendpointbesentduringregistration=True data-platformtype=FirefoxOnDesktop></div>
-    <div id=push-notification-registration-ui-settings data-noncontextualpromptallowed=true data-promptonfriendrequestsentenabled=true data-promptonprivatemessagesentenabled=false data-promptintervals=[604800000,1209600000,2419200000] data-notificationsdomain=https://notifications.roblox.com data-userid=@userId></div>
-    <script type=text/template id=push-notifications-initial-global-prompt-template>
-        <div class="push-notifications-global-prompt">
-        <div class="alert-info push-notifications-global-prompt-site-wide-body">
-            <div class="push-notifications-prompt-content">
-                <h5>
-                    <span class="push-notifications-prompt-text">
-                        Can we send you notifications on this computer?
-                    </span>
-                </h5>
-            </div>
-            <div class="push-notifications-prompt-actions">
-                <button type="button" class="btn-fixed-width btn-control-xs push-notifications-prompt-accept">Notify Me</button>
-                <span class="icon-close-white push-notifications-dismiss-prompt"></span>
-            </div>
-        </div>
-    </div>
-</script>
-    <script type=text/template id=push-notifications-permissions-prompt-template>
-        <div class="modal fade" id="push-notifications-permissions-prompt-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog rbx-modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">
-                            <span class="icon-close"></span>
-                        </span>
-                        <span class="sr-only">Close</span>
-                    </button>
-                    <h5>Enable Desktop Push Notifications</h5>
-                </div>
-                <div class="modal-body">
-                        <div>
-                            Now just click <strong>Always Receive Notifications</strong> in your browser, and we'll start sending you push notifications!
-                        </div>
-                        <div class="push-notifications-permissions-prompt-instructional-image">
-                                <img width="380" height="250" src="https://static.rbxcdn.com/images/Notifications/push-permission-prompt-firefox-windows-20160701.png" />
-                        </div>
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-        </div>
-    </div>
-</script>
-    <script type=text/template id=push-notifications-permissions-disabled-instruction-template>
-        <div class="modal fade" id="push-notifications-permissions-disabled-instruction-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog rbx-modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">
-                            <span class="icon-close"></span>
-                        </span>
-                        <span class="sr-only">Close</span>
-                    </button>
-                    <h5>Turn Push Notifications Back On</h5>
-                </div>
-                <div class="instructions-body">
-                    <div class="reenable-step reenable-step1-of3">
-                        <h1>1</h1>
-                            <p class="larger-font-size push-notifications-modal-step-instruction">Click the green lock next to the URL bar to open up your site permissions.</p>
-                                <img width="270" height="139" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step1-firefox-windows-20160701.png" />
-                    </div>
-                    <div class="reenable-step reenable-step2-of3">
-                        <h1>2</h1>
-                            <p class="larger-font-size push-notifications-modal-step-instruction">Click the drop-down arrow next to Notifications in the <strong>Permissions</strong> tab.</p>
-                                <img width="270" height="142" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step2-firefox-windows-20160701.png" />
-                    </div>
-                    <div class="reenable-step reenable-step3-of3">
-                        <h1>3</h1>
-                            <p class="larger-font-size push-notifications-modal-step-instruction">Select <strong>Allow</strong> to turn notifications back on.</p>
-                                <img width="270" height="182" src="https://static.rbxcdn.com/images/Notifications/push-permission-unblock-step3-firefox-windows-20160701.png" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                </div>
-            </div>
-        </div>
-    </div>
-</script>
-    <script type=text/template id=push-notifications-successfully-enabled-template>
-        <div class="push-notifications-global-prompt">
-        <div class="alert-system-feedback">
-            <div class="alert alert-success">
-                Push notifications have been enabled!
-            </div>
-        </div>
-    </div>
-</script>
-    <script type=text/template id=push-notifications-successfully-disabled-template>
-        <div class="push-notifications-global-prompt">
-        <div class="alert-system-feedback">
-            <div class="alert alert-success">
-                Push notifications have been disabled.
-            </div>
-        </div>
-    </div>
-</script>
-    <script>
-        var _comscore = _comscore || [];
-        _comscore.push({
-            c1: "2",
-            c2: "6035605",
-            c3: "",
-            c4: "",
-            c15: "Over13"
-        });
-        (function() {
-            var s = document.createElement("script"),
-                el = document.getElementsByTagName("script")[0];
-            s.async = true;
-            s.src = (document.location.protocol == "https:" ? "https://sb" : "http://b") + ".scorecardresearch.com/beacon.js";
-            el.parentNode.insertBefore(s, el);
-        })();
-    </script><noscript><img src="http://b.scorecardresearch.com/p?c1=2&amp;c2=&amp;c3=&amp;c4=&amp;c5=&amp;c6=&amp;c15=&amp;cv=2.0&amp;cj=1"></noscript>

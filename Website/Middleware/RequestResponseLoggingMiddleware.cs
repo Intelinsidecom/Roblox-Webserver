@@ -23,29 +23,64 @@ public class RequestResponseLoggingMiddleware
 
         var requestInfo = await BuildRequestInfo(context.Request);
 
-        // Capture the response by swapping the body stream
+        // Capture the response by swapping the body stream.
         var originalBody = context.Response.Body;
-        await using var responseBuffer = new MemoryStream();
+        var responseBuffer = new MemoryStream();
         context.Response.Body = responseBuffer;
 
         try
         {
-            await _next(context);
-            sw.Stop();
+            try
+            {
+                await _next(context);
+                sw.Stop();
+            }
+            finally
+            {
+                // Read response body safely. A downstream exception (handled by the
+                // developer-exception page middleware, etc.) may have already closed
+                // or replaced context.Response.Body, so guard each step.
+                string responseText = string.Empty;
+                if (responseBuffer.CanSeek && responseBuffer.Length > 0)
+                {
+                    try
+                    {
+                        responseBuffer.Seek(0, SeekOrigin.Begin);
+                        responseText = await new StreamReader(responseBuffer, Encoding.UTF8, leaveOpen: true).ReadToEndAsync();
+                        responseBuffer.Seek(0, SeekOrigin.Begin);
+                    }
+                    catch (ObjectDisposedException) { /* stream was torn down mid-flight */ }
+                }
+
+                // Always restore the original body before logging so a logging failure
+                // can't take down the actual response.
+                context.Response.Body = originalBody;
+
+                try
+                {
+                    PrintLog(requestInfo, context, responseText, sw.Elapsed);
+                }
+                catch
+                {
+                    // Logging must never fail the request.
+                }
+
+                // Copy the buffered response back to the real body. Guard against the
+                // case where the original stream is already closed by downstream code.
+                if (responseBuffer.CanSeek && responseBuffer.Length > 0)
+                {
+                    try
+                    {
+                        await responseBuffer.CopyToAsync(originalBody);
+                    }
+                    catch (ObjectDisposedException) { /* downstream already flushed */ }
+                    catch (IOException) { /* connection aborted by client */ }
+                }
+            }
         }
         finally
         {
-            // Read response body
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var responseText = await new StreamReader(context.Response.Body, Encoding.UTF8, leaveOpen: true).ReadToEndAsync();
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
-
-            // Print logs
-            PrintLog(requestInfo, context, responseText, sw.Elapsed);
-
-            // Copy the response back to the original body stream
-            await responseBuffer.CopyToAsync(originalBody);
-            context.Response.Body = originalBody;
+            responseBuffer.Dispose();
         }
     }
 

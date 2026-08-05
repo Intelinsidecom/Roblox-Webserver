@@ -93,5 +93,20 @@
   },
   "Social": {
     "DiscordServerInviteURL": "https://discord.com/invite/9ypw3ytK4t"
+  },
+  "Accounts": {
+    "AllowBypassEmailVerification": true,
+    "EmailVerificationBaseUrl": "http://localhost:5077",
+    "EmailVerificationTokenLifetimeHours": 24
+  },
+  "Email": {
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "SmtpUser": "freebloxiahelp@gmail.com",
+    "SmtpPass": "nuhuh",
+    "From": "freebloxiahelp@gmail.com"
+  },
+  "Validation": {
+    "EmailRegex": "^[A-Za-z0-9!#$%&'*+\\-/=?^_`{|}~]+(\\.[A-Za-z0-9!#$%&'*+\\-/=?^_`{|}~]+)*@((([A-Za-z0-9-]+\\.)+[A-Za-z]{2,4})|(([0-9]{1,3}\\.){3}[0-9]{1,3}))$"
   }
 }

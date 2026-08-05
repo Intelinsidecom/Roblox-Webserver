@@ -36,20 +36,12 @@ CREATE INDEX IF NOT EXISTS idx_place_thumbnails_place_id
 CREATE INDEX IF NOT EXISTS idx_place_thumbnails_type 
     ON place_thumbnails(thumbnail_type);
 
--- Add unique constraint to ensure only one video thumbnail per place (but allow multiple images)
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.table_constraints 
-        WHERE constraint_name = 'uk_place_thumbnails_video_type' 
-        AND table_name = 'place_thumbnails'
-    ) THEN
-        ALTER TABLE place_thumbnails 
-            ADD CONSTRAINT uk_place_thumbnails_video_type 
-            UNIQUE (place_id, thumbnail_type) 
-            DEFERRABLE INITIALLY DEFERRED;
-    END IF;
-END $$;
+-- Only one video thumbnail per place (multiple images are fine).
+-- Use a partial unique index so only rows with thumbnail_type='video' participate,
+-- which matches the intent described in the comment above and is idempotent.
+CREATE UNIQUE INDEX IF NOT EXISTS uk_place_thumbnails_one_video_per_place
+    ON place_thumbnails (place_id)
+    WHERE thumbnail_type = 'video';
 
 CREATE INDEX IF NOT EXISTS idx_place_thumbnails_sort_order 
     ON place_thumbnails(place_id, sort_order);

@@ -54,6 +54,13 @@ namespace RobloxWebserver.Controllers
             bool premiumMember = false;
             bool restrictionsEnabled = false;
             bool twoStepEnabled = false;
+            bool receiveNewsletter = false;
+            string? socialFacebook = null;
+            string? socialTwitter = null;
+            string? socialGoogleplus = null;
+            string? socialYoutube = null;
+            string? socialTwitch = null;
+            short socialVisibility = 6;
 
             try
             {
@@ -62,7 +69,10 @@ namespace RobloxWebserver.Controllers
 
                 await using var cmd = new NpgsqlCommand(
                     @"select user_name, email, email_verified, user_created, subscription_type, premium_member,
-                             account_restrictions_enabled, ""2sv_enabled""
+                             account_restrictions_enabled, ""2sv_enabled"",
+                             receive_newsletter,
+                             social_facebook_url, social_twitter_url, social_googleplus_url,
+                             social_youtube_url, social_twitch_url, social_networks_visibility
                       from users where user_id = @uid", conn);
                 cmd.Parameters.AddWithValue("uid", userId);
 
@@ -77,6 +87,13 @@ namespace RobloxWebserver.Controllers
                     premiumMember = !reader.IsDBNull(5) && reader.GetBoolean(5);
                     restrictionsEnabled = !reader.IsDBNull(6) && reader.GetBoolean(6);
                     twoStepEnabled = !reader.IsDBNull(7) && reader.GetBoolean(7);
+                    receiveNewsletter = !reader.IsDBNull(8) && reader.GetBoolean(8);
+                    socialFacebook   = reader.IsDBNull(9)  ? null : reader.GetString(9);
+                    socialTwitter    = reader.IsDBNull(10) ? null : reader.GetString(10);
+                    socialGoogleplus = reader.IsDBNull(11) ? null : reader.GetString(11);
+                    socialYoutube    = reader.IsDBNull(12) ? null : reader.GetString(12);
+                    socialTwitch     = reader.IsDBNull(13) ? null : reader.GetString(13);
+                    socialVisibility = reader.GetInt16(14);
                 }
             }
             catch
@@ -163,12 +180,12 @@ namespace RobloxWebserver.Controllers
                         ValidCodeCharacters = (int?)null
                     }
                 },
-                ApiProxyDomain = _configuration["PublicBaseUrl"] ?? _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}",
-                AccountSettingsApiDomain = _configuration["PublicBaseUrl"] ?? _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}",
-                AuthDomain = _configuration["PublicBaseUrl"] ?? _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}",
+                ApiProxyDomain = ResolveApiDomain(),
+                AccountSettingsApiDomain = ResolveApiDomain(),
+                AuthDomain = ResolveApiDomain(),
                 IsDisconnectFbSocialSignOnEnabled = true,
                 IsDisconnectXboxEnabled = true,
-                NotificationSettingsDomain = _configuration["PublicBaseUrl"] ?? _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}",
+                NotificationSettingsDomain = ResolveApiDomain(),
                 AllowedNotificationSourceTypes = new[]
                 {
                     "Test", "FriendRequestReceived", "FriendRequestAccepted",
@@ -184,7 +201,7 @@ namespace RobloxWebserver.Controllers
                 BlacklistedNotificationSourceTypesForMobilePush = Array.Empty<string>(),
                 MinimumChromeVersionForPushNotifications = 50,
                 PushNotificationsEnabledOnFirefox = true,
-                LocaleApiDomain = _configuration["PublicBaseUrl"] ?? _configuration["BaseUrl"] ?? $"{Request.Scheme}://{Request.Host}",
+                LocaleApiDomain = ResolveApiDomain(),
                 HasValidPasswordSet = true,
                 IsUpdateEmailApiEndpointEnabled = true,
                 FastTrackMember = (string?)null,
@@ -193,13 +210,14 @@ namespace RobloxWebserver.Controllers
                 IsAgeDownEnabled = false,
                 IsSendVerifyEmailApiEndpointEnabled = true,
                 IsPromotionChannelsEndpointEnabled = true,
-                ReceiveNewsletter = false,
-                SocialNetworksVisibilityPrivacy = 6,
-                SocialNetworksVisibilityPrivacyValue = "AllUsers",
-                Facebook = (string?)null,
-                Twitter = (string?)null,
-                YouTube = (string?)null,
-                Twitch = (string?)null
+                ReceiveNewsletter = receiveNewsletter,
+                SocialNetworksVisibilityPrivacy = socialVisibility,
+                SocialNetworksVisibilityPrivacyValue = SocialVisibilityToWireName(socialVisibility),
+                Facebook = socialFacebook,
+                Twitter = socialTwitter,
+                GooglePlus = socialGoogleplus,
+                YouTube = socialYoutube,
+                Twitch = socialTwitch
             });
         }
 

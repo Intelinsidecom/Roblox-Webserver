@@ -24,7 +24,7 @@ notificationStream.constant("layoutLibrary", {
     }
 
     , directiveTemplatesName: {
-        notificationIndicatorTemplate:"notification-indicator", notificationContentTemplate:"notification-content", friendRequestReceivedTemplate:"friend-request-received", friendRequestAcceptedTemplate:"friend-request-accepted", friendRequestTemplate:"friend-request", privateMessageTemplate:"private-message", testTemplate:"test"
+        notificationIndicatorTemplate:"notification-indicator.html", notificationContentTemplate:"notification-content.html", friendRequestReceivedTemplate:"friend-request-received.html", friendRequestAcceptedTemplate:"friend-request-accepted.html", friendRequestTemplate:"friend-request.html", privateMessageTemplate:"private-message.html", testTemplate:"test.html"
     }
 
     , notificationSourceType: {

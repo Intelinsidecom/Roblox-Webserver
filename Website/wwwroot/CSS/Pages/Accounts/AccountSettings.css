@@ -1,0 +1,811 @@
+/* ~/CSS/Pages/Accounts/AccountSettings.css */
+.form-inline {
+    position: static;
+}
+
+.icon-default-games,
+.icon-inventory,
+.icon-games,
+.icon-catalog,
+.icon-like,
+.icon-like.selected,
+.icon-dislike,
+.icon-dislike.selected,
+.icon-playaudio,
+.icon-copylocked,
+.icon-nocopylocked,
+.icon-publicserver,
+.icon-privateserver,
+.icon-allgears,
+.icon-partialgears,
+.icon-nogear,
+.icon-Melee,
+.icon-Ranged,
+.icon-PowerUp,
+.icon-Explosive,
+.icon-Musical,
+.icon-Navigation,
+.icon-Building,
+.icon-Social,
+.icon-Transport,
+.icon-experimental-white,
+.icon-experimental-gray2,
+.icon-experimental-gray1 {
+    background-image: url(/images/Shared/games_07192017.svg);
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    width: 28px;
+    height: 28px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-default-games-16x16,
+.icon-like-gray-16x16,
+.icon-like-gray-16x16.selected,
+.icon-dislike-gray-16x16,
+.icon-dislike-gray-16x16.selected {
+    background-image: url(/images/Shared/games_07192017.svg);
+    background-repeat: no-repeat;
+    background-size: 32px auto;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-inventory {
+    background-position: 0 0;
+}
+
+.icon-games {
+    background-position: 0 -28px;
+}
+
+.icon-catalog {
+    background-position: 0 -56px;
+}
+
+.icon-like {
+    background-position: 0 -84px;
+}
+
+.icon-like:hover {
+    background-position: -28px -84px;
+}
+
+button:hover .icon-like,
+a:hover .icon-like {
+    background-position: -28px -84px;
+}
+
+.icon-like.selected {
+    background-position: -28px -84px;
+}
+
+.icon-dislike {
+    background-position: 0 -112px;
+}
+
+.icon-dislike:hover {
+    background-position: -28px -112px;
+}
+
+button:hover .icon-dislike,
+a:hover .icon-dislike {
+    background-position: -28px -112px;
+}
+
+.icon-dislike.selected {
+    background-position: -28px -112px;
+}
+
+.icon-playaudio {
+    background-position: 0 -140px;
+}
+
+.icon-copylocked {
+    background-position: 0 -168px;
+}
+
+.icon-nocopylocked {
+    background-position: 0 -196px;
+}
+
+.icon-publicserver {
+    background-position: 0 -224px;
+}
+
+.icon-privateserver {
+    background-position: 0 -252px;
+}
+
+.icon-allgears {
+    background-position: 0 -280px;
+}
+
+.icon-partialgears {
+    background-position: 0 -308px;
+}
+
+.icon-nogear {
+    background-position: 0 -336px;
+}
+
+.icon-Melee {
+    background-position: 0 -364px;
+}
+
+.icon-Ranged {
+    background-position: 0 -392px;
+}
+
+.icon-PowerUp {
+    background-position: 0 -420px;
+}
+
+.icon-Explosive {
+    background-position: 0 -448px;
+}
+
+.icon-Musical {
+    background-position: 0 -476px;
+}
+
+.icon-Navigation {
+    background-position: 0 -504px;
+}
+
+.icon-Building {
+    background-position: 0 -532px;
+}
+
+.icon-Social {
+    background-position: 0 -560px;
+}
+
+.icon-Transport {
+    background-position: 0 -588px;
+}
+
+.icon-like-gray-16x16 {
+    background-position: 0 -352px;
+}
+
+.icon-like-gray-16x16:hover {
+    background-position: -16px -352px;
+}
+
+button:hover .icon-like-gray-16x16,
+a:hover .icon-like-gray-16x16 {
+    background-position: -16px -352px;
+}
+
+.icon-like-gray-16x16.selected {
+    background-position: -16px -352px;
+}
+
+.icon-dislike-gray-16x16 {
+    background-position: 0 -368px;
+}
+
+.icon-dislike-gray-16x16:hover {
+    background-position: -16px -368px;
+}
+
+button:hover .icon-dislike-gray-16x16,
+a:hover .icon-dislike-gray-16x16 {
+    background-position: -16px -368px;
+}
+
+.icon-dislike-gray-16x16.selected {
+    background-position: -16px -368px;
+}
+
+.icon-experimental-white {
+    background-position: 0 -672px;
+}
+
+.icon-experimental-gray2 {
+    background-position: -28px -672px;
+}
+
+.icon-experimental-gray1 {
+    background-position: 0 -700px;
+}
+
+.pin-fields-email {
+    text-align: center;
+}
+
+.pin-fields-label {
+    text-align: center;
+    margin: 6px 0;
+}
+
+.pin-fields {
+    text-align: center;
+}
+
+.pin-fields .pin-field {
+    display: inline-block;
+    width: 76px;
+    height: 38px;
+    margin: 0 6px;
+    text-align: center;
+    -webkit-text-security: disc;
+}
+
+.pin-fields-error {
+    margin-top: 6px;
+}
+
+.pin-submit {
+    margin-top: 12px;
+}
+
+.pin-toggle-button {
+    width: 40px;
+    text-align: right;
+    padding: 0;
+    float: right;
+    position: relative;
+    top: -84px;
+    margin-bottom: 0;
+}
+
+.pin-toggle-button .icon-locked {
+    background-position: 0 -1160px;
+    vertical-align: bottom;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+}
+
+.pin-toggle-button .icon-unlocked {
+    background-position: 0 -1180px;
+    vertical-align: bottom;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+}
+
+.pin-time-remaining {
+    float: right;
+    top: -87px;
+    text-align: right;
+    position: relative;
+}
+
+.text-new-line {
+    margin-bottom: 12px;
+}
+
+.content {
+    max-width: 970px;
+}
+
+.content .btn-toggle {
+    float: right;
+}
+
+@media(max-width:991px) {
+    .content .page-content {
+        margin: 0 6px;
+    }
+}
+
+@media(max-width:1199px) {
+    .content .page-content .user-account-header {
+        font-size: 30px;
+    }
+}
+
+.content .page-content .tab-dropdown {
+    display: none;
+}
+
+.content .page-content .rbx-tabs-horizontal .rbx-tab {
+    width: 25%;
+}
+
+@media(max-width:767px) {
+    .content .page-content .rbx-tab-content .account-settings-label {
+        display: block;
+    }
+}
+
+.content .page-content .rbx-tab-content .acct-settings-btn {
+    float: right;
+}
+
+.content .page-content .rbx-tab-content .acct-settings-btn.acct-cancel-renewal {
+    margin-left: 12px;
+}
+
+@media(max-width:543px) {
+    .content .page-content .rbx-tab-content .acct-settings-btn {
+        width: 100%;
+    }
+}
+
+.content .page-content .rbx-tab-content .text-error .icon-lock {
+    vertical-align: middle;
+}
+
+.content .page-content .rbx-tab-content h3 {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.content .page-content .rbx-tab-content .safety-on .form-group label {
+    color: #B8B8B8;
+}
+
+.content .page-content .rbx-tab-content .safety-on .form-group select {
+    color: #B8B8B8;
+    background-image: none;
+}
+
+.content .page-content .rbx-tab-content .safety-on .form-group select:hover {
+    background-color: #fff;
+}
+
+.content .page-content .rbx-tab-content .safety-on .form-group select[disabled],
+.content .page-content .rbx-tab-content .safety-on .form-group select[readonly] {
+    cursor: not-allowed;
+    background-color: #F2F2F2;
+    opacity: 1;
+}
+
+.content .page-content .rbx-tab-content .privacy-mode-info {
+    cursor: pointer;
+}
+
+.content .page-content .rbx-tab-content .settings-social-networks-container .form-group label,
+.content .page-content .rbx-tab-content .settings-privacy-container .form-group label,
+.content .page-content .rbx-tab-content .settings-billing-container .form-group label {
+    font-weight: 400;
+}
+
+.content .page-content .rbx-tab-content .settings-social-networks-container .form-group p,
+.content .page-content .rbx-tab-content .settings-privacy-container .form-group p,
+.content .page-content .rbx-tab-content .settings-billing-container .form-group p {
+    margin: 0;
+}
+
+.content .page-content .rbx-tab-content .settings-social-networks-container .form-group p .membership-name,
+.content .page-content .rbx-tab-content .settings-privacy-container .form-group p .membership-name,
+.content .page-content .rbx-tab-content .settings-billing-container .form-group p .membership-name {
+    color: #191919;
+}
+
+.content .page-content .rbx-tab-content .settings-social-networks-container .form-group p .membership-period,
+.content .page-content .rbx-tab-content .settings-privacy-container .form-group p .membership-period,
+.content .page-content .rbx-tab-content .settings-billing-container .form-group p .membership-period {
+    color: #02b757;
+    font-weight: 400;
+}
+
+.content .page-content .rbx-tab-content .settings-personal-container .save-settings-container {
+    float: right;
+    margin: 9px 0 0;
+}
+
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-username,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-password,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-email,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-phone {
+    background-position: 0 -84px;
+    vertical-align: middle;
+    cursor: pointer;
+    float: right;
+}
+
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-username:hover,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-password:hover,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-email:hover,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-change-phone:hover {
+    background-position: -28px -84px;
+}
+
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-email-verify,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-email-add-address,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-phone-verify,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-phone-add-phone {
+    float: right;
+}
+
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-verified-icon {
+    background-position: -16px -480px;
+    vertical-align: middle;
+}
+
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-email-add-msg .icon-warning,
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .account-field-email-verify-msg .icon-warning {
+    vertical-align: bottom;
+}
+
+.content .page-content .rbx-tab-content .settings-account-info-container .form-group .text-name {
+    cursor: pointer;
+}
+
+.content .page-content .rbx-tab-content .settings-privacy-blocked-users .blocked-users-item {
+    width: 62%;
+    padding: 12px;
+}
+
+.content .page-content .rbx-tab-content .settings-privacy-blocked-users .blocked-users-item .blocked-user-name {
+    width: 50%;
+    float: left;
+    padding-right: 12px;
+}
+
+.content .page-content .rbx-tab-content .settings-privacy-blocked-users .blocked-users-btn {
+    float: left;
+}
+
+.content .page-content .form-group .fake-input-lg {
+    padding: 0;
+    height: 38px;
+    overflow: hidden;
+}
+
+.content .page-content .form-group .fake-input-lg:before,
+.content .page-content .form-group .fake-input-lg:after {
+    content: " ";
+    display: table;
+}
+
+.content .page-content .form-group .fake-input-lg:after {
+    clear: both;
+}
+
+.content .page-content .form-group .fake-input-lg label {
+    padding: 9px 10px;
+    float: left;
+    width: 25%;
+    font-weight: 600;
+}
+
+.content .page-content .form-group.gender-container .gender-button {
+    display: inline-block;
+    height: 36px;
+    width: 37.5%;
+    border-left: 1px solid #B8B8B8;
+    padding-top: 5px;
+    cursor: pointer;
+    float: left;
+    text-align: center;
+}
+
+.content .page-content .form-group.gender-container .gender-button .icon-female.selected {
+    background-position: -28px -168px;
+}
+
+.content .page-content .form-group.gender-container .gender-button .icon-male.selected {
+    background-position: -28px -140px;
+}
+
+.content .page-content .form-group.language-container .rbx-select-group {
+    margin-right: 6px;
+}
+
+.content .page-content .form-group.birthday-container .rbx-select-group {
+    float: left;
+}
+
+.content .page-content .form-group.birthday-container .rbx-select-group.day,
+.content .page-content .form-group.birthday-container .rbx-select-group.month,
+.content .page-content .form-group.birthday-container .rbx-select-group.year {
+    width: 25%;
+}
+
+.content .page-content .form-group.birthday-container .rbx-select-group .rbx-select {
+    background-position-x: 89%;
+    background-position-x: calc(100% - 10px);
+    background-position-y: 5px;
+    border-radius: 0;
+    height: 36px;
+    border: 1px solid #B8B8B8;
+    border-width: 0 0 0 1px;
+    min-width: 80px;
+    width: 100%;
+    font-size: 18px;
+}
+
+.content .page-content .form-group.birthday-container .account-more-info {
+    display: block;
+    padding-top: 6px;
+}
+
+.content .page-content .form-group.account-security-settings-container .security-settings-text {
+    line-height: 1.5em;
+}
+
+.content .page-content .form-group .personal-field-describe {
+    height: 80px;
+}
+
+.content .page-content .acct-upgrade-membership {
+    margin-bottom: 12px;
+}
+
+.content .page-content .icon-moreinfo {
+    background-position: 0 -200px;
+    vertical-align: bottom;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+}
+
+.content .page-content .icon-moreinfo:hover {
+    background-position: -20px -200px;
+}
+
+.content .page-content select[disabled] {
+    color: #757575;
+    background-image: none;
+}
+
+.content .page-content select[disabled]:hover {
+    background-color: #fff;
+}
+
+.content .page-content .notifications-section,
+.content .page-content .privacy-section {
+    padding-top: 10px;
+}
+
+.content .page-content .notifications-section h4,
+.content .page-content .privacy-section h4 {
+    padding-top: 0;
+    display: inline-block;
+}
+
+.content .page-content .notifications-section .rbx-divider,
+.content .page-content .privacy-section .rbx-divider {
+    margin-top: 15px;
+    margin-bottom: 12px;
+}
+
+.content .page-content .privacy-section .contact-settings-locked {
+    margin-bottom: 12px;
+}
+
+@media(max-width:767px) {
+    .content .page-content .privacy-section .account-settings-label {
+        display: inline-block;
+    }
+}
+
+.content .page-content .privacy-section .rbx-select-group {
+    margin-top: 6px;
+}
+
+.content .page-content .privacy-section .tooltip-container {
+    float: right;
+}
+
+#settings-container .pin-toggle-button {
+    top: -45px;
+}
+
+#settings-container .pin-time-remaining {
+    top: -48px;
+}
+
+#settings-container .rbx-tab-content {
+    width: "794px";
+    width: calc(100% - 176px);
+    margin-left: 12px;
+    float: left;
+}
+
+#settings-container .left-navigation {
+    width: 160px;
+    float: left;
+    margin-top: 12px;
+}
+
+#settings-container .left-navigation .text-lead {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+.notifications-section .notifications-section-title {
+    font-weight: 400;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+.notifications-section .info-text {
+    padding-bottom: 10px;
+}
+
+.notifications-section .notification-settings-checkbox-container {
+    width: 50%;
+    display: inline-block;
+    padding-bottom: 3px;
+}
+
+@media(max-width:767px) {
+    .notifications-section .notification-settings-checkbox-container {
+        width: 100%;
+    }
+
+    .notifications-section .notification-settings-checkbox-container .notification-settings-checkbox.checkbox input[type="checkbox"]+label {
+        padding-top: 2px;
+    }
+}
+
+.notifications-section .notification-settings-checkbox-container .notification-settings-checkbox.checkbox {
+    padding-top: 5px;
+}
+
+.social-signon-section .social-connect-label {
+    padding-left: 70px;
+}
+
+.modal-content .change-username-important-info,
+.rbx-modal-dialog .change-username-important-info {
+    padding-top: 20px;
+    text-align: left;
+}
+
+.modal-content .icon-robux,
+.rbx-modal-dialog .icon-robux {
+    background-position: 0 -80px;
+    vertical-align: bottom;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+}
+
+.modal-content .modal-insufficient-funds .modal-body,
+.rbx-modal-dialog .modal-insufficient-funds .modal-body {
+    text-align: left;
+}
+
+.modal-content .modal-body .form-horizontal .form-group,
+.rbx-modal-dialog .modal-body .form-horizontal .form-group {
+    width: 100%;
+}
+
+.modal-content .modal-body .form-horizontal .form-group .form-control-label,
+.rbx-modal-dialog .modal-body .form-horizontal .form-group .form-control-label {
+    height: .9em;
+    display: block;
+    text-align: left;
+    margin: 0;
+    color: #E27676;
+    font-size: 14px;
+}
+
+.modal-content .modal-body .form-horizontal .form-group .modal-error-message,
+.modal-content .modal-body .form-horizontal .form-group .change-username-message,
+.rbx-modal-dialog .modal-body .form-horizontal .form-group .modal-error-message,
+.rbx-modal-dialog .modal-body .form-horizontal .form-group .change-username-message {
+    white-space: normal;
+}
+
+.two-step-warning {
+    border: 1px solid #F68802;
+    margin-bottom: 12px;
+    padding: 5px;
+}
+
+.two-step-warning .icon-warning-orange {
+    float: left;
+    margin: 10px 8px 0 0;
+}
+
+.two-step-warning .text-warning {
+    white-space: normal;
+}
+
+.update-phone .form-group {
+    width: 100%;
+}
+
+.input-group .phone-prefix {
+    padding-top: 10px;
+    width: 84px;
+}
+
+@media(max-width:767px) {
+    .input-group .phone-prefix {
+        padding-top: 5px;
+    }
+}
+
+.input-group .phone-input {
+    width: 276px;
+    width: calc(100% - 84px);
+}
+
+.modal-dialog .modal-content .modal-body .form-group.phone-number-group {
+    display: block;
+}
+
+@media(max-width:767px) {
+    .phone-prefix-list .rbx-select {
+        height: 32px;
+    }
+}
+
+.account-change-phone-info,
+.account-delete-phone-info,
+.current-phone {
+    margin-bottom: 12px;
+}
+
+.sms-img {
+    width: 100%;
+}
+
+.verification-code-input {
+    margin-top: 12px;
+}
+
+.resend-code,
+.remove-phone {
+    margin-top: 12px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.clear-phone {
+    position: absolute;
+    top: 12px;
+    right: 6px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+@media(max-width:767px) {
+    .clear-phone {
+        top: 9px;
+    }
+}
+
+@media(max-width:767px) {
+    .content .page-content .rbx-tabs-horizontal .nav-tabs {
+        display: none;
+    }
+
+    .content .page-content .tab-dropdown {
+        display: block;
+    }
+
+    .content .page-content .acct-upgrade-membership,
+    .content .page-content .acct-cancel-renewal {
+        width: 100%;
+    }
+
+    .pin-toggle-button {
+        top: -81px;
+    }
+
+    .pin-time-remaining {
+        top: -82px;
+    }
+
+    #settings-container .pin-toggle-button {
+        top: -81px;
+    }
+
+    #settings-container .pin-time-remaining {
+        top: -82px;
+    }
+
+    #settings-container .rbx-tab-content {
+        width: 100%;
+        margin-left: 0;
+        float: left;
+    }
+
+    #settings-container .left-navigation {
+        display: none;
+    }
+}
