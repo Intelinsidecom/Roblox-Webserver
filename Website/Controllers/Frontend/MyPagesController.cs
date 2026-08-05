@@ -283,6 +283,26 @@ namespace RobloxWebserver.Controllers
             return View(viewPath);
         }
 
+        private string ResolveApiDomain()
+        {
+            var configured = _configuration["Api:Domain"];
+            if (!string.IsNullOrWhiteSpace(configured))
+                return configured;
+            var scheme = Request.Scheme;
+            var host = Request.Host.Value;
+            return $"{scheme}://{host}";
+        }
+
+        private static string SocialVisibilityToWireName(short visibility) => visibility switch
+        {
+            6 => "AllUsers",
+            5 => "FriendsFollowingAndFollowers",
+            4 => "FriendsAndFollowing",
+            3 => "Friends",
+            0 => "NoOne",
+            _ => "AllUsers"
+        };
+
         [HttpGet("My/{*path}")]
         public IActionResult Route(string? path)
         {
