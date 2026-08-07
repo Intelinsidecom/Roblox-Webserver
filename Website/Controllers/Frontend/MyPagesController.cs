@@ -254,6 +254,19 @@ namespace RobloxWebserver.Controllers
             if (!recipientExists)
                 return Redirect("/my/messages");
 
+            bool canMessage;
+            try
+            {
+                canMessage = await UserQueries.CanMessageUserAsync(connStr, currentUserId, recipientId.Value);
+            }
+            catch
+            {
+                return Redirect("/my/messages");
+            }
+
+            if (!canMessage)
+                return Redirect("/my/messages");
+
             string recipientUserName = "";
             try
             {

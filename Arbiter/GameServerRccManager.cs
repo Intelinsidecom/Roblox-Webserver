@@ -28,7 +28,7 @@ namespace RCCArbiter
         public GameServerRccManager(IConfiguration config)
         {
             _config = config;
-            _cleanupTimer = new Timer(CleanupExpired, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
+            _cleanupTimer = new Timer(_ => Program.RunGuarded("GameServerRccManager.CleanupExpired", () => CleanupExpired(null)), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
         }
 
         /// <summary>

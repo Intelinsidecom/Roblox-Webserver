@@ -2,7 +2,7 @@
     ViewData["Title"] = "Roblox Webserver";
  }
 <!DOCTYPE html>
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style><script src="~/JS/lib/athena/athena.js" type="text/javascript"></script>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style type="text/css">@@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>
     <title>Roblox 2016 Webserver</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
 
@@ -12,20 +12,25 @@
 <meta property="og:image" content="~/images/fb70fd2b56107a0d43f2f98658885702.jpg">
 <link href="~/images/7aee41db80c1071f60377c3575a0ed87.ico" rel="icon">
 
-            <link href="~/css/signup/css.css" rel="stylesheet" type="text/css">
-
-<link rel="stylesheet" href="~/css/signup/LeanBaseStyle.css">
-<link rel="stylesheet" href="~/css/signup/Landing.css">
-<link rel="stylesheet" href="~/css/signup/SignupOrLoginContainer.css">
-<link rel="stylesheet" href="~/css/signup/SignupOrLogInIframe.css">
-<link rel="stylesheet" href="~/css/signup/SignupOrLogInLegacy.css">
+            @if (UseBundledAssets)
+            {
+                <link rel="stylesheet" href="~/css/Bundles/SignupBundle.css">
+            }
+            else
+            {
+                <link href="~/css/signup/css.css" rel="stylesheet" type="text/css">
+                <link rel="stylesheet" href="~/css/signup/LeanBaseStyle.css">
+                <link rel="stylesheet" href="~/css/signup/Landing.css">
+                <link rel="stylesheet" href="~/css/signup/SignupOrLoginContainer.css">
+                <link rel="stylesheet" href="~/css/signup/SignupOrLogInIframe.css">
+                <link rel="stylesheet" href="~/css/signup/SignupOrLogInLegacy.css">
+            }
 
     <!--[if lt IE 9]>
         <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
         <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <!-- IE 9 compatibility scripts -->
     <!--[if IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
@@ -37,8 +42,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
 <![endif]-->
 
-    <script type="text/javascript" src="~/JS/lib/jquery/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="~/JS/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/4b5682dbeb5b7dab3425ff8d3c5c9dd8.js"></script>
+    }
+    else
+    {
+        <script type="text/javascript" src="~/JS/lib/jquery/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="~/JS/lib/jquery/jquery-migrate-1.2.1.min.js"></script>
+    }
     
     <script type="text/javascript">
         if (typeof jQuery == 'undefined') {
@@ -60,24 +72,30 @@
         })();
     </script>
     
-    <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
-
-    <script type="text/javascript" src="~/JS/lib/beacon/beacon.js"></script>
-    <script type="text/javascript" src="~/JS/roblox.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
-    <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
-    <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
-    <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
-    <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
-    <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
-    <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
-    <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/8686747f204b08f8aab50b92ad97c14d.js"></script>
+    }
+    else
+    {
+        <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/iesupport/jquery.placeholder.js"></script>
+        <script type="text/javascript" src="~/JS/lib/beacon/beacon.js"></script>
+        <script type="text/javascript" src="~/JS/roblox.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/RobloxBaseInit.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
+        <script type="text/javascript" src="~/JS/utilities/deviceFeatureDetection.js"></script>
+        <script type="text/javascript" src="~/JS/utilities/lazyLoad.js"></script>
+        <script type="text/javascript" src="~/JS/utilities/performance.js"></script>
+        <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
+        <script type="text/javascript" src="~/JS/RobloxCookies.js"></script>
+        <script type="text/javascript" src="~/JS/RobloxEventManager.js"></script>
+        <script type="text/javascript" src="~/JS/RobloxEventStream.js"></script>
+    }
     
     <script type="text/javascript">
       window.Roblox = window.Roblox || {};
@@ -86,64 +104,67 @@
       }
     </script>
     
-    <script type="text/javascript" src="~/JS/Tracking/FormEvents.js"></script>
-    <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
-    <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
-    <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
-    <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
-    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
-    <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
-    <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
-    <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
-    
-    <script src="~/JS/Landing/RollerCoaster/RollerCoaster.js"></script>
-    
-    <script type="text/javascript" src="~/JS/SignupFormValidatorGeneric.js"></script>
-    <script type="text/javascript" src="~/JS/Login/SignupOrLogIn.js"></script>
-    <script type="text/javascript" src="~/JS/Login/SignupOrLoginContainer.js"></script>
-    <script type="text/javascript" src="~/JS/Login/Login.js"></script>
-    
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/formEvents.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/signupOrLogin.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formContext.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidation.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidationRedactInput.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/imagesService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/localStorageService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/numericCodeService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/performanceService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/realtimeService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/helpers.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
-    
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupOrLoginController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/loginController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/captchaController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/showSection.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validBirthday.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validPassword.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validPasswordConfirm.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validUsername.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/captchaService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/displayService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/loginService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/signupService.js"></script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/1636f1dea455d3b1fea8e3cdd8981ba0.js"></script>
+    }
+    else
+    {
+        <script type="text/javascript" src="~/JS/Tracking/FormEvents.js"></script>
+        <script type="text/javascript" src="~/JS/Events/PageHeartbeatEvent.js"></script>
+        <script type="text/javascript" src="~/JS/Events/UserInteractionsEvent.js"></script>
+        <script type="text/javascript" src="~/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+        <script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
+        <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
+        <script type="text/javascript" src="~/JS/DeveloperConsoleWarning.js"></script>
+        <script type="text/javascript" src="~/JS/JSErrorTracker.js"></script>
+        <script type="text/javascript" src="~/JS/angular/angular.js"></script>
+        <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
+        <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
+        <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
+        <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
+        <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
+        <script src="~/JS/Landing/RollerCoaster/RollerCoaster.js"></script>
+        <script type="text/javascript" src="~/JS/SignupFormValidatorGeneric.js"></script>
+        <script type="text/javascript" src="~/JS/Login/SignupOrLogIn.js"></script>
+        <script type="text/javascript" src="~/JS/Login/SignupOrLoginContainer.js"></script>
+        <script type="text/javascript" src="~/JS/Login/Login.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/formEvents/formEvents.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/signupOrLogin.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formContext.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formInteraction.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidation.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/formEvents/directives/formValidationRedactInput.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/imagesService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/localStorageService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/numericCodeService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/performanceService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/realtimeService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/helpers.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupOrLoginController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/signupController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/loginController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/controllers/captchaController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/showSection.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validBirthday.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validPassword.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validPasswordConfirm.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/directives/validUsername.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/captchaService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/displayService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/loginService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/common/signupOrLogin/services/signupService.js"></script>
+    }
 
     <title>Roblox 2016 Webserver</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">

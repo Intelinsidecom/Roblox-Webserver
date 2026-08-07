@@ -125,6 +125,7 @@ namespace Website.Controllers;
         var currentUserCanTrade = currentUserData?.GetValueOrDefault("canTrade") as bool? ?? false;
 
         var friendsCount = 0;
+        var profileFriends = new List<Dictionary<string, object?>>();
         if (!string.IsNullOrWhiteSpace(connStr) && id > 0)
         {
             try
@@ -132,6 +133,13 @@ namespace Website.Controllers;
                 friendsCount = await Users.UserQueries.GetFriendListTotalCountAsync(connStr, id, "AllFriends").ConfigureAwait(false);
             }
             catch { }
+            try
+            {
+                profileFriends = await UserQueries.GetFriendListAsync(connStr, id, currentUserId, 0, 9, "AllFriends").ConfigureAwait(false);
+            }
+            catch
+            {
+            }
         }
         var followersCount = profileData?.GetValueOrDefault("followersCount") as int? ?? 0;
         var followingsCount = profileData?.GetValueOrDefault("followingCount") as int? ?? 0;
@@ -206,6 +214,7 @@ namespace Website.Controllers;
         var isFollowing = false;
         var mayFollow = false;
         var canBeFollowed = false;
+        var canMessage = false;
 
         var isVieweeBlocked = false;
 
@@ -220,6 +229,7 @@ namespace Website.Controllers;
                 incomingFriendRequestPending = hasPending && isIncoming;
                 incomingFriendRequestId = hasPending && isIncoming ? requestId : 0;
                 isVieweeBlocked = await UserQueries.IsBlockedAsync(connStr, currentUserId, id).ConfigureAwait(false);
+                canMessage = await UserQueries.CanMessageUserAsync(connStr, currentUserId, id).ConfigureAwait(false);
             }
             catch
             {
@@ -237,6 +247,7 @@ namespace Website.Controllers;
         ViewBag.ProfileUserName = profileUserName;
         ViewBag.CurrentUserId = currentUserId.ToString();
         ViewBag.FriendsCount = friendsCount;
+        ViewBag.ProfileFriends = profileFriends;
         ViewBag.FollowersCount = followersCount;
         ViewBag.FollowingsCount = followingsCount;
         ViewBag.IsOwnProfile = isOwnProfile;
@@ -254,6 +265,7 @@ namespace Website.Controllers;
         ViewBag.IsFollowing = isFollowing;
         ViewBag.MayFollow = mayFollow;
         ViewBag.CanBeFollowed = canBeFollowed;
+        ViewBag.CurrentUserCanMessage = canMessage;
         ViewBag.ProfileVisibility = profileVisibility;
         ViewBag.ProfileDescription = profileDescription;
         ViewBag.ProfileSubscriptionType = profileSubType ?? "";

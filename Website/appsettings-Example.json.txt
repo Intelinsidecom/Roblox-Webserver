@@ -14,7 +14,8 @@
     "CookieDomain": ".freblx.xyz"
   },
   "Features": {
-    "EnableRequestLogging": true
+    "EnableRequestLogging": true,
+    "UseBundledAssets": true
   },
   "ConnectionStrings": {
     "Default": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root;Maximum Pool Size=25;Connection Idle Lifetime=60;Connection Pruning Interval=30"

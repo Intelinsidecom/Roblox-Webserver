@@ -46,7 +46,7 @@ namespace RCCArbiter
 
         public ReportCallbackManager()
         {
-            _cleanupTimer = new Timer(_ => CleanupExpiredTokens(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            _cleanupTimer = new Timer(_ => Program.RunGuarded("ReportCallbackManager.CleanupExpiredTokens", () => CleanupExpiredTokens()), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
         }
 
         /// <summary>
@@ -141,6 +141,13 @@ namespace RCCArbiter
         {
             Console.WriteLine("=== RCC Service Arbiter ===");
             Console.WriteLine();
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => LogCrash(e.ExceptionObject as Exception, "AppDomain.UnhandledException");
+            TaskScheduler.UnobservedTaskException += (sender, e) =>
+            {
+                LogCrash(e.Exception, "TaskScheduler.UnobservedTaskException");
+                e.SetObserved();
+            };
 
             _configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -1843,28 +1850,73 @@ namespace RCCArbiter
             app.Run();
         }
 
+        private const int MaxLuaDepth = 32;
+        private static readonly object _crashLogLock = new();
+        private static readonly string CrashLogPath = Path.Combine(Directory.GetCurrentDirectory(), "crash.log");
+
+        /// <summary>
+        /// Executes a background action (timer callbacks, fire-and-forget tasks) with a safety net so
+        /// an exception cannot crash the whole arbiter process.
+        /// </summary>
+        public static void RunGuarded(string what, Action action)
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[{what}] Unhandled exception: {ex.Message}");
+                LogCrash(ex, what);
+            }
+        }
+
+        private static void LogCrash(Exception? ex, string source)
+        {
+            try
+            {
+                lock (_crashLogLock)
+                {
+                    var line = $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss.fff}Z] [{source}] {ex?.GetType().FullName}: {ex?.Message}\n{ex?.StackTrace}";
+                    Console.WriteLine($"[CRASH] [{source}] {ex?.Message}");
+                    File.AppendAllText(CrashLogPath, line + Environment.NewLine);
+                }
+            }
+            catch
+            {
+            }
+        }
+
         static object[] FormatLuaValues(LuaValue[]? values)
         {
-            if (values == null || values.Length == 0)
+            return FormatLuaValues(values, 0);
+        }
+
+        static object[] FormatLuaValues(LuaValue[]? values, int depth)
+        {
+            if (values == null || values.Length == 0 || depth > MaxLuaDepth)
                 return Array.Empty<object>();
 
             var result = new object[values.Length];
             for (int i = 0; i < values.Length; i++)
             {
-                result[i] = FormatLuaValue(values[i]);
+                result[i] = FormatLuaValue(values[i], depth);
             }
             return result;
         }
 
-        static object FormatLuaValue(LuaValue value)
+        static object FormatLuaValue(LuaValue value, int depth)
         {
+            if (depth > MaxLuaDepth)
+                return new { type = "table", value = Array.Empty<object>() };
+
             return value.type switch
             {
                 LuaType.LUA_TNIL => new { type = "nil", value = (string?)null },
                 LuaType.LUA_TBOOLEAN => new { type = "boolean", value = value.value },
                 LuaType.LUA_TNUMBER => new { type = "number", value = value.value },
                 LuaType.LUA_TSTRING => new { type = "string", value = value.value },
-                LuaType.LUA_TTABLE => new { type = "table", value = FormatLuaValues(value.table) },
+                LuaType.LUA_TTABLE => new { type = "table", value = FormatLuaValues(value.table, depth + 1) },
                 _ => new { type = "unknown", value = (string?)null }
             };
         }
@@ -1874,37 +1926,45 @@ namespace RCCArbiter
         /// </summary>
         static Dictionary<string, object> ParseLuaTableToDictionary(LuaValue tableValue)
         {
+            return ParseLuaTableToDictionary(tableValue, 0);
+        }
+
+        static Dictionary<string, object> ParseLuaTableToDictionary(LuaValue tableValue, int depth)
+        {
             var dict = new Dictionary<string, object>();
-            
-            if (tableValue.type != LuaType.LUA_TTABLE || tableValue.table == null)
+
+            if (tableValue.type != LuaType.LUA_TTABLE || tableValue.table == null || depth > MaxLuaDepth)
                 return dict;
-            
+
             for (int i = 0; i < tableValue.table.Length - 1; i += 2)
             {
                 var key = tableValue.table[i];
                 var value = tableValue.table[i + 1];
-                
+
                 if (key.type == LuaType.LUA_TSTRING && !string.IsNullOrEmpty(key.value))
                 {
-                    dict[key.value] = ConvertLuaValueToObject(value);
+                    dict[key.value] = ConvertLuaValueToObject(value, depth);
                 }
             }
-            
+
             return dict;
         }
-        
+
         /// <summary>
         /// Converts a LuaValue to its corresponding C# object for dictionary storage
         /// </summary>
-        static object? ConvertLuaValueToObject(LuaValue value)
+        static object? ConvertLuaValueToObject(LuaValue value, int depth)
         {
+            if (depth > MaxLuaDepth)
+                return null;
+
             return value.type switch
             {
                 LuaType.LUA_TNIL => null,
                 LuaType.LUA_TBOOLEAN => bool.TryParse(value.value, out var b) ? b : value.value,
                 LuaType.LUA_TNUMBER => double.TryParse(value.value, out var n) ? n : value.value,
                 LuaType.LUA_TSTRING => value.value,
-                LuaType.LUA_TTABLE => ParseLuaTableToDictionary(value),
+                LuaType.LUA_TTABLE => ParseLuaTableToDictionary(value, depth + 1),
                 _ => value.value
             };
         }

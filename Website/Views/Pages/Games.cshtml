@@ -15,6 +15,12 @@
     </script>
     <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
     <link rel=canonical href=/games>
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="~/CSS/Bundles/Games.css">
+    }
+    else
+    {
     <link rel="stylesheet" href="~/CSS/2017/Games/LeanBaseStyle.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/SiteStyle.css">
@@ -25,13 +31,13 @@
     <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/Abp.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Legacy/Modal.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Fonts/SourceSansPro.css">
-
     <link rel="stylesheet" href="~/CSS/Pages/VotingPanel.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Games/GamesPage.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/PartialViews/CardItem.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Widgets/ContactUpsell.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Notifications/PushNotificationRegistration.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Notifications/NotificationStream.css">
+    }
 
     <style>
     
@@ -115,11 +121,16 @@ body, html {
         window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")
     </script>
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/a4c345722561231480047f816eca8d97.js"></script>
+    }
+    else
+    {
     <script src="~/js/history.js/jquery.history.js"></script>
     <script src="~/js/leancore/libs/json3.min.js"></script>
     <script src="~/js/roblox.js"></script>
     <script src="~/js/common/constants.js"></script>
-    <script src="~/js/leancore/RobloxHeaderInit.js"></script>
     <script src="~/js/jquery.cookie.js"></script>
     <script src="~/js/utilities/performance.js"></script>
     <script src="~/js/RobloxCookies.js"></script>
@@ -147,6 +158,7 @@ body, html {
     <script src="~/js/viewapp/widgets/emailAndPhoneUpsell/services/emailAndPhoneUpsellService.js"></script>
     <script src="~/js/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellController.js"></script>
     <script src="~/js/viewapp/widgets/emailAndPhoneUpsell/controllers/emailAndPhoneUpsellModalController.js"></script>
+    }
 
     <script>
         var Roblox = Roblox || {};
@@ -231,11 +243,6 @@ body, html {
             top.location = self.location.href;
         }
     </script>
-    <div class=alert-container><noscript>
-            <div>
-                <div class=alert-info role=alert>Please enable Javascript to use all the features on this site.</div>
-            </div>
-        </noscript></div>
     <div class=content>
                 <div id=ResponsiveWrapper class="games-responsive-wrapper hover-on-touch refactor" data-gamessearchonpage=true data-adsingamesearchresultsenabled=true data-loadgptadsafterpageload=false>
                     <div id=games-page-settings class=hidden data-gamessearchonpage=true data-adsingamesearchresultsenabled=true data-adshidden=false data-inapp=false data-defaultweeklyratings=true data-filtervaluetogameslistsidsuffixmapping=1,8,11,3,16 data-gamespagedefaulttoppaidweekly=true data-isuserloggedin=@(User.Identity.IsAuthenticated.ToString().ToLower()) data-adrefreshratemilliseconds=3000 data-minimumnumberofgamesforpersonalizedbylikedtoappear=1 data-devicetypeid=1 data-refreshadsingamespageenabled=true data-searchdefaultkeyword=Search data-incomingsearchquery="" data-zeroresults="No Search Results Found" data-pagetitle="Games - Roblox" data-usefakeresults=False data-suggestedcorrection="" data-suggestionkeyword="" data-suggestionreplacedkeyword="" data-isgamesthumbnailasyncenabled=false></div>
@@ -627,7 +634,7 @@ body, html {
                         
                     });
                 </script>
-    <div ng-modules="robloxApp, notificationStream, emailAndPhoneUpsell" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
+    <div ng-modules="robloxApp, notificationStream, emailAndPhoneUpsell, pageTemplateApp" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
                 'isPhone': library.isPhone, 
                 'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
         <div notification-content></div>
@@ -700,6 +707,12 @@ body, html {
             });
         });
     </script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/fc7322de55f13b769db1b39a090e6b37.js"></script>
+    }
+    else
+    {
     <script src="~/js/viewapp/app.js"></script>
     <script src="~/js/viewapp/common/services/robloxService.js"></script>
     <script src="~/js/viewapp/common/services/cacheService.js"></script>
@@ -779,7 +792,6 @@ body, html {
     <script src="~/js/leancore/iesupport/jquery.placeholder.js"></script>
     <script src="~/js/jquery.ba-postmessage.min.js"></script>
     <script src="~/js/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script src="~/js/leancore/Navigation.js"></script>
     <script src="~/js/Reference/widget.js"></script>
     <script src="~/js/CookieUpgrader.js"></script>
     <script src="~/js/Game/GamePlayEvents.js"></script>
@@ -823,7 +835,6 @@ body, html {
     <script src="~/js/ClientInstaller.js"></script>
     <script src="~/js/InstallationInstructions.js"></script>
     <script src="~/js/IEMetroInstructions.js"></script>
-    <!-- Notification Stream Bundle -->
     <script src="~/js/viewapp/widgets/notificationStream/notificationStream.js"></script>
     <script src="~/js/viewapp/widgets/notificationStream/constants/signalR.js"></script>
     <script src="~/js/viewapp/widgets/notificationStream/providers/layoutLibraryProvider.js"></script>
@@ -858,6 +869,7 @@ body, html {
     <script src="~/js/Games/Refactor/state.js"></script>
     <script src="~/js/Games/Refactor/ads.js"></script>
     <script src="~/js/VotingPanel.js"></script>
+    }
 
     <script>
         var requiredScripts = [

@@ -19,6 +19,7 @@
     <PackageReference Include="JWT" Version="11.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
+    <PackageReference Include="WebMarkupMin.AspNetCore8" Version="2.22.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 var Roblox = Roblox || {};
 Roblox.DevelopPage = function() {
     function y(r) {
-        !i && r.clickTargetID && (u = !0, r.clickTargetID === "catalog" || r.clickTargetID === h ? (t.hasClass("tab-active") || ($("div.tab-active").removeClass("tab-active"), t.addClass("tab-active"), n.addClass("tab-active")), Roblox.CatalogShared && Roblox.CatalogShared.handleURLChange(r)) : $("#" + r.clickTargetID).click(), u = !1)
+        !i && r.clickTargetID && (u = !0,             r.clickTargetID === "catalog" || r.clickTargetID === h ? (t.hasClass("tab-active") || ($("div.tab-active").removeClass("tab-active"), t.addClass("tab-active"), n.addClass("tab-active")), Roblox.CatalogShared && Roblox.CatalogShared.handleURLChange(r), syncTabVisibility()) : $("#" + r.clickTargetID).click(), u = !1)
     }
 
     function p(t) {
@@ -14,6 +14,23 @@ Roblox.DevelopPage = function() {
         s === f ? (w = "catalog", $("#LibraryTab #catalog").length == 0 ? (e = !0, Roblox.CatalogShared.LoadCatalogAjax(t.data("library-get-url"), null, n, !1, !0)) : r ? o += "?" + r : (h = $("#LibraryTabLink").data("query-params"), h && (o += "?" + h))) : (b || s === l) && (y = parseInt($("#assetTypeId").val()), p = $(b ? "#GroupCreationsTab" : "#MyCreationsTab"), y === a ? Roblox.BuildPage.ItemLoader.loadBadges(p, "") : y === v && Roblox.BuildPage.ItemLoader.loadGamePasses(p, 0)), u || (i = !0, o = o.indexOf("#") === -1 ? o : o.split("#")[1], History.pushState({
             clickTargetID: w
         }, document.title, o), i = !1)
+    }
+    function syncTabVisibility() {
+        var active = $("#DevelopTabs .tab-active").attr("id"),
+            panel;
+        switch (active) {
+            case "MyCreationsTabLink":
+                panel = $("#MyCreationsTab");
+                break;
+            case "GroupCreationsTabLink":
+                panel = $("#GroupCreationsTab");
+                break;
+            case "LibraryTabLink":
+                panel = $("#LibraryTab");
+                break;
+        }
+        $("#MyCreationsTab, #GroupCreationsTab, #LibraryTab").hide();
+        panel && panel.show();
     }
     var i = !1,
         u = !1,
@@ -29,7 +46,7 @@ Roblox.DevelopPage = function() {
             y(History.getState().data)
         });
         $("#DevelopTabs").on("tabsactivate", function() {
-            p($(this).find(".tab-active"))
+            p($(this).find(".tab-active")), syncTabVisibility()
         });
         n.on(Roblox.CatalogShared.CatalogLoadedViaAjaxEventName, null, null, Roblox.CatalogShared.handleCatalogLoadedViaAjaxEvent);
         $(".develop-experimental-label").click(function() {
@@ -42,6 +59,7 @@ Roblox.DevelopPage = function() {
                 allowHtmlContentInBody: !0,
                 xToCancel: !0
             })
-        })
+        });
+        syncTabVisibility();
     })
 }();

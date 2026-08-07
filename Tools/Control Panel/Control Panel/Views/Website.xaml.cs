@@ -400,6 +400,22 @@ namespace Control_Panel
             }
         }
 
+        private void FeedBroadcastButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var window = new Views.FeedBroadcastWindow
+                {
+                    Owner = Window.GetWindow(this)
+                };
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                ConsoleWindow.Instance?.WriteError($"Error opening feed broadcast window: {ex.Message}");
+            }
+        }
+
         private async void MaintenanceButton_Click(object sender, RoutedEventArgs e)
         {
             try

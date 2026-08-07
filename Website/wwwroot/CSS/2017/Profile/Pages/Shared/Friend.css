@@ -1,0 +1,76 @@
+/* ~/CSS/Pages/Shared/Friend.css */
+.form-inline {
+    position: static;
+}
+
+.modal-header .icon-close {
+    background-position: 0 -420px;
+    background-size: 40px auto;
+    width: 20px;
+    height: 20px;
+    vertical-align: top;
+}
+
+.friend-list {
+    max-height: 120px;
+    overflow: hidden;
+}
+
+.friend {
+    width: 11.11111%;
+    height: 120px;
+    position: relative;
+}
+
+.friend .avatar-container {
+    margin: 3px auto;
+}
+
+.friend .friend-link {
+    display: block;
+    position: relative;
+    margin: 0 auto;
+}
+
+.friend .friend-name {
+    display: block;
+    margin: 3px 0 0;
+    text-align: center;
+}
+
+.friend .friend-name:hover {
+    color: #00A2FF;
+}
+
+@media(max-width:991px) {
+    .friend {
+        width: 14.28571%;
+    }
+}
+
+@media(max-width:767px) {
+    .friend {
+        width: 20%;
+    }
+
+    .friend .avatar-container {
+        width: 84px;
+        height: 84px;
+    }
+
+    .friend .avatar-container .avatar-status {
+        right: 5px;
+        bottom: 4px;
+    }
+
+    .friend .avatar-container .avatar-card-fullbody {
+        width: 84px;
+        height: 84px;
+    }
+}
+
+@media(max-width:543px) {
+    .friend {
+        width: 33.33333%;
+    }
+}

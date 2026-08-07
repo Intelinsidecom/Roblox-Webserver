@@ -39,7 +39,7 @@ namespace RCCArbiter
                 idleMinutes = 10;
             }
             _idleTimeout = TimeSpan.FromMinutes(idleMinutes);
-            _sweeper = new Timer(SweepIdle, null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            _sweeper = new Timer(_ => Program.RunGuarded("RenderingRccManager.SweepIdle", () => SweepIdle(null)), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
         }
 
         public (string url, IDisposable lease)? AcquireIfTriggered(string routeOrFunction)

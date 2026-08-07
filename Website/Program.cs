@@ -14,6 +14,7 @@ using Website.Services;
 using Website.Middleware;
 using Games;
 using Website.Hubs;
+using WebMarkupMin.AspNetCore8;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,15 @@ builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<Assets.AssetService>();
 builder.Services.AddHttpClient();
 builder.Services.AddWebOptimizerPipeline();
+builder.Services.AddWebMarkupMin(options =>
+{
+    options.AllowMinificationInDevelopmentEnvironment = true;
+    options.AllowCompressionInDevelopmentEnvironment = true;
+})
+    .AddHtmlMinification(options =>
+    {
+        options.MinificationSettings.RemoveHtmlComments = false;
+    });
 builder.Services.AddSignalR();
 
 // Add Games services
@@ -179,6 +189,8 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.UseMiddleware<LockdownMiddleware>();
+
+app.UseWebMarkupMin();
 
 app.UseRouting();
 

@@ -130,6 +130,43 @@
                         </Grid>
                     </Border>
                     
+                    <Border Background="{DynamicResource Background}"
+                            BorderBrush="{DynamicResource SubtleText}"
+                            BorderThickness="1"
+                            Padding="20"
+                            Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0"
+                                           Text="Feed Broadcast"
+                                           Style="{StaticResource TitleText}"
+                                           Foreground="{DynamicResource Foreground}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Button Grid.Column="1"
+                                        Name="FeedBroadcastButton"
+                                        Width="80"
+                                        Content="Open"
+                                        Style="{StaticResource ModernButton}"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,10,0"
+                                        Click="FeedBroadcastButton_Click"/>
+                            </Grid>
+                            <TextBlock Grid.Row="1"
+                                       Text="Use this to broadcast a feed message to all users from the configured owner user."
+                                       Style="{StaticResource DescriptionText}"
+                                       Foreground="{DynamicResource SubtleText}"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+                    </Border>
                     <Border Background="{DynamicResource Background}" 
                             BorderBrush="{DynamicResource SubtleText}"
                             BorderThickness="1"

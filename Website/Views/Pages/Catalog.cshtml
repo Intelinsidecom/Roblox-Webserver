@@ -6,6 +6,12 @@
 	Catalog - ROBLOX
 </title>
 
+@if (UseBundledAssets)
+{
+    <link rel="stylesheet" href="~/CSS/Bundles/Catalog.css">
+}
+else
+{
 <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
 <link rel="stylesheet" href="/CSS/Pages/Catalog.css">
 <link rel="stylesheet" href="/CSS/Pages/Notifications/Notifications.css">
@@ -14,27 +20,29 @@
 <link rel="stylesheet" href="/CSS/Legacy/Modal.css">
 <link rel="stylesheet" href="/CSS/Pages/Shared/ShopInterstitialModal.css">
 <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
+}
 
+@if (UseBundledAssets)
+{
+    <script type="text/javascript" src="~/JS/Bundles/8fc0f5ec2f1f1b87bb9e1883cac445f9.js"></script>
+}
+else
+{
 <script type="text/javascript" src="/JS/roblox.js"></script>
-
 <script type="text/javascript" src="/JS/EventTracker.js"></script>
 <script type="text/javascript" src="/JS/ClientInstaller.js"></script>
 <script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
 <script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
-
 <script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
 <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
 <script type="text/javascript" src="/JS/TwoStepVerificationModal.js"></script>
-
 <script type="text/javascript" src="/JS/modules/Widgets/ItemImage.js"></script>
-
 <script type="text/javascript" src="/JS/PageStyleNotifications.js"></script>
 <script type="text/javascript" src="/JS/Events/CatalogImpression.js"></script>
 <script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
 <script type="text/javascript" src="/JS/history.js/jquery.history.js"></script>
 <script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
 <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
-
 <script type="text/javascript" src="/JS/roblox.js"></script>
 <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
 <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
@@ -88,14 +96,11 @@
 <script type="text/javascript" src="/JS/IframeEventListener.js"></script>
 <script type="text/javascript" src="/JS/ShopInterstitialModal.js"></script>
 <script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
-
 <script type="text/javascript" src="/JS/modules/Pages/CatalogShared.js"></script>
-
 <script type="text/javascript" src="/JS/modules/Widgets/HierarchicalDropdown.js"></script>
-
 <script type="text/javascript" src="/JS/athena.js"></script>
-
 <script type="text/javascript" src="/JS/modules/Pages/Catalog.js"></script>
+}
 
 
         <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -146,6 +146,13 @@
 }
 </style>
 
+
+@if (UseBundledAssets)
+{
+    <script type="text/javascript" src="~/JS/Bundles/307f6492aa390fd13de172b2d8a00b13.js"></script>
+}
+else
+{
 <script type="text/javascript" src="~/JS/Microsoft/MicrosoftAjax.js"></script>
 <script type="text/javascript" src="~/JS/angular/angular-elastic.js"></script>
 <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
@@ -182,9 +189,7 @@
 
 <script type="text/javascript" src="~/JS/dist/js/translationResourceProvider.bundle.min.js"></script>
 
-    <script>
-        angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
-    </script>
+
 
 <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
 <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
@@ -333,21 +338,34 @@
 
 <script type="text/javascript" src="~/JS/dist/js/legacyStyleGuide.bundle.min.js"></script>
 
-<script>
-    angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
-    angular.module("ui.bootstrap.popover", ["ui.bootstrap"]);
-</script>
+
 
 <script type="text/javascript" src="~/JS/dist/js/chat.bundle.min.js"></script>
 
 <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Feature_ChatResources_en_us_standard.js"></script>
 
+
+<script src=~/JS/Develop-Page.js></script>
+}
+    <script>
+        angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
+    </script>
+
+    <script>
+    angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
+    angular.module("ui.bootstrap.popover", ["ui.bootstrap"]);
+</script>
+
+@if (UseBundledAssets)
+{
+    <link rel="stylesheet" href="~/CSS/Bundles/Develop.css">
+}
+else
+{
 <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
 <link rel="stylesheet" href="~/CSS/YUIReset.css">
 <link rel="stylesheet" href="~/CSS/LeanBaseStyle.css">
 <link rel="stylesheet" href="~/CSS/RBXCommon.css">
-<link rel="stylesheet" href="~/CSS/SeiteStyle.css">
-<link rel="stylesheet" data-bundlename="LegacyStyleGuide" href="~/CSS/dist/css/ldegacyStyleGuide.css">
 <link rel="stylesheet" data-bundlename="NotificationStream" href="~/CSS/dist/css/notificationStream.css">
 <link rel="stylesheet" data-bundlename="Chat" href="~/CSS/dist/css/chat.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/Develop.css">
@@ -355,6 +373,7 @@
 <link rel="stylesheet" href="~/CSS/Pages/Build/StudioWidget.css">
 <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
 <link rel="stylesheet" href="~/CSS/Pages/Catalog.css">
+}
 
 }
 
@@ -433,7 +452,7 @@
     <div id=image-retry-data data-image-retry-max-times=10 data-image-retry-timer=1500 data-ga-logging-percent=10></div>
     <div id=http-retry-data data-http-retry-max-timeout=0 data-http-retry-base-timeout=0 data-http-retry-max-times=1></div>
     <div ng-modules=baseTemplateApp>
-        <script src=~/JS/Develop-Page.js></script>
+
     </div>
     <div ng-modules=pageTemplateApp>
         <script>

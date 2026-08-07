@@ -68,10 +68,10 @@ namespace RCCArbiter
             _rccManager = new GameServerRccManager(config);
             _activeServers = new();
             _serversLock = new();
-            _cleanupTimer = new Timer(state => CleanupExpiredServers(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
-            _inactivityTimer = new Timer(state => CleanupInactiveServers(), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
-            _zeroPlayerKillTimer = new Timer(state => CleanupZeroPlayerServers(), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
-            _rccHealthTimer = new Timer(state => CheckRccHealth(), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            _cleanupTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CleanupExpiredServers", () => CleanupExpiredServers()), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            _inactivityTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CleanupInactiveServers", () => CleanupInactiveServers()), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            _zeroPlayerKillTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CleanupZeroPlayerServers", () => CleanupZeroPlayerServers()), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
+            _rccHealthTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CheckRccHealth", () => CheckRccHealth()), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
         }
 
         public GameServerRccManager GetRccManager() => _rccManager;
@@ -251,7 +251,7 @@ namespace RCCArbiter
                         _ = Task.Run(async () =>
                         {
                             await Task.Delay(_rccKeepAliveDuration);
-                            _rccManager.ReleaseGameServer(gameId);
+                            Program.RunGuarded("GameServerManager.ReleaseGameServer", () => _rccManager.ReleaseGameServer(gameId));
                         });
                     }
                     else
@@ -515,7 +515,7 @@ namespace RCCArbiter
                 
                 if (server.PlayerCount == 0 && server.AutoKillEnabled && server.Status != "killing_0players" && server.HasReceivedReport && serverAge.TotalSeconds >= 20 && canKillOnZeroPlayers)
                 {
-                    _ = Task.Run(() => KillZeroPlayerServer(gameId));
+                    _ = Task.Run(() => Program.RunGuarded("GameServerManager.KillZeroPlayerServer", () => KillZeroPlayerServer(gameId)));
                 }
             }
         }
@@ -545,7 +545,14 @@ namespace RCCArbiter
 
             if (shouldStop)
             {
-                StopGameServer(gameId);
+                try
+                {
+                    StopGameServer(gameId);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[RCC Health] Error stopping game server {gameId}: {ex.Message}");
+                }
             }
         }
 
@@ -691,7 +698,14 @@ namespace RCCArbiter
                 }
                 catch
                 {
-                    RecordFailedReport(gameId);
+                    try
+                    {
+                        RecordFailedReport(gameId);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[RCC Health] Error recording failed report for game server {gameId}: {ex.Message}");
+                    }
                 }
             }
         }
@@ -756,21 +770,28 @@ namespace RCCArbiter
             return await File.ReadAllTextAsync(scriptPath);
         }
 
+        private const int MaxLuaDepth = 32;
+
         private Dictionary<string, object> ParseLuaResults(LuaValue[] results)
+        {
+            return ParseLuaResults(results, 0);
+        }
+
+        private Dictionary<string, object> ParseLuaResults(LuaValue[] results, int depth)
         {
             var dict = new Dictionary<string, object>();
 
             if (results != null && results.Length > 0 && results[0].type == LuaType.LUA_TTABLE)
             {
-                ParseLuaTable(results[0], dict);
+                ParseLuaTable(results[0], dict, depth);
             }
 
             return dict;
         }
 
-        private void ParseLuaTable(LuaValue table, Dictionary<string, object> dict)
+        private void ParseLuaTable(LuaValue table, Dictionary<string, object> dict, int depth)
         {
-            if (table.table == null) return;
+            if (table.table == null || depth > MaxLuaDepth) return;
 
             for (int i = 0; i < table.table.Length; i += 2)
             {
@@ -781,14 +802,17 @@ namespace RCCArbiter
 
                     if (key.type == LuaType.LUA_TSTRING && !string.IsNullOrWhiteSpace(key.value))
                     {
-                        dict[key.value!] = ConvertLuaValue(value);
+                        dict[key.value!] = ConvertLuaValue(value, depth);
                     }
                 }
             }
         }
 
-        private object ConvertLuaValue(LuaValue value)
+        private object ConvertLuaValue(LuaValue value, int depth)
         {
+            if (depth > MaxLuaDepth)
+                return new Dictionary<string, object>();
+
             switch (value.type)
             {
                 case LuaType.LUA_TNIL:
@@ -801,7 +825,7 @@ namespace RCCArbiter
                     return value.value ?? string.Empty;
                 case LuaType.LUA_TTABLE:
                     var dict = new Dictionary<string, object>();
-                    ParseLuaTable(value, dict);
+                    ParseLuaTable(value, dict, depth + 1);
                     return dict;
                 default:
                     return value.value ?? string.Empty;

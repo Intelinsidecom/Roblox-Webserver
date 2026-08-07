@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
     <link rel="stylesheet" href="/CSS/Legacy/Navigation.css">
 
-    <link rel="stylesheet" href="/CSS/Pages/Shared/Friend.css">
+    <link rel="stylesheet" href="/CSS/2017/Profile/Pages/Shared/Friend.css">
     <link rel="stylesheet" href="/CSS/Pages/Users/Profile/Profile.css">
     <link rel="stylesheet" href="/CSS/Pages/Users/Profile/ProfileHeader.css">
     <link rel="stylesheet" href="/CSS/Pages/Users/Profile/ProfileSlideshows.css">
@@ -187,7 +187,7 @@
                                     unFollowUrl: "/api/user/unfollow",
                                     messageUrl: "/messages/compose?recipientId=@ViewBag.ProfileUserId",
                                     canPm: true,
-                                    canMessage: true,
+                                    canMessage: @(ViewBag.CurrentUserCanMessage ? "true" : "false"),
                                     canChat: @(ViewBag.ProfileCanChat ? "true" : "false"),
                                     canTrade: @(ViewBag.ProfileCanTrade && ViewBag.CurrentUserCanTrade ? "true" : "false"),
                                     subscriptionType: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ProfileSubscriptionType)),
@@ -523,24 +523,18 @@
                                     </div>
                                     <div class=section-content>
                                         <ul class="hlist friend-list">
-                                            <li id=friend_181388287 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/181388287/profile class="avatar avatar-card-fullbody friend-link" title=selintjes54> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=181388287" data-orig-retry-url="/avatar-thumbnail/json?userId=181388287&amp;width=100&amp;height=100&amp;format=Png"><img alt=selintjes54 class=avatar-card-image src=https://t0.rbxcdn.com/a96757ab1404e5c215211ce93e93c771></span> <span class="text-overflow friend-name">selintjes54</span> </a></div>
-                                            <li id=friend_226099751 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/226099751/profile class="avatar avatar-card-fullbody friend-link" title=Gehaktbal2008> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=226099751" data-orig-retry-url="/avatar-thumbnail/json?userId=226099751&amp;width=100&amp;height=100&amp;format=Png"><img alt=Gehaktbal2008 class=avatar-card-image src=https://t6.rbxcdn.com/4fa85acb04eae27d75409b70d773884b></span> <span class="text-overflow friend-name">Gehaktbal2008</span> </a></div>
-                                            <li id=friend_192653536 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/192653536/profile class="avatar avatar-card-fullbody friend-link" title=kostas41365> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=192653536" data-orig-retry-url="/avatar-thumbnail/json?userId=192653536&amp;width=100&amp;height=100&amp;format=Png"><img alt=kostas41365 class=avatar-card-image src=https://t5.rbxcdn.com/c46c6461f98262b1a9b536bff2625895></span> <span class="text-overflow friend-name">kostas41365</span> </a></div>
-                                            <li id=friend_343836964 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/343836964/profile class="avatar avatar-card-fullbody friend-link" title=jayroboy12> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=343836964" data-orig-retry-url="/avatar-thumbnail/json?userId=343836964&amp;width=100&amp;height=100&amp;format=Png"><img alt=jayroboy12 class=avatar-card-image src=https://t2.rbxcdn.com/65e4ff33ae113102b8ec41ac6e1b9f87></span> <span class="text-overflow friend-name">jayroboy12</span> </a></div>
-                                            <li id=friend_309203542 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/309203542/profile class="avatar avatar-card-fullbody friend-link" title=Markzatv5648> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=309203542" data-orig-retry-url="/avatar-thumbnail/json?userId=309203542&amp;width=100&amp;height=100&amp;format=Png"><img alt=Markzatv5648 class=avatar-card-image src=https://t3.rbxcdn.com/014ef823e98d25733539ded7b276930e></span> <span class="text-overflow friend-name">Markzatv5648</span> </a></div>
-                                            <li id=friend_179177718 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/179177718/profile class="avatar avatar-card-fullbody friend-link" title=djblue08> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=179177718" data-orig-retry-url="/avatar-thumbnail/json?userId=179177718&amp;width=100&amp;height=100&amp;format=Png"><img alt=djblue08 class=avatar-card-image src=https://t3.rbxcdn.com/2ea74e680f34cf85ba2f2770c3735456></span> <span class="text-overflow friend-name">djblue08</span> </a></div>
-                                            <li id=friend_340196270 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/340196270/profile class="avatar avatar-card-fullbody friend-link" title=dannyveldehuis> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=340196270" data-orig-retry-url="/avatar-thumbnail/json?userId=340196270&amp;width=100&amp;height=100&amp;format=Png"><img alt=dannyveldehuis class=avatar-card-image src=https://t7.rbxcdn.com/3fcc1cc70a5b1338d7c89089495d14cf></span> <span class="text-overflow friend-name">dannyveldehuis</span> </a></div>
-                                            <li id=friend_334606266 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/334606266/profile class="avatar avatar-card-fullbody friend-link" title=lovecatsall> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=334606266" data-orig-retry-url="/avatar-thumbnail/json?userId=334606266&amp;width=100&amp;height=100&amp;format=Png"><img alt=lovecatsall class=avatar-card-image src=https://t7.rbxcdn.com/d9d1e4ad45b30b65aa8d1c2106dd4cc2></span> <span class="text-overflow friend-name">lovecatsall</span> </a></div>
-                                            <li id=friend_111284087 class="list-item friend">
-                                                <div class=avatar-container><a href=/users/111284087/profile class="avatar avatar-card-fullbody friend-link" title=foreverlovingpurple> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=111284087" data-orig-retry-url="/avatar-thumbnail/json?userId=111284087&amp;width=100&amp;height=100&amp;format=Png"><img alt=foreverlovingpurple class=avatar-card-image src=https://t0.rbxcdn.com/6be8b077dcb1d9a688ae344f75ae5437></span> <span class="text-overflow friend-name">foreverlovingpurple</span> </a></div>
+                                            @{
+                                                var profileFriends = ViewBag.ProfileFriends as List<Dictionary<string, object?>> ?? new List<Dictionary<string, object?>>();
+                                            }
+                                            @foreach (var friend in profileFriends)
+                                            {
+                                                var fId = friend.GetValueOrDefault("UserId")?.ToString() ?? "0";
+                                                var fName = System.Net.WebUtility.HtmlEncode(friend.GetValueOrDefault("Username")?.ToString() ?? "");
+                                                var fThumb = System.Net.WebUtility.HtmlEncode(friend.GetValueOrDefault("AvatarUri")?.ToString() ?? "");
+                                                <li id="friend_@fId" class="list-item friend">
+                                                    <div class=avatar-container><a href=/users/@fId/profile class="avatar avatar-card-fullbody friend-link" title="@fName"> <span class="avatar-card-link friend-avatar" data-3d-url="/avatar-thumbnail-3d/json?userId=@fId" data-orig-retry-url="/avatar-thumbnail/json?userId=@fId&amp;width=100&amp;height=100&amp;format=Png"><img alt="@fName" class=avatar-card-image src="@fThumb"></span> <span class="text-overflow friend-name">@fName</span> </a></div>
+                                                </li>
+                                            }
                                         </ul>
                                     </div>
                                 </div>

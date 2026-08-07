@@ -5,16 +5,21 @@
     <meta http-equiv="Content-Language" content="en-us">
     <title>Login</title>
     @section Head {
-        <script type="text/javascript" src="~/JS/lib/gigya/gigya.js">
         {
             bypassCookiePolicy: 'never'
         }
-        </script>
     }
 
+@if (UseBundledAssets)
+{
+    <link rel="stylesheet" href="~/CSS/Bundles/Login.css">
+}
+else
+{
 <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
 <link rel="stylesheet" href="~/CSS/Pages/IDE/Login.css">
 <link rel="stylesheet" href="~/CSS/Pages/Login/Login.css">
+}
 
 
     <script type="text/javascript">

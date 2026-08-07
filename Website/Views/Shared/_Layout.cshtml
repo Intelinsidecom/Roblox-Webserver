@@ -70,14 +70,27 @@
         {
             <link rel="stylesheet" href="~/CSS/Base/CSS/Roblox.css">
         }
+            @if (UseBundledAssets)
+            {
+                <link rel="stylesheet" href="~/CSS/Bundles/LayoutBaseA.css">
+            }
+            else
+            {
             <link rel="stylesheet" href="~/CSS/RBXCommon.css">
             <link rel="stylesheet" href="~/CSS/Base/CSS/Footer.css">
             <link rel="stylesheet" href="~/CSS/Base/CSS/Header.css">
+            }
             <!-- It seems that /games/id/name loads something and gets style guide loaded again too -->
             @if (ViewContext.HttpContext.Request.Path.Value.Contains("/catalog"))
             {
                 <link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
             }
+            @if (UseBundledAssets)
+            {
+                <link rel="stylesheet" href="~/CSS/Bundles/LayoutBaseB.css">
+            }
+            else
+            {
             <link rel="stylesheet" href="~/CSS/Base/CSS/tipsy.css">
             <link rel="stylesheet" href="~/CSS/Fonts/SourceSansPro-Google.css">
             <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
@@ -87,6 +100,7 @@
             <link rel="stylesheet" href="~/CSS/signup/SignupOrLogInLegacy.css">
             <link rel="stylesheet" href="/CSS/Legacy/iFrameLogin.css">
             <link rel="stylesheet" href="~/CSS/Pages/Notifications/NotificationStream.css">
+            }
         }
 
     <script type='text/javascript'>
@@ -133,38 +147,46 @@
         Roblox.config.paths['Widgets.PlaceImage'] = '/JS/modules/Widgets/PlaceImage.js';
     </script>
 
-        <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
-        <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-        <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
-        <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
-        <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
-        <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
-        <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
-        <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
-        <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
-        <script type="text/javascript" src="~/JS/templateApp.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
-        <script type="text/javascript" src="~/JS/viewapp/common/filters/translate.js"></script>
-        <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/DropdownMenu.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/GroupImage.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/ItemImage.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
-        <script type="text/javascript" src="~/JS/modules/Widgets/SurveyModal.js"></script>
-        <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
+        @if (UseBundledAssets)
+        {
+            <script type="text/javascript" src="~/JS/Bundles/c797d09ce82b25db64249b48493c0351.js"></script>
+        }
+        else
+        {
+            <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+            <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+            <script type="text/javascript" src="~/JS/jquery.cookie.js"></script>
+            <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
+            <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
+            <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
+            <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
+            <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
+            <script type="text/javascript" src="~/JS/angular/ui-bootstrap-custom-tpls-2.5.0.min.js"></script>
+            <script type="text/javascript" src="~/JS/templateApp.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/urlService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/userService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/eventStreamService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/hybridService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/services/chatDispatchService.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/filters.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/app.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/filters/translate.js"></script>
+            <script type="text/javascript" src="~/JS/Reference/widget.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Pages/Catalog.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Pages/CatalogShared.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/AvatarImage.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/DropdownMenu.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/GroupImage.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/HierarchicalDropdown.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/ItemImage.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/PlaceImage.js"></script>
+            <script type="text/javascript" src="~/JS/modules/Widgets/SurveyModal.js"></script>
+            <script type="text/javascript" src="/JS/iFrameLogin.js"></script>
+            <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
+        }
         <script type="text/javascript">
           window.Roblox = window.Roblox || {};
           Roblox.Lang = Roblox.Lang || {};
@@ -189,7 +211,7 @@
             };
           };
         </script>
-        <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
+        
         <script type="text/javascript">
 
 
@@ -215,7 +237,23 @@
             Roblox.EventStream.Init("/images/signup/e.png", "/images/signup/e.png", "/pe?t=studio", "/pe?t=diagnostic");
           }
         </script>
-        <script type="text/javascript" src="~/JS/lib/signalr/signalr.min.js"></script>
+        @if (UseBundledAssets)
+        {
+            <script type="text/javascript" src="~/JS/Bundles/dca07888f1dc32d149edc0c3f459f7a2.js"></script>
+        }
+        else
+        {
+            <script type="text/javascript" src="~/JS/lib/signalr/signalr.min.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/signalRConnectionWrapper.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/signalRSource.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/hybridSource.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/crossTabReplicatedSource.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/client.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/factory.js"></script>
+            <script type="text/javascript" src="~/JS/Notifications/RealTime/stateTracker.js"></script>
+            <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Notifications_NotificationStreamResources_en_us_standard.js"></script>
+        }
+        
         <script type="text/javascript">
           window.Roblox = window.Roblox || {};
           var _currentUserId = @(User.Identity?.IsAuthenticated == true ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0" : "0");
@@ -233,15 +271,7 @@
             IsLocalStorageInRealTimeEnabled: true
           };
         </script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/signalRConnectionWrapper.js"></script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/signalRSource.js"></script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/hybridSource.js"></script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/Sources/crossTabReplicatedSource.js"></script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/client.js"></script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/factory.js"></script>
-        <script type="text/javascript" src="~/JS/Notifications/RealTime/stateTracker.js"></script>
-        <script type="text/javascript" src="~/JS/Generated/js/Roblox_TranslationResources_Notifications_NotificationStreamResources_en_us_standard.js"></script>
-        
+
         @* <script type="text/javascript" src="~/JS/dist/js/notificationStream.bundle.min.js"></script> *@
     }
 
@@ -365,7 +395,7 @@
             catch { }
         }
     }
-    @if (!string.IsNullOrEmpty(globalMessage) && !(isApp && User.Identity.IsAuthenticated))
+    @if (!string.IsNullOrEmpty(globalMessage) && (User.Identity.IsAuthenticated))
     {
         var parsedMessage = ParseGlobalMessage(globalMessage);
         <div class="alert-container" style="margin-top: 40px; z-index: 1; position: relative;">
@@ -537,8 +567,39 @@
         <partial name="_Footer" />
     }
 
-    <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
-    <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/45e846e0f00dfd88d6297a5eca6dafc1.js"></script>
+    }
+    else
+    {
+        <script type="text/javascript" src="~/JS/leancore/Navigation.js"></script>
+        <script type="text/javascript" src="~/JS/leancore/RobloxHeaderInit.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/layoutLibraryService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/constants/signalR.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
+        <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
+        <script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
+        <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
+        <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
+        <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
+        <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
+    }
 
    <!-- <div class="notification-stream-base gotham-font" notification-stream-base ng-modules="notificationStream, notificationStreamHtmlTemplate"></div> -->
 

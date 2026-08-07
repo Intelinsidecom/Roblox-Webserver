@@ -194,6 +194,59 @@ namespace Users
                 c => c.Parameters.AddWithValue("v", value), ct);
         }
 
+        /// <summary>
+        /// Determines whether <paramref name="senderId"/> may send a private message to
+        /// <paramref name="recipientId"/> based on the recipient's <c>private_message_privacy</c>
+        /// setting. "All" always allows, "NoOne" always denies; the friend/follow levels allow
+        /// friends plus anyone the recipient follows ("Following") and, in addition, anyone who
+        /// follows the recipient ("Followers").
+        /// </summary>
+        public static async Task<bool> CanMessageUserAsync(
+            string connectionString,
+            long senderId,
+            long recipientId,
+            CancellationToken ct = default)
+        {
+            Guard(connectionString, senderId);
+            if (senderId <= 0 || recipientId <= 0 || senderId == recipientId)
+                return false;
+
+            const string sql = @"
+                select
+                    private_message_privacy,
+                    exists(select 1 from user_friends
+                            where user_id = @sender and friend_user_id = @recipient) as are_friends,
+                    @sender = any(following) as recipient_follows_sender,
+                    @sender = any(followers) as sender_follows_recipient
+                from users
+                where user_id = @recipient";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(ct).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("sender", senderId);
+            cmd.Parameters.AddWithValue("recipient", recipientId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(ct).ConfigureAwait(false);
+            if (!await reader.ReadAsync(ct).ConfigureAwait(false))
+                return false;
+
+            var privacy = NonNull(reader.IsDBNull(0) ? null : reader.GetString(0), DefaultMessagingPrivacy);
+            if (privacy == "All") return true;
+            if (privacy == "NoOne") return false;
+
+            if (reader.GetBoolean(1)) // friends
+                return true;
+
+            return privacy switch
+            {
+                "Friends" => false,
+                "Following" => reader.GetBoolean(2), // Friends and Users I Follow
+                "Followers" => reader.GetBoolean(2) || reader.GetBoolean(3), // Friends, Users I Follow, and Followers
+                _ => true // unknown values default permissive
+            };
+        }
+
         public static async Task<bool> GetAccountRestrictionsEnabledAsync(string connectionString, long userId, CancellationToken ct = default)
         {
             Guard(connectionString, userId);

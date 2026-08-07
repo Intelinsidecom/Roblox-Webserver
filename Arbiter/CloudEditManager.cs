@@ -38,7 +38,7 @@ namespace RCCArbiter
             _configuration = configuration;
             _rccManager = rccManager;
             _activeSessions = new();
-            _healthTimer = new Timer(CheckHealth, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+            _healthTimer = new Timer(_ => Program.RunGuarded("CloudEditManager.CheckHealth", () => CheckHealth(null)), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
         }
 
         public async Task<string> StartCloudEditServerAsync(int placeId, int port, int maxPlayers, string baseUrl, int universeId = 0)

@@ -94,7 +94,7 @@ namespace Website.Controllers
 
             var debugUserIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            bool isPlaceType = asset != null && (asset.IsPlace || asset.AssetTypeId == 9 || asset.AssetTypeId == 3);
+            bool isPlaceType = asset != null && (asset.IsPlace || asset.AssetTypeId == 9);
             if (!bypassAccessCheck && isPlaceType && !asset.IsCopyingAllowed)
             {
                 long? currentUserId = null;

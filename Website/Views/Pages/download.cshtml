@@ -9,8 +9,13 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+@if (UseBundledAssets)
+{
+    <link rel="stylesheet" href="~/CSS/Bundles/Download.css">
+}
+else
+{
 <link rel="stylesheet" href="/CSS/YUIReset.css">
-        
 <link rel="stylesheet" href="/CSS/Base/CSS/Roblox.css">
 <link rel="stylesheet" href="/CSS/RBXCommon.css">
 <link rel="stylesheet" href="/CSS/Base/CSS/Abp.css">
@@ -32,11 +37,10 @@
 <link rel="stylesheet" href="/CSS/Base/CSS/VideoPreRoll.css">
 <link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
 <link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
-
-
 <link rel="stylesheet" href="/CSS/Pages/Download.css">
 <link rel="stylesheet" href="/CSS/BasicStyle.css">
 <link rel="stylesheet" href="/CSS/Pages/LandingSignUp.css">
+}
 
 
 
@@ -51,6 +55,12 @@
 
     <script type="text/javascript">function urchinTracker() {}</script>
 
+@if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/18f3d8f3a36fcf8079941106c58435b8.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="/JS/roblox.js"></script>
@@ -62,54 +72,54 @@
     <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
      <script type="text/javascript" src="/JS/services/userService.js"></script>
-
-<script type="text/javascript" src="/js/leancore/libs/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/leancore/BootstrapNamespacing.js"></script>
-<script type="text/javascript" src="/js/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
-<script type="text/javascript" src="/js/JSErrorTracker.js"></script>
-<script type="text/javascript" src="/js/RobloxEventManager.js"></script>
-<script type="text/javascript" src="/js/GoogleEventListener.js"></script>
-<script type="text/javascript" src="/js/SiteTouchEvent.js"></script>
-<script type="text/javascript" src="/js/UpsellAdModal.js"></script>
-<script type="text/javascript" src="/js/JavaScriptEndpoints.js"></script>
-<script type="text/javascript" src="/js/XsrfToken.js"></script>
-<script type="text/javascript" src="/js/DeveloperConsoleWarning.js"></script>
-<script type="text/javascript" src="/js/leancore/iesupport/jquery.placeholder.js"></script>
-<script type="text/javascript" src="/js/jquery.ba-postmessage.min.js"></script>
-<script type="text/javascript" src="/js/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-<script type="text/javascript" src="/js/leancore/Navigation.js"></script>
-<script type="text/javascript" src="/js/Reference/widget.js"></script>
-<script type="text/javascript" src="/js/CookieUpgrader.js"></script>
-<script type="text/javascript" src="/js/Game/GamePlayEvents.js"></script>
-<script type="text/javascript" src="/js/IframeEventListener.js"></script>
-<script type="text/javascript" src="/js/leancore/RobloxBaseInit.js"></script>
-<script type="text/javascript" src="/js/jquery.tipsy.js"></script>
-<script type="text/javascript" src="/js/extensions/string.js"></script>
-<script type="text/javascript" src="/js/StringTruncator.js"></script>
-<script type="text/javascript" src="/js/json2.min.js"></script>
-<script type="text/javascript" src="/js/MasterPageUI.js"></script>
-<script type="text/javascript" src="/js/polyfill/ie7localStorage.js"></script>
-<script type="text/javascript" src="/js/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
-<script type="text/javascript" src="/js/jquery.simplemodal-1.3.5.js"></script>
-<script type="text/javascript" src="/js/AjaxAvatarThumbnail.js"></script>
-<script type="text/javascript" src="/js/extensions/Thumbnails.js"></script>
-<script type="text/javascript" src="/js/extensions/ThreeDeeThumbnails.js"></script>
-<script type="text/javascript" src="/js/Thumbnails/ThumbnailView.js"></script>
-<script type="text/javascript" src="/js/Linkify.js"></script>
-<script type="text/javascript" src="/js/CookieUpgrader.js"></script>
-<script type="text/javascript" src="/js/Tracking/SignupTrackingScript.js"></script>
-<script type="text/javascript" src="/js/Tracking/AsyncGoogleOnScript.js"></script>
-<script type="text/javascript" src="/js/VideoPreRoll.js"></script>
-<script type="text/javascript" src="/js/CharacterSelect.js"></script>
-<script type="text/javascript" src="/js/MadStatus.js"></script>
-<script type="text/javascript" src="/js/PlaceLauncher.js"></script>
-<script type="text/javascript" src="/js/ABPlaceLauncher.js"></script>
-<script type="text/javascript" src="/js/GameLauncher.js"></script>
-<script type="text/javascript" src="/js/GameLaunchLogger.js"></script>
-<script type="text/javascript" src="/js/ProtocolHandlerClientInterface.js"></script>
-<script type="text/javascript" src="/js/GameLaunchAdRefresher.js"></script>
-<script type="text/javascript" src="/js/ShopInterstitialModal.js"></script>
-<script type="text/javascript" src="/js/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="/js/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/leancore/BootstrapNamespacing.js"></script>
+    <script type="text/javascript" src="/js/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+    <script type="text/javascript" src="/js/JSErrorTracker.js"></script>
+    <script type="text/javascript" src="/js/RobloxEventManager.js"></script>
+    <script type="text/javascript" src="/js/GoogleEventListener.js"></script>
+    <script type="text/javascript" src="/js/SiteTouchEvent.js"></script>
+    <script type="text/javascript" src="/js/UpsellAdModal.js"></script>
+    <script type="text/javascript" src="/js/JavaScriptEndpoints.js"></script>
+    <script type="text/javascript" src="/js/XsrfToken.js"></script>
+    <script type="text/javascript" src="/js/DeveloperConsoleWarning.js"></script>
+    <script type="text/javascript" src="/js/leancore/iesupport/jquery.placeholder.js"></script>
+    <script type="text/javascript" src="/js/jquery.ba-postmessage.min.js"></script>
+    <script type="text/javascript" src="/js/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="/js/leancore/Navigation.js"></script>
+    <script type="text/javascript" src="/js/Reference/widget.js"></script>
+    <script type="text/javascript" src="/js/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="/js/Game/GamePlayEvents.js"></script>
+    <script type="text/javascript" src="/js/IframeEventListener.js"></script>
+    <script type="text/javascript" src="/js/leancore/RobloxBaseInit.js"></script>
+    <script type="text/javascript" src="/js/jquery.tipsy.js"></script>
+    <script type="text/javascript" src="/js/extensions/string.js"></script>
+    <script type="text/javascript" src="/js/StringTruncator.js"></script>
+    <script type="text/javascript" src="/js/json2.min.js"></script>
+    <script type="text/javascript" src="/js/MasterPageUI.js"></script>
+    <script type="text/javascript" src="/js/polyfill/ie7localStorage.js"></script>
+    <script type="text/javascript" src="/js/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.simplemodal-1.3.5.js"></script>
+    <script type="text/javascript" src="/js/AjaxAvatarThumbnail.js"></script>
+    <script type="text/javascript" src="/js/extensions/Thumbnails.js"></script>
+    <script type="text/javascript" src="/js/extensions/ThreeDeeThumbnails.js"></script>
+    <script type="text/javascript" src="/js/Thumbnails/ThumbnailView.js"></script>
+    <script type="text/javascript" src="/js/Linkify.js"></script>
+    <script type="text/javascript" src="/js/CookieUpgrader.js"></script>
+    <script type="text/javascript" src="/js/Tracking/SignupTrackingScript.js"></script>
+    <script type="text/javascript" src="/js/Tracking/AsyncGoogleOnScript.js"></script>
+    <script type="text/javascript" src="/js/VideoPreRoll.js"></script>
+    <script type="text/javascript" src="/js/CharacterSelect.js"></script>
+    <script type="text/javascript" src="/js/MadStatus.js"></script>
+    <script type="text/javascript" src="/js/PlaceLauncher.js"></script>
+    <script type="text/javascript" src="/js/ABPlaceLauncher.js"></script>
+    <script type="text/javascript" src="/js/GameLauncher.js"></script>
+    <script type="text/javascript" src="/js/GameLaunchLogger.js"></script>
+    <script type="text/javascript" src="/js/ProtocolHandlerClientInterface.js"></script>
+    <script type="text/javascript" src="/js/GameLaunchAdRefresher.js"></script>
+    <script type="text/javascript" src="/js/ShopInterstitialModal.js"></script>
+    <script type="text/javascript" src="/js/JSErrorTracker.js"></script>
+    }
 
 
         <script type="text/javascript">
@@ -221,10 +231,17 @@ var diduserdownloaduwp = false;
 <div id="pluginObjDiv" style="height:1px;width:1px;visibility:hidden;position: absolute;top: 0;"></div>
 <iframe id="downloadInstallerIFrame" name="downloadInstallerIFrame" style="visibility:hidden;height:0;width:1px;position:absolute" data-ruffle-polyfilled="" src="/images/saved_resource.html"></iframe>
 
+@if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/131fcb5e2195b44e54193a2f05131bbb.js"></script>
+    }
+    else
+    {
 <script type="text/javascript" src="/JS/EventTracker.js"></script>
 <script type="text/javascript" src="/JS/ClientInstaller.js"></script>
 <script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
 <script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
+}
 
   
 </div>  

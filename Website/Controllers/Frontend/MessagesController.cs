@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
+using Users;
 using Website.Hubs;
 using Website.Services;
 
@@ -361,6 +362,12 @@ public class MessagesController : ControllerBase
             .ConfigureAwait(false);
         if (!recipientExists)
             return Content(Serialize(new { success = false, message = "Recipient not found" }), "application/json");
+
+        var canMessage = await UserQueries.CanMessageUserAsync(
+            DatabaseUtilities.GetConnectionString(_configuration), senderId, recipientId, cancellationToken)
+            .ConfigureAwait(false);
+        if (!canMessage)
+            return Content(Serialize(new { success = false, message = "You cannot message this user due to their privacy settings" }), "application/json");
 
         try
         {

@@ -68,10 +68,7 @@
         userName = User.FindFirst("RobloxUsername")?.Value ?? User.FindFirst(ClaimTypes.Name)?.Value ?? User.Identity?.Name ?? "User";
     }
 }
-<!DOCTYPE html><!--[if IE 8]><html class=ie8 ng-app=robloxApp><![endif]--> <!--[if gt IE 8]><!-->
-<html><!--<![endif]-->
-
-<head data-machine-id=WEB1426>
+@section Head {
     <title>Home - Roblox</title>
     <meta http-equiv=X-UA-Compatible content="IE=edge,requiresActiveX=true">
     <meta charset=UTF-8>
@@ -87,8 +84,13 @@
         Roblox.I18nData = Roblox.I18nData || {};
         Roblox.I18nData.isI18nEnabledForChat = false;
     </script>
-    <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-amazon-app=false data-is-studio=false data-app-type=unknown>
-    </head>
+    <meta name=device-meta data-device-type=computer data-is-in-app=false data-is-desktop=true data-is-phone=false data-is-tablet=false data-is-console=false data-is-android-app=false data-is-ios-app=false data-is-uwp-app=false data-is-xbox-app=false data-is-studio=false data-app-type=unknown>
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="~/CSS/Bundles/HomeBundle.css">
+    }
+    else
+    {
     <link rel="stylesheet" href="~/CSS/2017/Home/SiteStyle.css">
 <link rel="stylesheet" href="~/CSS/2017/Home/LeanBaseStyle.css">
 <link rel="stylesheet" href="~/CSS/2017/Home/Base/CSS/jquery.mCustomScrollbar.css">
@@ -113,6 +115,8 @@
 <link rel="stylesheet" href="/CSS/2017/Home/Pages/Widgets/ContactUpsell.css">
 <link rel="stylesheet" href="/CSS/Pages/Notifications/PushNotificationRegistration.css">
 <link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+    }
+    <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
     <script src=//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js></script>
     <script>
         window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")
@@ -142,6 +146,13 @@
             chat: "https://chatsite.roblox.com"
         }
     </script>
+    
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/1ed84dc8a6709c1bd06a3d9d963b82fe.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="~/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="~/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="~/JS/roblox.js"></script>
@@ -166,6 +177,7 @@
     <script type="text/javascript" src="~/JS/utilities/CrossTabCommunication/Kingmaker.js"></script>
     <script type="text/javascript" src="~/JS/utilities/CrossTabCommunication/PubSub.js"></script>
     <script type="text/javascript" src="~/JS/Notifications/AuthenticationNotificationsHandler.js"></script>
+    }
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script>
         if (typeof(Roblox) === "undefined") {
@@ -185,8 +197,27 @@
             inApp: false
         };
     </script>
-
-<body id=rbx-body data-performance-relative-value=0.005 data-internal-page-name=Home data-send-event-percentage=0.01>
+    <style>
+        .container-footer {
+            position: relative;
+        }
+        .container-main {
+            padding-bottom: 40px;
+        }
+    </style>
+}
+<div ng-app="robloxApp">
+    <script>
+        (function() {
+            var b = document.body;
+            if (b) {
+                b.id = 'rbx-body';
+                b.setAttribute('data-performance-relative-value', '0.005');
+                b.setAttribute('data-internal-page-name', 'Home');
+                b.setAttribute('data-send-event-percentage', '0.01');
+            }
+        })();
+    </script>
     <div id=roblox-linkify data-enabled=true data-regex="(https?\:\/\/)?(?:www\.)?([a-z0-9\-]{2,}\.)*(((m|de|www|web|api|blog|wiki|help|corp|polls|bloxcon|developer|devforum|forum)\.roblox\.com|robloxlabs\.com)|(www\.shoproblox\.com))((\/[A-Za-z0-9-+&amp;@@#\/%?=~_|!:,.;]*)|(\b|\s))" data-regex-flags=gm data-as-http-regex=((wiki|[^.]help|corp|polls|bloxcon|developer|devforum)\.roblox\.com|robloxlabs\.com)></div>
     <div id=image-retry-data data-image-retry-max-times=10 data-image-retry-timer=1500 data-ga-logging-percent=10></div>
     <div id=http-retry-data data-http-retry-max-timeout=0 data-http-retry-base-timeout=0 data-http-retry-max-times=5></div>
@@ -482,8 +513,6 @@ else
                 </div>
             </div>
         </div>
-    </div>
-    </body>
     <div ng-modules="robloxApp, notificationStream" ng-controller=notificationStreamController class="roblox-popover-content manual bottom" data-hidden-class-name=invisible id=notification-stream data-isnotificationcontentopen={{layout.isNotificationContentOpen}} ng-class="{'inApp': library.inApp,
                 'isPhone': library.isPhone, 
                 'invisible': !library.inApp &amp;&amp; !layout.isNotificationContentOpen}">
@@ -625,10 +654,17 @@ else
     </div>
     <div class=InstallInstructionsImage data-modalwidth=970 style=display:none></div>
     <div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div><iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
+@if (UseBundledAssets)
+{
+    <script type="text/javascript" src="~/JS/Bundles/8a3fab63aefc6400793df7f9fde88997.js"></script>
+}
+else
+{
 <script type='text/javascript' src='/JS/EventTracker.js'></script>
 <script type='text/javascript' src='/JS/ClientInstaller.js'></script>
 <script type='text/javascript' src='/JS/InstallationInstructions.js'></script>
 <script type='text/javascript' src='/JS/IEMetroInstructions.js'></script>
+}
     <script>
         Roblox.Client._skip = null;
         Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
@@ -712,7 +748,15 @@ else
         var Roblox = Roblox || {};
         Roblox.jsConsoleEnabled = false;
     </script>
+</div>
 
+@section Scripts {
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/67626c207b4bb7ee6ce3d7afb99a4fc6.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="~/JS/leancore/BootstrapNamespacing.js"></script>
     <script type="text/javascript" src="~/JS/leancore/libs/underscore-min.js"></script>
@@ -775,8 +819,14 @@ else
     <script type="text/javascript" src="~/JS/GameLaunchLogger.js"></script>
     <script type="text/javascript" src="~/JS/ProtocolHandlerClientInterface.js"></script>
     <script type="text/javascript" src="~/JS/GameLaunchAdRefresher.js"></script>
+    }
 
-
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/3df878ea08444b07d2df3ea92a4de296.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="~/JS/angular/angular.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="~/JS/angular/angular-ui-router.min.js"></script>
@@ -841,7 +891,11 @@ else
     <script type="text/javascript" src="~/JS/viewapp/widgets/modal/controllers/modalController.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/providers/languageResourceProvider.js"></script>
     <script type="text/javascript" src="~/JS/viewapp/common/filters/translate.js"></script>
+    }
 
+
+
+    
 
     <div ng-modules=baseTemplateApp>
         <script src="/JS/base_splitApps___c1d87a81e58553825d5d0871bedadd16_m.js"></script>
@@ -849,25 +903,6 @@ else
     <div ng-modules=pageTemplateApp>
         <script src="/JS/page_splitApps___cb561afaa225945cf32c7bdf30775aa4_m.js"></script>
     </div>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/layoutLibraryService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/constants/signalR.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamUtility.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/services/notificationStreamService.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamIconController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationStreamController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/controllers/notificationsController.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationIndicatorDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationStreamBodyDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationContentDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/notificationCardDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/friendRequestDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/lazyLoadingDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
-    <script type="text/javascript" src="~/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
 
     <script>
         $(function() {
@@ -891,6 +926,12 @@ else
             decline: "No, thanks"
         };
     </script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/1856d55ff572aba36796a967d2a1c580.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="~/JS/GenericConfirmation.js"></script>
     <script type="text/javascript" src="~/JS/GenericModal.js"></script>
     <script type="text/javascript" src="~/JS/Games/GameCards.js"></script>
@@ -915,18 +956,5 @@ else
     <script type="text/javascript" src="~/JS/AbuseReport/AbuseReportDispatcher.js"></script>
 
     <script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
-
-    <script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
-    <script>
-        $(function() {
-            $('[data-behavior="nav-notification"]').off('click.homeNav').on('click.homeNav', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $('[data-behavior="left-col"]').toggleClass('nav-show');
-            });
-        });
-    </script>
+    }
+}

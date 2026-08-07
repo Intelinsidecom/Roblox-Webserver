@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Control_Panel;
 using ControlPanel.Functions;
@@ -75,14 +76,32 @@ namespace Control_Panel.Views
             UserIdText.Text = "";
             UsernameText.Text = "";
             EmailText.Text = "";
+            EmailVerifiedBadge.Visibility = Visibility.Collapsed;
             GenderText.Text = "";
             RobuxBalanceText.Text = "";
             TixBalanceText.Text = "";
             StatusText.Text = "";
             CreatedText.Text = "";
             MembershipText.Text = "";
+            CollapseSocialFields();
             RobuxAmountTextBox.Text = "0";
             TixAmountTextBox.Text = "0";
+        }
+        
+        private void CollapseSocialFields()
+        {
+            FacebookLabel.Visibility = Visibility.Collapsed;
+            FacebookText.Visibility = Visibility.Collapsed;
+            TwitterLabel.Visibility = Visibility.Collapsed;
+            TwitterText.Visibility = Visibility.Collapsed;
+            GooglePlusLabel.Visibility = Visibility.Collapsed;
+            GooglePlusText.Visibility = Visibility.Collapsed;
+            YouTubeLabel.Visibility = Visibility.Collapsed;
+            YouTubeText.Visibility = Visibility.Collapsed;
+            TwitchLabel.Visibility = Visibility.Collapsed;
+            TwitchText.Visibility = Visibility.Collapsed;
+            SocialNetworksLabel.Visibility = Visibility.Collapsed;
+            SocialNetworksText.Visibility = Visibility.Collapsed;
         }
         
         private void UpdateUIWithUserData()
@@ -93,11 +112,78 @@ namespace Control_Panel.Views
             UsernameText.Text = _currentUser.Username ?? "Unknown";
             RobuxBalanceText.Text = _currentUser.RobuxBalanceFormatted;
             TixBalanceText.Text = _currentUser.TixBalanceFormatted;
-            EmailText.Text = _currentUser.Email ?? "Not set";
+            
+            var email = _currentUser.Email;
+            if (string.IsNullOrEmpty(email))
+            {
+                EmailText.Text = "Not set";
+                EmailVerifiedBadge.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                EmailText.Text = email;
+                if (_currentUser.EmailVerified)
+                {
+                    EmailVerifiedBadge.Text = "(Verified)";
+                    EmailVerifiedBadge.Foreground = Brushes.Green;
+                }
+                else
+                {
+                    EmailVerifiedBadge.Text = "(Not Verified)";
+                    EmailVerifiedBadge.Foreground = Brushes.Red;
+                }
+                EmailVerifiedBadge.Visibility = Visibility.Visible;
+            }
+            
             GenderText.Text = _currentUser.GenderText;
             StatusText.Text = _currentUser.StatusText;
             CreatedText.Text = _currentUser.CreatedDateFormatted;
             MembershipText.Text = _currentUser.MembershipText;
+
+            bool hasAnySocial = !string.IsNullOrEmpty(_currentUser.Facebook)
+                || !string.IsNullOrEmpty(_currentUser.Twitter)
+                || !string.IsNullOrEmpty(_currentUser.GooglePlus)
+                || !string.IsNullOrEmpty(_currentUser.YouTube)
+                || !string.IsNullOrEmpty(_currentUser.Twitch);
+
+            SetSocialField(FacebookLabel, FacebookText, _currentUser.Facebook);
+            SetSocialField(TwitterLabel, TwitterText, _currentUser.Twitter);
+            SetSocialField(GooglePlusLabel, GooglePlusText, _currentUser.GooglePlus);
+            SetSocialField(YouTubeLabel, YouTubeText, _currentUser.YouTube);
+            SetSocialField(TwitchLabel, TwitchText, _currentUser.Twitch);
+
+            if (hasAnySocial)
+            {
+                SocialNetworksLabel.Visibility = Visibility.Visible;
+                SocialNetworksText.Visibility = Visibility.Visible;
+                SocialNetworksText.Text = SocialNetworksVisibilityText(_currentUser.SocialNetworksVisibility);
+            }
+            else
+            {
+                SocialNetworksLabel.Visibility = Visibility.Collapsed;
+                SocialNetworksText.Visibility = Visibility.Collapsed;
+            }
+        }
+        
+        private void SetSocialField(TextBlock label, TextBlock value, string text)
+        {
+            bool hasValue = !string.IsNullOrWhiteSpace(text);
+            label.Visibility = hasValue ? Visibility.Visible : Visibility.Collapsed;
+            value.Visibility = hasValue ? Visibility.Visible : Visibility.Collapsed;
+            if (hasValue) value.Text = text;
+        }
+        
+        private string SocialNetworksVisibilityText(short visibility)
+        {
+            return visibility switch
+            {
+                6 => "Everyone",
+                5 => "Friends, Following and Followers",
+                4 => "Friends and Following",
+                3 => "Friends",
+                0 => "No one",
+                _ => "Everyone"
+            };
         }
         
         private void SetLoadingState(bool isLoading)
@@ -109,10 +195,12 @@ namespace Control_Panel.Views
                 RobuxBalanceText.Text = "Loading...";
                 TixBalanceText.Text = "Loading...";
                 EmailText.Text = "Loading...";
+                EmailVerifiedBadge.Visibility = Visibility.Collapsed;
                 GenderText.Text = "Loading...";
                 StatusText.Text = "Loading...";
                 CreatedText.Text = "Loading...";
                 MembershipText.Text = "Loading...";
+                CollapseSocialFields();
             }
         }
         
@@ -392,10 +480,20 @@ namespace Control_Panel.Views
             }
         }
         
+        private async void EditSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentUser == null) return;
+
+            var settingsWindow = new UserSettingsWindow(_currentUser.UserId);
+            settingsWindow.Owner = this;
+            settingsWindow.ShowDialog();
+            await LoadUserDataAsync();
+        }
+
         private async void AddRobuxButton_Click(object sender, RoutedEventArgs e)
         {
             if (_currentUser == null) return;
-            
+
             if (!long.TryParse(RobuxAmountTextBox.Text, out long amount) || amount == 0)
             {
                 MessageBox.Show("Please enter a valid non-zero number for Robux amount. Use a negative value to subtract.", "Invalid Input", 

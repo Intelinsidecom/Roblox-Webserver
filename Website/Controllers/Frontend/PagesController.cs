@@ -35,6 +35,10 @@ namespace RobloxWebserver.Controllers
             var result = _viewEngine.GetView(executingFilePath: null, viewPath: viewPath, isMainPage: true);
             if (!result.Success)
             {
+                var accept = Request.Headers.Accept.ToString() ?? "";
+                if (!accept.Contains("text/html", StringComparison.OrdinalIgnoreCase))
+                    return NotFound();
+
                 return Redirect("/404");
             }
 
