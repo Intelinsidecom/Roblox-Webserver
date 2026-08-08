@@ -70,6 +70,104 @@ public class ChatRepository
         return Convert.ToInt32(result);
     }
 
+    public async Task<List<ConversationResult>> GetUnreadConversationsAsync(long userId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+            SELECT c.id, c.title, c.conversation_type, c.creator_user_id, c.universe_id, c.created_at,
+                   cp.last_read_message_id,
+                   (SELECT json_agg(json_build_object(
+                       'userId', cp2.user_id,
+                       'role', cp2.role
+                   ))
+                   FROM conversation_participants cp2
+                   WHERE cp2.conversation_id = c.id) AS participants_json
+            FROM conversations c
+            INNER JOIN conversation_participants cp ON cp.conversation_id = c.id AND cp.user_id = @userId
+            WHERE c.is_deleted = FALSE
+              AND EXISTS(
+                  SELECT 1 FROM chat_messages cm
+                  WHERE cm.conversation_id = c.id
+                    AND cm.id > cp.last_read_message_id
+                    AND cm.sender_id != @userId
+                    AND cm.is_deleted = FALSE
+              )
+            ORDER BY c.created_at DESC
+            LIMIT @pageSize OFFSET @offset";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@userId", userId);
+        cmd.Parameters.AddWithValue("@pageSize", pageSize);
+        cmd.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
+
+        var results = new List<ConversationResult>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var participantsJson = reader.IsDBNull(7) ? "[]" : reader.GetString(7);
+            var participants = JsonSerializer.Deserialize<List<ParticipantDto>>(participantsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+
+            results.Add(new ConversationResult
+            {
+                Id = reader.GetInt64(0),
+                Title = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                ConversationType = reader.GetString(2),
+                CreatorUserId = reader.GetInt64(3),
+                UniverseId = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+                CreatedAt = reader.GetDateTime(5),
+                LastReadMessageId = reader.IsDBNull(6) ? 0 : reader.GetInt64(6),
+                Participants = participants,
+                HasUnreadMessages = true
+            });
+        }
+
+        return results;
+    }
+
+    public async Task<List<ChatMessageResult>> GetUnreadMessagesAsync(long userId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+            SELECT cm.id, cm.conversation_id, cm.sender_id, cm.message_type, cm.content,
+                   cm.event_type, cm.event_metadata, cm.sent_at, u.user_name
+            FROM chat_messages cm
+            INNER JOIN conversation_participants cp
+                ON cp.conversation_id = cm.conversation_id AND cp.user_id = @userId
+            LEFT JOIN users u ON u.user_id = cm.sender_id
+            WHERE cm.id > cp.last_read_message_id
+              AND cm.sender_id != @userId
+              AND cm.is_deleted = FALSE
+            ORDER BY cm.id DESC
+            LIMIT @pageSize OFFSET @offset";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@userId", userId);
+        cmd.Parameters.AddWithValue("@pageSize", pageSize);
+        cmd.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
+
+        var messages = new List<ChatMessageResult>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            messages.Add(new ChatMessageResult
+            {
+                Id = reader.GetInt64(0),
+                ConversationId = reader.GetInt64(1),
+                SenderTargetId = reader.GetInt64(2),
+                MessageType = reader.GetString(3),
+                Content = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                EventType = reader.IsDBNull(5) ? null : reader.GetString(5),
+                EventMetadata = reader.IsDBNull(6) ? null : reader.GetString(6),
+                SentAt = reader.GetDateTime(7),
+                SenderName = reader.IsDBNull(8) ? "" : reader.GetString(8)
+            });
+        }
+
+        return messages;
+    }
+
     public async Task<List<ConversationResult>> GetUserConversationsAsync(long userId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         const string sql = @"
@@ -773,6 +871,302 @@ public class ChatRepository
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
         return Convert.ToInt64(result);
     }
+
+    private const string PartySelectColumns = @"
+        SELECT p.id, p.conversation_id, p.leader_user_id, p.game_id, p.game_place_id,
+               lu.user_name AS leader_name,
+               COALESCE((
+                   SELECT json_agg(json_build_object(
+                       'userId', pm.user_id,
+                       'name', mu.user_name,
+                       'memberStatus', pm.member_status
+                   ) ORDER BY pm.user_id)
+                   FROM party_members pm
+                   LEFT JOIN users mu ON mu.user_id = pm.user_id
+                   WHERE pm.party_id = p.id AND pm.member_status = 'Member'
+               ), '[]'::json) AS members_json
+        FROM parties p
+        LEFT JOIN users lu ON lu.user_id = p.leader_user_id";
+
+    private static PartyResult ReadParty(NpgsqlDataReader reader)
+    {
+        var membersJson = reader.IsDBNull(6) ? "[]" : reader.GetString(6);
+        var members = JsonSerializer.Deserialize<List<PartyMemberDto>>(membersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+
+        return new PartyResult
+        {
+            Id = reader.GetInt64(0),
+            ConversationId = reader.GetInt64(1),
+            LeaderUserId = reader.GetInt64(2),
+            GameId = reader.IsDBNull(3) ? null : reader.GetInt64(3),
+            GamePlaceId = reader.IsDBNull(4) ? null : reader.GetInt64(4),
+            LeaderName = reader.IsDBNull(5) ? "" : reader.GetString(5),
+            Members = members
+        };
+    }
+
+    public async Task<PartyResult?> GetPartyAsync(long partyId, CancellationToken cancellationToken = default)
+    {
+        var sql = $"{PartySelectColumns} WHERE p.id = @partyId AND p.is_deleted = FALSE";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@partyId", partyId);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            return ReadParty(reader);
+
+        return null;
+    }
+
+    public async Task<PartyResult> CreatePartyAsync(long conversationId, long leaderUserId, long[] invitedUserIds, CancellationToken cancellationToken = default)
+    {
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string createSql = @"
+            INSERT INTO parties (conversation_id, leader_user_id)
+            VALUES (@conversationId, @leaderUserId)
+            RETURNING id";
+
+        long partyId;
+        using (var createCmd = new NpgsqlCommand(createSql, conn))
+        {
+            createCmd.Parameters.AddWithValue("@conversationId", conversationId);
+            createCmd.Parameters.AddWithValue("@leaderUserId", leaderUserId);
+            var result = await createCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            partyId = Convert.ToInt64(result);
+        }
+
+        const string addMemberSql = @"
+            INSERT INTO party_members (party_id, user_id, member_status)
+            VALUES (@partyId, @userId, @memberStatus)
+            ON CONFLICT (party_id, user_id) DO UPDATE SET member_status = EXCLUDED.member_status";
+
+        using (var leaderCmd = new NpgsqlCommand(addMemberSql, conn))
+        {
+            leaderCmd.Parameters.AddWithValue("@partyId", partyId);
+            leaderCmd.Parameters.AddWithValue("@userId", leaderUserId);
+            leaderCmd.Parameters.AddWithValue("@memberStatus", "Member");
+            await leaderCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        foreach (var invitedId in invitedUserIds.Distinct())
+        {
+            if (invitedId == leaderUserId) continue;
+
+            using var cmd = new NpgsqlCommand(addMemberSql, conn);
+            cmd.Parameters.AddWithValue("@partyId", partyId);
+            cmd.Parameters.AddWithValue("@userId", invitedId);
+            cmd.Parameters.AddWithValue("@memberStatus", "Invited");
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        return (await GetPartyAsync(partyId, cancellationToken).ConfigureAwait(false))!;
+    }
+
+    public async Task<bool> InviteToPartyAsync(long partyId, long invitedUserId, CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+            INSERT INTO party_members (party_id, user_id, member_status)
+            VALUES (@partyId, @userId, 'Invited')
+            ON CONFLICT (party_id, user_id) DO UPDATE SET member_status = EXCLUDED.member_status";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@partyId", partyId);
+        cmd.Parameters.AddWithValue("@userId", invitedUserId);
+
+        var rows = await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        return rows > 0;
+    }
+
+    public async Task<bool> JoinPartyAsync(long partyId, long userId, CancellationToken cancellationToken = default)
+    {
+        const string sql = @"
+            UPDATE party_members SET member_status = 'Member'
+            WHERE party_id = @partyId AND user_id = @userId";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@partyId", partyId);
+        cmd.Parameters.AddWithValue("@userId", userId);
+
+        var rows = await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        return rows > 0;
+    }
+
+    public async Task<bool> LeavePartyAsync(long partyId, long userId, CancellationToken cancellationToken = default)
+    {
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string isLeaderSql = "SELECT 1 FROM parties WHERE id = @partyId AND leader_user_id = @userId AND is_deleted = FALSE";
+        using (var checkCmd = new NpgsqlCommand(isLeaderSql, conn))
+        {
+            checkCmd.Parameters.AddWithValue("@partyId", partyId);
+            checkCmd.Parameters.AddWithValue("@userId", userId);
+            var isLeader = await checkCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            if (isLeader != null)
+            {
+                const string deleteMembersSql = "DELETE FROM party_members WHERE party_id = @partyId";
+                using var deleteMembersCmd = new NpgsqlCommand(deleteMembersSql, conn);
+                deleteMembersCmd.Parameters.AddWithValue("@partyId", partyId);
+                await deleteMembersCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+
+                const string deletePartySql = "UPDATE parties SET is_deleted = TRUE WHERE id = @partyId";
+                using var deletePartyCmd = new NpgsqlCommand(deletePartySql, conn);
+                deletePartyCmd.Parameters.AddWithValue("@partyId", partyId);
+                await deletePartyCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                return true;
+            }
+        }
+
+        const string removeSql = "DELETE FROM party_members WHERE party_id = @partyId AND user_id = @userId";
+        using (var removeCmd = new NpgsqlCommand(removeSql, conn))
+        {
+            removeCmd.Parameters.AddWithValue("@partyId", partyId);
+            removeCmd.Parameters.AddWithValue("@userId", userId);
+            await removeCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        await DeletePartyIfEmptyAsync(conn, partyId, cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
+    public async Task<bool> RemoveFromPartyAsync(long partyId, long userId, CancellationToken cancellationToken = default)
+    {
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string removeSql = "DELETE FROM party_members WHERE party_id = @partyId AND user_id = @userId";
+        using var removeCmd = new NpgsqlCommand(removeSql, conn);
+        removeCmd.Parameters.AddWithValue("@partyId", partyId);
+        removeCmd.Parameters.AddWithValue("@userId", userId);
+        await removeCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+
+        await DeletePartyIfEmptyAsync(conn, partyId, cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
+    private static async Task DeletePartyIfEmptyAsync(NpgsqlConnection conn, long partyId, CancellationToken cancellationToken)
+    {
+        const string countSql = "SELECT COUNT(*) FROM party_members WHERE party_id = @partyId";
+        using var countCmd = new NpgsqlCommand(countSql, conn);
+        countCmd.Parameters.AddWithValue("@partyId", partyId);
+        var count = Convert.ToInt64(await countCmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false));
+        if (count <= 0)
+        {
+            const string deleteSql = "UPDATE parties SET is_deleted = TRUE WHERE id = @partyId";
+            using var deleteCmd = new NpgsqlCommand(deleteSql, conn);
+            deleteCmd.Parameters.AddWithValue("@partyId", partyId);
+            await deleteCmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    public async Task<List<PartyResult>> GetInvitedPartiesAsync(long userId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var sql = $@"
+            {PartySelectColumns}
+            INNER JOIN party_members pm_inv ON pm_inv.party_id = p.id AND pm_inv.user_id = @userId AND pm_inv.member_status = 'Invited'
+            WHERE p.is_deleted = FALSE
+            ORDER BY p.created_at DESC, p.id DESC
+            LIMIT @pageSize OFFSET @offset";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@userId", userId);
+        cmd.Parameters.AddWithValue("@pageSize", pageSize);
+        cmd.Parameters.AddWithValue("@offset", (pageNumber - 1) * pageSize);
+
+        var results = new List<PartyResult>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            results.Add(ReadParty(reader));
+
+        return results;
+    }
+
+    public async Task<PartyResult?> GetCurrentPartyAsync(long userId, CancellationToken cancellationToken = default)
+    {
+        var sql = $@"
+            {PartySelectColumns}
+            INNER JOIN party_members pm_cur ON pm_cur.party_id = p.id AND pm_cur.user_id = @userId AND pm_cur.member_status = 'Member'
+            WHERE p.is_deleted = FALSE
+            ORDER BY p.created_at DESC, p.id DESC
+            LIMIT 1";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@userId", userId);
+
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            return ReadParty(reader);
+
+        return null;
+    }
+
+    public async Task<List<PartyResult>> GetPartiesForConversationsAsync(long[] conversationIds, CancellationToken cancellationToken = default)
+    {
+        if (conversationIds.Length == 0) return new List<PartyResult>();
+
+        var parameters = new List<string>();
+        for (int i = 0; i < conversationIds.Length; i++)
+            parameters.Add($"@cid{i}");
+
+        var sql = $@"
+            {PartySelectColumns}
+            WHERE p.is_deleted = FALSE AND p.conversation_id IN ({string.Join(",", parameters)})
+            ORDER BY p.created_at DESC, p.id DESC";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        for (int i = 0; i < conversationIds.Length; i++)
+            cmd.Parameters.AddWithValue($"@cid{i}", conversationIds[i]);
+
+        var results = new List<PartyResult>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            results.Add(ReadParty(reader));
+
+        return results;
+    }
+
+    public async Task<bool> IsPartyLeaderAsync(long partyId, long userId, CancellationToken cancellationToken = default)
+    {
+        const string sql = "SELECT 1 FROM parties WHERE id = @partyId AND leader_user_id = @userId AND is_deleted = FALSE";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@partyId", partyId);
+        cmd.Parameters.AddWithValue("@userId", userId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result != null;
+    }
+
+    public async Task<bool> IsPartyMemberAsync(long partyId, long userId, CancellationToken cancellationToken = default)
+    {
+        const string sql = "SELECT 1 FROM party_members WHERE party_id = @partyId AND user_id = @userId";
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("@partyId", partyId);
+        cmd.Parameters.AddWithValue("@userId", userId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result != null;
+    }
 }
 
 public class ChatMetadata
@@ -843,4 +1237,22 @@ public class LatestMessagesResult
 {
     public long ConversationId { get; set; }
     public List<ChatMessageResult> Messages { get; set; } = new();
+}
+
+public class PartyResult
+{
+    public long Id { get; set; }
+    public long ConversationId { get; set; }
+    public long LeaderUserId { get; set; }
+    public string LeaderName { get; set; } = "";
+    public long? GameId { get; set; }
+    public long? GamePlaceId { get; set; }
+    public List<PartyMemberDto> Members { get; set; } = new();
+}
+
+public class PartyMemberDto
+{
+    public long UserId { get; set; }
+    public string Name { get; set; } = "";
+    public string MemberStatus { get; set; } = "Member";
 }

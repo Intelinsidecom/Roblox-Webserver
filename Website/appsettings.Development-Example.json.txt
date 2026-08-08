@@ -48,6 +48,11 @@
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets",
     "PublicBaseUrl": "http://www.freblx.xyz"
   },
+  "Chat": {
+    "ToggleChatBarEnabled": true,
+    "SmallerChatEnabled": true,
+    "CleanPartyFromConversationEnabled": false
+  },
   "Games": {
     "StarterPlacePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Places\\StartingPlace.rbxl",
     "EnableCreationCooldown": false,

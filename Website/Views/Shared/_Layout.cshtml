@@ -54,8 +54,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         @if (ViewBag.IncludeSharedCss == true)
         {
+            <link rel="stylesheet" href="/CSS/Pages/Chat/Chat_mini.css">
     <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>
     <!-- i did this since games page needs extra care, that means full frontend rework in css will be needed, yikes -->
 
@@ -277,10 +279,7 @@
 
 
 
-    @if (User.Identity?.IsAuthenticated == true)
-    {
-        <link rel="stylesheet" href="/CSS/dist/css/chat.css">
-    }
+
     @RenderSection("Head", required: false)
 </head>
 <body class="@(isApp && User.Identity.IsAuthenticated ? "no-header-nav" : "")">
@@ -395,7 +394,7 @@
             catch { }
         }
     }
-    @if (!string.IsNullOrEmpty(globalMessage) && (User.Identity.IsAuthenticated))
+    @if (!string.IsNullOrEmpty(globalMessage) && (User.Identity.IsAuthenticated) && !(isApp))
     {
         var parsedMessage = ParseGlobalMessage(globalMessage);
         <div class="alert-container" style="margin-top: 40px; z-index: 1; position: relative;">
@@ -405,6 +404,20 @@
             @@media (max-width: 991px) {
                 .alert-container {
                     margin-top: 80px !important;
+                }
+            }
+        </style>
+    }
+    else if (!string.IsNullOrEmpty(globalMessage) && (User.Identity.IsAuthenticated) && isApp)
+    {
+        var parsedMessage = ParseGlobalMessage(globalMessage);
+        <div class="alert-container" style="margin-top: 0px; z-index: 1; position: relative;">
+            <div class="alert-info">@Html.Raw(parsedMessage)</div>
+        </div>
+        <style>
+            @@media (max-width: 991px) {
+                .alert-container {
+                    margin-top: 0px !important;
                 }
             }
         </style>
@@ -566,6 +579,7 @@
     {
         <partial name="_Footer" />
     }
+  
 
     @if (UseBundledAssets)
     {
@@ -604,5 +618,7 @@
    <!-- <div class="notification-stream-base gotham-font" notification-stream-base ng-modules="notificationStream, notificationStreamHtmlTemplate"></div> -->
 
     @await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
 </html>

@@ -6,9 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://web.archive.org/web/20160410120934im_/https://images.rbxcdn.com/7aee41db80c1071f60377c3575a0ed87.ico" rel="icon">
-        <link href="./ROBUX - ROBLOX_files/css" rel="stylesheet" type="text/css">
 
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="/CSS/Bundles/Robux.css" />
+    }
+    else
+    {
     <link rel="stylesheet" href="/CSS/LeanBaseStyle.css">
     <link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="/CSS/SiteStyle.css">
@@ -21,23 +25,30 @@
     <link rel="stylesheet" href="/CSS/Legacy/Modal.css">
     <link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
     <link rel="stylesheet" href="/CSS/Legacy/Navigation.css">
-<link rel="stylesheet" href="/CSS/Legacy/iFrameLogin.css">
+    <link rel="stylesheet" href="/CSS/Legacy/iFrameLogin.css">
 
     
-<link rel="stylesheet" href="/CSS/Pages/Upgrades/Robux.css">
-<link rel="stylesheet" href="/CSS/Legacy/Modal.css">
-<link rel="stylesheet" href="/CSS/Pages/Shared/ShopInterstitialModal.css">
+    <link rel="stylesheet" href="/CSS/Pages/Upgrades/Robux.css">
+    <link rel="stylesheet" href="/CSS/Legacy/Modal.css">
+    <link rel="stylesheet" href="/CSS/Pages/Shared/ShopInterstitialModal.css">
+    }
 
     
     
     
-    <script type="text/javascript" src="/JS/jquery/jquery-1.11.1.min.js.download"></script>
+    <script type="text/javascript" src="/JS/jquery/jquery-1.11.1.min.js"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")</script>
-<script type="text/javascript" src="/js/jquery/jquery-migrate-1.2.1.min.js.download"></script>
+<script type="text/javascript" src="/js/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
 
 
     
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/541d4fd6c9957a887e796219e0525e6f.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="/JS/roblox.js"></script>
@@ -48,6 +59,7 @@
     <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
     <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+    }
 
 <script type="text/javascript">
     $(function () {
@@ -124,7 +136,7 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
             <div id="rbx-continue-shopping-btn" class="btn btn-medium btn-neutral btn-secondary-xs btn-more btn-continue-shopping">Continue to Shop</div>
         </div>
         <div class="text-date-hint fine-print">
-            The shop is not part of ROBLOX.com and is governed by a separate <a class="text-link" href="https://web.archive.org/web/20160410120934/http://www.myplay.com/direct/cookie-policy?origin=desktop&amp;permalink=shoproblox" target="_blank">privacy policy</a>.
+            The shop is not part of ROBLOX.com and is governed by a separate <a class="text-link" href="www.myplay.com/direct/cookie-policy?origin=desktop&amp;permalink=shoproblox" target="_blank">privacy policy</a>.
         </div>
     </div>
 </div>
@@ -302,52 +314,18 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 
 
 
+
+
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/64b2ddd2cdf49dd34ab76a2e00414876.js"></script>
+    }
+    else
+    {
 <script type="text/javascript" src="/JS/EventTracker.js"></script>
 <script type="text/javascript" src="/JS/ClientInstaller.js"></script>
 <script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
 <script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
-
-<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
-    <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
-    <div class="Title"></div>
-    <div class="GenericModalBody">
-        <div class="TopBody">
-            <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays="" data-no-click="">
-                <img class="GenericModalImage" alt="generic image">
-            </div>
-            <div class="Message"></div>
-        </div>
-        <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
-            <a href="https://web.archive.org/web/20160410120934/https://www.roblox.com/upgrades/robux?ctx=nav" id="roblox-confirm-btn"><span></span></a>
-            <a href="https://web.archive.org/web/20160410120934/https://www.roblox.com/upgrades/robux?ctx=nav" id="roblox-decline-btn"><span></span></a>
-        </div>
-        <div class="ConfirmationModalFooter">
-        
-        </div>  
-    </div>  
-    <script type="text/javascript">
-        Roblox = Roblox || {};
-        Roblox.Resources = Roblox.Resources || {};
-        
-        //<sl:translate>
-        Roblox.Resources.GenericConfirmation = {
-            yes: "Yes",
-            No: "No",
-            Confirm: "Confirm",
-            Cancel: "Cancel"
-        };
-        //</sl:translate>
-    </script>
-</div>
-
-
-
-<script type="text/javascript">
-    var Roblox = Roblox || {};
-    Roblox.jsConsoleEnabled = false;
-</script>
-
-
 <script type="text/javascript" src="/js/leancore/libs/bootstrap.min.js"></script>
 <script type="text/javascript" src="/js/leancore/BootstrapNamespacing.js"></script>
 <script type="text/javascript" src="/js/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
@@ -381,7 +359,6 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 <script type="text/javascript" src="/js/extensions/ThreeDeeThumbnails.js"></script>
 <script type="text/javascript" src="/js/Thumbnails/ThumbnailView.js"></script>
 <script type="text/javascript" src="/js/Linkify.js"></script>
-<script type="text/javascript" src="/js/CookieUpgrader.js"></script>
 <script type="text/javascript" src="/js/Tracking/SignupTrackingScript.js"></script>
 <script type="text/javascript" src="/js/Tracking/AsyncGoogleOnScript.js"></script>
 <script type="text/javascript" src="/js/VideoPreRoll.js"></script>
@@ -394,7 +371,49 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 <script type="text/javascript" src="/js/ProtocolHandlerClientInterface.js"></script>
 <script type="text/javascript" src="/js/GameLaunchAdRefresher.js"></script>
 <script type="text/javascript" src="/js/ShopInterstitialModal.js"></script>
-<script type="text/javascript" src="/js/JSErrorTracker.js"></script>
+<script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    }
+<div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
+    <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
+    <div class="Title"></div>
+    <div class="GenericModalBody">
+        <div class="TopBody">
+            <div class="ImageContainer roblox-item-image" data-image-size="small" data-no-overlays="" data-no-click="">
+                <img class="GenericModalImage" alt="generic image">
+            </div>
+            <div class="Message"></div>
+        </div>
+        <div class="ConfirmationModalButtonContainer GenericModalButtonContainer">
+            <a href="/upgrades/robux?ctx=nav" id="roblox-confirm-btn"><span></span></a>
+            <a href="/upgrades/robux?ctx=nav" id="roblox-decline-btn"><span></span></a>
+        </div>
+        <div class="ConfirmationModalFooter">
+        
+        </div>  
+    </div>  
+    <script type="text/javascript">
+        Roblox = Roblox || {};
+        Roblox.Resources = Roblox.Resources || {};
+        
+        //<sl:translate>
+        Roblox.Resources.GenericConfirmation = {
+            yes: "Yes",
+            No: "No",
+            Confirm: "Confirm",
+            Cancel: "Cancel"
+        };
+        //</sl:translate>
+    </script>
+</div>
+
+
+
+<script type="text/javascript">
+    var Roblox = Roblox || {};
+    Roblox.jsConsoleEnabled = false;
+</script>
+
+
 
     <script>
         Roblox.XsrfToken.setToken('aWISVXUBhZfB');
@@ -426,7 +445,5 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
     };
 </script>
 
-    
-<script type="text/javascript" src="/js/GenericConfirmation.js"></script>
     
 </body></html>

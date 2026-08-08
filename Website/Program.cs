@@ -33,9 +33,20 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(
+                "https://www.freblx.xyz",
+                "https://chat.freblx.xyz",
+                "https://api.freblx.xyz",
+                "http://www.freblx.xyz",
+                "http://chat.freblx.xyz",
+                "http://api.freblx.xyz",
+                "http://localhost:5077",
+                "http://localhost:3000",
+                "http://127.0.0.1:5077",
+                "http://127.0.0.1:3000")
               .AllowAnyMethod()
               .AllowAnyHeader()
+              .AllowCredentials()
               .WithExposedHeaders("*");
     });
 });
@@ -163,11 +174,7 @@ app.UseWebSockets();
 app.UseWebOptimizer();
 
 // Add CORS for UWP WebView support
-app.UseCors(policy => policy
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .WithExposedHeaders("*"));
+app.UseCors("AllowAll");
 
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".file"] = "application/octet-stream";

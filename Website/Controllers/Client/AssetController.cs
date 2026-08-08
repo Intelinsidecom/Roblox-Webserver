@@ -135,12 +135,13 @@ namespace Website.Controllers
                     {
                         var ct = !string.IsNullOrWhiteSpace(contentType) && contentType.Contains('/') ? contentType : "application/octet-stream";
 
-                        var xmlExts = new[] { ".rbxm", ".rbxmx", ".rbxl", ".rbxlx", ".xml" };
-                        if (ext != null && xmlExts.Contains(ext, StringComparer.OrdinalIgnoreCase))
-                        {
-                            var content = await System.IO.File.ReadAllTextAsync(fullPath, Encoding.UTF8);
-                            return Content(content, ct, Encoding.UTF8);
-                        }
+                        // TEMP: disabled to avoid UTF-8 corruption of binary assets
+                        // var xmlExts = new[] { ".rbxm", ".rbxmx", ".rbxl", ".rbxlx", ".xml" };
+                        // if (ext != null && xmlExts.Contains(ext, StringComparer.OrdinalIgnoreCase))
+                        // {
+                        //     var content = await System.IO.File.ReadAllTextAsync(fullPath, Encoding.UTF8);
+                        //     return Content(content, ct, Encoding.UTF8);
+                        // }
 
                         var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
                         return File(stream, ct);

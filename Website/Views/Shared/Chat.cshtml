@@ -2,229 +2,893 @@
 {
     var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0";
 
-    <script type="text/javascript">
+    var cookieDomain = Configuration["Auth:CookieDomain"] ?? "";
+    var domain = string.IsNullOrWhiteSpace(cookieDomain)
+        ? (Configuration["PublicBaseUrl"] ?? Configuration["BaseUrl"] ?? "")
+            .Replace("https://", "").Replace("http://", "").Split('/')[0]
+            .Replace("www.", "")
+        : cookieDomain.TrimStart('.');
+    var publicBaseUrl = Configuration["PublicBaseUrl"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var inApp = ViewBag.IsMobile == true;
+    var deviceType = "Computer";
+    if (inApp)
+    {
+        var userAgent = Context.Request.Headers["User-Agent"].ToString() ?? "";
+        deviceType = userAgent.Contains("iPad") ? "Tablet" : "Phone";
+    }
+
+        
+
+    <script type="text/javascript" src="/JS/angular/angular.audio.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/chat.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/services/chatService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/services/partyService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/services/messageService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/services/cookieService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/services/chatUtilityService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/services/chatHybridService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/chatDataDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/controllers/chatController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/controllers/dialogsController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/chatBarDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/lazyLoadDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/dialogDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/groupSelectDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/abuseReportDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/friendsSelectionDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/controllers/dialogController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/dialogLazyLoadDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/dialogMinimizeDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/minimizeItemDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/chatSettingDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/controllers/friendsController.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/friendsLazyLoadDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/backBtnDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/removeFocusDirective.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/pages/chat/directives/chatPlaceholderDirective.js"></script>
+    
+
+<script type="text/javascript">
         var Roblox = Roblox || {};
+        Roblox.ChatTemplates = {
+            ChatBarTemplate: "chat-bar",
+            AbuseReportTemplate: "chat-abuse-report",
+            DialogTemplate: "chat-dialog",
+            FriendsSelectionTemplate: "chat-friends-selection",
+            GroupDialogTemplate: "chat-group-dialog",
+            NewGroupTemplate: "chat-new-group",
+            DialogMinimizeTemplate: "chat-dialog-minimize",
+            ChatPlaceholderTemplate: "chat-placeholder"
+        };
         Roblox.Chat = {
             SoundFile: "/Chat/sound/chatsound.mp3"
         };
         Roblox.Party = {};
         Roblox.Party.SetGoogleAnalyticsCallback = function () {
-            RobloxLaunch._GoogleAnalyticsCallback = function () {
-                var isInsideRobloxIDE = 'website';
-                if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; }
-                GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);
-                GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);
-                EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin');
-                if (typeof Roblox.GamePlayEvents != 'undefined') {
-                    Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId);
-                }
-            };
+            RobloxLaunch._GoogleAnalyticsCallback = function() { var isInsideRobloxIDE = 'website'; if (Roblox && Roblox.Client && Roblox.Client.isIDE && Roblox.Client.isIDE()) { isInsideRobloxIDE = 'Studio'; };GoogleAnalyticsEvents.FireEvent(['Plugin Location', 'Launch Attempt', isInsideRobloxIDE]);GoogleAnalyticsEvents.FireEvent(['Plugin', 'Launch Attempt', 'Play']);EventTracker.fireEvent('GameLaunchAttempt_Win32', 'GameLaunchAttempt_Win32_Plugin'); if (typeof Roblox.GamePlayEvents != 'undefined') { Roblox.GamePlayEvents.SendClientStartAttempt(null, play_placeId); }  }; 
         };
+
     </script>
 
-     <div id="chat-container" class="chat chat-container"
-         ng-controller="chatController"
-         ng-class="{'collapsed': chatLibrary.chatLayout.collapsed,
-                    'inApp': chatLibrary.inApp,
-                    'tablet': chatLibrary.tabletInApp}"
-         ng-cloak
-         style="position:fixed; bottom:0; right:0; z-index:1000; visibility:hidden;">
 
-        <div id="chat-data-model"
-             class="hidden"
-             chat-data
-             chat-view-model="chatViewModel"
+<div id="chat-container" class="chat chat-container"
+     ng-modules="robloxApp, chat"
+     ng-controller="chatController"
+     ng-class="{'collapsed': chatLibrary.chatLayout.collapsed, 
+                'inApp': chatLibrary.inApp,
+                'tablet': chatLibrary.tabletInApp}"
+     ng-cloak>
+<div id="chat-data-model"
+     class="hidden"
+     chat-data
+     chat-view-model="chatViewModel"
+     chat-library="chatLibrary"
+     data-userid="@userId"
+     data-domain="@domain"
+     data-gamespagelink="/games"
+     data-chatdomain="@publicBaseUrl"
+     data-numberofmembersforpartychrome="6"
+     data-avatarheadshotsmultigetlimit="100"
+     data-userpresencemultigetlimit="100"
+     data-intervalofchangetitleforpartychrome="500"
+     data-spinner="/images/4bed93c91f909002b1f17f05c0ce13d1.gif"
+     data-notificationsdomain="https://notifications.@domain/"
+     data-devicetype="@deviceType"
+     data-inapp="@(inApp ? "true" : "false")"
+     data-togglechatbarenabled="@(Configuration["Chat:ToggleChatBarEnabled"] == "true" ? "true" : "false")"
+     data-smallerchatenabled="@(Configuration["Chat:SmallerChatEnabled"] == "true" ? "true" : "false")"
+     data-cleanpartyfromconversationenabled="@(Configuration["Chat:CleanPartyFromConversationEnabled"] == "true" ? "true" : "false")"
+     data-parytchromedisplaytimestampinterval="300000">
+</div>
+    <div chat-bar></div>
+    <script type="text/ng-template" id="chat-bar">
+    <div id="chat-main" class="chat-main"
+         ng-class="{'chat-main-empty': chatLibrary.chatLayout.chatLandingEnabled}" ng-cloak>
+        <div id="chat-header"
+             class="chat-windows-header chat-header"
+             ng-style="chatLibrary.inApp ? chatLibrary.inAppLayout.headerStyle : ''">
+            <div class="chat-header-label"
+                 ng-click="toggleChatContainer()"
+                      ng-hide="chatLibrary.inApp">
+                <span class="font-bold chat-header-title">Chat & Party</span>
+            </div>
+            <div class="chat-header-label"
+                 ng-click="toggleChatContainer()"
+                      ng-show="chatLibrary.inApp">
+                <span class="font-bold chat-header-title">Chat</span>
+            </div>
+            <div class="chat-header-action">
+                <span class="notification-red"
+                      ng-show="chatLibrary.chatLayout.collapsed && chatViewModel.conversationCount > 0"
+                      ng-cloak>{{chatViewModel.conversationCount}}</span>
+                <span id="chat-group-create"
+                      class="icon-chat-group-create"
+                      ng-hide="chatLibrary.chatLayout.collapsed || chatLibrary.chatLayout.errorMaskEnable || chatLibrary.chatLayout.chatLandingEnabled || chatLibrary.chatLayout.pageDataLoading"
+                      ng-click="launchDialog(newGroup.layoutId)"
+                      data-toggle="tooltip"
+                      title="Add at least 2 people to create chat group"
+                      ng-cloak></span>
+            </div>
+        </div>
+        <div id="chat-body"
+             class="chat-body"
+             ng-style="chatLibrary.inApp ? chatLibrary.inAppLayout.chatBodyHeight : ''"
+             ng-hide="chatLibrary.chatLayout.errorMaskEnable || chatLibrary.chatLayout.pageDataLoading"
+             ng-if="!chatLibrary.chatLayout.chatLandingEnabled">
+            <div class="chat-search"
+                 ng-class="{'chat-search-focus': chatLibrary.chatLayout.searchFocus}">
+                <input type="text"
+                       placeholder="Search"
+                       class="chat-search-input"
+                       ng-model="chatViewModel.searchTerm"
+                       ng-focus="chatLibrary.chatLayout.searchFocus = true" />
+                <span class="icon-chat-search"></span>
+                <span class="icon-chat-cancel-search"
+                      ng-click="cancelSearch()"></span>
+            </div>
+            <button id="chat-group-create-btn"
+                    type="button"
+                    class="btn btn-control-md"
+                    ng-click="launchDialog(newGroup.layoutId)"
+                    title="Add at least 2 people to create chat group"
+                    ng-cloak>
+                <span>Create Chat Group</span>
+            </button>
+            <div id="chat-friend-list" class="rbx-scrollbar chat-friend-list" lazy-load>
+                <ul id="chat-friends" class="chat-friends">
+                    <li ng-repeat="chatUser in chatUserDict | orderList: chatLibrary.chatLayoutIds | filter : {name: chatViewModel.searchTerm}"
+                        class="chat-friend">
+                        <div ng-click="launchDialog(chatUser.layoutId)"
+                             ng-if="chatUser.dialogType === dialogType.CHAT && chatUser.isConversation"
+                             class="chat-friend-container">
+                            <div class="avatar avatar-headshot-sm card-plain chat-friend-avatar">
+                                <img ng-src="{{chatLibrary.friendsDict[chatUser.displayUserId].AvatarThumb.Url}}"
+                                     class="avatar-card-image chat-avatar"
+                                     thumbnail="chatLibrary.friendsDict[chatUser.displayUserId].AvatarThumb"
+                                     image-retry
+                                     ng-if="chatUser.isConversation">
+                                <div class="avatar-status chat-friend-status" ng-class="userPresenceTypes[chatLibrary.friendsDict[chatUser.displayUserId].UserPresenceType]['className']"></div>
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name" ng-if="chatUser.isConversation">{{chatUser.name}}</span>
+                                <span class="small text-overflow chat-friend-message"
+                                      ng-class="{'font-bold': chatUser.HasUnreadMessages}"
+                                      ng-bind-html="chatUser.DisplayMessage.Content"
+                                      ng-if="chatUser.DisplayMessage"></span>
+                            </div>
+                        </div>
+
+                        <div ng-click="launchDialog(chatUser.layoutId)"
+                             ng-if="chatUser.dialogType === dialogType.GROUPCHAT && chatUser.isConversation"
+                             class="chat-friend-container chat-friend-groups">
+                            <div class="chat-friend-avatar">
+                                <ul class="avatar-group card-plain chat-avatar-groups"
+                                    ng-class="{'avatar-double': chatUser.userIds.length == 2, 
+                                                'avatar-triple': chatUser.userIds.length == 3, 
+                                                'avatar-all': chatUser.userIds.length >= 4}">
+                                    <li ng-repeat="userId in chatUser.userIds | limitTo : 4"
+                                        class="avatar-item chat-avatar">
+                                        <img ng-src="{{chatLibrary.friendsDict[userId].AvatarThumb.Url}}"
+                                             thumbnail="chatLibrary.friendsDict[userId].AvatarThumb"
+                                             class="avatar-card-image"
+                                             image-retry>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name">{{chatUser.name}}</span>
+                                <span class="small text-overflow chat-friend-message"
+                                      ng-class="{'font-bold': chatUser.HasUnreadMessages}"
+                                      ng-bind-html="chatUser.DisplayMessage.Content"
+                                      ng-if="chatUser.DisplayMessage"></span>
+                            </div>
+                        </div>
+
+                        <div ng-click="launchDialog(chatUser.layoutId)"
+                             ng-if="chatUser.dialogType === dialogType.PARTY && chatUser.isConversation"
+                             class="chat-friend-container">
+                            <div class="chat-friend-avatar chat-party-avatar">
+                                <span class="icon-chat-party-avatar"></span>
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name">{{chatUser.name}}</span>
+                                <span class="small text-overflow chat-friend-message"
+                                      ng-class="{'font-bold': chatUser.HasUnreadMessages}"
+                                      ng-bind-html="chatUser.DisplayMessage.Content"
+                                      ng-if="chatUser.DisplayMessage"></span>
+                            </div>
+                        </div>
+                        <div ng-click="launchDialog(chatUser.layoutId)"
+                             ng-if="chatUser.dialogType === dialogType.PENDINGPARTY  && chatUser.isConversation"
+                             class="chat-friend-container chat-pending-party">
+                            <div class="chat-friend-avatar">
+                                <ul class="avatar-group card-plain chat-avatar-groups"
+                                    ng-class="{'avatar-double': chatUser.userIds.length == 1, 
+                                                'avatar-triple': chatUser.userIds.length == 2, 
+                                                'avatar-all': chatUser.userIds.length >= 3}">
+                                    <li ng-repeat="userId in chatUser.userIds | limitTo : 3"
+                                        class="avatar-item chat-avatar">
+                                        <img ng-src="{{chatLibrary.friendsDict[userId].AvatarThumb.Url}}"
+                                             thumbnail="chatLibrary.friendsDict[userId].AvatarThumb"
+                                             class="avatar-card-image"
+                                             image-retry>
+                                    </li>
+                                    <li class="chat-avatar-party-icon">
+                                        <span class="icon-chat-party-avatar"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name">{{chatUser.name}}</span>
+                                <span class="small text-overflow chat-friend-message party-pending-msg"
+                                      ng-if="chatUser.incomingPartyInvite">{{chatUser.pendingPartyMsg}}</span>
+                                <span class="small text-overflow chat-friend-message"
+                                      ng-class="{'font-bold': chatUser.HasUnreadMessages}"
+                                      ng-bind-html="chatUser.DisplayMessage.Content"
+                                      ng-if="chatUser.DisplayMessage && !chatUser.incomingPartyInvite"></span>
+                            </div>
+                        </div>
+                        <div ng-click="launchDialog(chatUser.layoutId)"
+                             ng-if="!chatUser.isConversation"
+                             class="chat-friend-container">
+                            <div class="avatar avatar-headshot-sm card-plain chat-friend-avatar">
+                                <img ng-src="{{chatUser.AvatarThumb.Url}}" class="avatar-card-image chat-avatar"
+                                     thumbnail="chatUser.AvatarThumb"
+                                     image-retry>
+                                <div class="avatar-status chat-friend-status" ng-class="userPresenceTypes[chatUser.UserPresenceType]['className']"></div>
+
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name">{{chatUser.name}}</span>
+                                <span class="xsmall text-overflow chat-friend-message">{{userPresenceTypes[chatUser.UserPresenceType].title}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="chat-loading loading-bottom"
+                     ng-show="chatLibrary.chatLayout.isChatLoading">
+                    <img ng-src="{{chatLibrary.spinner}}" alt="loading ...">
+                </div>
+            </div>
+        </div>
+        <div id="chat-disconnect"
+             class="chat-disconnect"
+             ng-show="chatLibrary.chatLayout.errorMaskEnable || chatLibrary.chatLayout.pageDataLoading"
+             ng-cloak>
+            <p ng-show="chatLibrary.chatLayout.errorMaskEnable">Trying to connect ...</p>
+            <img ng-src="{{chatLibrary.spinner}}" alt="loading ...">
+        </div>
+        <div id="chat-empty-list"
+             class="chat-disconnect"
+             ng-hide="chatLibrary.chatLayout.errorMaskEnable"
+             ng-if="chatLibrary.chatLayout.chatLandingEnabled">
+            <span class="icon-chat-friends"></span>
+            <p class="text-lead">Make friends to start chatting and partying!</p>
+        </div>
+    </div>
+</script>
+    <div id="dialogs"
+         class="dialogs"
+         ng-controller="dialogsController">
+        <div dialog
+             id="{{chatLayoutId}}"
+             dialog-data="chatUserDict[chatLayoutId]"
              chat-library="chatLibrary"
-             data-userid="@userId"
-             data-domain="roblox.com"
-             data-gamespagelink="/games"
-             data-chatdomain=""
-             data-numberofmembersforpartychrome="6"
-             data-friendslistoutputcachedurationinseconds="10"
-             data-avatarheadshotsmultigetlimit="100"
-             data-userpresencemultigetlimit="100"
-             data-intervalofchangetitleforpartychrome="500"
-             data-spinner="/images/4bed93c91f909002b1f17f05c0ce13d1.gif"
-             data-notificationsdomain=""
-             data-devicetype="Computer"
-             data-inapp=false
-             data-togglechatbarenabled=true
-             data-localstorageenabledforchat=true
-             data-cleanpartyfromconversationenabled=false
-             data-parytchromedisplaytimestampinterval="300000"
-             data-initialconversationtodisplay=""
-             data-isclientsideurlparseenabled="true"
-             data-signalrdisconnectionresponseinmilliseconds="3000"
-             data-isnewexponentialbackoffforangularhttpretryenabled="true">
+             close-dialog="closeDialog(chatLayoutId)"
+             send-invite="sendInvite(chatLayoutId)"
+             ng-repeat="chatLayoutId in chatLibrary.layoutIdList"></div>
+        <script type="text/ng-template" id="chat-abuse-report">
+    <div class="dialog-report-container"
+         ng-show="dialogLayout.isConfirmationOn">
+        <div class="dialog-report-content">
+            <h4>Continue to report?</h4>
+            <button id="chat-abuse-report-btn"
+                    class="btn-primary-xs"
+                    ng-click="abuseReport(null, true)">
+                Report
+            </button>
+
+            <button class="btn-control-xs"
+                    ng-click="dialogLayout.isConfirmationOn = false">
+                Cancel
+            </button>
         </div>
+    </div>
+</script>
 
-        <div chat-bar></div>
-
-        <div id="dialogs"
-             class="dialogs"
-             ng-controller="dialogsController"
-             ng-hide="chatLibrary.chatLayout.isChatEnabledByPrivacySetting !== chatLibrary.chatLayout.chatEnabledByPrivacySettingTypes.enabled">
-
-            <div dialog
-                 id="{{chatLayoutId}}"
-                 dialog-data="chatUserDict[chatLayoutId]"
-                 chat-library="chatLibrary"
-                 close-dialog="closeDialog(chatLayoutId)"
-                 send-invite="sendInvite(chatLayoutId)"
-                 ng-repeat="chatLayoutId in chatLibrary.layoutIdList"></div>
-
-            <div dialog
-                 id="{{newGroup.layoutId}}"
-                 dialog-data="newGroup"
-                 chat-library="chatLibrary"
-                 close-dialog="closeDialog('newGroup')"
-                 send-invite="sendInvite(newGroup.layoutId)"
-                 ng-if="newGroup"></div>
-
-            <div id="dialogs-minimize"
-                 class="dialogs-minimize"
-                 dialog-minimize
-                 chat-library="chatLibrary">
+        <script type="text/ng-template" id="chat-friends-selection">
+    <div class="chat-friends-container"
+        ng-style="chatLibrary.inApp ? chatLibrary.inAppLayout.chatBodyHeight : ''">
+        <div class="chat-search"
+             ng-class="{'group-select-container' : dialogData.selectedUserIds.length > 0}"
+             group-select>
+            <div class="group-select">
+                <ul class="group-select-friends">
+                    <li class="small group-select-friend"
+                        ng-repeat="userId in dialogData.selectedUserIds"
+                        ng-click="selectFriends(userId)">
+                        {{dialogData.selectedUsersDict[userId].Username}}
+                        <span class="icon-chat-cancel-search group-select-cancel"></span>
+                    </li>
+                </ul>
+                <input type="text"
+                       placeholder="Search"
+                       class="chat-search-input"
+                       focus-me="{{dialogLayout.focusMeEnabled}}"
+                       ng-model="dialogData.searchTerm" />
+            </div>
+            <button id="friends-selection-btn"
+                    class="btn-fixed-width btn-secondary-xs friends-invite-btn"
+                    ng-disabled="dialogLayout.inviteBtnDisabled"
+                    ng-click="sendInvite()"
+                    ng-bind="dialogData.dialogType == dialogType.NEWGROUPCHAT ? 'Create' : 'Add'">
+            </button>
+        </div>
+        
+        <div ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.friendsListStyle : ''">
+            <div id="scrollbar_friend_{{dialogData.dialogType}}_{{dialogData.layoutId}}"
+                 class="rbx-scrollbar chat-friend-list"
+                 friends-lazy-load>
+                <ul class="chat-friends">
+                    <li ng-repeat="friend in chatLibrary.friendsDict | orderList: dialogData.friendIds  | filter: {Username: dialogData.searchTerm}"
+                        class="chat-friend">
+                        <div class="chat-friend-container chat-friend-select"
+                             ng-click="selectFriends(friend.Id)">
+                            <div class="avatar avatar-headshot-sm card-plain chat-friend-avatar">
+                                <img ng-src="{{friend.AvatarThumb.Url}}"
+                                     thumbnail="friend.AvatarThumb"
+                                     image-retry
+                                     class="avatar-card-image chat-avatar">
+                                <div class="avatar-status chat-friend-status" ng-class="userPresenceTypes[friend.UserPresenceType]['className']"></div>
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name">{{friend.Username}}</span>
+                                <span class="small text-overflow chat-friend-message">{{userPresenceTypes[friend.UserPresenceType].title}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>
+        <script type="text/ng-template" id="chat-dialog">
+    <div id="dialog-container" class="dialog-container"
+         ng-class="{'group-has-banner': dialogData.isPartyExisted || dialogData.partyInGame,
+                    'dialog-party': dialogData.dialogType == dialogType.PARTY,
+                    'collapsed': dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER,
+                    'active': dialogLayout.active && !dialogLayout.hasFocus}"
+         ng-controller="dialogController"
+         ng-focus="focusDialog()">
+        <div class="dialog-main">
+            <div class="chat-windows-header dialog-header"
+             ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.headerStyle : ''">
+                <div class="chat-header-back"
+                        ng-click="closeDialog(dialogData.layoutId)"
+                        ng-show="chatLibrary.inApp && !chatLibrary.tabletInApp">
+                    <span class="icon-chat-arrow-left"></span>
+                </div>
+                <div class="chat-header-label">
+                    <span class="icon-chat-party-label"
+                          ng-show="dialogData.dialogType == dialogType.PARTY"
+                          title="Party"
+                          ng-cloak></span>
+                    <span id="chat-title"
+                          class="text-overflow chat-header-title dialog-header-title"
+                          ng-click="toggleDialogContainer()"
+                          ng-if="dialogData.dialogType != dialogType.PARTY">
+                        <a class="font-bold"
+                           ng-click="linkToProfile($event)"
+                           ng-class="{'disabled': chatLibrary.inApp}"
+                           ng-href="{{dialogData.nameLink}}">{{dialogData.name}}</a>
+                    </span>
+                    <span id="party-title"
+                          class="font-bold text-overflow chat-header-title dialog-header-title"
+                          ng-click="toggleDialogContainer()"
+                          ng-if="dialogData.dialogType == dialogType.PARTY">
+                        {{dialogData.name}}
+                    </span>
+                </div>
+                <div class="chat-header-action"
+                     chat-setting>
+                    <span class="icon-chat-close"
+                          ng-click="closeDialog(dialogData.layoutId)"
+                          ng-hide="chatLibrary.inApp"
+                          data-toggle="tooltip"
+                          title="Close"></span>
+                    <span class="icon-chat-setting"
+                          data-toggle="popover"
+                          data-bind="group-settings-{{dialogData.Id}}"
+                          ng-hide="(dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER) || chatLibrary.chatLayout.errorMaskEnable"></span>
+                    <div class="rbx-popover-content" data-toggle="group-settings-{{dialogData.Id}}">
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a id="abuse-report"
+                                   ng-click="abuseReport(dialogData.userIds[0], false)">Report Abuse</a>
+                            </li>
+                            <li>
+                                <a id="leave-group"
+                                   ng-click="leaveGroup()"
+                                   ng-if="dialogData.dialogType === dialogType.PARTY">Leave Party</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <span id="create-party"
+                          class="icon-chat-party-label"
+                          ng-click="sendInvite(dialogData.layoutId)"
+                          data-toggle="tooltip"
+                          title="Play Together"
+                          ng-hide="dialogData.party || (dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER)  || chatLibrary.chatLayout.errorMaskEnable || chatLibrary.inApp"></span>
+                </div>
             </div>
 
-            <div class="chat-placeholder"
-                 chat-placeholder>
+            <div id="dialog-member-header"
+                 class="dialog-member-header"
+                 ng-show="dialogData.isPartyExisted && !dialogData.partyInGame"
+                 ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.bannerStyle : ''">
+                <ul class="group-members">
+                    <li class="avatar avatar-headshot-sm card-plain group-member"
+                        title="{{chatLibrary.friendsDict[userId].Username}}{{dialogData.membersDict[userId].statusTooltip}}"
+                        ng-repeat="userId in dialogData.userIds">
+                        <img ng-src="{{chatLibrary.friendsDict[userId].AvatarThumb.Url}}"
+                             thumbnail="chatLibrary.friendsDict[userId].AvatarThumb"
+                             image-retry
+                             alt="{{chatLibrary.friendsDict[userId].Username}}"
+                             class="avatar-card-image group-member-avatar"
+                             ng-class="{'group-leader': dialogData.membersDict[userId].memberStatus === memberStatus.LEADER,
+                                        'group-pending':dialogData.membersDict[userId].memberStatus === memberStatus.PENDING}">
+                    </li>
+                </ul>
+                <a id="find-game"
+                   class="btn-primary-xs"
+                   ng-show="dialogData.dialogType === dialogType.PARTY && dialogData.party.LeaderUser.Id === chatLibrary.userId"
+                   ng-href="{{chatLibrary.gamesPageLink}}">Find Game</a>
+                <a id="join-party"
+                   class="btn-control-xs"
+                   ng-hide="dialogData.dialogType === dialogType.PARTY || !dialogData.party"
+                   ng-click="joinParty()">
+                    Join Party
+                </a>
+            </div>
+
+            <div id="party-ingame-header"
+                 class="party-ingame-header"
+                 ng-show="dialogData.dialogType === dialogType.PARTY && dialogData.isPartyExisted && dialogData.partyInGame"
+                 ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.bannerStyle : ''">
+                <img ng-src="{{dialogData.placeThumbnail.Url}}"
+                     thumbnail="dialogData.placeThumbnail" image-retry
+                     class="party-ingame-thumbnail">
+                <div class="party-ingame-label"
+                     ng-class="{'party-ingame-member': chatLibrary.userId !== dialogData.party.LeaderUser.Id}">
+                    <span class="small">Playing</span>
+                    <span class="small font-bold text-overflow party-ingame-name">{{dialogData.party.GameName}}</span>
+                </div>
+                <a id="join-game"
+                   class="btn-control-xs"
+                   ng-hide="chatLibrary.userId === dialogData.party.LeaderUser.Id"
+                   ng-click="joinGame()">
+                    Join Game
+                </a>
+            </div>
+            <div id="scrollbar_{{dialogData.dialogType}}_{{dialogData.layoutId}}"
+                 class="rbx-scrollbar dialog-body"
+                 ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.dialogStyle : dialogLayout.defaultStyle.dialogStyle"
+                 dialog-lazy-load>
+                <ul class="dialog-messages">
+                    <li class="dialog-message-container"
+                        ng-repeat="message in dialogData.ChatMessages | reverse"
+                        ng-class="{'message-inbound': message.SenderUserId != chatLibrary.userId && !message.isSystemMessage,
+                                    'system-message': message.isSystemMessage,
+                                    'message-cluster-master': message.isClusterMaster}">
+                        <div class="text-date-hint" ng-hide="!message.displayTimeStamp">{{message.displayTimeStamp}}</div>
+                        <div class="small dialog-message dialog-message-content dialog-triangle"
+                             ng-bind-html="message.Content"
+                             ng-hide="message.isSystemMessage"></div>
+                        <div class="xsmall dialog-sending" ng-show="message.sendingMessage">Sending...</div>
+                        <div class="xsmall text-error dialog-sending" ng-show="message.sendMessageHasError"
+                             ng-bind="message.error || 'Error'"></div>
+                        <span class="system-message-content"
+                              ng-show="message.isSystemMessage"
+                              ng-bind-html="message.Content"></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="chat-loading loading-top"
+                 ng-show="dialogLayout.isChatLoading">
+                <img ng-src="{{chatLibrary.spinner}}" alt="loading ...">
+            </div>
+            <div class="dialog-input-container"
+                ng-focus="toggleDialogFocusStatus(true)"
+                ng-blur="toggleDialogFocusStatus(false)"
+                ng-style="chatLibrary.inApp? dialogLayout.inAppStyle.inputStyle : dialogLayout.defaultStyle.inputStyle">
+                <textarea id="dialog-input"
+                          msd-elastic
+                          focus-me="{{dialogLayout.focusMeEnabled}}"
+                          placeholder="Send a message ..."
+                          ng-model="dialogData.messageForSend"
+                          key-press-enter="keyPressEnter($event)"
+                          class="dialog-input"
+                          maxlength="{{dialogLayout.limitCharacterCount}}"
+                          ng-disabled="chatLibrary.chatLayout.errorMaskEnable"
+                          ng-style="chatLibrary.inApp? dialogLayout.inAppStyle.inputStyle : dialogLayout.defaultStyle.inputStyle"></textarea>
+                <button class="btn-secondary-sm message-send-btn"
+                        ng-show="chatLibrary.inApp && dialogData.messageForSend && dialogData.messageForSend.length > 0"
+                        remove-focus>
+                    Send
+                </button>
+            </div>
+
+            <div abuse-report></div>
+        </div>
+    </div>
+</script>
+        <script type="text/ng-template" id="chat-group-dialog">
+    <div class="dialog-container group-dialog"
+         ng-class="{'group-has-banner': dialogData.isPartyExisted || dialogData.partyInGame,
+                    'dialog-party': dialogData.dialogType == dialogType.PARTY,
+                    'collapsed': dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER,
+                    'active': dialogLayout.active && !dialogLayout.hasFocus}"
+         ng-controller="dialogController">
+        <div class="dialog-main"
+             ng-hide="dialogLayout.isConfirmationOn || dialogLayout.lookUpMembers || dialogData.addMoreFriends">
+            <div class="chat-windows-header dialog-header"
+                ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.headerStyle : ''">
+                <div class="chat-header-back"
+                        ng-click="closeDialog(dialogData.layoutId)"
+                        ng-show="chatLibrary.inApp && !chatLibrary.tabletInApp">
+                    <span class="icon-chat-arrow-left"></span>
+                </div>
+                <div class="chat-header-label">
+                    <span class="icon-chat-party-label"
+                          ng-show="dialogData.dialogType == dialogType.PARTY"
+                          title="Party"
+                          ng-cloak></span>
+                    <span class="icon-chat-group-label"
+                          ng-show="dialogData.dialogType != dialogType.PARTY"
+                          title="Group Chat"
+                          ng-cloak></span>
+                    <span id="party-title"
+                          class="font-bold text-overflow dialog-header-title"
+                          title="{{dialogData.partyName}}"
+                          ng-click="toggleDialogContainer()" ng-if="dialogData.dialogType == dialogType.PARTY">{{dialogData.partyName}}</span>
+                    <span id="group-chat-title"
+                          class="font-bold text-overflow dialog-header-title"
+                          title="{{dialogData.groupName}}"
+                          ng-click="toggleDialogContainer()" ng-if="dialogData.dialogType != dialogType.PARTY">{{dialogData.groupName}}</span>
+                </div>
+                <div class="chat-header-action"
+                     chat-setting>
+                    <span class="icon-chat-close"
+                          ng-click="closeDialog(dialogData.layoutId)"
+                          data-toggle="tooltip"
+                          ng-hide="chatLibrary.inApp"
+                          title="Close"></span>
+                    <span class="icon-chat-setting"
+                          data-toggle="popover"
+                          data-bind="group-settings-{{dialogData.Id}}"
+                          ng-hide="(dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER) || chatLibrary.chatLayout.errorMaskEnable"></span>
+                    <div class="rbx-popover-content" data-toggle="group-settings-{{dialogData.Id}}">
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a id="add-friends" ng-click="addFriends()">Add Friends</a></li>
+                            <li><a id="view-participants" ng-click="viewParticipants()">View Participants</a></li>
+                            <li>
+                                <a id="leave-group" ng-click="leaveGroup()" ng-bind="dialogData.dialogType === dialogType.PARTY ? 'Leave Party' : 'Leave Group'"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <span id="create-party"
+                          class="icon-chat-party-label"
+                          ng-click="sendInvite(dialogData.layoutId)"
+                          data-toggle="tooltip"
+                          title="Play Together"
+                          ng-hide="dialogData.party || (dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER) || chatLibrary.chatLayout.errorMaskEnable || chatLibrary.inApp"></span>
+                </div>
+            </div>
+            <div id="dialog-member-header"
+                 class="dialog-member-header"
+                 ng-show="dialogData.isPartyExisted && (!dialogData.partyInGame || dialogData.dialogType === dialogType.PENDINGPARTY)"
+                 ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.bannerStyle : ''">
+                <ul class="group-members">
+                    <li class="avatar avatar-headshot-sm card-plain group-member"
+                        title="{{chatLibrary.friendsDict[userId].Username}}{{dialogData.membersDict[userId].statusTooltip}}"
+                        ng-repeat="userId in dialogData.userIds | limitTo: dialogLayout.limitMemberDisplay">
+                        <img ng-src="{{chatLibrary.friendsDict[userId].AvatarThumb.Url}}"
+                             thumbnail="chatLibrary.friendsDict[userId].AvatarThumb"
+                             image-retry
+                             alt="{{chatLibrary.friendsDict[userId].Username}}"
+                             class="avatar-card-image group-member-avatar"
+                             ng-class="{'group-leader': dialogData.membersDict[userId].memberStatus === memberStatus.LEADER,
+                                        'group-pending':dialogData.membersDict[userId].memberStatus === memberStatus.PENDING}">
+                    </li>
+                    <li ng-show="dialogData.userIds.length === (dialogLayout.limitMemberDisplay + 1)"
+                        title="{{chatLibrary.friendsDict[dialogData.userIds[dialogLayout.limitMemberDisplay]].Username}}{{dialogData.membersDict[dialogData.userIds[dialogLayout.limitMemberDisplay]].statusTooltip}}"
+                        class="avatar avatar-headshot-sm card-plain group-member">
+                        <img ng-src="{{chatLibrary.friendsDict[dialogData.userIds[dialogLayout.limitMemberDisplay]].AvatarThumb.Url}}"
+                             thumbnail="chatLibrary.friendsDict[dialogData.userIds[dialogLayout.limitMemberDisplay]].AvatarThumb"
+                             image-retry
+                             alt="{{chatLibrary.friendsDict[dialogData.userIds[dialogLayout.limitMemberDisplay]].Username}}"
+                             class="avatar-card-image group-member-avatar"
+                             ng-class="{'group-pending': dialogData.membersDict[dialogData.userIds[dialogLayout.limitMemberDisplay]].memberStatus === memberStatus.PENDING}">
+                    </li>
+                    <li ng-show="dialogData.userIds.length > (dialogLayout.limitMemberDisplay + 1)"
+                        ng-click="dialogLayout.lookUpMembers = !dialogLayout.lookUpMembers"
+                        class="group-member group-member-plus"
+                        ng-cloak>+{{dialogData.userIds.length - dialogLayout.limitMemberDisplay}}</li>
+                </ul>
+                <a id="find-game"
+                   class="btn-primary-xs"
+                   ng-show="dialogData.dialogType === dialogType.PARTY && dialogData.party.LeaderUser.Id === chatLibrary.userId && !chatLibrary.inApp"
+                   ng-href="{{chatLibrary.gamesPageLink}}">Find Game</a>
+                <a id="join-party"
+                   class="btn-control-xs"
+                   ng-hide="dialogData.dialogType === dialogType.PARTY || !dialogData.party"
+                   ng-click="joinParty()">
+                    Join Party
+                </a>
+            </div>
+
+            <div id="party-ingame-header"
+                 class="party-ingame-header"
+                 ng-show="dialogData.dialogType === dialogType.PARTY && dialogData.isPartyExisted && dialogData.partyInGame"
+                 ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.bannerStyle : ''">
+                <img ng-src="{{dialogData.placeThumbnail.Url}}"
+                     thumbnail="dialogData.placeThumbnail" image-retry
+                     class="party-ingame-thumbnail">
+                <div class="party-ingame-label"
+                     ng-class="{'party-ingame-member': chatLibrary.userId !== dialogData.party.LeaderUser.Id}">
+                    <span class="small">Playing</span>
+                    <span class="small font-bold text-overflow party-ingame-name">{{dialogData.party.GameName}}</span>
+                </div>
+                <a id="join-game"
+                   class="btn-control-xs"
+                   ng-hide="chatLibrary.userId === dialogData.party.LeaderUser.Id"
+                   ng-click="joinGame()">
+                    Join Game
+                </a>
+            </div>
+            <div id="scrollbar_{{dialogData.dialogType}}_{{dialogData.layoutId}}"
+                 ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.dialogStyle : dialogLayout.defaultStyle.dialogStyle"
+                 class="rbx-scrollbar dialog-body"
+                 dialog-lazy-load>
+                <ul class="dialog-messages">
+                    <li class="dialog-message-container"
+                        ng-repeat="message in dialogData.ChatMessages | reverse"
+                        ng-class="{'message-inbound': message.SenderUserId != chatLibrary.userId && !message.isSystemMessage,
+                                    'system-message': message.isSystemMessage,
+                                    'message-cluster-master': message.isClusterMaster}">
+                        <div class="text-date-hint" ng-hide="!message.displayTimeStamp">{{message.displayTimeStamp}}</div>
+                        <a ng-href="{{chatLibrary.friendsDict[message.SenderUserId].UserProfileLink}}"
+                           ng-click="goToProfile()"
+                           ng-hide="message.isSystemMessage"
+                           class="avatar avatar-headshot-sm dialog-message-avatar-link">
+                            <img ng-if="message.SenderUserId != chatLibrary.userId"
+                                 ng-src="{{chatLibrary.friendsDict[message.SenderUserId].AvatarThumb.Url}}"
+                                 thumbnail="chatLibrary.friendsDict[message.SenderUserId].AvatarThumb"
+                                 image-retry
+                                 class="avatar-card-image dialog-message-avatar">
+                        </a>
+                        <div class="dialog-message dialog-triangle"
+                             ng-hide="message.isSystemMessage">
+                            <span ng-if="chatLibrary.friendsDict[message.SenderUserId]"
+                                  ng-show="message.isClusterMaster && message.SenderUserId != chatLibrary.userId"
+                                  class="xsmall dialog-message-author">{{chatLibrary.friendsDict[message.SenderUserId].Username}}</span>
+                            <span class="small dialog-message-content" ng-bind-html="message.Content"></span>
+                        </div>
+                        <div class="xsmall dialog-sending" ng-show="message.sendingMessage">Sending...</div>
+                        <div class="text-error dialog-sending" ng-show="message.sendMessageHasError"
+                             ng-bind="message.error || 'Error'"></div>
+                        <span class="system-message-content"
+                              ng-show="message.isSystemMessage"
+                              ng-bind-html="message.Content"></span>
+                    </li>
+                </ul>
+            </div>
+            <div class="chat-loading loading-top"
+                 ng-show="dialogLayout.isChatLoading">
+                <img ng-src="{{chatLibrary.spinner}}" alt="loading ...">
+            </div>
+            <div class="dialog-input-container"
+                ng-style="chatLibrary.inApp? dialogLayout.inAppStyle.inputStyle : dialogLayout.defaultStyle.inputStyle">
+                <textarea msd-elastic
+                          focus-me="{{dialogLayout.focusMeEnabled}}"
+                          ng-focus="toggleDialogFocusStatus(true)"
+                          ng-blur="toggleDialogFocusStatus(false)"
+                          placeholder="Send a message ..."
+                          ng-model="dialogData.messageForSend"
+                          key-press-enter="keyPressEnter($event)"
+                          class="dialog-input"
+                          maxlength="{{dialogLayout.limitCharacterCount}}"
+                          ng-disabled="chatLibrary.chatLayout.errorMaskEnable"
+                          ng-style="chatLibrary.inApp? dialogLayout.inAppStyle.inputStyle : dialogLayout.defaultStyle.inputStyle"></textarea>
+                <button class="btn-secondary-sm message-send-btn"
+                        ng-show="chatLibrary.inApp && dialogData.messageForSend && dialogData.messageForSend.length > 0"
+                        remove-focus>
+                    Send
+                </button>
             </div>
         </div>
+        <div class="group-members-container"
+             ng-show="dialogLayout.lookUpMembers">
+            <div class="chat-windows-header"
+                ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.headerStyle : ''">
+                <div class="chat-header-back"
+                        ng-click="viewParticipants()">
+                    <span class="icon-chat-arrow-left"></span>
+                </div>
+                <div class="chat-header-label">
+                    <span class="font-bold">Participants</span>
+                </div>
+            </div>
+            <div id="group-members" class="rbx-scrollbar chat-friend-list"
+                ng-style="chatLibrary.inApp ? chatLibrary.inAppLayout.chatBodyHeight : ''">
+                <ul class="chat-friends">
+                    <li ng-repeat="userId in dialogData.userIds"
+                        class="chat-friend">
+                        <div class="chat-friend-container">
+                            <div class="avatar avatar-headshot-sm card-plain chat-friend-avatar">
+                                <img ng-src="{{chatLibrary.friendsDict[userId].AvatarThumb.Url}}"
+                                     thumbnail="chatLibrary.friendsDict[userId].AvatarThumb"
+                                     image-retry
+                                     class="avatar-card-image chat-avatar">
+                                <div class="avatar-status chat-friend-status" ng-class="userPresenceTypes[chatLibrary.friendsDict[userId].UserPresenceType]['className']"></div>
+                            </div>
+                            <div class="chat-friend-info">
+                                <span class="text-overflow chat-friend-name">{{chatLibrary.friendsDict[userId].Username}}</span>
+                                <span class="small" ng-show="dialogData.party && dialogData.membersDict[userId].memberStatus == memberStatus.LEADER">Leader</span>
+                                <span class="small" ng-show="dialogData.party && dialogData.membersDict[userId].memberStatus == memberStatus.MEMBER">In party</span>
+                            </div>
+                            <div class="group-member-action">
+                                <span ng-if="chatLibrary.userId != userId && chatLibrary.userId === dialogData.party.LeaderUser.Id && dialogData.dialogType == dialogType.PARTY"
+                                      class="icon-chat-remove"
+                                      ng-click="removeMember(userId)"></span>
+                                <span ng-if="chatLibrary.userId != userId && chatLibrary.userId === dialogData.InitiatorUser.Id && dialogData.dialogType != dialogType.PARTY"
+                                      class="icon-chat-remove"
+                                      ng-click="removeMember(userId)"></span>
+                                <span class="icon-chat-report-person"
+                                      ng-if="chatLibrary.userId != userId"
+                                      ng-click="abuseReport(userId, false)"></span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div abuse-report></div>
+        <div class="group-friends-container"
+             ng-show="dialogData.addMoreFriends">
+            <div class="chat-windows-header"
+                ng-style="chatLibrary.inApp ? chatLibrary.inAppLayout.headerStyle : ''">
+                <div class="chat-header-back"
+                        ng-click="dialogData.addMoreFriends = false">
+                    <span class="icon-chat-arrow-left"></span>
+                </div>
+                <div class="chat-header-label">
+                    <span class="font-bold">Add Friends</span>
+                    <span class="font-bold"
+                          ng-class="{'group-overload': dialogLayout.isMembersOverloaded}">
+                        ({{(dialogData.numberOfSelected)}}/{{chatLibrary.quotaOfPartyMembers}})
+                    </span>
+                </div>
+            </div>
+            <div friends-selection
+                 class="friends-selection-container"></div>
+        </div>
+    </div>
+</script>
 
-        <script type="text/javascript">
-            $(function () {
-                $(document).on('Roblox.Chat.PartyInGame', function (event, args) {
-                    play_placeId = args.placeId;
-                });
-            });
-        </script>
+        <div dialog
+             id="{{newGroup.layoutId}}"
+             dialog-data="newGroup"
+             chat-library="chatLibrary"
+             close-dialog="closeDialog('newGroup')"
+             send-invite="sendInvite(newGroup.layoutId)"
+             ng-if="newGroup"></div>
+        <script type="text/ng-template" id="chat-new-group">
+    <div class="dialog-container group-create-container"
+         ng-class="{'collapsed': dialogLayout.collapsed && chatLibrary.deviceType === deviceType.COMPUTER}"
+         ng-controller="chatFriendsController">
+        <div class="chat-windows-header"
+            ng-style="chatLibrary.inApp ? dialogLayout.inAppStyle.headerStyle : ''">
+            <div class="chat-header-back"
+                    ng-click="closeDialog(dialogData.layoutId)"
+                    ng-show="chatLibrary.inApp">
+                <span class="icon-chat-arrow-left"></span>
+            </div>
+            <div class="chat-header-create-group chat-header-label"
+                 ng-click="toggleDialogContainer()">
+                <span class="font-bold">{{dialogLayout.title}}</span>
+                <span class="font-bold"
+                      ng-class="{'group-overload': dialogLayout.isMembersOverloaded}">
+                    ({{(dialogData.numberOfSelected)}}/{{chatLibrary.quotaOfPartyMembers}})
+                </span>
+            </div>
+            <div class="chat-header-action">
+                <span class="icon-chat-close"
+                      ng-click="closeDialog(dialogData.layoutId)"
+                      ng-hide="chatLibrary.inApp"
+                      data-toggle="tooltip"
+                      title="Close"></span>
+            </div>
+        </div>
+        <div friends-selection></div>
+    </div>
+</script>
+        <script type="text/ng-template" id="chat-dialog-minimize">
+    <div id="dialogs-minimize-container"
+         class="dialogs-minimize-container"
+         ng-show="hasMinimizedDialogs"
+         data-toggle="popover"
+         data-bind="dialogs">
+        <span class="icon-chat-minimize"></span>
+        <span class="minimize-count">{{chatLibrary.minimizedDialogIdList.length}}</span>
+        <div class="rbx-popover-content" data-toggle="dialogs">
+            <ul class="dropdown-menu minimize-list" role="menu">
+                <li ng-repeat="dialogLayoutId in chatLibrary.minimizedDialogIdList"
+                    class="minimize-item"
+                    id="{{dialogLayoutId}}"
+                    minimize-item>
+                    <a class="text-overflow minimize-title">
+                        <span>
+                            {{chatLibrary.minimizedDialogData[dialogLayoutId].name}}
+                        </span>
+                    </a>
+                    <span class="icon-chat-cancel-search minimize-close"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</script>
+
+
+        <div id="dialogs-minimize"
+             class="dialogs-minimize"
+             dialog-minimize
+             chat-library="chatLibrary">
+        </div>
+        <div class="chat-placeholder"
+             chat-placeholder>
+        </div>
+        <script type="text/ng-template" id="chat-placeholder">
+    <div class="chat-placeholder-container"
+         ng-show="chatLibrary.chatPlaceholderEnabled">
+        <div class="chat-placeholder-header"
+             ng-style="chatLibrary.inApp ? chatLibrary.inAppLayout.headerStyle : ''"></div>
+        <span class="icon-chat-placeholder"></span>
+    </div>
+</script>
+
     </div>
 
     <script type="text/javascript">
-        var robloxAppService = angular.module("robloxApp.services");
-        var robloxFilters = angular.module("robloxApp.filters");
-        var robloxApp = angular.module("robloxApp");
-        robloxApp.constant("keyCode", { enter: 13, esc: 27 });
-        robloxApp.directive("enterEscapeShift", ["keyCode", function(keyCode) {
-            return {
-                restrict: "A", link: function(scope, element, attrs) {
-                    element.bind("keydown keypress", function(event) {
-                        var which = event.keyCode || event.which;
-                        if (which !== keyCode.enter || event.shiftKey) return;
-                        event.preventDefault();
-                        scope.$apply(function() { scope.$eval(attrs.enterEscapeShift); });
-                    });
-                }
-            };
-        }]);
-        robloxApp.directive("focusMe", ["$timeout", function($timeout) {
-            return {
-                scope: { trigger: "@@focusMe" },
-                link: function(scope, element, attrs) {
-                    scope.$watch(function() { return attrs.focusMe; }, function(value) {
-                        if (value === "true") {
-                            $timeout(function() { element[0].focus(); });
-                        }
-                    });
-                }
-            };
-        }]);
-        robloxApp.directive("focusModel", function() {
-            return function(scope, element, attrs) {
-                var handler = function() {
-                    scope.$evalAsync(function() { scope.$eval(attrs.focusModel); });
-                };
-                element[0].addEventListener("focus", handler, true);
-            };
-        });
-        robloxApp.directive("inputMaxLength", function() {
-            return {
-                require: "ngModel", link: function(scope, element, attrs, ctrl) {
-                    var max = Number(attrs.inputMaxLength);
-                    ctrl.$parsers.push(function(value) {
-                        if (value && value.length > max) {
-                            var truncated = value.substring(0, max);
-                            ctrl.$setViewValue(truncated);
-                            ctrl.$render();
-                            return truncated;
-                        }
-                        return value;
-                    });
-                }
-            };
-        });
-        robloxApp.directive("onFinishRender", ["$timeout", function($timeout) {
-            return {
-                restrict: "A", link: function(scope, element, attrs) {
-                    if (scope.$last === true) {
-                        $timeout(function() { scope.$emit(attrs.onFinishRender); });
-                    }
-                }
-            };
-        }]);
-    </script>
-    @* Only load scripts not already included by _Layout.cshtml *@
-    <script type="text/javascript" src="/JS/viewapp/common/constants/keyCode.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/constants/callBackTypes.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/constants/localStorageNames.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/cacheService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/imagesService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/localStorageService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/performanceService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/friendsInfoService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/services/playGameService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/common/filters/formatString.js"></script>
-    <script type="text/javascript">
-        var notificationStream;
-        try { notificationStream = angular.module("notificationStream"); } catch(e) { notificationStream = angular.module("notificationStream", ["robloxApp"]); }
-    </script>
-    <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/services/layoutLibraryService.js"></script>
-    <script type="text/javascript" src="/JS/angular/angular-elastic.js"></script>
-    <script type="text/javascript" src="/JS/chat/ui-bootstrap-popover-only.js"></script>
-    <script type="text/javascript" src="/JS/chat/chat-modal-shim.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/widgets/modal/modal.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/widgets/modal/constants/modalOptions.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/widgets/modal/services/modalStringService.js"></script>
-    <script type="text/javascript" src="/JS/viewapp/widgets/modal/services/modalService.js"></script>
-    <script type="text/javascript" src="/JS/chat/chat-modal-controller.js"></script>
-    <script type="text/javascript" src="/JS/dist/js/legacyStyleGuide.bundle.min.js"></script>
-    <script type="text/javascript">
-        try { angular.module("toast"); } catch(e) { angular.module("toast", []); }
-    </script>
-    <script type="text/javascript" src="/JS/chat/chat-translations-en.js"></script>
-    <script type="text/javascript" src="/JS/chat/chat-translations-loader.js"></script>
-    <script type="text/javascript" src="/JS/chat/chat-template-cache.js"></script>
-    <script type="text/javascript" src="/JS/chat/chat.bundle.min.js"></script>
-    <script type="text/javascript">
-        var _chatJq = window.jQuery;
         $(function () {
-            var el = document.getElementById('chat-container');
-            if (el) {
-                if (!angular.element(el).injector()) {
-                    try {
-                        angular.bootstrap(el, ['chat', 'chatAppTemplates']);
-                    } catch (e) {
-                        console.warn('Chat bootstrap fallback:', e);
-                    }
-                }
-                el.style.visibility = 'visible';
-            }
-        });
-        window.addEventListener('load', function () {
-            var leftCol = document.querySelector('.rbx-left-col');
-            var scrollbar = leftCol && leftCol.querySelector('[data-toggle="scrollbar"]');
-            if (scrollbar && _chatJq && _chatJq.fn.mCustomScrollbar) {
-                _chatJq(scrollbar).mCustomScrollbar('destroy');
-                _chatJq(scrollbar).mCustomScrollbar({
-                    autoHideScrollbar: false,
-                    autoExpandScrollbar: false,
-                    scrollInertia: 0,
-                    mouseWheel: { preventDefault: true }
-                });
-            }
+            // Because of placeLauncher.js, has to add this stupid global "play_placeId"
+            $(document).on('Roblox.Chat.PartyInGame', function (event, args) {
+                play_placeId = args.placeId;
+            });
         });
     </script>
+
+</div>
+
+
 }

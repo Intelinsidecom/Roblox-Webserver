@@ -13,6 +13,12 @@
 </head>
 
 
+@if (UseBundledAssets)
+{
+    <link rel="stylesheet" href="/CSS/Bundles/Membership.css" />
+}
+else
+{
 <link rel="stylesheet" href="/CSS/Base/CSS/Roblox.css">
 <link rel="stylesheet" href="/CSS/RBXCommon.css">
 <link rel="stylesheet" href="/CSS/Base/CSS/Abp.css">
@@ -43,15 +49,22 @@
 <link rel="stylesheet" href="/CSS/Pages/Upgrades/BuildersClubProductsGrid.css">
 <link rel="stylesheet" href="/CSS/Pages/CashOut/CashOut.css">
 <link rel="stylesheet" href="/CSS/Pages/Upgrades/BuildersClubPanel.css">
+}
 
-        <script type="text/javascript" src="/js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="/js/jquery/jquery-1.11.1.min.js"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")</script>
-<script type="text/javascript" src="/js/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="/js/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
-<script type="text/javascript" src="/js/MicrosoftAjax.js"></script>
+<script type="text/javascript" src="/js/Microsoft/MicrosoftAjax.js"></script>
 <script type="text/javascript">window.Sys || document.write("<script type='text/javascript' src='/js/Microsoft/MicrosoftAjax.js'><\/script>")</script>
 
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/541d4fd6c9957a887e796219e0525e6f.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="/JS/roblox.js"></script>
@@ -62,6 +75,7 @@
     <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
     <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+    }
 
             <script type="text/javascript">
             if (Roblox && Roblox.EventStream) {
@@ -80,6 +94,16 @@
     }
 </script>
 
+
+
+    
+
+@if (UseBundledAssets)
+{
+    <script type="text/javascript" src="~/JS/Bundles/6e4b656a1c21e80afa0764e194704070.js"></script>
+}
+else
+{
 <script type="text/javascript" src="/js/leancore/libs/bootstrap.min.js"></script>
 <script type="text/javascript" src="/js/leancore/BootstrapNamespacing.js"></script>
 <script type="text/javascript" src="/js/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
@@ -123,12 +147,14 @@
 <script type="text/javascript" src="/js/webkit.js"></script>
 <script type="text/javascript" src="/js/DropDownNav.js"></script>
 <script type="text/javascript" src="/js/common/forms.js"></script>
-
 <script type="text/javascript" src="/js/Upgrades/BuildersClubProductsGrid.js"></script>
 <script type="text/javascript" src="/js/GenericModal.js"></script>
 <script type="text/javascript" src="/js/GenericConfirmation.js"></script>
-
-    
+<script type="text/javascript" src="/JS/EventTracker.js"></script>
+<script type="text/javascript" src="/JS/ClientInstaller.js"></script>
+<script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
+<script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
+}
 <script type="text/javascript">
     $(function () {
         Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
@@ -670,10 +696,6 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
         });
     </script>
 
-<script type="text/javascript" src="/JS/EventTracker.js"></script>
-<script type="text/javascript" src="/JS/ClientInstaller.js"></script>
-<script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
-<script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
 
 <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
     <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>

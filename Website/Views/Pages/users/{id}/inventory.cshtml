@@ -7,6 +7,12 @@
     <meta charset=UTF-8>
     <meta name=viewport content="width=device-width, initial-scale=1">
     
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="/CSS/Bundles/Inventory.css" />
+    }
+    else
+    {
     <link rel="stylesheet" href="/CSS/LeanBaseStyle.css">
     <link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="/CSS/SiteStyle.css">
@@ -23,6 +29,7 @@
     <link rel="stylesheet" href="/CSS/Pages/Recommendations/Recommendations.css">
     <link rel="stylesheet" href="/CSS/Pages/Notifications/PushNotificationRegistration.css">
     <link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+    }
 
     <script src=//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js></script>
     <script>
@@ -44,6 +51,12 @@
     </style>
 
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/0cf1a2d56bada35da07d375a3bae013b.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="/JS/roblox.js"></script>
@@ -56,6 +69,7 @@
     <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
     <script type="text/javascript" src="/JS/services/userService.js"></script>
+    }
 
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
@@ -664,6 +678,12 @@
         Roblox.jsConsoleEnabled = false;
     </script>
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/1f51970f17df6db6e7584802c8925f40.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/underscore-min.js"></script>
@@ -724,9 +744,7 @@
 
 
 
-    <script>
-        angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
-    </script>
+
     <script type="text/javascript" src="/js/angular/angular.ng-modules.js"></script>
     <script type="text/javascript" src="/js/angular/angular.audio.js"></script>
     <script type="text/javascript" src="/js/angular/angular-elastic.js"></script>
@@ -773,41 +791,7 @@
     <script type="text/javascript" src="/js/viewapp/common/directives/onFinishRenderDirective.js"></script>
     <script type="text/javascript" src="/js/viewapp/common/directives/phoneDirective.js"></script>
     <script type="text/javascript" src="/js/viewapp/common/directives/switcherDirective.js"></script>
-    <div ng-modules=baseTemplateApp>
-        <script type="text/javascript" src="/js/base_splitApps___29d0d828b10d9553443e4d5e9e2cc728_m.js"></script>
-    </div>
 
-    <div ng-modules=pageTemplateApp>
-        <script type="text/javascript" src="/js/page_splitApps___808d6377e164800d75eea4639a9c218e_m.js"></script>
-    </div>
-
-
-    <script>
-        Roblox.XsrfToken.setToken('ZBiF+JCaP3O/');
-    </script>
-    <script>
-        $(function() {
-            Roblox.DeveloperConsoleWarning.showWarning();
-        });
-    </script>
-    <script>
-        $(function() {
-            Roblox.JSErrorTracker.initialize({
-                'suppressConsoleError': true
-            });
-        });
-    </script>
-
-    <script>
-        var Roblox = Roblox || {};
-        Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
-        Roblox.UpsellAdModal.Resources = {
-            title: "Remove Ads Like This",
-            body: "Builders Club members do not see external ads like these.",
-            accept: "Upgrade Now",
-            decline: "No, thanks"
-        };
-    </script>
 
     <script type="text/javascript" src="/js/viewapp/common/services/cacheService.js"></script>
     <script type="text/javascript" src="/js/viewapp/widgets/cursorPagination/cursorPagination.js"></script>
@@ -840,4 +824,45 @@
 <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
 <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
 <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
+    }
     
+
+
+
+    <div ng-modules=baseTemplateApp>
+        <script type="text/javascript" src="/js/base_splitApps___29d0d828b10d9553443e4d5e9e2cc728_m.js"></script>
+    </div>
+
+    <div ng-modules=pageTemplateApp>
+        <script type="text/javascript" src="/js/page_splitApps___808d6377e164800d75eea4639a9c218e_m.js"></script>
+    </div>
+
+    <script>
+        angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
+    </script>
+    <script>
+        Roblox.XsrfToken.setToken('ZBiF+JCaP3O/');
+    </script>
+    <script>
+        $(function() {
+            Roblox.DeveloperConsoleWarning.showWarning();
+        });
+    </script>
+    <script>
+        $(function() {
+            Roblox.JSErrorTracker.initialize({
+                'suppressConsoleError': true
+            });
+        });
+    </script>
+
+    <script>
+        var Roblox = Roblox || {};
+        Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
+        Roblox.UpsellAdModal.Resources = {
+            title: "Remove Ads Like This",
+            body: "Builders Club members do not see external ads like these.",
+            accept: "Upgrade Now",
+            decline: "No, thanks"
+        };
+    </script>

@@ -23,6 +23,12 @@
     <meta charset=UTF-8>
     <meta name=viewport content="width=device-width, initial-scale=1">
 
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="/CSS/Bundles/Profile.css" />
+    }
+    else
+    {
     <link rel="stylesheet" href="/CSS/LeanBaseStyle.css">
     <link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="/CSS/SiteStyle.css">
@@ -45,8 +51,15 @@
     <link rel="stylesheet" href="/CSS/Pages/Shared/ThumbnailLoader.css">
     <link rel="stylesheet" href="/CSS/Pages/Notifications/PushNotificationRegistration.css">
     <link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+    }
   
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/3885cf5028d0a13584d02644a23ac490.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="/JS/common/constants.js"></script>
@@ -55,6 +68,7 @@
     <script type="text/javascript" src="/JS/RobloxEventStream.js"></script>
     <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
+    }
 
     <script>
         var Roblox = Roblox || {};
@@ -862,10 +876,168 @@
     <div id=pluginObjDiv style=height:1px;width:1px;visibility:hidden;position:absolute;top:0></div><iframe id=downloadInstallerIFrame name=downloadInstallerIFrame style=visibility:hidden;height:0;width:1px;position:absolute></iframe>
 
 @section Scripts {
-    <script type='text/javascript' src='/JS/EventTracker.js'></script>
-    <script type='text/javascript' src='/JS/ClientInstaller.js'></script>
-    <script type='text/javascript' src='/JS/InstallationInstructions.js'></script>
-    <script type='text/javascript' src='/JS/IEMetroInstructions.js'></script>
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/34c2bbadca5908ecfecff9b07a20dcaa.js"></script>
+    }
+    else
+    {
+<script type='text/javascript' src='/JS/EventTracker.js'></script>
+<script type='text/javascript' src='/JS/ClientInstaller.js'></script>
+<script type='text/javascript' src='/JS/InstallationInstructions.js'></script>
+<script type='text/javascript' src='/JS/IEMetroInstructions.js'></script>
+<script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
+<script type="text/javascript" src="/JS/leancore/libs/underscore-min.js"></script>
+<script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
+<script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
+<script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
+<script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
+<script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
+<script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
+<script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
+<script type="text/javascript" src="/JS/utilities/deviceFeatureDetection.js"></script>
+<script type="text/javascript" src="/JS/utilities/lazyLoad.js"></script>
+<script type="text/javascript" src="/JS/utilities/urlParser.js"></script>
+<script type="text/javascript" src="/JS/utilities/ExponentialBackoff.js"></script>
+<script type="text/javascript" src="/JS/utilities/ExponentialBackoffSpecification.js"></script>
+<script type="text/javascript" src="/JS/XsrfToken.js"></script>
+<script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
+<script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
+<script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
+<script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+<script type="text/javascript" src="/JS/leancore/Navigation.js"></script>
+<script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+<script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
+<script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
+<script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
+<script type="text/javascript" src="/JS/extensions/string.js"></script>
+<script type="text/javascript" src="/JS/StringTruncator.js"></script>
+<script type="text/javascript" src="/JS/json2.min.js"></script>
+<script type="text/javascript" src="/JS/MasterPageUI.js"></script>
+<script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
+<script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
+<script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
+<script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
+<script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
+<script type="text/javascript" src="/JS/extensions/AnimatedThumbnails.js"></script>
+<script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
+<script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
+<script type="text/javascript" src="/JS/3D/three.js"></script>
+<script type="text/javascript" src="/JS/3D/MTLLoader.js"></script>
+<script type="text/javascript" src="/JS/3D/OBJMTLLoader.js"></script>
+<script type="text/javascript" src="/JS/3D/tween.js"></script>
+<script type="text/javascript" src="/JS/3D/RobloxOrbitControls.js"></script>
+<script type="text/javascript" src="/JS/Linkify.js"></script>
+<script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
+<script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
+<script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
+<script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
+<script type="text/javascript" src="/JS/VideoPreRollDFP.js"></script>
+<script type="text/javascript" src="/JS/CharacterSelect.js"></script>
+<script type="text/javascript" src="/JS/MadStatus.js"></script>
+<script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
+<script type="text/javascript" src="/JS/GameLauncher.js"></script>
+<script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
+<script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
+<script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
+<script type="text/javascript" src="/JS/angular/angular.ng-modules.js"></script>
+<script type="text/javascript" src="/JS/angular/angular.audio.js"></script>
+<script type="text/javascript" src="/JS/angular/angular-elastic.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/robloxService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/chatDispatchService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/eventStreamService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/httpService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/hybridService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/imagesService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/localStorageService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/numericCodeService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/realtimeService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/retryService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/urlService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/userService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/services/performanceService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/constants/keyCode.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/constants/callBackTypes.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/constants/deviceTypes.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/helpers.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/abbreviate.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/capitalize.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/firstLetter.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/getPercentage.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/htmlToPlainText.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/isEmpty.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/orderList.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/parseTimeStamp.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/positive.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/reverse.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/filters/startsWith.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/directives/autoResizeDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/directives/blurDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/directives/clickOutsideDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/directives/enterEscapeShiftDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/directives/focusDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/common/directives/inputMaxLength.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/lazyLoadImage/angularLazyImg.js"></script>
+<script type="text/javascript" src="/JS/angular/ui-bootstrap-0.11.2.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/profile.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/groupCard/groupCard.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/slideSwitcher/slideSwitcher.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/services/profileService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/filters/profileHeaderStatusTextFilter.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/constants/layout.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/constants/profileJsonEndPoints.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileUtilitiesController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileHeaderController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileAccoutrementsController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileCollectionsController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileGridController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/groupCard/constants/layout.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/groupCard/directives/groupCardDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/slideSwitcher/directives/slideSwitcherDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileGroupController.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileHeaderDataDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileUtilitiesDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/userStatusDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileAccoutrementsDataDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileAccoutrementsSliderDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileAccoutrementsPageDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileEmptyTabDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileStatusInputElementDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileTabClickDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/scrollHorizontally.js"></script>
+<script type="text/javascript" src="/JS/jquery/jquery.history.js"></script>
+<script type="text/javascript" src="/JS/utilities/jquery.history.override.js"></script>
+<script type="text/javascript" src="/JS/utilities/robloxTabs.js"></script>
+<script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
+<script type="text/javascript" src="/JS/StringTruncator.js"></script>
+<script type="text/javascript" src="/JS/VotingPanel.js"></script>
+<script type="text/javascript" src="/JS/GameItemCard.js"></script>
+<script type="text/javascript" src="/JS/captcha/constants/captchaConstants.js"></script>
+<script type="text/javascript" src="/JS/captcha/captchaService.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/captcha/captcha.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/captcha/constants/captchaConstants.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/captcha/directives/captchaDirective.js"></script>
+<script type="text/javascript" src="/JS/viewapp/widgets/captcha/services/captchaInterface.js"></script>
+<script type="text/javascript" src="/JS/utilities/popover.js"></script>
+<script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
+<script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+<script type="text/javascript" src="/JS/utilities/dialog.js"></script>
+<script type="text/javascript" src="/JS/cookieLawNotice.js"></script>
+<script type="text/javascript" src="/JS/TosModalCheck.js"></script>
+<script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+<script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
+<script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
+<script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
+<script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
+<script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
+<script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
+    }
+
     <script>
         Roblox.Client._skip = null;
         Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
@@ -917,106 +1089,10 @@
         });
     </script>
 
-    <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
-    <script type="text/javascript" src="/JS/leancore/libs/underscore-min.js"></script>
-    <script type="text/javascript" src="/JS/GoogleAnalytics/GoogleAnalyticsEvents.js"></script>
-    <script type="text/javascript" src="/JS/JSErrorTracker.js"></script>
-    <script type="text/javascript" src="/JS/RobloxEventManager.js"></script>
-    <script type="text/javascript" src="/JS/GoogleEventListener.js"></script>
-    <script type="text/javascript" src="/JS/SiteTouchEvent.js"></script>
-    <script type="text/javascript" src="/JS/UpsellAdModal.js"></script>
-    <script type="text/javascript" src="/JS/JavaScriptEndpoints.js"></script>
-    <script type="text/javascript" src="/JS/utilities/deviceFeatureDetection.js"></script>
-    <script type="text/javascript" src="/JS/utilities/lazyLoad.js"></script>
-    <script type="text/javascript" src="/JS/utilities/urlParser.js"></script>
-    <script type="text/javascript" src="/JS/utilities/ExponentialBackoff.js"></script>
-    <script type="text/javascript" src="/JS/utilities/ExponentialBackoffSpecification.js"></script>
-    <script type="text/javascript" src="/JS/XsrfToken.js"></script>
-    <script type="text/javascript" src="/JS/DeveloperConsoleWarning.js"></script>
-    <script type="text/javascript" src="/JS/leancore/iesupport/jquery.placeholder.js"></script>
-    <script type="text/javascript" src="/JS/jquery.ba-postmessage.min.js"></script>
-    <script type="text/javascript" src="/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-    <script type="text/javascript" src="/JS/leancore/Navigation.js"></script>
 
-    <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
-    <script type="text/javascript" src="/JS/Game/GamePlayEvents.js"></script>
-    <script type="text/javascript" src="/JS/leancore/RobloxBaseInit.js"></script>
-    <script type="text/javascript" src="/JS/jquery.tipsy.js"></script>
-    <script type="text/javascript" src="/JS/extensions/string.js"></script>
-    <script type="text/javascript" src="/JS/StringTruncator.js"></script>
-    <script type="text/javascript" src="/JS/json2.min.js"></script>
-    <script type="text/javascript" src="/JS/MasterPageUI.js"></script>
-    <script type="text/javascript" src="/JS/polyfill/ie7localStorage.js"></script>
-    <script type="text/javascript" src="/JS/jPlayer/2.9.2/jquery.jplayer.min.js"></script>
-    <script type="text/javascript" src="/JS/jquery.simplemodal-1.3.5.js"></script>
-    <script type="text/javascript" src="/JS/AjaxAvatarThumbnail.js"></script>
-    <script type="text/javascript" src="/JS/extensions/Thumbnails.js"></script>
-    <script type="text/javascript" src="/JS/extensions/ThreeDeeThumbnails.js"></script>
-    <script type="text/javascript" src="/JS/extensions/AnimatedThumbnails.js"></script>
-    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailView.js"></script>
-    <script type="text/javascript" src="/JS/Thumbnails/ThumbnailSpinner.js"></script>
-    <script type="text/javascript" src="/JS/3D/three.js"></script>
-    <script type="text/javascript" src="/JS/3D/MTLLoader.js"></script>
-    <script type="text/javascript" src="/JS/3D/OBJMTLLoader.js"></script>
-    <script type="text/javascript" src="/JS/3D/tween.js"></script>
-    <script type="text/javascript" src="/JS/3D/RobloxOrbitControls.js"></script>
-    <script type="text/javascript" src="/JS/Linkify.js"></script>
-    <script type="text/javascript" src="/JS/CookieUpgrader.js"></script>
-    <script type="text/javascript" src="/JS/utilities/stringFormat.js"></script>
-    <script type="text/javascript" src="/JS/Tracking/SignupTrackingScript.js"></script>
-    <script type="text/javascript" src="/JS/Tracking/AsyncGoogleOnScript.js"></script>
-    <script type="text/javascript" src="/JS/VideoPreRollDFP.js"></script>
-    <script type="text/javascript" src="/JS/CharacterSelect.js"></script>
-    <script type="text/javascript" src="/JS/MadStatus.js"></script>
-    <script type="text/javascript" src="/JS/PlaceLauncher.js"></script>
-    <script type="text/javascript" src="/JS/GameLauncher.js"></script>
-    <script type="text/javascript" src="/JS/GameLaunchLogger.js"></script>
-    <script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
-    <script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
 
 
     
-<script type="text/javascript" src="/JS/angular/angular.ng-modules.js"></script>
-<script type="text/javascript" src="/JS/angular/angular.audio.js"></script>
-<script type="text/javascript" src="/JS/angular/angular-elastic.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/robloxService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/chatDispatchService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/eventStreamService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/httpService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/hybridService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/imagesService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/localStorageService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/numericCodeService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/realtimeService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/retryService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/urlService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/userService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/services/performanceService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/constants/keyCode.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/constants/callBackTypes.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/constants/deviceTypes.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/constants/performanceMarkLabels.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/helpers.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/abbreviate.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/capitalize.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/firstLetter.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/getPercentage.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/htmlToPlainText.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/isEmpty.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/orderList.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/parseTimeStamp.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/positive.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/reverse.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/filters/startsWith.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/directives/autoResizeDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/directives/blurDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/directives/clickOutsideDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/directives/enterEscapeShiftDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/directives/focusDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/common/directives/inputMaxLength.js"></script>
 
     <div ng-modules=baseTemplateApp>
         <script src=/JS/base_splitApps___29d0d828b10d9553443e4d5e9e2cc728_m.js></script>
@@ -1108,13 +1184,10 @@
     </script>
     <script type="text/ng-template" id="slide-switcher"><ul class="slide-items-container switcher-items hlist"><li class="switcher-item slide-item-container" ng-repeat="item in collection" ng-show=shouldPreLoad($index) ng-class="{'active':curIdx===$index}"><div class="col-sm-6 slide-item-container-left"><div class=slide-item-emblem-container><a ng-href={{item.GroupUrl}}><img class=slide-item-image lazy-img={{item.Emblem.Url}} thumbnail=item.Emblem reset-src=true image-retry alt={{item.Name}}></a></div></div><div class="col-sm-6 text-overflow slide-item-container-right groups"><div class=slide-item-info><h2 class="slide-item-name groups">{{item.Name}}</h2><p class="text-description slide-item-description groups">{{item.Description}}</div><div class=slide-item-stats><ul class=hlist><li class=list-item><div class="text-label slide-item-stat-title">Members</div><div class="text-lead slide-item-members-count">{{item.Members|abbreviate}}</div><li class=list-item><div class="text-label slide-item-stat-title">Rank</div><div class="text-lead text-overflow slide-item-my-rank groups">{{item.Rank}}</div></ul></div></div></ul><a class="carousel-control left" ng-if="collection.length>1" ng-click=slidePrev()><span class=icon-carousel-left></span></a> <a class="carousel-control right" ng-if="collection.length>1" ng-click=slideNext()><span class=icon-carousel-right></span></a></script>
     <script type="text/ng-template" id="profile-player-assets"><div class=container-header><h3>{{layout.title}}</h3><a ng-href={{layout.assetUrl}} ng-show=layout.showSeeAllButton class="btn-fixed-width btn-secondary-xs btn-more">See All</a></div><div class=section-content><ul class="hlist item-list"><li class="list-item asset-item" ng-repeat="item in assets"><a ng-href={{item.AssetSeoUrl}} title={{item.Name}}><img lazy-img={{item.Thumbnail.Url}} thumbnail=item.Thumbnail reset-src=true image-retry> <span class="text-overflow item-name">{{item.Name}}</span></a></ul></div></script>
-    <script type="text/javascript" src="/JS/viewapp/widgets/lazyLoadImage/angularLazyImg.js"></script>
-<script type="text/javascript" src="/JS/angular/ui-bootstrap-0.11.2.js"></script>
 <script>
     angular.module("ui.bootstrap.compat", angular.module("ui.bootstrap").requires);
     angular.module("ui.bootstrap", ["ui.bootstrap.v2"]);
 </script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/profile.js"></script>
 <script>
     angular.module("profile").run(["$templateCache", function(t) {
         var tmpl = '<div tabindex="-1" role="dialog" class="modal fade" ng-class="{in: animate}" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)">' +
@@ -1171,59 +1244,8 @@
 
         ]);
 </script>
-<script type="text/javascript" src="/JS/viewapp/widgets/groupCard/groupCard.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/slideSwitcher/slideSwitcher.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/services/profileService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/filters/profileHeaderStatusTextFilter.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/constants/layout.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/constants/profileJsonEndPoints.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileUtilitiesController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileHeaderController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileAccoutrementsController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileCollectionsController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileGridController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/groupCard/constants/layout.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/groupCard/directives/groupCardDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/slideSwitcher/directives/slideSwitcherDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/controllers/profileGroupController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileHeaderDataDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileUtilitiesDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/userStatusDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileAccoutrementsDataDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileAccoutrementsSliderDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileAccoutrementsPageDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileEmptyTabDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileStatusInputElementDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/profileTabClickDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/profile/directives/scrollHorizontally.js"></script>
-<script type="text/javascript" src="/JS/jquery/jquery.history.js"></script>
-<script type="text/javascript" src="/JS/utilities/jquery.history.override.js"></script>
-<script type="text/javascript" src="/JS/utilities/robloxTabs.js"></script>
-<script type="text/javascript" src="/JS/utilities/robloxAds.js"></script>
-<script type="text/javascript" src="/JS/StringTruncator.js"></script>
-<script type="text/javascript" src="/JS/VotingPanel.js"></script>
-<script type="text/javascript" src="/JS/GameItemCard.js"></script>
-<script type="text/javascript" src="/JS/captcha/constants/captchaConstants.js"></script>
-<script type="text/javascript" src="/JS/captcha/captchaService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/captcha/captcha.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/captcha/constants/captchaConstants.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/captcha/directives/captchaDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/widgets/captcha/services/captchaInterface.js"></script>
-<script type="text/javascript" src="/JS/utilities/popover.js"></script>
-<script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
-<script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
-<script type="text/javascript" src="/JS/utilities/dialog.js"></script>
-<script type="text/javascript" src="/JS/cookieLawNotice.js"></script>
-<script type="text/javascript" src="/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
 
-<script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
 
-<script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
-<script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
-<script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
-<script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
-<script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
     
 <noscript><img src="http://b.scorecardresearch.com/p?c1=2&amp;c2=&amp;c3=&amp;c4=&amp;c5=&amp;c6=&amp;c15=&amp;cv=2.0&amp;cj=1"></noscript>
 }
