@@ -22,6 +22,12 @@
 	Trade - Roblox
 </title>
 
+@if (UseBundledAssets)
+{
+    <link rel="stylesheet" href="~/CSS/Bundles/Money.css">
+}
+else
+{
 <link rel="stylesheet" href="/CSS/Base/CSS/Roblox.css">
 <link rel="stylesheet" href="/CSS/RBXCommon.css">
 <link rel="stylesheet" href="/CSS/Base/CSS/Abp.css">
@@ -50,6 +56,7 @@
 <link rel="stylesheet" href="/CSS/Pages/Money/Money.css">
 <link rel="stylesheet" href="/CSS/Pages/Graphs/Graphs.css">
 <link rel="stylesheet" href="/CSS/Pages/Notifications/Notifications.css">
+}
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true" />
 <meta charset="UTF-8">
@@ -99,6 +106,12 @@
         chat: "https://chatsite.roblox.com"
     }
 </script>
+@if (UseBundledAssets)
+{
+    <script type="text/javascript" src="~/JS/Bundles/ab526733898870a9081e178a002d104f.js"></script>
+}
+else
+{
 <script type='text/javascript' src='/JS/roblox.js'></script>
 <script type='text/javascript' src='/JS/jquery.tipsy.js'></script>
 <script type='text/javascript' src='/JS/AjaxAvatarThumbnail.js'></script>
@@ -176,25 +189,7 @@
 <script type='text/javascript' src='/JS/utilities/CrossTabCommunication/Kingmaker.js'></script>
 <script type='text/javascript' src='/JS/utilities/CrossTabCommunication/PubSub.js'></script>
 <script type='text/javascript' src='/JS/Notifications/AuthenticationNotificationsHandler.js'></script>
-        <script type="text/javascript">
-            if (Roblox && Roblox.EventStream) {
-                Roblox.EventStream.Init("/www/e.png",
-                    "/www/e.png",
-                    "/pe?t=studio",
-                    "/pe?t=diagnostic");
-            }
-        </script>
 
-
-<script type="text/javascript">
-    if (Roblox && Roblox.PageHeartbeatEvent) {
-        Roblox.PageHeartbeatEvent.Init([2,8,20,60]);
-    }
-</script><script type='text/javascript'>Roblox.config.externalResources = [];Roblox.config.paths['Pages.Catalog'] = 'https://js.rbxcdn.com/8d6821a4eed971155a4829a1e43336f4.js.gzip';Roblox.config.paths['Pages.CatalogShared'] = 'https://js.rbxcdn.com/5c0ac85bd60f40a577bfff7e323e3690.js.gzip';Roblox.config.paths['Widgets.AvatarImage'] = 'https://js.rbxcdn.com/823c7d686e6b3d8321275740fe498f9d.js.gzip';Roblox.config.paths['Widgets.DropdownMenu'] = 'https://js.rbxcdn.com/5cf0eb71249768c86649bbf0c98591b0.js.gzip';Roblox.config.paths['Widgets.GroupImage'] = 'https://js.rbxcdn.com/556af22c86bce192fb12defcd4d2121c.js.gzip';Roblox.config.paths['Widgets.HierarchicalDropdown'] = 'https://js.rbxcdn.com/7689b2fd3f7467640cda2d19e5968409.js.gzip';Roblox.config.paths['Widgets.ItemImage'] = 'https://js.rbxcdn.com/c2aa2fcc2b1e8ec82e1bacfdb9dfffea.js.gzip';Roblox.config.paths['Widgets.PlaceImage'] = 'https://js.rbxcdn.com/52ff803e77bb661839e8b2c93bb5ba27.js.gzip';Roblox.config.paths['Widgets.SurveyModal'] = 'https://js.rbxcdn.com/56ad7af86ee4f8bc82af94269ed50148.js.gzip';</script>    <script type="text/javascript">
-        $(function () {
-            Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
-        });
-    </script>
 <script type='text/javascript' src='/JS/angular/angular.min.js'></script>
 <script type='text/javascript' src='/JS/angular/angular-sanitize.min.js'></script>
 <script type='text/javascript' src='/JS/angular/angular-ui-router.min.js'></script>
@@ -292,7 +287,28 @@
 <script type='text/javascript' src='/JS/Trade/InventoryItem.js'></script>
 <script type='text/javascript' src='/JS/Trade/TradeRequest.js'></script>
 <script type='text/javascript' src='/JS/GenericConfirmation.js'></script>
+}
 
+
+        <script type="text/javascript">
+            if (Roblox && Roblox.EventStream) {
+                Roblox.EventStream.Init("/www/e.png",
+                    "/www/e.png",
+                    "/pe?t=studio",
+                    "/pe?t=diagnostic");
+            }
+        </script>
+
+
+<script type="text/javascript">
+    if (Roblox && Roblox.PageHeartbeatEvent) {
+        Roblox.PageHeartbeatEvent.Init([2,8,20,60]);
+    }
+</script><script type='text/javascript'>Roblox.config.externalResources = [];Roblox.config.paths['Pages.Catalog'] = 'https://js.rbxcdn.com/8d6821a4eed971155a4829a1e43336f4.js.gzip';Roblox.config.paths['Pages.CatalogShared'] = 'https://js.rbxcdn.com/5c0ac85bd60f40a577bfff7e323e3690.js.gzip';Roblox.config.paths['Widgets.AvatarImage'] = 'https://js.rbxcdn.com/823c7d686e6b3d8321275740fe498f9d.js.gzip';Roblox.config.paths['Widgets.DropdownMenu'] = 'https://js.rbxcdn.com/5cf0eb71249768c86649bbf0c98591b0.js.gzip';Roblox.config.paths['Widgets.GroupImage'] = 'https://js.rbxcdn.com/556af22c86bce192fb12defcd4d2121c.js.gzip';Roblox.config.paths['Widgets.HierarchicalDropdown'] = 'https://js.rbxcdn.com/7689b2fd3f7467640cda2d19e5968409.js.gzip';Roblox.config.paths['Widgets.ItemImage'] = 'https://js.rbxcdn.com/c2aa2fcc2b1e8ec82e1bacfdb9dfffea.js.gzip';Roblox.config.paths['Widgets.PlaceImage'] = 'https://js.rbxcdn.com/52ff803e77bb661839e8b2c93bb5ba27.js.gzip';Roblox.config.paths['Widgets.SurveyModal'] = 'https://js.rbxcdn.com/56ad7af86ee4f8bc82af94269ed50148.js.gzip';</script>    <script type="text/javascript">
+        $(function () {
+            Roblox.JSErrorTracker.initialize({ 'suppressConsoleError': true});
+        });
+    </script>
 
         <link rel="canonical" href="/my/money.aspx" />
 
@@ -589,7 +605,7 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ctl00$ScriptManager', 'aspnet
             
         </ul>
     </div>
-    <a href=/upgrades/robux?ctx=money class="BuyRobuxButton btn-medium btn-primary">Buy Robux</a>
+    <a href="/upgrades/robux?ctx=money" class="BuyRobuxButton btn-medium btn-primary">Buy Robux</a>
     <div class="StandardPanelContainer">
         <div id="TabsContentContainer" class="StandardPanelWhite">
         
@@ -1016,264 +1032,6 @@ Sys.WebForms.PageRequestManager._initialize('ctl00$ctl00$ScriptManager', 'aspnet
     <div notification-content></div>
 
 </div>
-
-				<!-- chat-container now provided by Chat partial in _Layout.cshtml -->
-		
-    
-    
-
-    <div id="InstallationInstructions" class="style2016" style="display:none;">
-        <div class="ph-installinstructions">
-            <div class="ph-modal-header">
-                    <span class="icon-close-16x16 simplemodal-close"></span>
-                    <h5 class="title">Thanks for playing ROBLOX</h5>
-            </div>
-            <div class="modal-content-container"> 
-                <div class="ph-installinstructions-body ">
-
-
-        <ul class="modal-col-5">
-            <li class="step1-of-5">
-                <h2>1</h2>
-                <p class="larger-font-size">Click <strong>Save File</strong> when the download window pops up</p>
-                <img data-delaysrc="/images/635085abe343ceec97e5da00103cbd8d.png" />
-            </li>
-            <li class="2-of-5">
-                <h2>2</h2>
-                <p class="larger-font-size">Go to Downloads and double click <strong>RobloxPlayer.exe</strong></p>
-                <img data-delaysrc="/images/4791f147e474426b284e7885b8f91635.png" />
-            </li>
-            <li class="step3-of-5">
-                <h2>3</h2>
-                <p class="larger-font-size">Click <strong>Run</strong></p>
-                <img data-delaysrc="/images/27e0e77ae7b5d726ca231c5d338fa473.png" />
-            </li>
-            <li class="step4-of-5">
-                <h2>4</h2>
-                <p class="larger-font-size">Once installed, click <strong>Play</strong> to join the action!</p>
-                <div class="VisitButton VisitButtonContinueGLI">
-                    <a class="btn btn-primary-lg disabled btn-full-width">Play</a>
-                </div>
-            </li>
-            <li class="step5-of-5">
-                <h2>5</h2>
-                <p class="larger-font-size">Click <strong>Ok</strong> when the alert pops up</p>
-                <img data-delaysrc="/images/f024c63845c2f79d30ccebe2b2f5818d.png" />
-            </li>
-        </ul>
-
-                </div>
-            </div>
-            <div class="xsmall">
-                The ROBLOX installer should download shortly. If it doesn’t, start the <a href="#" class="text-link" onclick="Roblox.ProtocolHandlerClientInterface.manualDownload(); return false;">download now.</a>
-            </div>
-        </div>
-    </div>
-    <div class="InstallInstructionsImage" data-modalwidth="970" style="display:none;"></div>
-
-
-<div id="pluginObjDiv" style="height:1px;width:1px;visibility:hidden;position: absolute;top: 0;"></div>
-<iframe id="downloadInstallerIFrame" name="downloadInstallerIFrame" style="visibility:hidden;height:0;width:1px;position:absolute"></iframe>
-
-<script type='text/javascript' src='/JS/EventTracker.js'></script>
-<script type='text/javascript' src='/JS/ClientInstaller.js'></script>
-<script type='text/javascript' src='/JS/InstallationInstructions.js'></script>
-<script type='text/javascript' src='/JS/IEMetroInstructions.js'></script>
-
-<script type="text/javascript">
-    Roblox.Client._skip = null;
-    Roblox.Client._CLSID = '76D50904-6780-4c8b-8986-1A7EE0B1716D';
-    Roblox.Client._installHost = 'setup.freblx.xyz';
-    Roblox.Client.ImplementsProxy = true;
-    Roblox.Client._silentModeEnabled = true;
-    Roblox.Client._bringAppToFrontEnabled = false;
-    Roblox.Client._currentPluginVersion = '';
-    Roblox.Client._eventStreamLoggingEnabled = true;
-
-        
-        Roblox.Client._installSuccess = function() {
-            if(GoogleAnalyticsEvents){
-                GoogleAnalyticsEvents.ViewVirtual('InstallSuccess');
-                GoogleAnalyticsEvents.FireEvent(['Plugin','Install Success']);
-                if (Roblox.Client._eventStreamLoggingEnabled && typeof Roblox.GamePlayEvents != "undefined") {
-                    Roblox.GamePlayEvents.SendInstallSuccess(Roblox.Client._launchMode, play_placeId);
-                }
-            }
-        }
-        
-    </script>
-
-
-<div id="PlaceLauncherStatusPanel" style="display:none;width:300px"
-     data-new-plugin-events-enabled="True"
-     data-event-stream-for-plugin-enabled="True"
-     data-event-stream-for-protocol-enabled="True"
-     data-is-game-launch-interface-enabled="True"
-     data-is-protocol-handler-launch-enabled="True"
-     data-is-user-logged-in="True"
-     data-os-name="Windows"
-     data-protocol-name-for-client="roblox-player"
-     data-protocol-name-for-studio="roblox-studio"
-     data-protocol-url-includes-launchtime="true"
-     data-protocol-detection-enabled="true"
-     data-protocol-version="1">
-    <div class="modalPopup blueAndWhite PlaceLauncherModal" style="min-height: 160px">
-        <div id="Spinner" class="Spinner" style="padding:20px 0;">
-            <img data-delaysrc="/images/e998fb4c03e8c2e30792f2f3436e9416.gif" height="32" width="32" alt="Progress" />
-        </div>
-        <div id="status" style="min-height:40px;text-align:center;margin:5px 20px">
-            <div id="Starting" class="PlaceLauncherStatus MadStatusStarting" style="display:block">
-                Starting Roblox...
-            </div>
-            <div id="Waiting" class="PlaceLauncherStatus MadStatusField">Connecting to Players...</div>
-            <div id="StatusBackBuffer" class="PlaceLauncherStatus PlaceLauncherStatusBackBuffer MadStatusBackBuffer"></div>
-        </div>
-        <div style="text-align:center;margin-top:1em">
-            <input type="button" class="Button CancelPlaceLauncherButton translate" value="Cancel" />
-        </div>
-    </div>
-</div>
-<div id="ProtocolHandlerStartingDialog" style="display:none;" class="protocol-handler-container">
-    <div class="modalPopup ph-modal-popup">
-        <div class="ph-modal-header">
-
-        </div>
-        <div class="ph-logo-row">
-            <img src="/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip" width="90" height="90" alt="R" class="play-logo-image" />
-            <img src="/images/3da410727fa2670dcb4f31316643138a.svg.gzip" width="90" height="90" alt="R" class="studio-logo-image hidden" />
-        </div>
-        <div class="ph-areyouinstalleddialog-content">
-            <p class="larger-font-size">
-                Roblox is now loading. Get ready to play!
-            </p>
-            <div class="ph-startingdialog-spinner-row">
-                <img src="/images/4bed93c91f909002b1f17f05c0ce13d1.gif" width="82" height="24" />
-            </div>
-        </div>
-    </div>
-</div>
-<div id="ProtocolHandlerAreYouInstalled" style="display:none;" class="protocol-handler-container">
-    <div class="modalPopup ph-modal-popup">
-        <div class="ph-modal-header">
-            <span class="icon-close simplemodal-close"></span>
-        </div>
-        <div class="ph-logo-row">
-            <img src="/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip" width="90" height="90" alt="R" class="play-logo-image" />
-            <img src="/images/3da410727fa2670dcb4f31316643138a.svg.gzip" width="90" height="90" alt="R" class="studio-logo-image hidden" />
-        </div>
-        <div class="ph-areyouinstalleddialog-content">
-            <p class="larger-font-size">
-                You're moments away from getting into the game!
-            </p>
-            <div>
-                <button type="button" class="btn btn-primary-md" id="ProtocolHandlerInstallButton">
-                    Download and Install Roblox
-                </button>
-            </div>
-            <div class="small">
-                <a href="https://en.help.roblox.com/hc/en-us/articles/204473560" class="text-name" target="_blank">Click here for help</a>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="ProtocolHandlerClickAlwaysAllowed"
-     class="ph-clickalwaysallowed"
-     
-     style="display:none;">
-    <p class="larger-font-size">
-        <span class="icon-moreinfo"></span>
-            
-                Check <b>Remember my choice</b> and click
-                <strong>OK</strong>
-            
-        in the dialog box above to join games faster in the future!
-    </p>
-</div>
-
-
-    <div id="videoPrerollPanel" style="display:none">
-        <div id="videoPrerollTitleDiv">
-            Gameplay sponsored by:
-        </div>
-        <div id="content">
-            <video id="contentElement" style="width:0; height:0;" />
-        </div>
-        <div id="videoPrerollMainDiv"></div>
-        <div id="videoPrerollCompanionAd">
-        </div>
-        <div id="videoPrerollLoadingDiv">
-            Loading <span id="videoPrerollLoadingPercent">0%</span> - <span id="videoPrerollMadStatus" class="MadStatusField">Starting game...</span><span id="videoPrerollMadStatusBackBuffer" class="MadStatusBackBuffer"></span>
-            <div id="videoPrerollLoadingBar">
-                <div id="videoPrerollLoadingBarCompleted">
-                </div>
-            </div>
-        </div>
-        <div id="videoPrerollJoinBC">
-            <span>Get more with Builders Club!</span>
-            <a href="/premium/membership?ctx=preroll" target="_blank" class="btn-medium btn-primary" id="videoPrerollJoinBCButton">Join Builders Club</a>
-        </div>
-    </div>   
-    <script type="text/javascript">
-        $(function () {
-            var videoPreRollDFP = Roblox.VideoPreRollDFP;
-            if (videoPreRollDFP) {
-                var customTargeting = Roblox.VideoPreRollDFP.customTargeting;
-                videoPreRollDFP.showVideoPreRoll = false;
-                videoPreRollDFP.loadingBarMaxTime = 33000;
-                videoPreRollDFP.videoLoadingTimeout = 11000;
-                videoPreRollDFP.videoPlayingTimeout = 41000;
-                videoPreRollDFP.videoLogNote = "BuildersClub";
-                videoPreRollDFP.logsEnabled = true;
-                videoPreRollDFP.excludedPlaceIds = "32373412";
-                videoPreRollDFP.adUnit = "/1015347/VideoPrerollUnder13";
-                videoPreRollDFP.adTime = 15;
-                videoPreRollDFP.isSwfPreloaderEnabled = false;
-                videoPreRollDFP.isPrerollShownEveryXMinutesEnabled = true;
-                videoPreRollDFP.isAgeTargetingEnabled = true;
-                videoPreRollDFP.isAgeOrSegmentTargetingEnabled = true;
-                videoPreRollDFP.isCompanionAdRenderedByGoogleTag = true;
-                customTargeting.userAge = "8";
-                customTargeting.userAgeOrSegment = "U13";
-                customTargeting.userGender = "Female";
-                customTargeting.gameGenres = "";
-                customTargeting.environment = "Production";
-                customTargeting.adTime = "15";
-                customTargeting.PLVU = false;
-                $(videoPreRollDFP.checkEligibility);
-            }
-        });
-    </script>                                                     
-
-
-<div id="GuestModePrompt_BoyGirl" class="Revised GuestModePromptModal" style="display:none;">
-    <div class="simplemodal-close">
-        <a class="ImageButton closeBtnCircle_20h" style="cursor: pointer; margin-left:455px;top:7px; position:absolute;"></a>
-    </div>
-    <div class="Title">
-        Choose Your Avatar
-    </div>
-    <div style="min-height: 275px; background-color: white;">
-        <div style="clear:both; height:25px;"></div>
-
-        <div style="text-align: center;">
-            <div class="VisitButtonsGuestCharacter VisitButtonBoyGuest" style="float:left; margin-left:45px;"></div>
-            <div class="VisitButtonsGuestCharacter VisitButtonGirlGuest" style="float:right; margin-right:45px;"></div>
-        </div>
-        <div style="clear:both; height:25px;"></div>
-        <div class="RevisedFooter">
-            <div style="width:200px;margin:10px auto 0 auto;">
-                <a href="h/?returnUrl=https%3A%2F%2Fweb.roblox.com%2Fmy%2Fmoney.aspx"><div class="RevisedCharacterSelectSignup"></div></a>
-                <a class="HaveAccount" href="/newlogin?returnUrl=https%3A%2F%2Fweb.roblox.com%2Fmy%2Fmoney.aspx">I have an account</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script type="text/javascript">
-    function checkRobloxInstall() {
-             return RobloxLaunch.CheckRobloxInstall('/install/download.aspx');
-    }
-</script>
 
 <script type="text/javascript">
     var Roblox = Roblox || {};

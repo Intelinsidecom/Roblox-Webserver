@@ -12,6 +12,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="~/CSS/Bundles/Messages.css">
+    }
+    else
+    {
     <link rel="stylesheet" href="~/CSS/2017/Base/CSS/jquery.mCustomScrollbar.css">
 <link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
 <link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
@@ -19,6 +25,7 @@
 <link rel="stylesheet" href="/CSS/Pages/Messages/Message.css">
 <link rel="stylesheet" href="/CSS/Pages/Notifications/PushNotificationRegistration.css">
 <link rel="stylesheet" href="/CSS/Pages/Notifications/NotificationStream.css">
+    }
 
     <style>
         @@media(min-width:600px) {
@@ -39,6 +46,12 @@
 <script type='text/javascript'>window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
 
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/9f4c8290a124921b11a06a84542be2f7.js"></script>
+    }
+    else
+    {
     <script type="text/javascript" src="/JS/GPTAdScript.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/json3.min.js"></script>
     <script type="text/javascript" src="/JS/roblox.js"></script>
@@ -49,6 +62,7 @@
     <script type="text/javascript" src="/JS/Events/UserInteractionsEvent.js"></script>
     <script type="text/javascript" src="/JS/Events/PageHeartbeatEvent.js"></script>
     <script type="text/javascript" src="/JS/services/userService.js"></script>
+    }
     
     
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
@@ -200,8 +214,9 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
         Roblox.messageDefaults = {
             robloxUserId: 1,
             robloxUserName: "ROBLOX",
-            robloxUserThumbnail: "https://t6.rbxcdn.com/15bccd771afdb062fc92219d3a258ccb",
-            robloxUserAbsoluteUrl: "https://www.roblox.com/users/1/profile/"
+            robloxUserThumbnail: "/headshot-thumbnail/image?userId=1&width=48&height=48",
+            robloxSystemThumbnail: { Url: "/images/Logo/admin_icon_11222016.svg", Final: true },
+            robloxUserAbsoluteUrl: "/users/1/profile/"
         };
     </script>
     <div ng-modules="robloxApp, messages" class="messages-container">
@@ -314,11 +329,6 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 
 
 
-<script type="text/javascript" src="/JS/EventTracker.js"></script>
-<script type="text/javascript" src="/JS/ClientInstaller.js"></script>
-<script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
-<script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
-
 <div class="ConfirmationModal modalPopup unifiedModal smallModal" data-modal-handle="confirmation" style="display:none;">
     <a class="genericmodal-close ImageButton closeBtnCircle_20h"></a>
     <div class="Title"></div>
@@ -413,6 +423,17 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 </script>
 
 
+    @if (UseBundledAssets)
+    {
+        <script type="text/javascript" src="~/JS/Bundles/9744ddf7f2e715cca7dd2c2bed23659a.js"></script>
+    }
+    else
+    {
+    <script type="text/javascript" src="/JS/EventTracker.js"></script>
+    <script type="text/javascript" src="/JS/ClientInstaller.js"></script>
+    <script type="text/javascript" src="/JS/InstallationInstructions.js"></script>
+    <script type="text/javascript" src="/JS/IEMetroInstructions.js"></script>
+
     <script type="text/javascript" src="/JS/leancore/libs/bootstrap.min.js"></script>
     <script type="text/javascript" src="/JS/leancore/BootstrapNamespacing.js"></script>
     <script type="text/javascript" src="/JS/leancore/libs/underscore-min.js"></script>
@@ -469,8 +490,6 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
     <script type="text/javascript" src="/JS/ProtocolHandlerClientInterface.js"></script>
     <script type="text/javascript" src="/JS/GameLaunchAdRefresher.js"></script>
 
-
-
     <script type="text/javascript" src="/JS/angular/angular.min.js"></script>
     <script type="text/javascript" src="/JS/angular/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="/JS/angular/angular-ui-router.min.js"></script>
@@ -525,13 +544,6 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
     <script type="text/javascript" src="/JS/viewapp/common/directives/phoneDirective.js"></script>
     <script type="text/javascript" src="/JS/viewapp/common/directives/switcherDirective.js"></script>
 
-    <div ng-modules="baseTemplateApp">
-        <script type="text/javascript" src="/js/base_splitApps___29d0d828b10d9553443e4d5e9e2cc728_m.js"></script>
-    </div>
-    <div ng-modules="pageTemplateApp">
-        <script type="text/javascript" src="/js/page_splitApps___6bb5caceb7100bf43a762e49ad35c679_m.js"></script>
-    </div>
-
     <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/notificationStream.js"></script>
     <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/notificationStreamIcon.js"></script>
     <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/filters/abbreviateCountFilter.js"></script>
@@ -551,6 +563,44 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
     <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/clickInCardDirective.js"></script>
     <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/privateMessageDirective.js"></script>
     <script type="text/javascript" src="/JS/viewapp/widgets/notificationStream/directives/testDirective.js"></script>
+
+    <script type="text/javascript" src="/JS/DataPager.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/messages.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/constants/tabs.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/constants/moduleState.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/services/messagesService.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/controllers/messagesController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/controllers/messagesContentController.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesTabsDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesNavDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesListDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesDetailDirective.js"></script>
+    <script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesAvatarDirective.js"></script>
+    <script type="text/javascript" src="/JS/utilities/popover.js"></script>
+    <script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
+    <script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
+    <script type="text/javascript" src="/JS/utilities/dialog.js"></script>
+    <script type="text/javascript" src="/JS/cookieLawNotice.js"></script>
+    <script type="text/javascript" src="/JS/TosModalCheck.js"></script>
+    <script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
+
+    <script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
+
+    <script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
+    <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
+    }
+
+    <div ng-modules="baseTemplateApp">
+        <script type="text/javascript" src="/js/base_splitApps___29d0d828b10d9553443e4d5e9e2cc728_m.js"></script>
+    </div>
+    <div ng-modules="pageTemplateApp">
+        <script type="text/javascript" src="/js/page_splitApps___6bb5caceb7100bf43a762e49ad35c679_m.js"></script>
+    </div>
+
+
 
 
 
@@ -572,48 +622,6 @@ Roblox.Endpoints.Urls = Roblox.Endpoints.Urls || {};
 
 
 
-
-<script type="text/javascript">
-    var Roblox = Roblox || {};
-    Roblox.UpsellAdModal = Roblox.UpsellAdModal || {};
-
-    Roblox.UpsellAdModal.Resources = {
-        //<sl:translate>
-        title: "Remove Ads Like This",
-        body: "Builders Club members do not see external ads like these.",
-        accept: "Upgrade Now",
-        decline: "No, thanks"
-        //</sl:translate>
-    };
-</script>
-
-<script type="text/javascript" src="/JS/DataPager.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/messages.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/constants/tabs.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/constants/moduleState.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/services/messagesService.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/controllers/messagesController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/controllers/messagesContentController.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesTabsDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesNavDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesListDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesDetailDirective.js"></script>
-<script type="text/javascript" src="/JS/viewapp/pages/messages/directives/messagesAvatarDirective.js"></script>
-<script type="text/javascript" src="/JS/utilities/popover.js"></script>
-<script type="text/javascript" src="/JS/Navigation/ShopAmazon.js"></script>
-<script type="text/javascript" src="/JS/GenericConfirmation.js"></script>
-<script type="text/javascript" src="/JS/utilities/dialog.js"></script>
-<script type="text/javascript" src="/JS/cookieLawNotice.js"></script>
-<script type="text/javascript" src="/JS/TosModalCheck.js"></script>
-<script type="text/javascript" src="/JS/AbuseReport/AbuseReportDispatcher.js"></script>
-
-    <script type="text/javascript" src="/JS/ServiceWorker/ServiceWorkerRegistrar.js"></script>
-
-    <script type="text/javascript" src="/JS/utilities/PersistedBackoffIntervalTracker.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationsRegistrar.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/PushNotificationRegistrationUtilities.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/EventPublishers/Registration.js"></script>
-    <script type="text/javascript" src="/JS/Notifications/PushNotifications/DesktopPushNotificationsRegistrationUI.js"></script>
 
 
 </body>

@@ -66,7 +66,7 @@ Roblox.AdsHelper = Roblox.AdsHelper || {}, Roblox.AdsHelper.AdRefresher = Roblox
                 var t = Roblox.AdsHelper.AdRefresher,
                     r = Roblox.GamesPage.getLeftColumnElement(),
                     u = Roblox.GamesPage.getRightSidebarElement();
-                n.guttersEnabled = !1, t.registerAd(this.adDiv1Id), t.registerAd(this.adDiv2Id), this.getLeftGutter().hide(), this.getRightGutter().hide(), r.addClass("gutters-hidden"), this.getGutterAdStyles().remove(), i = this.getGutterIframe(), u.html(i)
+                n.guttersEnabled = !1, t.registerAd && (t.registerAd(this.adDiv1Id), t.registerAd(this.adDiv2Id)), this.getLeftGutter().hide(), this.getRightGutter().hide(), r.addClass("gutters-hidden"), this.getGutterAdStyles().remove(), i = this.getGutterIframe(), u.html(i)
             }
         },
         init: function() {
@@ -77,7 +77,7 @@ Roblox.AdsHelper = Roblox.AdsHelper || {}, Roblox.AdsHelper.AdRefresher = Roblox
                     t = this.getSettings();
                 t && t.adsInGameSearchResultsEnabled && (googletag && (googletag.pubads && googletag.pubads() ? googletag.pubads().disableInitialLoad() : googletag.cmd.push(function() {
                     googletag.pubads().disableInitialLoad()
-                })), i.length ? (n.registerAd(this.leftGutterId), n.registerAd(this.rightGutterId)) : (n.registerAd(this.adDiv1Id), n.registerAd(this.adDiv2Id), n.registerAd(this.adDiv3Id)), r.length && n.registerAd(this.leaderboardId), this.bindGuttersHidden(), this.bindFilmStripHidden())
+                })), i.length ? (n.registerAd && (n.registerAd(this.leftGutterId), n.registerAd(this.rightGutterId))) : (n.registerAd && (n.registerAd(this.adDiv1Id), n.registerAd(this.adDiv2Id), n.registerAd(this.adDiv3Id))), r.length && n.registerAd && n.registerAd(this.leaderboardId), this.bindGuttersHidden(), this.bindFilmStripHidden())
             }
         },
         populateNewAds: function() {

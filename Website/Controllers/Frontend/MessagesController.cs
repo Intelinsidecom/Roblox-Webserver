@@ -47,9 +47,9 @@ public class MessagesController : ControllerBase
             ?? $"{Request.Scheme}://{Request.Host}";
     }
 
-    private static string GetDefaultThumbnailUrl()
+    private static string GetUserHeadshotUrl(long userId)
     {
-        return "https://t6.rbxcdn.com/15bccd771afdb062fc92219d3a258ccb";
+        return $"/headshot-thumbnail/image?userId={userId}&width=48&height=48";
     }
 
     private static (string subject, string body) FormatNotificationContent(NotificationService.NotificationData n)
@@ -137,7 +137,7 @@ public class MessagesController : ControllerBase
                 SenderAbsoluteUrl = $"{baseUrl}/users/{m.SenderId}/profile",
                 SenderThumbnail = new
                 {
-                    Url = GetDefaultThumbnailUrl(),
+                    Url = GetUserHeadshotUrl(m.SenderId),
                     Final = false,
                     RetryUrl = $"/thumbnail/avatar-headshot?userId={m.SenderId}&width=48&height=48"
                 },
@@ -149,7 +149,7 @@ public class MessagesController : ControllerBase
                 RecipientAbsoluteUrl = $"{baseUrl}/users/{m.RecipientId}/profile",
                 RecipientThumbnail = new
                 {
-                    Url = GetDefaultThumbnailUrl(),
+                    Url = GetUserHeadshotUrl(m.RecipientId),
                     Final = false,
                     RetryUrl = $"/thumbnail/avatar-headshot?userId={m.RecipientId}&width=48&height=48"
                 },
@@ -198,7 +198,7 @@ public class MessagesController : ControllerBase
                     SenderAbsoluteUrl = n.SenderUserId.HasValue ? $"{baseUrl}/users/{n.SenderUserId}/profile" : "",
                     SenderThumbnail = new
                     {
-                        Url = GetDefaultThumbnailUrl(),
+                        Url = n.SenderUserId.HasValue ? GetUserHeadshotUrl(n.SenderUserId.Value) : "",
                         Final = false,
                         RetryUrl = n.SenderUserId.HasValue ? $"/thumbnail/avatar-headshot?userId={n.SenderUserId}&width=48&height=48" : ""
                     },
@@ -210,7 +210,7 @@ public class MessagesController : ControllerBase
                     RecipientAbsoluteUrl = "",
                     RecipientThumbnail = new
                     {
-                        Url = GetDefaultThumbnailUrl(),
+                        Url = GetUserHeadshotUrl(userId.Value),
                         Final = true
                     },
                     IsRead = n.IsRead,
@@ -441,7 +441,7 @@ public class MessagesController : ControllerBase
             SenderAbsoluteUrl = $"{baseUrl}/users/{message.SenderId}/profile",
             SenderThumbnail = new
             {
-                Url = GetDefaultThumbnailUrl(),
+                Url = GetUserHeadshotUrl(message.SenderId),
                 Final = false,
                 RetryUrl = $"/thumbnail/avatar-headshot?userId={message.SenderId}&width=48&height=48"
             },
@@ -453,7 +453,7 @@ public class MessagesController : ControllerBase
             RecipientAbsoluteUrl = $"{baseUrl}/users/{message.RecipientId}/profile",
             RecipientThumbnail = new
             {
-                Url = GetDefaultThumbnailUrl(),
+                Url = GetUserHeadshotUrl(message.RecipientId),
                 Final = false,
                 RetryUrl = $"/thumbnail/avatar-headshot?userId={message.RecipientId}&width=48&height=48"
             },

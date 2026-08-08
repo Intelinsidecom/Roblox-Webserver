@@ -1124,7 +1124,15 @@ strong:active {
     display: none;
 }
 
+.bottom-nav {
+    display: none;
+}
+
 @media(max-width:767px) {
+    .bottom-nav {
+        display: block;
+    }
+
     .bottom-nav .message-actions .messageCheckbox {
         display: none;
     }

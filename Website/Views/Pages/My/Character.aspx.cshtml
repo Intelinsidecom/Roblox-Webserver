@@ -13,18 +13,22 @@
     bool isApp = containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
 }
 @section Head {
-    
-    
-    <link rel="stylesheet" href="~/CSS/Pages/Avatar/Character.css">
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="~/CSS/Bundles/Character.css">
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/CSS/Pages/Avatar/Character.css">
+        <link rel="stylesheet" href="~/CSS/2017/Base/CSS/jquery.mCustomScrollbar.css">
+        <link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
+        <link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
+        <link rel="stylesheet" href="~/CSS/Pages/IDE/Login.css">
+        <link rel="stylesheet" href="~/CSS/Pages/Shared/AssetsExplorer.css">
+        <link rel="stylesheet" href="~/CSS/Pages/Avatar/Avatar.css">
+        <link rel="stylesheet" href="~/CSS/Pages/Shared/ThumbnailLoader.css">
+    }
 }
-
-<link rel="stylesheet" href="~/CSS/2017/Base/CSS/jquery.mCustomScrollbar.css">
-<link rel="stylesheet" href="~/CSS/2017/LeanBaseStyle.css">
-<link rel="stylesheet" href="~/CSS/2017/SiteStyle.css">
-<link rel="stylesheet" href="~/CSS/Pages/IDE/Login.css">
-<link rel="stylesheet" href="~/CSS/Pages/Shared/AssetsExplorer.css">
-<link rel="stylesheet" href="~/CSS/Pages/Avatar/Avatar.css">
-<link rel="stylesheet" href="~/CSS/Pages/Shared/ThumbnailLoader.css">
 
 
     <script>document.querySelector('meta[name="viewport"]').setAttribute('content','width=1300');</script>
@@ -63,89 +67,36 @@
 }
 
 
+@if (UseBundledAssets)
+{
+    <script type="text/javascript" src="~/JS/Bundles/97e8c16681e36de95cf22912862fe87b.js"></script>
+}
+else
+{
     <script type="text/javascript" src="~/JS/angular/angular.ng-modules.js"></script>
-<script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
-<script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
-<script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
-<script type="text/javascript" src="~/JS/3D/three.js"></script>
-<script type="text/javascript" src="~/JS/3D/tween.js"></script>
-<script type="text/javascript" src="~/JS/3D/MTLLoader.js"></script>
-<script type="text/javascript" src="~/JS/3D/RobloxOrbitControls.js"></script>
-<script type="text/javascript" src="~/JS/3D/OBJMTLLoader.js"></script>
-<div ng-modules="pageTemplateApp">
+    <script type="text/javascript" src="~/JS/leancore/libs/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/JS/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script type="text/javascript" src="~/JS/MasterPageUI.js"></script>
+    <script type="text/javascript" src="~/JS/3D/three.js"></script>
+    <script type="text/javascript" src="~/JS/3D/tween.js"></script>
+    <script type="text/javascript" src="~/JS/3D/MTLLoader.js"></script>
+    <script type="text/javascript" src="~/JS/3D/RobloxOrbitControls.js"></script>
+    <script type="text/javascript" src="~/JS/3D/OBJMTLLoader.js"></script>
+
+    <!-- Load Angular dependencies for avatar module -->
+    <script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/cacheService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/imagesService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
+    <script type="text/javascript" src="~/JS/viewapp/common/modal.js"></script>
+
     <script type="text/javascript" src="~/JS/AvatarCustomize2017.js"></script>
     <script type="text/javascript" src="~/JS/AvatarCustomizer2017-2.js"></script>
     <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailSpinner.js"></script>
-</div>
 
-<script type="text/javascript">
-    window.Roblox = window.Roblox || {};
-    Roblox.uiBootstrap = Roblox.uiBootstrap || {
-      modalBackdropTemplateLink: "/templates/modal/backdrop.html",
-      modalWindowTemplateLink: "/templates/modal/window.html"
-    };
-  </script>
-  <script type="text/ng-template" id="/templates/modal/backdrop.html">
-    <div class="modal-backdrop fade in"></div>
-  </script>
-  <script type="text/ng-template" id="/templates/modal/window.html">
-    <div class="modal-dialog" ng-class="{ 'modal-sm': size == 'sm', 'modal-lg': size == 'lg' }">
-      <div class="modal-content" modal-transclude></div>
-    </div>
-  </script>
-<!-- Load Angular dependencies for avatar module -->
-<script type="text/javascript" src="~/JS/angular/ui-bootstrap-0.11.2.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/services/robloxService.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/services/cacheService.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/services/imagesService.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/services/httpService.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/services/googleAnalyticsEventsService.js"></script>
-<script type="text/javascript" src="~/JS/viewapp/common/modal.js"></script>
-
-<div id="image-retry-data"
-     data-image-retry-max-times="10"
-     data-image-retry-timer="1500"
-     data-ga-logging-percent="10">
-</div>
-<div id="http-retry-data"
-     data-http-retry-max-timeout="0"
-     data-http-retry-base-timeout="0"
-     data-http-retry-max-times="5">
-</div>
-
-<script type="text/javascript">
-window.Roblox = window.Roblox || {};
-Roblox.Endpoints = Roblox.Endpoints || {
-  addCrossDomainOptionsToAllRequests: false,
-  Urls: {
-    '/asset-thumbnail/json': '/asset-thumbnail/json',
-    '/outfit-thumbnail/json': '/outfit-thumbnail/json',
-    '/thumbnail/user-avatar': '/thumbnail/user-avatar',
-    '/avatar-thumbnail/json': '/avatar-thumbnail/json',
-    '/users/inventory/list-json': '/users/inventory/list-json'
-  }  
-};
-</script>
-<script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
-
-<script type="text/javascript">
-  window.Roblox = window.Roblox || {};
-  Roblox.AvatarData = Roblox.AvatarData || {};
-  Roblox.AvatarData.avatarDomain = "";
-</script>
-
-  <script>
-    (function(){
-      try {
-        if (location.hash) {
-          history.replaceState(null, '', location.pathname + location.search);
-        }
-      } catch(e) {}
-      try { if (typeof window.scrollTo === 'function') { window.scrollTo(0, 0); } } catch(e) {}
-    })();
-  </script>
-
-  <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/cursorPagination.js"></script>
+      <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/cursorPagination.js"></script>
   <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/services/cursorPaginationService.js"></script>
   <script type="text/javascript" src="~/JS/viewapp/widgets/cursorPagination/directives/cursorPaginationDirective.js"></script>
 
@@ -176,6 +127,75 @@ Roblox.Endpoints = Roblox.Endpoints || {
 <script type="text/javascript" src="~/JS/extensions/Thumbnails.js"></script>
 <script type="text/javascript" src="~/JS/extensions/ThreeDeeThumbnails.js"></script>
 <script type="text/javascript" src="~/JS/Thumbnails/ThumbnailView.js"></script>
+
+<script type="text/javascript" src="~/JS/JavaScriptEndpoints.js"></script>
+}
+
+<div ng-modules="pageTemplateApp">
+
+</div>
+
+<script type="text/javascript">
+    window.Roblox = window.Roblox || {};
+    Roblox.uiBootstrap = Roblox.uiBootstrap || {
+      modalBackdropTemplateLink: "/templates/modal/backdrop.html",
+      modalWindowTemplateLink: "/templates/modal/window.html"
+    };
+  </script>
+  <script type="text/ng-template" id="/templates/modal/backdrop.html">
+    <div class="modal-backdrop fade in"></div>
+  </script>
+  <script type="text/ng-template" id="/templates/modal/window.html">
+    <div class="modal-dialog" ng-class="{ 'modal-sm': size == 'sm', 'modal-lg': size == 'lg' }">
+      <div class="modal-content" modal-transclude></div>
+    </div>
+  </script>
+
+
+<div id="image-retry-data"
+     data-image-retry-max-times="10"
+     data-image-retry-timer="1500"
+     data-ga-logging-percent="10">
+</div>
+<div id="http-retry-data"
+     data-http-retry-max-timeout="0"
+     data-http-retry-base-timeout="0"
+     data-http-retry-max-times="5">
+</div>
+
+<script type="text/javascript">
+window.Roblox = window.Roblox || {};
+Roblox.Endpoints = Roblox.Endpoints || {
+  addCrossDomainOptionsToAllRequests: false,
+  Urls: {
+    '/asset-thumbnail/json': '/asset-thumbnail/json',
+    '/outfit-thumbnail/json': '/outfit-thumbnail/json',
+    '/thumbnail/user-avatar': '/thumbnail/user-avatar',
+    '/avatar-thumbnail/json': '/avatar-thumbnail/json',
+    '/users/inventory/list-json': '/users/inventory/list-json'
+  }  
+};
+</script>
+
+
+<script type="text/javascript">
+  window.Roblox = window.Roblox || {};
+  Roblox.AvatarData = Roblox.AvatarData || {};
+  Roblox.AvatarData.avatarDomain = "";
+</script>
+
+  <script>
+    (function(){
+      try {
+        if (location.hash) {
+          history.replaceState(null, '', location.pathname + location.search);
+        }
+      } catch(e) {}
+      try { if (typeof window.scrollTo === 'function') { window.scrollTo(0, 0); } } catch(e) {}
+    })();
+  </script>
+
+
 
 
 
