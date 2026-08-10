@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets;
@@ -640,120 +637,6 @@ namespace RobloxWebserver.Controllers
             {
                 _logger.LogError(ex, "Error loading game name for place ID {PlaceId}", id);
                 return StatusCode(500);
-            }
-        }
-
-        /// <summary>
-        /// Mobile launch endpoint. The Roblox Android/iOS WebView intercepts URLs matching
-        /// "/games/start?" and only passes placeid, gameInstanceId, requestType, userID and
-        /// accessCode through to the native engine. The engine has no code to resolve a server
-        /// on its own, so we must resolve/spawn a running game server here and redirect the
-        /// WebView to a full "/games/start?" URL carrying a real gameInstanceId (jobId).
-        /// </summary>
-        [HttpGet("mobilelaunch/{id:long}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> MobileLaunch(long id, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var connectionString = _configuration.GetConnectionString("Default");
-                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, id, cancellationToken);
-                if (!universeId.HasValue)
-                {
-                    return NotFound();
-                }
-
-                string gameId;
-                var existingServer = await FindAvailableServerForPlaceAsync(id);
-                if (existingServer != null)
-                {
-                    gameId = existingServer.GameId;
-                }
-                else
-                {
-                    var maxPlayers = await GameCreationService.GetPlaceMaxPlayersAsync(id, connectionString);
-                    var (jobId, _) = await GameCreationService.CreateGameServerAsync(
-                        (int)id, maxPlayers, _configuration, connectionString, cancellationToken);
-                    gameId = jobId;
-                }
-
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                long.TryParse(userIdClaim, out var userId);
-
-                var redirectUrl = $"/games/start?placeid={id}&gameInstanceId={Uri.EscapeDataString(gameId)}&requestType=1&userID={userId}";
-                _logger.LogInformation("Mobile launch for place {PlaceId} -> {RedirectUrl}", id, redirectUrl);
-                return Redirect(redirectUrl);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error launching mobile game for place ID {PlaceId}", id);
-                return StatusCode(500);
-            }
-        }
-
-        private async Task<ArbiterGameServerInfo?> FindAvailableServerForPlaceAsync(long placeId)
-        {
-            try
-            {
-                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
-                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
-                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
-                using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(5);
-                var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-place/{placeId}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return null;
-                }
-
-                var json = await response.Content.ReadAsStringAsync();
-                var serverInfoOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-
-                var apiResponse = JsonSerializer.Deserialize<Dictionary<string, object>>(json, serverInfoOptions);
-                if (apiResponse == null || !apiResponse.TryGetValue("servers", out var serversObj))
-                {
-                    return null;
-                }
-
-                var serversJson = JsonSerializer.Serialize(serversObj);
-                var servers = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(serversJson, serverInfoOptions);
-                if (servers == null || servers.Count == 0)
-                {
-                    return null;
-                }
-
-                foreach (var serverDict in servers)
-                {
-                    if (serverDict.TryGetValue("playerCount", out var pcObj) &&
-                        serverDict.TryGetValue("maxPlayers", out var mpObj) &&
-                        int.TryParse(pcObj.ToString(), out var playerCount) &&
-                        int.TryParse(mpObj.ToString(), out var maxPlayers) &&
-                        playerCount < maxPlayers)
-                    {
-                        var gameId = serverDict["gameId"].ToString();
-                        var port = int.Parse(serverDict["port"].ToString());
-
-                        return new ArbiterGameServerInfo
-                        {
-                            GameId = gameId,
-                            PlaceId = (int)placeId,
-                            Port = port,
-                            MaxPlayers = maxPlayers,
-                            PlayerCount = playerCount,
-                            Status = serverDict["status"].ToString()
-                        };
-                    }
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to find available server for place {PlaceId}", placeId);
-                return null;
             }
         }
 
