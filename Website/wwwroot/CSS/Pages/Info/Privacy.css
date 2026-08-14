@@ -1,0 +1,12 @@
+/* ~/CSS/pages/info/Privacy.css */
+.privacy-policy li {
+    list-style-type: circle;
+}
+
+.privacy-policy h1 {
+    margin: 0;
+}
+
+.privacy-policy h2 {
+    display: block;
+}

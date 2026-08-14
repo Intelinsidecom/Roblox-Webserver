@@ -48,5 +48,53 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/Games.cshtml");
         }
 
+        [HttpGet("games/list")]
+        public IActionResult GamesList()
+        {
+            return View("~/Views/Pages/Games.cshtml");
+        }
+
+        [HttpPost("games/list")]
+        public IActionResult GamesListPost()
+        {
+            return View("~/Views/Pages/Games.cshtml");
+        }
+
+        [HttpGet("inbox")]
+        public IActionResult inbox()
+        {
+            return View("~/Views/Pages/My/Messages.cshtml");
+        }
+
+        [HttpPost("inbox")]
+        public IActionResult inboxPost()
+        {
+            return View("~/Views/Pages/My/Messages.cshtml");
+        }
+
+        [HttpGet("mobile-app-upgrades/native-ios/robux")]
+        public IActionResult AppRobux()
+        {
+            return View("~/Views/Pages/upgrades/robux.cshtml");
+        }
+
+        [HttpPost("mobile-app-upgrades/native-ios/robux")]
+        public IActionResult AppRobuxPost()
+        {
+            return View("~/Views/Pages/upgrades/robux.cshtml");
+        }
+
+        [HttpGet("mobile-app-upgrades/native-ios/bc")]
+        public IActionResult AppBC()
+        {
+            return View("~/Views/Pages/premium/membership.cshtml");
+        }
+
+        [HttpPost("mobile-app-upgrades/native-ios/bc")]
+        public IActionResult AppBCPost()
+        {
+            return View("~/Views/Pages/premium/membership.cshtml");
+        }
+
 	    }
 }

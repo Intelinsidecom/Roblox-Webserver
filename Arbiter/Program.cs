@@ -154,6 +154,8 @@ namespace RCCArbiter
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
+            PortManager.Initialize(_configuration);
+
             string rccUrl;
             bool autoStartRCC = false;
             bool httpFlag = args.Any(a => string.Equals(a, "--http", StringComparison.OrdinalIgnoreCase));

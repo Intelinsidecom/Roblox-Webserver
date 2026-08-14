@@ -226,6 +226,23 @@ namespace Users
             }
         }
 
+        public static async Task<string?> GetUserPasswordHashAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                return null;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand("select password from users where user_id = @uid", conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result == null || result is DBNull ? null : result.ToString();
+        }
+
         public static async Task<bool> UpdateUserPasswordAsync(string connectionString, long userId, string newPassword, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -377,6 +394,7 @@ namespace Users
         public bool PhoneVerified { get; set; }
         public bool TwoStepEnabled { get; set; }
         public DateTime? UserCreated { get; set; }
+        public DateTime? Birthday { get; set; }
     }
 
     public static partial class UserQueries
@@ -393,7 +411,7 @@ namespace Users
 
             using var cmd = new NpgsqlCommand(@"
                 select user_name, email, email_verified, password, phone_number, phone_verified,
-                       ""2sv_enabled"", user_created
+                       ""2sv_enabled"", user_created, birthday
                 from users
                 where user_id = @uid
                 limit 1", conn);
@@ -415,7 +433,8 @@ namespace Users
                 PhoneNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
                 PhoneVerified = !reader.IsDBNull(5) && reader.GetBoolean(5),
                 TwoStepEnabled = !reader.IsDBNull(6) && reader.GetBoolean(6),
-                UserCreated = reader.IsDBNull(7) ? null : reader.GetDateTime(7)
+                UserCreated = reader.IsDBNull(7) ? null : reader.GetDateTime(7),
+                Birthday = reader.IsDBNull(8) ? null : reader.GetDateTime(8)
             };
         }
     }

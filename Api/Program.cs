@@ -24,8 +24,10 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "https://www.freblx.xyz",
+                "https://freblx.xyz",
                 "https://api.freblx.xyz",
                 "http://www.freblx.xyz",
+                "http://freblx.xyz",
                 "http://api.freblx.xyz",
                 "http://localhost:5077",
                 "http://localhost:3000",

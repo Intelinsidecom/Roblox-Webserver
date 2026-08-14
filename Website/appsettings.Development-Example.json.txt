@@ -98,7 +98,8 @@
     "UWPClientDownloadLocation": "https://www.freblx.xyz/Appx.zip"
   },
   "Social": {
-    "DiscordServerInviteURL": "https://discord.com/invite/9ypw3ytK4t"
+    "DiscordServerInviteURL": "https://discord.com/invite/9ypw3ytK4t",
+    "FriendlyName": "Freebloxia"
   },
   "Accounts": {
     "AllowBypassEmailVerification": true,

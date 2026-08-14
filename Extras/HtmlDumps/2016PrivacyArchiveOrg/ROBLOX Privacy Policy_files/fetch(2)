@@ -1,0 +1,24 @@
+/* ~/CSS/YUIReset.css */
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,select,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,button,caption,cite,code,dfn,em,input,optgroup,option,select,strong,textarea,th,var{font:inherit;}del,ins{text-decoration:none;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:baseline;}sub{vertical-align:baseline;}legend{color:#000;}
+
+/*
+     FILE ARCHIVED ON 22:37:04 Aug 11, 2016 AND RETRIEVED FROM THE
+     INTERNET ARCHIVE ON 08:05:43 Aug 14, 2026.
+     JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE.
+
+     ALL OTHER CONTENT MAY ALSO BE PROTECTED BY COPYRIGHT (17 U.S.C.
+     SECTION 108(a)(3)).
+*/
+/*
+playback timings (ms):
+  capture_cache.get: 0.364
+  captures_list: 0.445
+  exclusion.robots: 0.053
+  exclusion.robots.policy: 0.047
+  esindex: 0.006
+  cdx.remote: 14.405
+  LoadShardBlock: 178.192 (6)
+  PetaboxLoader3.datanode: 325.914 (8)
+  load_resource: 245.82 (2)
+  PetaboxLoader3.resolve: 73.104
+*/

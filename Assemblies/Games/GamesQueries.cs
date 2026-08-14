@@ -180,6 +180,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true
             AND a.access_type = 1 -- Public access only
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL";
 
         if (genreFilter > 1)
@@ -287,6 +288,7 @@ public static class GamesQueries
             WHERE u.creator_user_id = @userId
             AND a.is_place = true
             AND a.access_type = 1 -- Public access only
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL";
 
         if (genreFilter > 1)
@@ -383,6 +385,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true
             AND a.access_type = 1 -- Public access only
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL
             AND ({searchCondition})
             ORDER BY u.created_at DESC
@@ -440,6 +443,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true 
             AND a.access_type = 1 -- Public access only
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL";
 
         if (timeFilter > 0)
@@ -492,6 +496,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true 
             AND a.access_type = 1 -- Public access only
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL
             ORDER BY u.created_at DESC
             LIMIT @limit";
@@ -628,6 +633,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true
             AND a.access_type = 1 -- Public access only
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL
             AND ({string.Join(" AND ", searchConditions)})
             ORDER BY a.last_updated DESC -- Filter by last updated
@@ -745,6 +751,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true
             AND a.access_type = 1
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL
             ORDER BY u.visit_count DESC
             LIMIT @maxResults";
@@ -781,6 +788,7 @@ public static class GamesQueries
             INNER JOIN assets a ON u.root_place_id = a.asset_id
             WHERE a.is_place = true
             AND a.access_type = 1
+            AND COALESCE(u.privacy_level, 1) = 1 -- Public privacy only
             AND u.root_place_id IS NOT NULL
             ORDER BY score DESC
             LIMIT @maxResults";

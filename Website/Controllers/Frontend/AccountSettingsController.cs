@@ -358,6 +358,76 @@ namespace RobloxWebserver.Controllers.Frontend
             return Json(new { Success = true, Message = "Email updated. Please check your inbox to verify." });
         }
 
+        [HttpPost("account/changepassword")]
+        public async Task<IActionResult> ChangePassword()
+        {
+            var (ok, uid) = GetUserId();
+            if (!ok) return Json(new { Success = false, Message = "Not authenticated" });
+
+            string oldPassword;
+            string newPassword;
+            string confirmNewPassword;
+            try
+            {
+                var form = await Request.ReadFormAsync();
+                oldPassword         = (form["oldPassword"].ToString()        ?? string.Empty).Trim();
+                newPassword         = (form["newPassword"].ToString()        ?? string.Empty).Trim();
+                confirmNewPassword  = (form["confirmNewPassword"].ToString() ?? string.Empty).Trim();
+            }
+            catch
+            {
+                return Json(new { Success = false, Message = "Invalid form submission" });
+            }
+
+            if (oldPassword.Length == 0 || newPassword.Length == 0 || confirmNewPassword.Length == 0)
+                return Json(new { Success = false, Message = "All password fields are required" });
+
+            if (newPassword.Length < 4)
+                return Json(new { Success = false, Message = "New password is too short" });
+
+            if (newPassword.Length > 20)
+                return Json(new { Success = false, Message = "New password is too long (max 20 chars)" });
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(newPassword, ".*[0-9].*[0-9].*"))
+                return Json(new { Success = false, Message = "New password must contain at least 2 digits" });
+
+            if (newPassword != confirmNewPassword)
+                return Json(new { Success = false, Message = "New password and confirmation do not match" });
+
+            var connStr = ConnStr();
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Json(new { Success = false, Message = "Service unavailable" });
+
+            string? storedPassword;
+            try
+            {
+                storedPassword = await UserQueries.GetUserPasswordHashAsync(connStr, uid);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Success = false, Message = $"Database error: {ex.Message}" });
+            }
+
+            if (string.IsNullOrEmpty(storedPassword))
+                return Json(new { Success = false, Message = "Password not set on this account" });
+
+            if (!PasswordHasher.VerifyPassword(oldPassword, storedPassword))
+                return Json(new { Success = false, Message = "Incorrect current password" });
+
+            try
+            {
+                var okUpdate = await UserQueries.UpdateUserPasswordAsync(connStr, uid, newPassword);
+                if (!okUpdate)
+                    return Json(new { Success = false, Message = "Failed to update password" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Success = false, Message = $"Failed to update password: {ex.Message}" });
+            }
+
+            return Json(new { Success = true, Message = "Password updated successfully" });
+        }
+
         [HttpPost("my/account/sendverifyemail")]
         public async Task<IActionResult> SendVerifyEmail()
         {

@@ -54,6 +54,12 @@
     "Port": 5000,
     "Urls": "http://localhost:5000"
   },
+  "PortRanges": {
+    "GameServerMin": 52000,
+    "GameServerMax": 60000,
+    "RccMin": 50000,
+    "RccMax": 51000
+  },
   "Arbiter": {
     "BaseUrl": "http://localhost:5077",
     "UploadUrl": "http://localhost:5077/api/thumbnails/upload",

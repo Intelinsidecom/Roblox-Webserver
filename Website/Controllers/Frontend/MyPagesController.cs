@@ -35,6 +35,35 @@ namespace RobloxWebserver.Controllers
             return View(viewPath);
         }
 
+        [HttpGet("my/account/json")]
+        public async Task<IActionResult> AccountJson()
+        {
+            var (isValid, userId) = AuthenticationHelper.GetCurrentUserId(User);
+            if (!isValid)
+                return Unauthorized();
+
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Unauthorized();
+
+            var info = await UserQueries.GetAccountInfoAsync(connStr, userId);
+            if (info == null)
+                return Unauthorized();
+
+            var isUnder13 = info.Birthday.HasValue && info.Birthday.Value.AddYears(13) > DateTime.UtcNow;
+
+            return Json(new
+            {
+                UserId = info.UserId,
+                Name = info.UserName,
+                DisplayName = info.UserName,
+                UserEmail = info.Email ?? "",
+                IsEmailVerified = info.EmailVerified,
+                AgeBracket = isUnder13 ? 1 : 2,
+                UserAbove13 = !isUnder13
+            });
+        }
+
         [HttpGet("my/settings/json")]
         public async Task<IActionResult> SettingsJson()
         {

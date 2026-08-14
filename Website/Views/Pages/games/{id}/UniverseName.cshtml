@@ -10,10 +10,10 @@
     bool containsRobloxiOS = userAgent.Contains("ROBLOX iOS App");
     bool containsRobloxUWP = userAgent.Contains("EdgeWebView") || userAgent.Contains("MSAppHost") || userAgent.Contains("Windows UWP") || /*userAgent.Contains("WOW64")  breaks ie  ||*/ userAgent.Contains("Edge/");
     bool containsRobloxStudio = userAgent.Contains("RobloxStudio");
-
+    string mobileLaunchUrl = "/games/start?placeid=" + ViewBag.Id + "&requestType=0&userID=" + (ViewBag.MobileUserId ?? 0);
     bool isMobile = containsAndroid || containsIPhone || containsIPad || containsIPod || containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP;
-
-    ViewBag.ProtocolName = isMobile ? "robloxmobile" : "freblx-player";
+    ViewBag.mobileLaunchUrl = mobileLaunchUrl;
+    ViewBag.ProtocolName = isMobile ? mobileLaunchUrl : "freblx-player";
     ViewBag.IsMobile = isMobile;
 }
 
@@ -44,25 +44,14 @@
     <meta name=author content="Roblox Corporation">
     <meta name=description content="Check out @ViewBag.Name. @(string.IsNullOrEmpty(ViewBag.Description) ? "" : ViewBag.Description)">
     <meta name=keywords content="free games,online games,building games,virtual worlds,free mmo,gaming cloud,physics engine">
-    <meta name=apple-itunes-app content="app-id=431946152">
-    <meta name=google-site-verification content=KjufnQUaDv5nXJogvDMey4G-Kb7ceUVxTdzcMaP9pCY>
-    <meta property=og:site_name content=ROBLOX>
     <meta property=og:title content=@ViewBag.Name>
     <meta property=og:type content=game>
-    <meta property=og:url content="https://www.roblox.com/games/@ViewBag.Id/@ViewBag.Name">
+    <meta property=og:url content="/games/@ViewBag.Id/@ViewBag.Name">
     <meta property=og:description content="Check out @ViewBag.Name. @(string.IsNullOrEmpty(ViewBag.Description) ? "" : ViewBag.Description)">
     <meta property=og:image content="https://t3.rbxcdn.com/b5d60bde3fd28406a6acdacc2a090faf">
-    <meta property=fb:app_id content=190191627665278>
 
-    <meta name=twitter:app:url:iphone content="robloxmobile://placeID=@ViewBag.Id">
-    <meta name=twitter:app:name:ipad content="ROBLOX Mobile">
-    <meta name=twitter:app:id:ipad content=431946152>
-    <meta name=twitter:app:url:ipad content="robloxmobile://placeID=@ViewBag.Id">
-    <meta name=twitter:app:name:googleplay content=ROBLOX>
-    <meta name=twitter:app:id:googleplay content=com.roblox.client>
-    <meta name=twitter:app:url:googleplay content="robloxmobile://placeID=@ViewBag.Id">
     <meta name=user-data data-userid=@ViewBag.CreatorUserId data-name="" data-isunder13=false>
-    <link rel=canonical href="https://www.roblox.com/games/@ViewBag.Id/@ViewBag.Name">
+    <link rel=canonical href="/games/@ViewBag.Id/@ViewBag.Name">
     
     <link rel="stylesheet" href="~/CSS/Legacy/Navigation.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/LeanBaseStyle.css">
@@ -222,7 +211,6 @@
             });
         });
     </script>
-    <meta property=al:ios:url content="robloxmobile://placeID=370731277">
     <meta property=al:ios:app_store_id content=431946152>
     <meta property=al:ios:app_name content="Roblox Mobile">
     <meta property=al:web:should_fallback content=false><!--[if lt IE 9]><script src=//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js></script><script src=//oss.maxcdn.com/respond/1.4.2/respond.min.js></script><![endif]-->
@@ -435,10 +423,10 @@
                             </div>
                             <div class=game-buttons-container>
                                 <div class=game-play-buttons data-autoplay=false>
-                                    @if (containsRobloxAndroid || containsRobloxiOS || containsRobloxUWP)
+                                    @if (isMobile)
                                     {
-                                        var mobileLaunchUrl = "/games/start?placeid=" + ViewBag.Id + "&requestType=0&userID=" + (ViewBag.MobileUserId ?? 0);
-                                        <a href="@mobileLaunchUrl" placeid="@ViewBag.Id" class="VisitButton VisitButtonPlayGLI btn-primary-lg" style="display:inline-block;text-decoration:none;">Play</a>
+                                        mobileLaunchUrl = "/games/start?placeid=" + ViewBag.Id + "&requestType=0&userID=" + (ViewBag.MobileUserId ?? 0);
+                                        <a href="@mobileLaunchUrl"  class="VisitButton VisitButtonPlayGLI btn-primary-lg" style="display:inline-block;text-decoration:none;">Play</a>
                                     }
                                     else
                                     {
@@ -600,7 +588,7 @@
                                                 var copylockedText = isCopylocked ? "This game is copylocked" : "This game is uncopylocked";
                                             }
                                             <span class="text-pastname game-copylocked-footnote">@copylockedText</span> 
-                                            <span class=game-report-abuse><a class="text-report abuse-report-modal" href="https://web.roblox.com/abusereport/asset?id=@ViewBag.Id&amp;RedirectUrl=%2fgames%2f@ViewBag.Id%2f@ViewBag.Name">Report Abuse</a></span>
+                                            <span class=game-report-abuse><a class="text-report abuse-report-modal" href="/abusereport/asset?id=@ViewBag.Id&amp;RedirectUrl=%2fgames%2f@ViewBag.Id%2f@ViewBag.Name">Report Abuse</a></span>
                                         </div>
                                     </div>
                                 </div>
@@ -986,7 +974,7 @@
                             <div id=BCMessageDiv>This is a premium item only available to our Builders Club members.</div>
                             <div class=modal-image-container><span class="icon-default-bc upgrade-icon-bc"></span></div>
                         </div>
-                        <div class=modal-footer><a href="https://web.roblox.com/premium/membership?ctx=bc-only-item" class=btn-primary-md>Upgrade Now</a> <button type=button class=btn-control-md onclick=$.modal.close()>Cancel</button></div>
+                        <div class=modal-footer><a href="/premium/membership?ctx=bc-only-item" class=btn-primary-md>Upgrade Now</a> <button type=button class=btn-control-md onclick=$.modal.close()>Cancel</button></div>
                     </div>
                 </div>
                 <script>
@@ -1033,21 +1021,21 @@
             IsProtocolHandlerBaseUrlParamEnabled: "False",
             ProtocolHandlerAreYouInstalled: {
                 play: {
-                    content: "<img src='https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>You&#39;re moments away from getting into the game!</p>",
+                    content: "<img src='/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>You&#39;re moments away from getting into the game!</p>",
                     buttonText: "Download and Install Roblox",
                     footerContent: "<a href='https://assetgame.roblox.com/game/help'class= 'text-name small' target='_blank' >Click here for help</a> "
                 },
                 studio: {
-                    content: "<img src='https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Get started creating your own games!</p>",
+                    content: "<img src='/images/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Get started creating your own games!</p>",
                     buttonText: "Download Studio"
                 }
             },
             ProtocolHandlerStartingDialog: {
                 play: {
-                    content: "<img src='https://images.rbxcdn.com/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>Roblox is now loading. Get ready to play!</p>"
+                    content: "<img src='/images/6304dfebadecbb3b338a79a6a528936c.svg.gzip' width='90' height='90' alt='R'/><p>Roblox is now loading. Get ready to play!</p>"
                 },
                 studio: {
-                    content: "<img src='https://images.rbxcdn.com/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Checking for Roblox Studio...</p>"
+                    content: "<img src='/images/3da410727fa2670dcb4f31316643138a.svg.gzip' width='95' height='95' alt='R' /><p>Checking for Roblox Studio...</p>"
                 },
                 loader: "<span class='spinner spinner-default'></span>"
             }

@@ -8,8 +8,6 @@ namespace RCCArbiter.Endpoints
     public class StartGameServerEndpoint : ICompiledEndpoint
     {
         private IConfiguration? _configuration;
-        private const int MinPort = 54000;
-        private const int MaxPort = 55000;
 
         public string Route => "/gameserver/start";
         public string ScriptName => "StartGameServer";
@@ -33,7 +31,7 @@ namespace RCCArbiter.Endpoints
             int port;
             if (req.Query.TryGetValue("port", out var pv) && int.TryParse(pv, out var providedPort))
             {
-                if (providedPort >= MinPort && providedPort <= MaxPort && PortManager.ReservePort(providedPort))
+                if (providedPort >= PortManager.GameServerMinPort && providedPort <= PortManager.GameServerMaxPort && PortManager.ReservePort(providedPort))
                 {
                     port = providedPort;
                 }

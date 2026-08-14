@@ -7,7 +7,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,requiresActiveX=true">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="author" content="ROBLOX Corporation">
 <meta name="description" content="This Webserver is designed for testing Clients and for learning how everything works, this is not any kind of revival or anything.">
 <meta property="og:image" content="~/images/fb70fd2b56107a0d43f2f98658885702.jpg">
 <link href="~/images/7aee41db80c1071f60377c3575a0ed87.ico" rel="icon">
@@ -701,7 +700,7 @@
             <div class="legal-text-container">
                 By signing up you agree to our <a href="/info/terms-of-service" target="_blank">Terms</a> and <a href="/Info/Privacy.aspx" target="_blank">Privacy Policy</a> 
             </div>
-            <button id="signup-button" type="button" tabindex="9" class="btn-primary-md signup-submit-button" rbx-form-interaction="" name="signupSubmit" ng-disabled="isSubmitting" data-signup-api-url="/signup/v1" ng-click="submitSignup($event)" ng-keypress="submitSignup($event)">Sign Up</button>
+            <button id="signup-button" type="button" tabindex="9" class="btn-primary-md signup-submit-button" rbx-form-interaction="" name="signupSubmit" ng-disabled="isSubmitting" data-signup-api-url="@Configuration["PublicAPIBaseUrl"]/signup/v1" ng-click="submitSignup($event)" ng-keypress="submitSignup($event)">Sign Up</button>
             <noscript>
                 <div class="text-danger">
                     <strong>JavaScript is required to submit this form.</strong>
@@ -843,7 +842,7 @@
                 </a>
             </li>
             <li class="col-4 col-xs-1 footer-link">
-                <a href="/Info/Privacy.aspx" class="text-footer-nav" target="_blank">
+                <a href="/Info/Privacy" class="text-footer-nav" target="_blank">
                     Privacy
                 </a>
             </li>
