@@ -1,0 +1,128 @@
+@model Assemblies.Common.DevelopTabViewModel
+@{
+    Layout = null;
+    var selectedPlaceId = Context.Request.Query["selectedPlaceId"].ToString();
+    var targetPlaceId = Context.Request.Query["targetPlaceId"].ToString();
+    var placeIdString = string.IsNullOrEmpty(targetPlaceId) ? selectedPlaceId : targetPlaceId;
+    long.TryParse(placeIdString, out var placeId);
+
+    var publicPlaces = Model.Items.Where(i => i.IsPublic).ToList();
+
+    var allPasses = Model?.GamePasses ?? new List<Assemblies.Common.DevelopItem>();
+}
+<div id="gamepass-create-container" style="display:@(placeId > 0 ? "block" : "none")">
+    <h2>Create a Pass</h2>
+    <iframe id="upload-iframe"
+            class="place-specific-assets my-upload-iframe"
+            src="@(placeId > 0 ? "/build/upload?assetTypeId=34&targetPlaceId=" + placeId : "")"
+            frameborder="0" scrolling="no"
+            data-target-universe-id="@placeId"></iframe>
+</div>
+<table class="section-header">
+    <tbody>
+        <tr>
+            <td class="content-title">
+                <div>
+                    <h2 class="header-text">Game Passes</h2>
+                </div>
+            </td>
+            <td>
+                <div class="creation-context-filters-and-sorts">
+                    <div class="option">
+                        <label class="sort-label">Select from Public Games:</label>
+                        <select class="universe-selection-drop-down" size="1">
+                            @foreach (var place in publicPlaces)
+                            {
+                                var selectedAttr = place.RootPlaceId == placeId ? "selected" : null;
+                                <option value="@place.RootPlaceId" selected="@selectedAttr">@place.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="items-container-inner">
+    <div class="items-container">
+        @if (allPasses.Count == 0)
+        {
+            @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", "You have no game passes yet.")
+        }
+        else
+        {
+            foreach (var item in allPasses)
+            {
+                <div class="gamepass-item" data-root-place-id="@item.RootPlaceId">
+                    <table class="item-table" data-item-id="@item.AssetId" data-type="gamepasses" data-dropdown="#gamepass-dropdown-menu">
+                        <tr>
+                            <td class="image-col universe-image-col" style="text-align:center">
+                                <a href="@item.CatalogUrl" class="game-image">
+                                    <img src="@(item.ThumbnailUrl ?? "/images/default.png")" alt="@item.Name">
+                                </a>
+                            </td>
+                            <td class="universe-name-col" style="padding-left:3px">
+                                <a class="title notranslate" href="@item.CatalogUrl">@item.Name</a>
+                                <table class="details-table">
+                                    <tr>
+                                        <td class="item-universe"><span>Created:</span> @item.CreatedAt.ToString("M/d/yyyy") (ID: <a href="/asset/?id=@item.AssetId">@item.AssetId</a>)</td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="edit-col" style="white-space:nowrap;padding-right:105px">
+                                <span style="color:gray">Total sales:</span> <span style="color:black">@item.Sales.ToString("N0")</span><br />
+                                <span style="color:gray">Last 7 days:</span> <span style="color:black">@item.SalesLast7Days.ToString("N0")</span>
+                            </td>
+                            <td class="menu-col">
+                                <div class="gear-button-wrapper"><a href="#" class="gear-button"></a></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="separator"></div>
+                </div>
+            }
+            <div class="no-matching-passes" style="display:none;">
+                @await Html.PartialAsync("~/Views/Develop/Tabs/_NoItems.cshtml", "No game passes found for the selected game.")
+            </div>
+        }
+    </div>
+    <div id="gamepass-dropdown-menu" class="item-dropdown-menu" style="display:none;">
+        <a href="#" data-action="configure">Configure</a>
+        <a href="#" data-action="advertise" class="divider-top">Advertise</a>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var select = document.querySelector('.universe-selection-drop-down');
+        if (!select) return;
+
+        function filterPasses() {
+            var selected = select.value;
+            var items = document.querySelectorAll('.gamepass-item');
+            var visible = 0;
+
+            items.forEach(function (item) {
+                if (!selected || item.getAttribute('data-root-place-id') === selected) {
+                    item.style.display = '';
+                    visible++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            var noMatch = document.querySelector('.no-matching-passes');
+            if (noMatch) {
+                noMatch.style.display = (visible === 0 && selected) ? '' : 'none';
+            }
+        }
+
+
+        select.addEventListener('change', function () {
+            filterPasses();
+        });
+
+        if (select.value) {
+            filterPasses();
+        }
+    });
+</script>

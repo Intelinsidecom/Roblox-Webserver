@@ -21,6 +21,7 @@
 	local jobId = "%gameId%"
 	
 	local assetId = placeId -- might be able to remove this now
+	local apiUrl = string.gsub(url, "www%.", "api.")
 
 	local scriptContext = game:GetService('ScriptContext')
 	pcall(function() scriptContext:AddStarterScript(37801172) end)
@@ -40,7 +41,10 @@
 	
 		game:GetService("BadgeService"):SetPlaceId(placeId)
 	
-		game:GetService("BadgeService"):SetIsBadgeLegalUrl("")
+		game:GetService("BadgeService"):SetAwardBadgeUrl(apiUrl .. "/badges/award?userId=%d&badgeId=%d&placeId=%d")
+		game:GetService("BadgeService"):SetHasBadgeUrl(apiUrl .. "/badges/has-badge?userId=%d&badgeId=%d")
+		game:GetService("BadgeService"):SetIsBadgeDisabledUrl(apiUrl .. "/badges/is-disabled?badgeId=%d&placeId=%d")
+		game:GetService("BadgeService"):SetIsBadgeLegalUrl(apiUrl .. "/badges/is-legal?badgeId=%d&placeId=%d")
 		game:GetService("InsertService"):SetBaseSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=10&type=base")
 		game:GetService("InsertService"):SetUserSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=20&type=user&userid=%d")
 		game:GetService("InsertService"):SetCollectionUrl(url .. "/Game/Tools/InsertAsset.ashx?sid=%d")

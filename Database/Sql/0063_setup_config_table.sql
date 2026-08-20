@@ -12,13 +12,6 @@ ADD COLUMN IF NOT EXISTS current_windowsplayer_version VARCHAR(36),
 ADD COLUMN IF NOT EXISTS current_rcc_version VARCHAR(36),
 ADD COLUMN IF NOT EXISTS current_studio_version VARCHAR(36);
 
-INSERT INTO setup (current_windowsplayer_version, current_rcc_version, current_studio_version) 
-VALUES (
-    '5541c7b5a06c39b267a5efae6628e003',
-    '5541c7b5a06c39b267a5efae6628e003',
-    '5541c7b5a06c39b267a5efae6628e003'
-) ON CONFLICT DO NOTHING;
-
 CREATE OR REPLACE FUNCTION get_client_version(client_type TEXT)
 RETURNS TEXT AS $$
 BEGIN

@@ -1,0 +1,139 @@
+@{
+    Layout = null;
+    var assetTypeId = ViewBag.AssetTypeId as int? ?? 0;
+    var targetPlaceId = ViewBag.TargetPlaceId as long?;
+    var groupId = ViewBag.GroupId as string;
+    var gameName = ViewBag.GameName as string;
+    var uploadName = ViewBag.UploadName as string;
+    var uploadDescription = ViewBag.UploadDescription as string;
+    var uploadImageBase64 = ViewBag.UploadImageBase64 as string;
+    var badgeUploadCost = ViewBag.BadgeUploadCost as int? ?? 0;
+}
+
+    <link rel="stylesheet" href="/CSS/Base/CSS/Roblox.css">
+    <link rel="stylesheet" href="/CSS/RBXCommon.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Abp.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Flyouts.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Header.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Item.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/MediaThumb.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Modals.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Place.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/PlaceLauncher.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/tipsy.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Upgrades.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/Utility.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/VideoPreRoll.css">
+    <link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+    <link rel="stylesheet" href="/CSS/Fonts/SourceSansPro.css">
+
+    <link rel="stylesheet" href="/CSS/Base/CSS/StyleGuide.css">
+    <link rel="stylesheet" href="/CSS/Pages/Build/UploadAlt.css">
+
+<form id="upload-form" action="/build/doverifiedupload" enctype="multipart/form-data" method="post">
+    <input name="__RequestVerificationToken" type="hidden" value="" />
+    <input id="assetTypeId" name="assetTypeId" type="hidden" value="@assetTypeId" />
+    <input id="isOggUploadEnabled" name="isOggUploadEnabled" type="hidden" value="False" />
+    <input id="groupId" name="groupId" type="hidden" value="@groupId" />
+    <input id="onVerificationPage" name="onVerificationPage" type="hidden" value="True" />
+    <input id="captchaEnabled" name="captchaEnabled" type="hidden" value="False" />
+    <input id="captchaToken" name="captchaToken" type="hidden" value="" />
+    <input id="captchaProvider" name="captchaProvider" type="hidden" value="" />
+    <div id="container">
+        @if (!string.IsNullOrEmpty(uploadImageBase64))
+        {
+            <div class="asset-image-preview">
+                <span><img class="MainThumbnail" src="data:image/png;base64,@uploadImageBase64" /></span>
+            </div>
+        }
+        <div class="form-row" style="margin-bottom: 10px;">
+            <div class="preview-item">
+                <h3>Name: </h3><span>@uploadName</span>
+            </div>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(gameName))
+        {
+            <div class="form-row" style="margin-bottom: 10px;">
+                <div class="preview-item">
+                    <h3>Target Game: </h3><span><a href="/games/@targetPlaceId/@Uri.EscapeDataString(gameName)" target="_blank">@gameName</a></span>
+                </div>
+            </div>
+        }
+        <div class="form-row" style="margin-bottom: 10px;">
+            <div class="preview-item">
+                <h3 class="description">Description: </h3>
+                <div class="description">@uploadDescription</div>
+            </div>
+        </div>
+        <div class="hidden-form-info">
+            <input name="img" value="@uploadImageBase64" />
+        </div>
+        <div class="hidden-form-info">
+            <input name="assetImageId" value="0" />
+        </div>
+        <div class="hidden-form-info">
+            <input name="expectedCost" />
+        </div>
+        <div class="hidden-form-info">
+            <input name="name" value="@uploadName" />
+            <input name="assetTypeId" value="@assetTypeId" />
+            <input name="description" value="@uploadDescription" />
+            @if (targetPlaceId.HasValue && targetPlaceId.Value > 0)
+            {
+                <input name="targetPlaceId" value="@targetPlaceId" />
+            }
+        </div>
+        <div class="form-row submit-buttons">
+            <a id="upload-button" class="btn-medium btn-primary" data-freeaudio-enabled="true" tabindex="4">@(badgeUploadCost > 0 ? "Purchase for " + badgeUploadCost + " R$" : "Verify Upload")<span class=""></span></a>
+            <span id="loading-container"><img src="/images/LoadingSpinner.gif"></span>
+            <a id="cancel-upload-button" href="/build/upload?assetTypeId=@assetTypeId&amp;targetPlaceId=@targetPlaceId" class="btn-medium btn-negative" tabindex="4">Cancel</a>
+        </div>
+    </div>
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const uploadButton = document.getElementById('upload-button');
+        const loadingContainer = document.getElementById('loading-container');
+        if (uploadButton && loadingContainer) {
+            uploadButton.addEventListener('click', () => {
+                loadingContainer.style.setProperty('display', 'inline-block', 'important');
+                uploadButton.style.setProperty('display', 'none', 'important');
+            });
+        }
+    });
+</script>
+<script>
+    const btn = document.getElementById('upload-button');
+    const form = document.getElementById('upload-form');
+    if (btn && form) {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            form.submit();
+        });
+    }
+</script>
+<script type="text/javascript">
+    if (typeof Roblox === "undefined") {
+        Roblox = {};
+    }
+    if (typeof Roblox.EmbeddedUpload === 'undefined') {
+        Roblox.EmbeddedUpload = {};
+    }
+
+    Roblox.EmbeddedUpload.Resources = {
+        invalidImageFile: 'Must be a .png, .jpg, .tga, or .bmp file',
+        invalidMeshFile: 'Must be a .obj file',
+        invalidSoundFile: 'Must be a .mp3 or .ogg file',
+        invalidPluginFile: 'Must be an .rbxmx file',
+        noFile: 'You must select a file',
+        noName: 'You must specify a name',
+        noDescription: 'You must add a description',
+        longDescription: 'The description is too long',
+        fileIsEmpty: 'The file is empty',
+        fileTooLarge: 'The file is too large'
+    };
+
+    Roblox.EmbeddedUpload.isInsufficientFunds = false;
+    Roblox.EmbeddedUpload.isPlaceSpecificAsset = true;
+</script>

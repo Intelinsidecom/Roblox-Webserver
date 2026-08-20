@@ -28,6 +28,8 @@ public sealed class DevelopTabViewModel
     public IReadOnlyList<DevelopItem> Decals { get; set; } = new List<DevelopItem>();
     public IReadOnlyList<DevelopItem> Audios { get; set; } = new List<DevelopItem>();
     public IReadOnlyList<DevelopItem> Plugins { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> GamePasses { get; set; } = new List<DevelopItem>();
+    public IReadOnlyList<DevelopItem> Badges { get; set; } = new List<DevelopItem>();
     public IReadOnlyList<DevelopItem> LibraryItems { get; set; } = new List<DevelopItem>();
 
     public int SelectedCategory { get; set; }

@@ -437,5 +437,123 @@ namespace Users
                 Birthday = reader.IsDBNull(8) ? null : reader.GetDateTime(8)
             };
         }
+
+        public sealed class OnlineStatus
+        {
+            public bool IsOnline { get; set; }
+            public bool IsInGame { get; set; }
+            public bool IsInStudio { get; set; }
+        }
+
+        public static async Task<OnlineStatus> GetUserOnlineStatusAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                return new OnlineStatus { IsOnline = false, IsInGame = false, IsInStudio = false };
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"SELECT last_activity, in_game, in_studio FROM users WHERE user_id = @uid";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return new OnlineStatus { IsOnline = false, IsInGame = false, IsInStudio = false };
+
+            var lastActivity = reader.IsDBNull(0) ? (System.DateTime?)null : reader.GetDateTime(0);
+            var inGame = !reader.IsDBNull(1) && reader.GetBoolean(1);
+            var inStudio = !reader.IsDBNull(2) && reader.GetBoolean(2);
+
+            var isOnline = lastActivity.HasValue && (System.DateTime.UtcNow - lastActivity.Value).TotalMinutes < 5;
+
+            return new OnlineStatus { IsOnline = isOnline, IsInGame = inGame, IsInStudio = inStudio };
+        }
+
+        public static async Task<long?> GetUserIdByUsernameAsync(string connectionString, string username, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (string.IsNullOrWhiteSpace(username))
+                return null;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(
+                "SELECT user_id FROM users WHERE lower(user_name) = lower(@username) LIMIT 1", conn);
+            cmd.Parameters.AddWithValue("username", username);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result == null || result is System.DBNull ? null : Convert.ToInt64(result);
+        }
+
+        public static async Task<Dictionary<long, OnlineStatus>> GetBatchOnlineStatusAsync(string connectionString, long[] userIds, CancellationToken cancellationToken = default)
+        {
+            var result = new Dictionary<long, OnlineStatus>();
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userIds == null || userIds.Length == 0)
+                return result;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(
+                "SELECT user_id, last_activity, in_game, in_studio FROM users WHERE user_id = ANY(@ids)", conn);
+            cmd.Parameters.AddWithValue("ids", userIds);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var uid = reader.GetInt64(0);
+                var lastActivity = reader.IsDBNull(1) ? (System.DateTime?)null : reader.GetDateTime(1);
+                var inGame = !reader.IsDBNull(2) && reader.GetBoolean(2);
+                var inStudio = !reader.IsDBNull(3) && reader.GetBoolean(3);
+                var isOnline = lastActivity.HasValue && (System.DateTime.UtcNow - lastActivity.Value).TotalMinutes < 5;
+                result[uid] = new OnlineStatus { IsOnline = isOnline, IsInGame = inGame, IsInStudio = inStudio };
+            }
+            return result;
+        }
+
+        public static async Task<long> GetUserVoteCountAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                return 0;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(
+                @"SELECT (SELECT COUNT(*) FROM user_upvoted_assets WHERE user_id = @uid) +
+                        (SELECT COUNT(*) FROM user_downvoted_assets WHERE user_id = @uid)", conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result == null || result is System.DBNull ? 0 : Convert.ToInt64(result);
+        }
+
+        public static async Task UpdateLastActivityBySessionTokenAsync(string connectionString, string sessionToken, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (string.IsNullOrWhiteSpace(sessionToken))
+                return;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(
+                @"UPDATE users SET last_activity = NOW()
+                  WHERE user_id = (SELECT user_id FROM sessions WHERE session_token = @token LIMIT 1)", conn);
+            cmd.Parameters.AddWithValue("token", sessionToken);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 }

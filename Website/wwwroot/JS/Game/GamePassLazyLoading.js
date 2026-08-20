@@ -10,22 +10,22 @@ Roblox.GamePassLazyLoading = function() {
     }
 
     function u() {
-        $("rbx-passes-container").find("#rbx-game-passes").remove(), $("rbx-passes-container").find("#store-does-not-sell").remove(), $(".tab-pane.store").append('<p id="store-does-not-sell" class="section-content-off">' + Roblox.GamePassJSData.LabelGameDoesNotSell + "</p>")
+        if (Roblox.GamePassJSData.IsCreator) return;
+        n.find("#store-does-not-sell").remove(), $(".tab-pane.store").append('<p id="store-does-not-sell" class="section-content-off">' + Roblox.GamePassJSData.LabelGameDoesNotSell + "</p>")
     }
 
     function f() {
-        var f = t.clone().css("display", "inherit"),
-            n;
-        $("#rbx-passes-container").append(f), n = "/Games/GetGamePassesInnerPartial?startIndex=0&maxRows=" + Roblox.GamePassJSData.GamePassesPerPlaceLimit + "&placeId=" + Roblox.GamePassJSData.PlaceID, $.ajax({
+        var f = t.clone().css("display", "inherit");
+        n.append(f), $.ajax({
             type: "GET",
-            url: n,
+            url: "/Games/GetGamePassesInnerPartial?startIndex=0&maxRows=" + Roblox.GamePassJSData.GamePassesPerPlaceLimit + "&placeId=" + Roblox.GamePassJSData.PlaceID,
             contentType: "application/json; charset=utf-8",
             cache: !1,
-            success: function(n) {
-                $(".rbx-passes-item-container#spinner").remove(), i(), r(n), Roblox.GamePassJSData.TotalGearItems == 0 && n.length < 10 && u()
+            success: function(e) {
+                n.find(".rbx-gear-passes-item-add").remove(), i(), r(e), Roblox.GamePassJSData.TotalGearItems == 0 && e.length < 10 && u()
             },
             error: function() {
-                Roblox.Dialog.open({
+                n.find(".rbx-gear-passes-item-add").remove(), Roblox.Dialog.open({
                     titleText: "Error",
                     bodyContent: "Failed to load Game Passes.  Please try again later.",
                     acceptText: "Ok",
@@ -36,7 +36,7 @@ Roblox.GamePassLazyLoading = function() {
         })
     }
     var n = $("#rbx-passes-container"),
-        t = $(".rbx-gear-passes-item-add#spinner");
+        t = $(".rbx-gear-passes-item-add").first();
     return {
         init: f
     }

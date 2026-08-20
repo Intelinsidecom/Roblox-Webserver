@@ -1,4 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Threading.Tasks;
+using Users;
 
 namespace Api.Controllers;
 
@@ -16,5 +20,29 @@ public class DeviceController : ControllerBase
     };
     
     return Ok(result);
+    }
+
+    [HttpPost("client-status/set")]
+    public async Task<IActionResult> SetClientStatus(
+        [FromQuery] string browserTrackerId,
+        [FromQuery] string status,
+        [FromServices] IConfiguration config)
+    {
+        if (string.IsNullOrWhiteSpace(browserTrackerId))
+            return Ok();
+
+        try
+        {
+            var connStr = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Ok();
+
+            await UserQueries.UpdateLastActivityBySessionTokenAsync(connStr, browserTrackerId);
+        }
+        catch
+        {
+        }
+
+        return Ok();
     }
 }

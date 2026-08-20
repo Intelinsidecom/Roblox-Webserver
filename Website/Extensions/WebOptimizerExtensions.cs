@@ -14,8 +14,8 @@ namespace Website.Extensions
                     new[]
                     {
                         "JS/lib/athena/athena.js",
-                        "JS/lib/jquery/jquery-1.11.1.min.js",
-                        "JS/lib/jquery/jquery-migrate-1.2.1.min.js",
+                        "JS/jquery/jquery-1.11.1.min.js",
+                        "JS/jquery/jquery-migrate-1.2.1.min.js",
                         "JS/jquery.ba-postmessage.min.js",
                         "JS/roblox.js",
                         "JS/jquery.cookie.js",

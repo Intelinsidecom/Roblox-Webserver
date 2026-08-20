@@ -312,6 +312,27 @@ namespace Api.Controllers
             return Ok(new { success = true, isFollowing = isFollowing });
         }
 
+        [HttpGet("users/{userId:long}/onlinestatus")]
+        public async Task<IActionResult> GetOnlineStatus([FromRoute] long userId, [FromServices] IConfiguration config)
+        {
+            if (userId <= 0)
+                return Ok(new { isOnline = false, isGame = false, isStudio = false });
+
+            var connStr = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Ok(new { isOnline = false, isGame = false, isStudio = false });
+
+            try
+            {
+                var status = await UserQueries.GetUserOnlineStatusAsync(connStr, userId);
+                return Ok(new { isOnline = status.IsOnline, isGame = status.IsInGame, isStudio = status.IsInStudio });
+            }
+            catch
+            {
+                return Ok(new { isOnline = false, isGame = false, isStudio = false });
+            }
+        }
+
         [HttpGet("my/friendsonline")]
         public async Task<IActionResult> GetFriendsOnline([FromServices] IConfiguration config)
         {
@@ -352,6 +373,84 @@ namespace Api.Controllers
             var connString = config.GetConnectionString("Default");
             var result = await Users.UserQueries.UnfollowUserAsync(connString, currentUserId, followedUserId).ConfigureAwait(false);
             return Ok(new { success = true });
+        }
+
+        [HttpGet("users/get-by-username")]
+        public async Task<IActionResult> GetUserByUsername([FromQuery] string username, [FromServices] IConfiguration config)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                return NotFound(new { errors = new[] { new { code = 0, message = "Username is required" } } });
+
+            var connStr = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return StatusCode(500);
+
+            try
+            {
+                var userId = await UserQueries.GetUserIdByUsernameAsync(connStr, username);
+                if (!userId.HasValue || userId.Value <= 0)
+                    return NotFound(new { errors = new[] { new { code = 0, message = "User not found" } } });
+
+                return Ok(new { Id = userId.Value, Username = username });
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        public class OnlineStatusBatchRequest
+        {
+            public long[] UserIds { get; set; } = Array.Empty<long>();
+        }
+
+        [HttpPost("users/online-status")]
+        public async Task<IActionResult> GetOnlineStatusBatch([FromBody] OnlineStatusBatchRequest request, [FromServices] IConfiguration config)
+        {
+            if (request?.UserIds == null || request.UserIds.Length == 0)
+                return Ok(new { userStatuses = Array.Empty<object>() });
+
+            var connStr = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Ok(new { userStatuses = Array.Empty<object>() });
+
+            try
+            {
+                var statuses = await UserQueries.GetBatchOnlineStatusAsync(connStr, request.UserIds);
+                var result = request.UserIds.Select(uid =>
+                {
+                    var s = statuses.TryGetValue(uid, out var st) ? st : new UserQueries.OnlineStatus();
+                    return new { userId = uid, isOnline = s.IsOnline, isGame = s.IsInGame, isStudio = s.IsInStudio };
+                }).ToArray();
+
+                return Ok(new { userStatuses = result });
+            }
+            catch
+            {
+                return Ok(new { userStatuses = Array.Empty<object>() });
+            }
+        }
+
+        [HttpGet("user/get-vote-count")]
+        public async Task<IActionResult> GetUserVoteCount([FromQuery] string targetType, [FromServices] IConfiguration config)
+        {
+            var currentUserId = await _currentUserService.GetUserIdAsync();
+            if (currentUserId <= 0)
+                return Ok(new { VoteCount = 0 });
+
+            var connStr = config.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return Ok(new { VoteCount = 0 });
+
+            try
+            {
+                var count = await UserQueries.GetUserVoteCountAsync(connStr, currentUserId);
+                return Ok(new { VoteCount = count });
+            }
+            catch
+            {
+                return Ok(new { VoteCount = 0 });
+            }
         }
     }
 }

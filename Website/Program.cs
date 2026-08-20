@@ -95,6 +95,15 @@ builder.Services.AddHostedService<ToolboxService>(sp => sp.GetRequiredService<To
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<Assets.AssetService>();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("RobloxAssetDelivery", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(5);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Roblox-Webserver/1.0");
+}).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+{
+    MaxConnectionsPerServer = 8,
+    AutomaticDecompression = System.Net.DecompressionMethods.All
+});
 builder.Services.AddWebOptimizerPipeline();
 builder.Services.AddWebMarkupMin(options =>
 {

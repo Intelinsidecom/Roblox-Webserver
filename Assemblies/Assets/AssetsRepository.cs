@@ -105,6 +105,7 @@ namespace Assets
         public bool IsCopyingAllowed { get; set; } = false; // Allow copying setting
         public bool IsPlace { get; set; } = false; // Whether this asset is a place
         public bool InUniverse { get; set; } = false; // Whether this place is in a universe
+        public long? BelongsToUniverse { get; set; } // Universe this asset belongs to (game passes)
         public bool AllowPlaceToBeUpdatedInGame { get; set; } = false; // Allow place to be updated in game
     }
 
@@ -244,7 +245,8 @@ namespace Assets
     place_generated_icon_hash,
     is_place,
     in_universe,
-    is_copying_allowed
+    is_copying_allowed,
+    belongs_to_universe
 ) values (
     @name,
     @asset_type_id,
@@ -269,7 +271,8 @@ namespace Assets
     @place_generated_icon_hash,
     @is_place,
     @in_universe,
-    @is_copying_allowed
+    @is_copying_allowed,
+    @belongs_to_universe
 ) returning asset_id;";
 
             using var cmd = new NpgsqlCommand(sql, conn);
@@ -297,6 +300,7 @@ namespace Assets
             cmd.Parameters.AddWithValue("is_place", p.IsPlace);
             cmd.Parameters.AddWithValue("in_universe", p.InUniverse);
             cmd.Parameters.AddWithValue("is_copying_allowed", p.IsCopyingAllowed);
+            cmd.Parameters.AddWithValue("belongs_to_universe", (object?)p.BelongsToUniverse ?? DBNull.Value);
 
             var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             if (result == null || result == DBNull.Value)
@@ -939,6 +943,43 @@ where asset_id = @asset_id;";
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("asset_id", assetId);
             cmd.Parameters.AddWithValue("rank", rank);
+
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<bool> BadgeExistsAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select exists(select 1 from assets where asset_id = @asset_id and asset_type_id = 21);";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result is bool exists && exists;
+        }
+
+        public async Task IncrementAssetSalesAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"update assets set sales = coalesce(sales, 0) + 1 where asset_id = @asset_id;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("asset_id", assetId);
 
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }

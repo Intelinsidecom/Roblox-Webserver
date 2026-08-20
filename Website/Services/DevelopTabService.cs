@@ -96,6 +96,20 @@ public sealed class DevelopTabService
             case "Plugins":
                 await PopulatePluginsAsync(vm, cancellationToken).ConfigureAwait(false);
                 break;
+            case "GamePasses":
+                await PopulateGamesAsync(vm, showPublicOnly: true, cancellationToken).ConfigureAwait(false);
+                await PopulateGamePassesAsync(vm, cancellationToken).ConfigureAwait(false);
+                vm.AssetTypeId = 34;
+                vm.HeaderText = "Game Passes";
+                vm.MaxActiveCount = 0;
+                break;
+            case "Badges":
+                await PopulateGamesAsync(vm, showPublicOnly: true, cancellationToken).ConfigureAwait(false);
+                await PopulateBadgesAsync(vm, cancellationToken).ConfigureAwait(false);
+                vm.AssetTypeId = 21;
+                vm.HeaderText = "Badges";
+                vm.MaxActiveCount = 0;
+                break;
             default:
                 break;
         }
@@ -198,6 +212,176 @@ public sealed class DevelopTabService
         {
             Console.WriteLine($"[ERROR] PopulateGamesAsync: {ex}");
             vm.Items = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulateGamePassesAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url,
+                    COALESCE(a.price, 0) as price, COALESCE(a.on_sale, false) as on_sale,
+                    COALESCE(a.sales, 0) as sales, COALESCE(u.root_place_id, 0) as root_place_id
+                from assets a
+                left join universes u on u.universe_id = a.belongs_to_universe
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 34
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            {
+                await using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    var assetId = reader.GetInt64(0);
+                    var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                    var createdAt = reader.GetDateTime(2);
+                    var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
+                    var price = reader.IsDBNull(4) ? 0 : reader.GetInt32(4);
+                    var onSale = !reader.IsDBNull(5) && reader.GetBoolean(5);
+                    var sales = reader.IsDBNull(6) ? 0L : reader.GetInt64(6);
+                    var rootPlaceId = reader.IsDBNull(7) ? 0L : reader.GetInt64(7);
+
+                    items.Add(new Assemblies.Common.DevelopItem
+                    {
+                        ItemId = assetId,
+                        AssetId = assetId,
+                        RootPlaceId = rootPlaceId,
+                        Name = name,
+                        ThumbnailUrl = thumb,
+                        Type = "gamepasses",
+                        CatalogUrl = "/catalog/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                        CreatedAt = createdAt,
+                        PriceRobux = price,
+                        IsOnSale = onSale,
+                        Sales = sales,
+                    });
+                }
+            }
+
+            vm.GamePasses = items;
+
+            var assetIds = items.Select(i => i.AssetId).ToList();
+            var salesLast7 = await GetSalesLast7DaysAsync(conn, assetIds, cancellationToken).ConfigureAwait(false);
+            foreach (var item in items)
+            {
+                if (salesLast7.TryGetValue(item.AssetId, out var count))
+                    item.SalesLast7Days = count;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] PopulateGamePassesAsync: {ex}");
+            vm.GamePasses = new List<Assemblies.Common.DevelopItem>();
+        }
+    }
+
+    private async Task PopulateBadgesAsync(Assemblies.Common.DevelopTabViewModel vm, CancellationToken cancellationToken)
+    {
+        var connStr = ConnectionString;
+        if (string.IsNullOrWhiteSpace(connStr) || vm.UserId <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            const string sql = @"select a.asset_id, a.name, a.created_at, a.thumbnail_url,
+                    COALESCE(a.sales, 0) as sales, COALESCE(u.root_place_id, 0) as root_place_id
+                from assets a
+                left join universes u on u.universe_id = a.belongs_to_universe
+                where a.owner_user_id = @uid
+                  and a.asset_type_id = 21
+                order by a.created_at desc, a.asset_id desc
+                limit 50;";
+
+            await using var conn = new NpgsqlConnection(connStr);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            var items = new List<Assemblies.Common.DevelopItem>();
+            {
+                await using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("uid", vm.UserId);
+
+                await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    var assetId = reader.GetInt64(0);
+                    var name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1);
+                    var createdAt = reader.GetDateTime(2);
+                    var thumb = reader.IsDBNull(3) ? DefaultThumbnailUrl : reader.GetString(3);
+                    var sales = reader.IsDBNull(4) ? 0L : reader.GetInt64(4);
+                    var rootPlaceId = reader.IsDBNull(5) ? 0L : reader.GetInt64(5);
+
+                    items.Add(new Assemblies.Common.DevelopItem
+                    {
+                        ItemId = assetId,
+                        AssetId = assetId,
+                        RootPlaceId = rootPlaceId,
+                        Name = name,
+                        ThumbnailUrl = thumb,
+                        Type = "badges",
+                        CatalogUrl = "/badges/" + assetId + "/" + Assemblies.Common.DevelopSlugHelper.Slug(name),
+                        CreatedAt = createdAt,
+                        Sales = sales,
+                    });
+                }
+            }
+
+            vm.Badges = items;
+
+            var assetIds = items.Select(i => i.AssetId).ToList();
+            if (assetIds.Count > 0)
+            {
+                const string statsSql = @"SELECT asset_id, COUNT(*),
+                        COUNT(*) FILTER (WHERE created_at >= now() - interval '1 day')
+                    FROM user_assets
+                    WHERE asset_id = ANY(@ids)
+                    GROUP BY asset_id;";
+
+                await using var statsCmd = new NpgsqlCommand(statsSql, conn);
+                statsCmd.Parameters.AddWithValue("ids", assetIds);
+
+                var subtractCreator = _configuration.GetValue<bool>("Badge:SubtractCreatorFromTotalWon");
+                await using var statsReader = await statsCmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+                while (await statsReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    var badgeId = statsReader.GetInt64(0);
+                    var totalWon = statsReader.GetInt64(1);
+                    var wonYesterday = statsReader.GetInt64(2);
+
+                    if (subtractCreator)
+                    {
+                        totalWon = Math.Max(0, totalWon - 1);
+                        wonYesterday = Math.Max(0, wonYesterday - 1);
+                    }
+
+                    var item = items.FirstOrDefault(i => i.AssetId == badgeId);
+                    if (item != null)
+                    {
+                        item.Sales = totalWon;
+                        item.SalesLast7Days = wonYesterday;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] PopulateBadgesAsync: {ex}");
+            vm.Badges = new List<Assemblies.Common.DevelopItem>();
         }
     }
 

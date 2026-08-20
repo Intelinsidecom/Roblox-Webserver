@@ -27,6 +27,10 @@ namespace Assets
                     return "Pants";
                 case 13:
                     return "Decal";
+                case 34:
+                    return "Game Pass";
+                case 21:
+                    return "Badge";
                 case 38:
                     return "Plugin";
                 default:
@@ -62,12 +66,14 @@ namespace Assets
                 case 17:
                     return "Head";
                 case 21:
-                    return "Face Accessory";
+                    return "Badge";
                 case 24:
                 case 27:
                     return "Gear";
                 case 32:
                     return "Package";
+                case 34:
+                    return "Game Pass";
                 case 38:
                     return "Plugin";
                 case 41:

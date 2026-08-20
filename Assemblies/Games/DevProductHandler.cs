@@ -481,6 +481,45 @@ namespace Games
         }
 
         /// <summary>
+        /// Gets a single developer product by its product ID
+        /// </summary>
+        public static async Task<DeveloperProduct?> GetDeveloperProductByIdAsync(string connectionString, long productId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (productId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(productId));
+
+            using var connection = new NpgsqlConnection(connectionString);
+            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"SELECT dp.id, dp.universe_id, dp.name, dp.description, dp.price_in_robux, dp.price_in_tix,
+                   dp.image_asset_id, dp.created_at, dp.updated_at
+            FROM developer_products dp
+            WHERE dp.id = @productId";
+
+            using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@productId", productId);
+
+            using var reader = await command.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return null;
+
+            return new DeveloperProduct
+            {
+                Id = reader.GetInt64(0),
+                UniverseId = reader.GetInt64(1),
+                Name = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                Description = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                PriceInRobux = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                PriceInTix = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
+                ImageAssetId = reader.IsDBNull(6) ? null : reader.GetInt64(6),
+                CreatedAt = reader.GetDateTime(7),
+                UpdatedAt = reader.GetDateTime(8),
+            };
+        }
+
+        /// <summary>
         /// Model representing a developer product
         /// </summary>
         public class DeveloperProduct

@@ -5,8 +5,7 @@
     var items = Model?.Items ?? new List<Assemblies.Common.DevelopItem>();
     var fallbackThumb = Configuration["DefaultThumbnailUrl"] ?? "/images/default.png";
 }
-<div class="items-container games-container" style="position: relative">
-    <script>
+<script>
     function editGameInStudio(play_placeId){
         RobloxLaunch._GoogleAnalyticsCallback=function(){
             var isInsideRobloxIDE='website';
@@ -68,19 +67,19 @@
                             <img src="@(item.ThumbnailUrl ?? fallbackThumb)" alt="@item.Name">
                         </a>
                     </td>
-                    <td class=name-col>
-                        <a class="title notranslate" href="@item.ConfigureUrl">@item.Name</a>
-                        <table class=details-table>
-                            <tr>
-                                <td class=item-date><span>Updated:</span>@item.CreatedAt.ToString("M/d/yyyy")</td>
-                            </tr>
-                        </table>
+                        <td class=name-col>
+                            <a class="title notranslate" href="@item.ConfigureUrl">@item.Name</a>
+                            <table class=details-table>
+                                <tr>
+                                    <td class=item-date><span>Updated:</span>@item.CreatedAt.ToString("M/d/yyyy")</td>
+                                </tr>
+                            </table>
+                        </td>
                         <td class=stats-col-games>
                             <div class=totals-label>Total Visitors:<span>@item.VisitCount.ToString("N0")</span></div>
                             <div class=totals-label>Last 7 days:<span>0</span></div>
                         </td>
-                    </td>
-                    <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href="javascript:editGameInStudio(@item.RootPlaceId)">Edit</a></td>
+                        <td class=edit-col><a class="roblox-edit-button btn-control btn-control-large" href="javascript:editGameInStudio(@item.RootPlaceId)">Edit</a></td>
                     <td class=menu-col><div class=gear-button-wrapper><a href=# class=gear-button></a></div></td>
                 </tr>
             </table>
@@ -88,4 +87,3 @@
         }
     }
     <div id=build-dropdown-menu style=display:none><a href=# data-href-template=/places/0/update>Configure Place</a> <a href=# data-gameonly-link=true data-href-template=/places/0/stats>Developer Stats</a> <a class=shutdown-all-servers-button href=#>Shut Down All Servers</a></div>
-</div>

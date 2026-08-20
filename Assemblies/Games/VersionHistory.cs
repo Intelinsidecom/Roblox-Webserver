@@ -29,7 +29,7 @@ public static class VersionHistory
 
         const string sql = @"SELECT place_version_history FROM assets WHERE asset_id = @placeId";
 
-        using var cmd = new NpgsqlCommand(sql, conn);
+        using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
         cmd.Parameters.AddWithValue("placeId", placeId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
@@ -88,7 +88,7 @@ public static class VersionHistory
                               SET place_version_history = COALESCE(place_version_history, '[]'::jsonb) || @entry
                               WHERE asset_id = @placeId";
 
-        using var cmd = new NpgsqlCommand(sql, conn);
+        using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
         cmd.Parameters.Add(new NpgsqlParameter("entry", NpgsqlTypes.NpgsqlDbType.Jsonb) { Value = entryJson });
         cmd.Parameters.AddWithValue("placeId", placeId);
 
@@ -112,7 +112,7 @@ public static class VersionHistory
 
         const string sql = @"SELECT place_version_history FROM assets WHERE asset_id = @placeId";
 
-        using var cmd = new NpgsqlCommand(sql, conn);
+        using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
         cmd.Parameters.AddWithValue("placeId", placeId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
@@ -145,7 +145,7 @@ public static class VersionHistory
 
         const string sql = @"SELECT place_version_history FROM assets WHERE asset_id = @assetId";
 
-        using var cmd = new NpgsqlCommand(sql, conn);
+        using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
         cmd.Parameters.AddWithValue("assetId", assetId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
@@ -180,7 +180,7 @@ public static class VersionHistory
 
         const string sql = @"SELECT place_version_history FROM assets WHERE asset_id = @assetId";
 
-        using var cmd = new NpgsqlCommand(sql, conn);
+        using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
         cmd.Parameters.AddWithValue("assetId", assetId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);

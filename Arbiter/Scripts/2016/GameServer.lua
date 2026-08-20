@@ -41,6 +41,7 @@ function start(placeId, port, url)
 	
 	-- establish this peer as the Server
 	local ns = game:GetService("NetworkServer")
+	local apiUrl = string.gsub(url, "www%.", "api.")
 	
 	if url~=nil then
 		pcall(function() game:GetService("Players"):SetAbuseReportUrl(url .. "/AbuseReport/InGameChatHandler.ashx") end)
@@ -50,7 +51,10 @@ function start(placeId, port, url)
 	
 		game:GetService("BadgeService"):SetPlaceId(placeId)
 	
-		game:GetService("BadgeService"):SetIsBadgeLegalUrl("")
+		game:GetService("BadgeService"):SetAwardBadgeUrl(apiUrl .. "/badges/award?userId=%d&badgeId=%d&placeId=%d")
+		game:GetService("BadgeService"):SetHasBadgeUrl(apiUrl .. "/badges/has-badge?userId=%d&badgeId=%d")
+		game:GetService("BadgeService"):SetIsBadgeDisabledUrl(apiUrl .. "/badges/is-disabled?badgeId=%d&placeId=%d")
+		game:GetService("BadgeService"):SetIsBadgeLegalUrl(apiUrl .. "/badges/is-legal?badgeId=%d&placeId=%d")
 		game:GetService("InsertService"):SetBaseSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=10&type=base")
 		game:GetService("InsertService"):SetUserSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=20&type=user&userid=%d")
 		game:GetService("InsertService"):SetCollectionUrl(url .. "/Game/Tools/InsertAsset.ashx?sid=%d")

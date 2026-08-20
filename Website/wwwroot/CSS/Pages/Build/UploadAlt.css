@@ -1,0 +1,115 @@
+/* ~/CSS/Pages/Build/Upload.css */
+body {
+    background: none !important;
+}
+
+#container {
+    width: auto;
+    margin: 10px;
+}
+
+#container .form-row {
+    margin-bottom: 10px;
+}
+
+#name {
+    width: 450px;
+    height: 20px;
+}
+
+#container label {
+    min-width: 100px;
+    display: inline-block;
+}
+
+.asset-image-preview .MainThumbnail {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+}
+
+.error {
+    color: red;
+    display: inline-block;
+}
+
+.text-box {
+    width: 200px;
+}
+
+ul {
+    padding-left: 0;
+}
+
+.btn-level-element {
+    margin-right: 6px;
+    float: left;
+}
+
+#upload-result {
+    margin-left: 10px;
+    margin-top: 3px;
+}
+
+#loading-container {
+    display: none;
+    font: bold 12px arial;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.asset-image-preview {
+    float: left;
+    margin: 10px 10px 10px 0;
+}
+
+.form-row.submit-buttons {
+    clear: both;
+}
+
+.form-row.submit-buttons #upload-fee-item-result-success {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.form-row.submit-buttons #upload-fee-item-result-error {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.hidden-form-info {
+    display: none;
+}
+
+.badge-place-drop-down {
+    min-width: 150px;
+}
+
+.form-row.textarea-container * {
+    vertical-align: top;
+}
+
+.preview-item h3 {
+    min-width: 100px;
+    display: inline-block;
+    float: left;
+}
+
+.preview-item .description {
+    height: 100px;
+    overflow: hidden;
+}
+
+.textarea-container #description {
+    width: 450px;
+}
+
+.create-new-place-container {
+    text-align: center;
+}
+
+.create-new-place-container .create-new-button {
+    margin: 10px 0;
+}

@@ -90,31 +90,104 @@ order by awa.asset_id";
         /// <param name="assetId">The asset ID to fetch</param>
         /// <param name="contentType">The expected content type</param>
         /// <returns>File stream result if successful, null if failed</returns>
+        private static readonly SemaphoreSlim AssetFetchGate = new(4);
+
+        private const string HttpClientName = "RobloxAssetDelivery";
+
+        private const long MaxCachedBytes = 32L * 1024 * 1024;
+
         public async Task<(Stream? Stream, string ContentType, string? Error)> TryFetchFromRobloxAssetDeliveryAsync(long assetId, string? contentType)
         {
+            var cachePath = GetProxyCachePath(assetId);
+            var ctPath = cachePath + ".contenttype";
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+
             try
             {
-                var baseUrl = _configuration["RobloxAssetDelivery:BaseUrl"] ?? "https://assetdelivery.roblox.com";
-                var client = _httpClientFactory.CreateClient();
-                
-                var response = await client.GetAsync($"{baseUrl}/v1/asset/?id={assetId}");
-                if (!response.IsSuccessStatusCode)
+                if (cachePath != null && File.Exists(cachePath))
                 {
-                    return (null, string.Empty, "Asset not found locally or on Roblox asset delivery");
+                    var cachedCt = File.Exists(ctPath) ? File.ReadAllText(ctPath).Trim() : null;
+                    var ct = !string.IsNullOrWhiteSpace(cachedCt) ? cachedCt : FallbackContentType(contentType, null);
+                    sw.Stop();
+                    return (new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true), ct, null);
                 }
 
-                var stream = await response.Content.ReadAsStreamAsync();
-                var ct = string.IsNullOrWhiteSpace(contentType) 
-                    ? response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream" 
-                    : contentType;
-                
-                return (stream, ct, null);
+                await AssetFetchGate.WaitAsync();
+                try
+                {
+                    if (cachePath != null && File.Exists(cachePath))
+                    {
+                        var cachedCt = File.Exists(ctPath) ? File.ReadAllText(ctPath).Trim() : null;
+                        var ct = !string.IsNullOrWhiteSpace(cachedCt) ? cachedCt : FallbackContentType(contentType, null);
+                        sw.Stop();
+                        return (new FileStream(cachePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true), ct, null);
+                    }
+
+                    using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    var baseUrl = _configuration["RobloxAssetDelivery:BaseUrl"] ?? "https://assetdelivery.roblox.com";
+                    var client = _httpClientFactory.CreateClient(HttpClientName);
+
+                    using var response = await client.GetAsync($"{baseUrl}/v1/asset/?id={assetId}", cts.Token);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        sw.Stop();
+                        return (null, string.Empty, "Asset not found locally or on Roblox asset delivery");
+                    }
+
+                    using var responseStream = await response.Content.ReadAsStreamAsync();
+                    using var buffer = new MemoryStream();
+                    var buf = new byte[81920];
+                    int readCount;
+                    while ((readCount = await responseStream.ReadAsync(buf, 0, buf.Length, cts.Token)) > 0)
+                        await buffer.WriteAsync(buf, 0, readCount, cts.Token);
+                    var bytes = buffer.ToArray();
+                    var resolvedCt = FallbackContentType(contentType, response.Content.Headers.ContentType?.MediaType);
+
+                    if (cachePath != null && bytes.Length <= MaxCachedBytes)
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(cachePath)!);
+                            File.WriteAllBytes(cachePath, bytes);
+                            File.WriteAllText(ctPath, resolvedCt);
+                        }
+                        catch (Exception writeEx)
+                        {
+                            Console.WriteLine($"[ASSET-PROXY] cache write failed assetId={assetId}: {writeEx.Message}");
+                        }
+                    }
+
+                    sw.Stop();
+                    return (new MemoryStream(bytes), resolvedCt, null);
+                }
+                finally
+                {
+                    AssetFetchGate.Release();
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] FetchAssetStreamAsync assetId={assetId}: {ex}");
+                sw.Stop();
+                Console.WriteLine($"[ASSET-PROXY] assetId={assetId} failed ({sw.ElapsedMilliseconds}ms): {ex.Message}");
                 return (null, string.Empty, "Failed to fetch asset from Roblox asset delivery");
             }
+        }
+
+        private string? GetProxyCachePath(long assetId)
+        {
+            var assetsRoot = _configuration["Assets:Directory"];
+            if (string.IsNullOrWhiteSpace(assetsRoot))
+                return null;
+            return Path.Combine(assetsRoot, "proxy", assetId.ToString());
+        }
+
+        private static string FallbackContentType(string? requested, string? upstream)
+        {
+            if (!string.IsNullOrWhiteSpace(requested) && requested.Contains('/'))
+                return requested!;
+            if (!string.IsNullOrWhiteSpace(upstream))
+                return upstream!;
+            return "application/octet-stream";
         }
 
         /// <summary>
@@ -209,7 +282,6 @@ order by awa.asset_id";
                 var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
                 if (result == null || result == DBNull.Value)
                 {
-                    Console.WriteLine($"[AssetService] Asset {assetId} not found");
                     return false;
                 }
                 assetTypeId = Convert.ToInt32(result);
@@ -282,7 +354,6 @@ order by awa.asset_id";
             var (hash, ext, contentType) = await GetAssetMetadataAsync(assetId);
             if (string.IsNullOrWhiteSpace(hash))
             {
-                Console.WriteLine($"[AssetService] Decal {assetId}: no content hash found");
                 return false;
             }
 
@@ -331,19 +402,16 @@ order by awa.asset_id";
                         }
                         else
                         {
-                            Console.WriteLine($"[AssetService] Decal {assetId}: backing image file not found at {imgPath}");
                             return false;
                         }
                     }
                     else
                     {
-                        Console.WriteLine($"[AssetService] Decal {assetId}: backing image has no content hash");
                         return false;
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"[AssetService] Decal {assetId}: no backing image found via asset_link");
                     return false;
                 }
             }
@@ -353,7 +421,6 @@ order by awa.asset_id";
                 var filePath = GetAssetFilePath(hash, ext);
                 if (string.IsNullOrWhiteSpace(filePath) || !System.IO.File.Exists(filePath))
                 {
-                    Console.WriteLine($"[AssetService] Decal {assetId}: asset file not found at {filePath}");
                     return false;
                 }
 
@@ -447,7 +514,6 @@ order by awa.asset_id";
 
             var repo = new AssetsRepository();
             await repo.UpdateAssetThumbnailsAsync(connStr, assetId, lowUrl, highResUrl, cancellationToken).ConfigureAwait(false);
-            Console.WriteLine($"[AssetService] Decal {assetId}: thumbnail saved (low={lowUrl}, high={highResUrl})");
             return true;
         }
 

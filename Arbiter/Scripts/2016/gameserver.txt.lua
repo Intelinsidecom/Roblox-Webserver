@@ -50,7 +50,10 @@ if url~=nil then
 
 	game:GetService("BadgeService"):SetPlaceId(placeId)
 
-	game:GetService("BadgeService"):SetIsBadgeLegalUrl("")
+	game:GetService("BadgeService"):SetAwardBadgeUrl(url .. "/badges/award?userId=%d&badgeId=%d&placeId=%d")
+	game:GetService("BadgeService"):SetHasBadgeUrl(url .. "/badges/has-badge?userId=%d&badgeId=%d")
+	game:GetService("BadgeService"):SetIsBadgeDisabledUrl(url .. "/badges/is-disabled?badgeId=%d&placeId=%d")
+	game:GetService("BadgeService"):SetIsBadgeLegalUrl(url .. "/badges/is-legal?badgeId=%d&placeId=%d")
 	game:GetService("InsertService"):SetBaseSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=10&type=base")
 	game:GetService("InsertService"):SetUserSetsUrl(url .. "/Game/Tools/InsertAsset.ashx?nsets=20&type=user&userid=%d")
 	game:GetService("InsertService"):SetCollectionUrl(url .. "/Game/Tools/InsertAsset.ashx?sid=%d")

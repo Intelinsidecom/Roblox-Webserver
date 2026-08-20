@@ -13,6 +13,8 @@ namespace RobloxWebserver.Controllers
             _viewEngine = viewEngine;
         }
 
+        [HttpGet]
+        [HttpPost]
         public IActionResult Route(string? path)
         {
             var pagePath = string.IsNullOrWhiteSpace(path) ? "index" : path.Trim().Trim('/');

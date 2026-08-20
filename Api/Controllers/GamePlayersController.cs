@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
 using Games;
 
@@ -67,6 +68,29 @@ namespace Api.Controllers
                     finalPage = true,
                     players = new object[] { }
                 });
+            }
+        }
+
+        [HttpGet("game/is-playable")]
+        public async Task<IActionResult> IsPlayable(
+            [FromQuery] long placeId,
+            [FromServices] IConfiguration config)
+        {
+            if (placeId <= 0)
+                return Ok(new { isPlayable = false });
+
+            try
+            {
+                var connStr = config.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connStr))
+                    return Ok(new { isPlayable = true });
+
+                var playable = await GamesRepository.ValidatePlaceJoinAsync(connStr, placeId);
+                return Ok(new { isPlayable = playable });
+            }
+            catch
+            {
+                return Ok(new { isPlayable = true });
             }
         }
     }

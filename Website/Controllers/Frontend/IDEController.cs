@@ -218,7 +218,10 @@ public class IDEController : Controller
         var isPlace = assetTypeId == 9;
 
         var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
-        var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl.Replace("://www.", "://data.").Replace("://assetgame.", "://data.");
+        var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl
+            .Replace("https://www.", "http://data.")
+            .Replace("http://www.", "http://data.")
+            .Replace("://assetgame.", "://data.");
         var uploadUrl = $"{dataBaseUrl}/Data/Upload.ashx?assetid={assetId}&type={typeName}&ispublic=False&groupId=";
         var previousUrl = baseUrl + "/ide/Upload.ashx";
 

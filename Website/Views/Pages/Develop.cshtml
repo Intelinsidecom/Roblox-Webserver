@@ -20,6 +20,10 @@
         {
             viewParam = string.Empty;
         }
+        else if (pageParam.Equals("game-passes", System.StringComparison.OrdinalIgnoreCase))
+        {
+            viewParam = "34";
+        }
     }
 
     if (string.IsNullOrEmpty(viewParam) && string.IsNullOrEmpty(pageParam))
@@ -65,6 +69,9 @@
             case "38":
                 viewName = "Plugins";
                 break;
+            case "34":
+                viewName = "GamePasses";
+                break;
             default:
                 viewName = "Games";
                 break;
@@ -106,6 +113,7 @@
         "Shirts" => 11,
         "Pants" => 12,
         "Plugins" => 38,
+        "GamePasses" => 34,
         _ => 0,
     };
 
@@ -149,7 +157,7 @@
 
 @if (UseBundledAssets)
 {
-    <script type="text/javascript" src="~/JS/Bundles/307f6492aa390fd13de172b2d8a00b13.js"></script>
+    <script type="text/javascript" src="~/JS/Bundles/e5c6560c021163734e1557ed5ef4ba21.js"></script>
 }
 else
 {
@@ -370,6 +378,7 @@ else
 <link rel="stylesheet" data-bundlename="Chat" href="~/CSS/dist/css/chat.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/Develop.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/BuildPage.css">
+<link rel="stylesheet" href="~/CSS/Pages/Build/DropDownMenus.css">
 <link rel="stylesheet" href="~/CSS/Pages/Build/StudioWidget.css">
 <link rel="stylesheet" href="~/CSS/Pages/Universes/PlaceSelectorModal.css">
 <link rel="stylesheet" href="~/CSS/Pages/Catalog.css">
@@ -495,8 +504,8 @@ else
                                                             <a href="/develop?view=9" class="tab-item @(viewParam == "9" ? "tab-item-selected" : string.Empty)">Places</a>
                                                             <a href="/develop?view=10" class="tab-item @(viewParam == "10" ? "tab-item-selected" : string.Empty)">Models</a>
                                                             <a href="/develop?view=13" class="tab-item @(viewParam == "13" ? "tab-item-selected" : string.Empty)">Decals</a>
-                                                            <a href="/develop?view=21" class="tab-item tab-item-disabled @(viewParam == "21" ? "tab-item-selected" : string.Empty)">Badges</a>
-                                                            <a href="/develop?Page=game-passes" class="tab-item tab-item-disabled">Game Passes</a>
+                                                            <a href="/develop?view=21" class="tab-item @(viewParam == "21" ? "tab-item-selected" : string.Empty)">Badges</a>
+                                                            <a href="/develop?view=34" class="tab-item @(viewParam == "34" ? "tab-item-selected" : string.Empty)">Game Passes</a>
                                                             <a href="/develop?view=3" class="tab-item @(viewParam == "3" ? "tab-item-selected" : string.Empty)">Audio</a>
                                                             <a href="/develop?view=24" class="tab-item tab-item-disabled @(viewParam == "24" ? "tab-item-selected" : string.Empty)">Animations</a>
                                                             <a href="/develop?view=4" class="tab-item @(viewParam == "4" ? "tab-item-selected" : string.Empty)">Meshes</a>

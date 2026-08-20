@@ -227,6 +227,9 @@
                                     <div class="verticaltab selected" data-maindiv="basicSettings">
                                         <a href="#">Basic Settings</a>
                                     </div>
+                                    <div class="verticaltab" data-maindiv="upload">
+                                        <a href="#">Upload</a>
+                                    </div>
                                     <div class="verticaltab" data-maindiv="icon">
                                         <a href="#">Game Icon</a>
                                     </div>
@@ -319,6 +322,107 @@
                                             </div>
                                         </div>
                                     </form>
+
+                                    <div id="upload" class="configure-tab" style="display: none">
+                                        <div class="headline">
+                                            <h2>Upload Place File</h2>
+                                        </div>
+                                        <div style="margin-bottom: 15px;">
+                                            <span>Upload a <code>.rbxl</code> file to replace this place's content. The
+                                                file will be validated before it is saved.</span>
+                                        </div>
+                                        <div class="universe-form-label">
+                                            <label class="form-label" for="placeFile">Select .rbxl file</label>:
+                                        </div>
+                                        <div class="description-field-container">
+                                            <input type="file" id="placeFile" name="file" accept=".rbxl">
+                                        </div>
+                                        <div id="UploadPlaceStatus" class="error-message"
+                                            style="width: 400px; margin-bottom: 10px; display: none;"></div>
+                                        <div id="PlaceUploadProgress"
+                                            style="display: none; width: 400px; height: 20px; background-color: #e0e0e0; margin-bottom: 10px; position: relative;">
+                                            <div id="PlaceUploadProgressBar"
+                                                style="width: 0%; height: 100%; background-color: #00a2ff;"></div>
+                                            <span id="PlaceUploadPercent"
+                                                style="position: absolute; width: 100%; text-align: center; line-height: 20px; font-size: 12px; color: #000;">0%</span>
+                                        </div>
+                                        <div class="universe-buttons">
+                                            <a class="btn-medium btn-neutral add-image-button"
+                                                id="uploadPlaceButton">Upload Place</a>
+                                            <img id="PlaceLoadingImage" class="add-image-button"
+                                                src="/images/ec4e85b0c4396cf753a06fade0a8d8af.gif"
+                                                alt="Uploading place..." style="display: none;">
+                                            <a href="/develop?Page=Universes" class="btn-medium btn-negative"
+                                                id="cancelButton">Cancel</a>
+                                        </div>
+                                        <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $('#uploadPlaceButton').click(function() {
+                                                    var button = $(this);
+                                                    var fileInput = $('#placeFile')[0];
+                                                    var status = $('#UploadPlaceStatus');
+                                                    status.hide();
+
+                                                    if (!fileInput.files || fileInput.files.length === 0) {
+                                                        status.html('Please choose a .rbxl place file to upload.').addClass('error-message').show();
+                                                        return;
+                                                    }
+
+                                                    var file = fileInput.files[0];
+                                                    if (!/\.rbxl$/i.test(file.name)) {
+                                                        status.html('Invalid file type. Please upload a .rbxl place file.').addClass('error-message').show();
+                                                        return;
+                                                    }
+
+                                                    var formData = new FormData();
+                                                    formData.append('file', file);
+
+                                                    button.hide();
+                                                    $('#PlaceLoadingImage').show();
+                                                    $('#PlaceUploadProgress').show();
+                                                    $('#PlaceUploadProgressBar').css('width', '0%');
+                                                    $('#PlaceUploadPercent').text('0%');
+
+                                                    var xhr = new XMLHttpRequest();
+                                                    xhr.open('POST', '/places/@gameid/upload', true);
+
+                                                    xhr.upload.onprogress = function(e) {
+                                                        if (e.lengthComputable) {
+                                                            var percent = Math.round((e.loaded / e.total) * 100);
+                                                            $('#PlaceUploadProgressBar').css('width', percent + '%');
+                                                            $('#PlaceUploadPercent').text(percent + '%');
+                                                        }
+                                                    };
+
+                                                    xhr.onload = function() {
+                                                        $('#PlaceLoadingImage').hide();
+                                                        $('#PlaceUploadProgress').hide();
+                                                        button.show();
+                                                        var resp = null;
+                                                        try {
+                                                            resp = JSON.parse(xhr.responseText);
+                                                        } catch (err) { }
+
+                                                        if (xhr.status === 200 && resp && resp.success) {
+                                                            window.location.reload();
+                                                        } else {
+                                                            var msg = resp && resp.message ? resp.message : 'An error occurred while uploading the place. Please try again.';
+                                                            status.html(msg).addClass('error-message').show();
+                                                        }
+                                                    };
+
+                                                    xhr.onerror = function() {
+                                                        $('#PlaceLoadingImage').hide();
+                                                        $('#PlaceUploadProgress').hide();
+                                                        button.show();
+                                                        status.html('An error occurred while uploading the place. Please try again.').addClass('error-message').show();
+                                                    };
+
+                                                    xhr.send(formData);
+                                                });
+                                            });
+                                        </script>
+                                    </div>
 
                                     <div id="icon" class="configure-tab" style="display:none">
                                             <div class="headline">

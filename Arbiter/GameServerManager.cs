@@ -23,6 +23,7 @@ namespace RCCArbiter
         private readonly Timer _zeroPlayerKillTimer;
         private readonly Timer _rccHealthTimer;
         private readonly TimeSpan _rccKeepAliveDuration = TimeSpan.FromSeconds(10);
+        private readonly int _zeroPlayerReportsRequired;
 
         public class GameServerInfo
         {
@@ -49,6 +50,7 @@ namespace RCCArbiter
             public List<string> PlayerEvents { get; set; } = new();
             public string? ShutdownReason { get; set; }
             public int FailedReportCount { get; set; } = 0;
+            public int ConsecutiveZeroPlayerReports { get; set; } = 0;
         }
 
         public class PlayerInfo
@@ -68,6 +70,7 @@ namespace RCCArbiter
             _rccManager = new GameServerRccManager(config);
             _activeServers = new();
             _serversLock = new();
+            _zeroPlayerReportsRequired = int.TryParse(config["GameServer:ZeroPlayerReportsRequired"], out var zpr) ? zpr : 2;
             _cleanupTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CleanupExpiredServers", () => CleanupExpiredServers()), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
             _inactivityTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CleanupInactiveServers", () => CleanupInactiveServers()), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             _zeroPlayerKillTimer = new Timer(_ => Program.RunGuarded("GameServerManager.CleanupZeroPlayerServers", () => CleanupZeroPlayerServers()), null, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
@@ -84,8 +87,6 @@ namespace RCCArbiter
         public async Task<string> StartGameServerAsync(int placeId, int port = 0, int maxPlayers = 10, string privateServerId = "", string baseUrl = "", int maxInactive = 0)
         {
             var gameId = Guid.NewGuid().ToString();
-            
-            Console.WriteLine($"[PortAllocation] StartGameServerAsync called with placeId={placeId}, port={port}");
             
             if (string.IsNullOrWhiteSpace(baseUrl))
                 baseUrl = "http://www.freblx.xyz";
@@ -513,9 +514,17 @@ namespace RCCArbiter
                 var serverAge = DateTime.UtcNow - server.StartTime;
                 var canKillOnZeroPlayers = server.MaxInactiveMinutes == 0 || server.Expiration <= DateTime.UtcNow;
                 
-                if (server.PlayerCount == 0 && server.AutoKillEnabled && server.Status != "killing_0players" && server.HasReceivedReport && serverAge.TotalSeconds >= 20 && canKillOnZeroPlayers)
+                if (server.PlayerCount == 0)
                 {
-                    _ = Task.Run(() => Program.RunGuarded("GameServerManager.KillZeroPlayerServer", () => KillZeroPlayerServer(gameId)));
+                    server.ConsecutiveZeroPlayerReports++;
+                    if (server.ConsecutiveZeroPlayerReports >= _zeroPlayerReportsRequired && server.AutoKillEnabled && server.Status != "killing_0players" && server.HasReceivedReport && serverAge.TotalSeconds >= 20 && canKillOnZeroPlayers)
+                    {
+                        _ = Task.Run(() => Program.RunGuarded("GameServerManager.KillZeroPlayerServer", () => KillZeroPlayerServer(gameId)));
+                    }
+                }
+                else
+                {
+                    server.ConsecutiveZeroPlayerReports = 0;
                 }
             }
         }
@@ -532,11 +541,9 @@ namespace RCCArbiter
                 if (_activeServers.TryGetValue(gameId, out var server))
                 {
                     server.FailedReportCount++;
-                    Console.WriteLine($"[RCC Health] Game server {gameId} failed report {server.FailedReportCount}/3");
 
                     if (server.FailedReportCount >= 3)
                     {
-                        Console.WriteLine($"[RCC Health] RCC unreachable for game server {gameId}, destroying session");
                         server.ShutdownReason = "RCC unreachable";
                         shouldStop = true;
                     }
@@ -571,7 +578,7 @@ namespace RCCArbiter
                 {
                     var server = kvp.Value;
                     
-                    if (server.AutoKillEnabled && server.PlayerCount == 0 && server.Status != "killing_0players" && server.HasReceivedReport)
+                    if (server.AutoKillEnabled && server.PlayerCount == 0 && server.Status != "killing_0players" && server.HasReceivedReport && server.ConsecutiveZeroPlayerReports >= _zeroPlayerReportsRequired)
                     {
                         var inactiveDuration = now - server.LastActivityTime;
                         var serverAge = now - server.StartTime;

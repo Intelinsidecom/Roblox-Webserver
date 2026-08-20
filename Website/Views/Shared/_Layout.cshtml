@@ -60,6 +60,9 @@
 <script type="text/javascript" src="/js/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script type="text/javascript">window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-migrate-1.2.1.js'><\/script>")</script>
 
+<script type="text/javascript" src="~/JS/vendors/babel/polyfill.min.js"></script>
+<script type="text/javascript">(function () { var names = ["Int8Array", "Uint8Array", "Uint8ClampedArray", "Int16Array", "Uint16Array", "Int32Array", "Uint32Array", "Float32Array", "Float64Array"]; var i, ctor = null; for (i = 0; i < names.length; i++) { if (typeof window[names[i]] !== "undefined") { ctor = window[names[i]]; break; } } if (!ctor) { ctor = Array; } for (i = 0; i < names.length; i++) { if (typeof window[names[i]] === "undefined") { (function (n, c) { window[n] = function (a) { return new c(a); }; })(names[i], ctor); } } })();</script>
+
 
 
         @if (ViewBag.IncludeSharedCss == true)
@@ -158,7 +161,7 @@
 
         @if (UseBundledAssets)
         {
-            <script type="text/javascript" src="~/JS/Bundles/c797d09ce82b25db64249b48493c0351.js"></script>
+            <script type="text/javascript" src="~/JS/Bundles/d92b3277539539771771e539d55adca2.js"></script>
         }
         else
         {
@@ -248,7 +251,7 @@
         </script>
         @if (UseBundledAssets)
         {
-            <script type="text/javascript" src="~/JS/Bundles/dca07888f1dc32d149edc0c3f459f7a2.js"></script>
+            <script type="text/javascript" src="~/JS/Bundles/0f78a94ee15fb3891f51445f3df97bfb.js"></script>
         }
         else
         {
@@ -561,7 +564,7 @@
                         <div class="modal-checkbox checkbox"><input id=modal-checkbox-input type=checkbox> <label for=modal-checkbox-input></label></div>
                     </div>
                     <div class=modal-btns><a href="" id=confirm-btn><span></span></a> <a href="" id=decline-btn><span></span></a></div>
-                    <div class="loading modal-processing"><img class=loading-default src=https://images.rbxcdn.com/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
+                    <div class="loading modal-processing"><img class=loading-default src=/images/4bed93c91f909002b1f17f05c0ce13d1.gif alt=Processing...></div>
                 </div>
                 <div class="modal-footer text-footer"></div>
             </div>
@@ -590,7 +593,7 @@
 
     @if (UseBundledAssets)
     {
-        <script type="text/javascript" src="~/JS/Bundles/45e846e0f00dfd88d6297a5eca6dafc1.js"></script>
+        <script type="text/javascript" src="~/JS/Bundles/843fb64e9fcb09339ffbf1e4415ff82d.js"></script>
     }
     else
     {

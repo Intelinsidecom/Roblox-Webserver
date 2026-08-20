@@ -145,6 +145,54 @@ namespace Website.Controllers.Client
             }
         }
 
+        private async Task<(string GameId, int Port)> AcquireServerForPlaceAsync(long placeId)
+        {
+            var existingServer = await FindAvailableServerForPlaceAsync(placeId);
+            if (existingServer != null)
+                return (existingServer.GameId, existingServer.Port);
+
+            var connectionString = _configuration.GetConnectionString("Default");
+            var maxPlayers = await GameCreationService.GetPlaceMaxPlayersAsync(placeId, connectionString);
+            return await GameCreationService.CreateGameServerAsync((int)placeId, maxPlayers, _configuration, connectionString);
+        }
+
+        private async Task<(bool Alive, int Port)> GetGameServerPortAsync(string jobId)
+        {
+            if (string.IsNullOrWhiteSpace(jobId))
+                return (false, 0);
+
+            try
+            {
+                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/{jobId}/status");
+                if (!response.IsSuccessStatusCode)
+                    return (false, 0);
+
+                var json = await response.Content.ReadAsStringAsync();
+                var serverInfoOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                var serverInfoDict = JsonSerializer.Deserialize<Dictionary<string, object>>(json, serverInfoOptions);
+
+                if (serverInfoDict != null && serverInfoDict.TryGetValue("port", out var portObj) &&
+                    int.TryParse(portObj.ToString(), out var actualPort) && actualPort > 0)
+                {
+                    return (true, actualPort);
+                }
+
+                return (true, 0);
+            }
+            catch
+            {
+                return (false, 0);
+            }
+        }
+
         private async Task<long> GetCurrentUserIdAsync()
         {
             if (User.Identity?.IsAuthenticated == true)
@@ -189,41 +237,39 @@ namespace Website.Controllers.Client
                 var existingPresence = await _gamePresenceService.GetUserGamePresenceAsync(userId);
                 if (existingPresence != null && existingPresence.IsInGame)
                 {
-                    return Ok(new PlaceLauncherResponse { status = 3, message = "User is already in a game" });
+                    var (presenceAlive, _) = await GetGameServerPortAsync(existingPresence.JobId);
+                    if (!string.IsNullOrEmpty(existingPresence.JobId) && !presenceAlive)
+                    {
+                        await _gamePresenceService.RemoveFromGameAsync(userId);
+                    }
+                    else
+                    {
+                        return Ok(new PlaceLauncherResponse { status = 3, message = "User is already in a game" });
+                    }
                 }
             }
 
             string gameId;
             int serverPort;
-            
-            if (string.IsNullOrEmpty(providedJobId))
+
+            var (resumeAlive, resumePort) = await GetGameServerPortAsync(providedJobId ?? "");
+            if (!string.IsNullOrEmpty(providedJobId) && resumeAlive)
             {
-                var existingServer = await FindAvailableServerForPlaceAsync(placeId);
-                if (existingServer != null)
-                {
-                    gameId = existingServer.GameId;
-                    serverPort = existingServer.Port;
-                }
-                else
-                {
-                    try
-                    {
-                        var connectionString = _configuration.GetConnectionString("Default");
-                        var maxPlayers = await GameCreationService.GetPlaceMaxPlayersAsync(placeId, connectionString);                        
-                        var (jobId, port) = await GameCreationService.CreateGameServerAsync((int)placeId, maxPlayers, _configuration, connectionString);
-                        gameId = jobId;
-                        serverPort = port;
-                    }
-                    catch (Exception ex)
-                    {
-                        return Ok(new PlaceLauncherResponse { status = 4, message = $"Error creating game server: {ex.Message}" });
-                    }
-                }
+                gameId = providedJobId;
+                serverPort = resumePort > 0 ? resumePort : (providedServerPort ?? 53640);
             }
             else
             {
-                gameId = providedJobId;
-                serverPort = providedServerPort ?? 53640;
+                try
+                {
+                    var (jobId, port) = await AcquireServerForPlaceAsync(placeId);
+                    gameId = jobId;
+                    serverPort = port;
+                }
+                catch (Exception ex)
+                {
+                    return Ok(new PlaceLauncherResponse { status = 4, message = $"Error creating game server: {ex.Message}" });
+                }
             }
 
             string ticketToken = "";
@@ -377,17 +423,34 @@ namespace Website.Controllers.Client
                 try
                 {
                     var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/{jobid}/status");
-                    if (response.IsSuccessStatusCode)
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        try
+                        {
+                            var connectionString = _configuration.GetConnectionString("Default");
+                            var maxPlayers = await GameCreationService.GetPlaceMaxPlayersAsync(gameid, connectionString);
+                            var (newJobId, newPort) = await GameCreationService.CreateGameServerAsync((int)gameid, maxPlayers, _configuration, connectionString);
+                            Console.WriteLine($"[join.ashx] Job {jobid} no longer available; started replacement server {newJobId} on port {newPort}");
+                            jobid = newJobId;
+                            serverPort = newPort;
+                        }
+                        catch (Exception createEx)
+                        {
+                            Console.WriteLine($"[join.ashx] Failed to start replacement server for place {gameid}: {createEx.Message}");
+                            return StatusCode(410, "This game server is no longer available. Please try joining again.");
+                        }
+                    }
+                    else
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        
+
                         var serverInfoOptions = new JsonSerializerOptions 
                         { 
                             PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
                         };
-                        
+
                         var serverInfoDict = JsonSerializer.Deserialize<Dictionary<string, object>>(json, serverInfoOptions);
-                        
+
                         if (serverInfoDict != null && serverInfoDict.TryGetValue("port", out var portObj) && 
                             int.TryParse(portObj.ToString(), out var actualPort))
                         {

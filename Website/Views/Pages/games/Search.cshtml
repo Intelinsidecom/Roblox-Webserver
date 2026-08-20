@@ -4,23 +4,29 @@
     var keyword = Context.Request.Query["keyword"].ToString() ?? "";
 }
 
-    <link rel="stylesheet" href="~/CSS/LeanBaseStyle.css">
-    <link rel="stylesheet" href="~/CSS/Base/CSS/jquery.mCustomScrollbar.css">
-    <link rel="stylesheet" href="~/CSS/SiteStyle.css">
-    <link rel="stylesheet" href="~/CSS/Base/CSS/Modals.css">
-    <link rel="stylesheet" href="~/CSS/Base/CSS/PlaceLauncher.css">
-    <link rel="stylesheet" href="~/CSS/Base/CSS/RevisedCharacterSelectModal.css">
-    <link rel="stylesheet" href="~/CSS/Base/CSS/VideoPreRoll.css">
-    <link rel="stylesheet" href="~/CSS/Base/CSS/Abp.css">
-    <link rel="stylesheet" href="~/CSS/Legacy/Modal.css">
-    <link rel="stylesheet" href="~/CSS/Fonts/SourceSansPro.css">
-
+    @if (UseBundledAssets)
+    {
+        <link rel="stylesheet" href="~/CSS/Bundles/GamesSearch.css">
+    }
+    else
+    {
+    <link rel="stylesheet" href="~/CSS/2017/Games/LeanBaseStyle.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/SiteStyle.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/Modals.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/PlaceLauncher.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/RevisedCharacterSelectModal.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/VideoPreRoll.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Base/CSS/Abp.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Legacy/Modal.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Fonts/SourceSansPro.css">
     <link rel="stylesheet" href="~/CSS/Pages/VotingPanel.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Games/GamesPage.css">
     <link rel="stylesheet" href="~/CSS/2017/Games/PartialViews/CardItem.css">
-    <link rel="stylesheet" href="~/CSS/Pages/Widgets/ContactUpsell.css">
-    <link rel="stylesheet" href="~/CSS/Pages/Notifications/PushNotificationRegistration.css">
-    <link rel="stylesheet" href="~/CSS/Pages/Notifications/NotificationStream.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Widgets/ContactUpsell.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Notifications/PushNotificationRegistration.css">
+    <link rel="stylesheet" href="~/CSS/2017/Games/Pages/Notifications/NotificationStream.css">
+    }
 
 <style>
 body, html {
@@ -90,9 +96,15 @@ body, html {
     window.jQuery || document.write("<script type='text/javascript' src='/js/jquery/jquery-1.11.1.js'><\/script>")
 </script>
 
+@if (UseBundledAssets)
+{
+    <script src="~/JS/Bundles/5d4dd731929ad0a55a4bcafddcf17783.js"></script>
+}
+else
+{
 <script src="~/js/leancore/libs/bootstrap.min.js"></script>
 <script src="~/js/leancore/BootstrapNamespacing.js"></script>
-<script src="~/js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="~/js/widgets/jquery.mCustomScrollbar.concat.min.js"></script>
 <script src="~/js/jquery.simplemodal-1.3.5.js"></script>
 <script src="~/js/UpsellAdModal.js"></script>
 <script src="~/js/viewapp/widgets/modal/modal.js"></script>
@@ -103,6 +115,7 @@ body, html {
 <script src="~/js/viewapp/common/providers/languageResourceProvider.js"></script>
 <script src="~/js/viewapp/common/filters/translate.js"></script>
 <script src="~/JS/VotingPanel.js"></script>
+}
 
 <script type="text/template" id="push-notifications-permissions-prompt-template">
     <div class="modal fade" id="push-notifications-permissions-prompt-modal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

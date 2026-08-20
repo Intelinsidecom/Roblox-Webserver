@@ -1,4 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.Extensions.Configuration;
+using Npgsql;
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Users;
 
 namespace RobloxWebserver.Controllers
 {
@@ -58,6 +66,36 @@ namespace RobloxWebserver.Controllers
         public IActionResult GamesListPost()
         {
             return View("~/Views/Pages/Games.cshtml");
+        }
+
+        [HttpGet("friends.aspx")]
+        public IActionResult FriendsPage()
+        {
+            return Redirect("/friends");
+        }
+
+        [HttpPost("friends.aspx")]
+        public IActionResult FriendsPagePost()
+        {
+            return Redirect("/friends");
+        }
+
+        [HttpGet("User.aspx")]
+        public IActionResult UserPage()
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+                return Redirect("/");
+            var (isValid, userId) = AuthenticationHelper.GetCurrentUserId(User);
+            return Redirect("/users/" + userId + "/profile");
+        }
+
+        [HttpPost("User.aspx")]
+        public IActionResult UserPagePost()
+        {
+            if (User?.Identity?.IsAuthenticated != true)
+                return Redirect("/");
+            var (isValid, userId) = AuthenticationHelper.GetCurrentUserId(User);
+            return Redirect("/users/" + userId + "/profile");
         }
 
         [HttpGet("inbox")]

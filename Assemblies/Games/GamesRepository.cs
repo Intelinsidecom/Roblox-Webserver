@@ -366,7 +366,7 @@ public static class GamesRepository
 
         const string sql = @"SELECT owner_user_id FROM assets WHERE asset_id = @assetId";
 
-        using var cmd = new NpgsqlCommand(sql, conn);
+        using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
         cmd.Parameters.AddWithValue("assetId", assetId);
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
@@ -412,7 +412,7 @@ public static class GamesRepository
 
             const string sql = @"SELECT asset_id, content_hash, owner_user_id FROM assets WHERE asset_id = @placeId AND is_place = true";
 
-            using var cmd = new NpgsqlCommand(sql, conn);
+            using var cmd = new NpgsqlCommand(sql, conn) { CommandTimeout = 30 };
             cmd.Parameters.AddWithValue("placeId", placeId);
 
             using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
@@ -469,7 +469,7 @@ public static class GamesRepository
                     last_updated = CURRENT_TIMESTAMP
                 WHERE asset_id = @placeId AND is_place = true";
 
-            using var cmd = new NpgsqlCommand(updateSql, conn);
+            using var cmd = new NpgsqlCommand(updateSql, conn) { CommandTimeout = 30 };
             cmd.Parameters.AddWithValue("newHash", newHash);
             cmd.Parameters.AddWithValue("placeId", placeId);
 
@@ -519,5 +519,199 @@ public static class GamesRepository
 
         var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
         return result is int typeId && typeId == 9;
+    }
+
+    public static async Task<List<GamePassStoreItem>> GetGamePassesForUniverseAsync(
+        string connectionString,
+        long universeId,
+        int startIndex = 0,
+        int maxRows = 50,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT a.asset_id, a.name, a.thumbnail_url, COALESCE(a.price, 0), a.owner_user_id
+            FROM assets a
+            WHERE a.belongs_to_universe = @universeId
+              AND a.asset_type_id = 34
+              AND a.on_sale = true
+            ORDER BY a.created_at DESC, a.asset_id DESC
+            LIMIT @maxRows OFFSET @startIndex";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+        cmd.Parameters.AddWithValue("maxRows", maxRows);
+        cmd.Parameters.AddWithValue("startIndex", startIndex);
+
+        var items = new List<GamePassStoreItem>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            items.Add(new GamePassStoreItem
+            {
+                AssetId = reader.GetInt64(0),
+                Name = reader.IsDBNull(1) ? "Unnamed" : reader.GetString(1),
+                ThumbnailUrl = reader.IsDBNull(2) ? null : reader.GetString(2),
+                Price = reader.IsDBNull(3) ? 0 : reader.GetInt32(3),
+                OwnerUserId = reader.IsDBNull(4) ? 0 : reader.GetInt64(4),
+            });
+        }
+
+        return items;
+    }
+
+    public static async Task<int> GetGamePassCountForUniverseAsync(
+        string connectionString,
+        long universeId,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT COUNT(*) FROM assets
+            WHERE belongs_to_universe = @universeId
+              AND asset_type_id = 34
+              AND on_sale = true";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+        return result is int count ? count : 0;
+    }
+
+    public sealed class BadgeInfo
+    {
+        public long AssetId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? ThumbnailUrl { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string CreatorName { get; set; } = string.Empty;
+        public long CreatorUserId { get; set; }
+        public long TotalWon { get; set; }
+        public long WonYesterday { get; set; }
+        public string Rarity { get; set; } = string.Empty;
+    }
+
+    public static (double NumericPercent, string Label) GetRarity(long totalWon, long totalVisits)
+    {
+        if (totalVisits <= 0)
+            return (0.0, "Impossible");
+
+        var pct = (double)totalWon / totalVisits * 100.0;
+        var label = pct switch
+        {
+            < 1.0  => "Impossible",
+            < 5.0  => "Insane",
+            < 15.0 => "Extreme",
+            < 30.0 => "Hard",
+            _      => "Moderate"
+        };
+        return (Math.Round(pct, 1), label);
+    }
+
+    public static string GetRarityString(long totalWon, long totalVisits)
+    {
+        var (pct, label) = GetRarity(totalWon, totalVisits);
+        return $"{pct:0.0}% ({label})";
+    }
+
+    public static async Task<List<BadgeInfo>> GetBadgesForPlaceAsync(
+        string connectionString,
+        long placeId,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (placeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(placeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT a.asset_id, a.name, a.description, a.thumbnail_url, a.created_at,
+                u.user_name, u.user_id
+            FROM assets a
+            LEFT JOIN users u ON a.owner_user_id = u.user_id
+            WHERE a.belongs_to_universe = (
+                SELECT universe_id FROM universes
+                WHERE @placeId = ANY(place_ids) OR root_place_id = @placeId
+                LIMIT 1
+            )
+            AND a.asset_type_id = 21
+            ORDER BY a.created_at DESC, a.asset_id DESC
+            LIMIT 100";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("placeId", placeId);
+
+        var badges = new List<BadgeInfo>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            badges.Add(new BadgeInfo
+            {
+                AssetId = reader.GetInt64(0),
+                Name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                Description = reader.IsDBNull(2) ? null : reader.GetString(2),
+                ThumbnailUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
+                CreatedAt = reader.GetDateTime(4),
+                CreatorName = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                CreatorUserId = reader.IsDBNull(6) ? 0 : reader.GetInt64(6),
+            });
+        }
+
+        return badges;
+    }
+
+    public static async Task<Dictionary<long, (long TotalWon, long WonYesterday)>> GetBadgeStatsAsync(
+        string connectionString,
+        IReadOnlyList<long> badgeIds,
+        CancellationToken cancellationToken = default,
+        bool subtractCreator = false)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (badgeIds == null || badgeIds.Count == 0)
+            return new Dictionary<long, (long, long)>();
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT asset_id, COUNT(*),
+                COUNT(*) FILTER (WHERE created_at >= now() - interval '1 day')
+            FROM user_assets
+            WHERE asset_id = ANY(@ids)
+            GROUP BY asset_id;";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("ids", badgeIds);
+
+        var dict = new Dictionary<long, (long TotalWon, long WonYesterday)>();
+        using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var totalWon = reader.GetInt64(1);
+            var wonYesterday = reader.GetInt64(2);
+            if (subtractCreator)
+            {
+                totalWon = Math.Max(0, totalWon - 1);
+                wonYesterday = Math.Max(0, wonYesterday - 1);
+            }
+            dict[reader.GetInt64(0)] = (totalWon, wonYesterday);
+        }
+        return dict;
     }
 }

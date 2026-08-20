@@ -1,4 +1,6 @@
-//using Data.Middleware;
+using Data.Middleware;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 var currentDirectory = Directory.GetCurrentDirectory();
@@ -36,6 +38,8 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
+
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.HasValue)
@@ -71,6 +75,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
+//app.UseMiddleware<RequestResponseLoggingMiddleware>();
 app.UseRouting();
 
 app.MapControllers();

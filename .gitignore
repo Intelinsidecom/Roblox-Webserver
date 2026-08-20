@@ -29,7 +29,6 @@ Desktop.ini
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 DerivedData/
-build/
 
 # CLion / JetBrains
 .idea/
@@ -46,9 +45,7 @@ build/
 # Build directories
 # ========================
 # Out-of-source CMake build
-build/
 bin/
-lib/
 Debug/
 Release/
 RelWithDebInfo/
@@ -67,7 +64,6 @@ Contribs/cpm-cache
 # Android / NDK
 .gradle/
 local.properties
-**/build/
 
 # iOS / CocoaPods
 Pods/

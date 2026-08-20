@@ -15,7 +15,9 @@ Roblox = Roblox || {}, Roblox.Performance = function() {
     }
 
     function o() {
-        n = window.performance.timing
+        if (window.performance && window.performance.timing) {
+            n = window.performance.timing
+        }
     }
 
     function w(n, t, i, r) {

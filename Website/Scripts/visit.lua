@@ -40,9 +40,9 @@ pcall(function() game:GetService("SocialService"):SetGroupUrl("%3%/Game/LuaWebSe
 pcall(function() game:GetService("SocialService"):SetGroupRankUrl("%3%/Game/LuaWebService/HandleSocialRequest.ashx?method=GetGroupRank&playerid=%d&groupid=%d") end)
 pcall(function() game:GetService("SocialService"):SetGroupRoleUrl("%3%/Game/LuaWebService/HandleSocialRequest.ashx?method=GetGroupRole&playerid=%d&groupid=%d") end)
 pcall(function() game:GetService("GamePassService"):SetPlayerHasPassUrl("%3%/Game/GamePass/GamePassHandler.ashx?Action=HasPass&UserID=%d&PassID=%d") end)
-pcall(function() game:GetService("MarketplaceService"):SetProductInfoUrl("https://api.roblox.com/marketplace/productinfo?assetId=%d") end)
-pcall(function() game:GetService("MarketplaceService"):SetDevProductInfoUrl("https://api.roblox.com/marketplace/productDetails?productId=%d") end)
-pcall(function() game:GetService("MarketplaceService"):SetPlayerOwnsAssetUrl("https://api.roblox.com/ownership/hasasset?userId=%d&assetId=%d") end)
+pcall(function() game:GetService("MarketplaceService"):SetProductInfoUrl("%apiUrl%/marketplace/productinfo?assetId=%d") end)
+pcall(function() game:GetService("MarketplaceService"):SetDevProductInfoUrl("%apiUrl%/marketplace/productDetails?productId=%d") end)
+pcall(function() game:GetService("MarketplaceService"):SetPlayerOwnsAssetUrl("%apiUrl%/ownership/hasasset?userId=%d&assetId=%d") end)
 pcall(function() game:SetCreatorID(%5%, Enum.CreatorType.User) end)
 
 ifSeleniumThenSetCookie("SeleniumTest3", "Set creator ID")

@@ -52,6 +52,7 @@ public class DevelopTabController : Controller
             "11" => "Shirts",
             "12" => "Pants",
             "38" => "Plugins",
+            "34" => "GamePasses",
             _ => "Games",
         };
     }

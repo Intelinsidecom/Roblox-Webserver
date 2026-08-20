@@ -5,6 +5,9 @@ using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Users;
+using Games;
+using Economy;
 
 namespace Api.Controllers
 {
@@ -14,12 +17,150 @@ namespace Api.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly Api.Services.CurrentUserService _currentUserService;
         private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
 
-        public MarketplaceController(AppDbContext dbContext, IConfiguration configuration)
+        public MarketplaceController(AppDbContext dbContext, IConfiguration configuration, Api.Services.CurrentUserService currentUserService)
         {
             _dbContext = dbContext;
             _configuration = configuration;
+            _currentUserService = currentUserService;
+        }
+
+        private string GetConnStr() => _configuration.GetConnectionString("Default") ?? "";
+
+        [HttpGet("productDetails")]
+        public async Task<IActionResult> GetProductDetails([FromQuery] long productId)
+        {
+            if (productId <= 0)
+                return BadRequest(new { error = "Invalid product ID" });
+
+            try
+            {
+                var connStr = GetConnStr();
+                var product = await DevProductHandler.GetDeveloperProductByIdAsync(connStr, productId);
+
+                if (product == null)
+                    return NotFound(new { error = "Product not found" });
+
+                return Ok(new
+                {
+                    ProductId = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    IconImageAssetId = product.ImageAssetId ?? 0,
+                    PriceInRobux = product.PriceInRobux
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("purchase")]
+        [Consumes("application/x-www-form-urlencoded", "multipart/form-data", "application/json")]
+        public async Task<IActionResult> PurchaseAsset()
+        {
+            long userId = await _currentUserService.GetUserIdAsync();
+            if (userId <= 0)
+                return StatusCode(403, new { error = "Not authenticated" });
+
+            try
+            {
+                long productId = 0;
+                int currencyTypeId = 1;
+
+                if (Request.HasFormContentType)
+                {
+                    long.TryParse(Request.Form["productId"].FirstOrDefault(), out productId);
+                    int.TryParse(Request.Form["currencyTypeId"].FirstOrDefault(), out currencyTypeId);
+                }
+                else
+                {
+                    using var body = await JsonDocument.ParseAsync(Request.Body);
+                    if (body.RootElement.TryGetProperty("productId", out var pid))
+                        pid.TryGetInt64(out productId);
+                    if (body.RootElement.TryGetProperty("currencyTypeId", out var cid))
+                        cid.TryGetInt32(out currencyTypeId);
+                }
+
+                if (productId <= 0)
+                    return BadRequest(new { error = "Invalid productId" });
+
+                var connStr = GetConnStr();
+                var currency = currencyTypeId == 2
+                    ? UserPurchaseService.CurrencyKind.Tix
+                    : UserPurchaseService.CurrencyKind.Robux;
+
+                var purchaseService = new UserPurchaseService();
+                var (success, error) = await purchaseService.PurchaseAssetAsync(connStr, userId, productId, currency);
+
+                if (success)
+                    return Ok(new { status = "Purchased", productId });
+                else
+                    return BadRequest(new { error = error ?? "Purchase failed" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("submitpurchase")]
+        [Consumes("application/x-www-form-urlencoded", "multipart/form-data", "application/json")]
+        public async Task<IActionResult> SubmitPurchase()
+        {
+            long userId = await _currentUserService.GetUserIdAsync();
+            if (userId <= 0)
+                return StatusCode(403, new { error = "Not authenticated" });
+
+            try
+            {
+                long productId = 0;
+                int currencyTypeId = 1;
+
+                if (Request.HasFormContentType)
+                {
+                    long.TryParse(Request.Form["productId"].FirstOrDefault(), out productId);
+                    int.TryParse(Request.Form["currencyTypeId"].FirstOrDefault(), out currencyTypeId);
+                }
+                else
+                {
+                    using var body = await JsonDocument.ParseAsync(Request.Body);
+                    if (body.RootElement.TryGetProperty("productId", out var pid))
+                        pid.TryGetInt64(out productId);
+                    if (body.RootElement.TryGetProperty("currencyTypeId", out var cid))
+                        cid.TryGetInt32(out currencyTypeId);
+                }
+
+                if (productId <= 0)
+                    return BadRequest(new { error = "Invalid productId" });
+
+                var connStr = GetConnStr();
+                var currency = currencyTypeId == 2
+                    ? UserPurchaseService.CurrencyKind.Tix
+                    : UserPurchaseService.CurrencyKind.Robux;
+
+                var purchaseService = new UserPurchaseService();
+                var (success, error) = await purchaseService.PurchaseAssetAsync(connStr, userId, productId, currency);
+
+                if (success)
+                    return Ok(new { status = "Purchased", productId });
+                else
+                    return BadRequest(new { error = error ?? "Purchase failed" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("purchase-from-anywhere")]
+        [Consumes("application/x-www-form-urlencoded", "multipart/form-data", "application/json")]
+        public async Task<IActionResult> PurchaseFromAnywhere()
+        {
+            return await PurchaseAsset();
         }
 
         [HttpGet("productinfo")]
@@ -226,20 +367,45 @@ namespace Api.Controllers
                     return BadRequest(new { error = "Receipt parameter is required" });
                 }
 
-                var response = new
+                long playerId = 0;
+                long productId = 0;
+                long placeId = 0;
+                int currencyType = 1;
+                long currencySpent = 0;
+
+                var connStr = GetConnStr();
+                if (!string.IsNullOrWhiteSpace(connStr))
+                {
+                    try
+                    {
+                        var logging = new AssetPurchaseLogging();
+                        var sale = await logging.GetSaleByReceiptAsync(connStr, receipt);
+
+                        if (sale != null)
+                        {
+                            playerId = sale.BuyerUserId;
+                            productId = sale.AssetId;
+                            currencySpent = sale.Price;
+                            currencyType = sale.Currency;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return Ok(new
                 {
                     isValid = true,
-                    receipt = receipt,
-                    playerId = 0,
-                    productId = 0,
-                    placeId = 0,
-                    currencyType = 1, // Robux
-                    currencySpent = 0,
-                    message = "Purchase validated (placeholder)",
+                    receipt,
+                    playerId,
+                    productId,
+                    placeId,
+                    currencyType,
+                    currencySpent,
+                    message = "Purchase validated",
                     validatedAt = DateTime.UtcNow
-                };
-
-                return Ok(response);
+                });
             }
             catch (Exception ex)
             {
@@ -248,7 +414,7 @@ namespace Api.Controllers
                     isValid = true,
                     receipt = receipt ?? "unknown",
                     error = ex.Message,
-                    message = "Validation error - allowing purchase (placeholder)"
+                    message = "Validation error - allowing purchase"
                 });
             }
         }

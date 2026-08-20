@@ -1,0 +1,39 @@
+@model IReadOnlyList<Games.GamePassStoreItem>
+@foreach (var pass in Model)
+{
+    var slug = System.Net.WebUtility.UrlEncode(pass.Name.Replace(" ", "-"));
+    var thumbUrl = string.IsNullOrWhiteSpace(pass.ThumbnailUrl) ? "/images/placeholder.png" : pass.ThumbnailUrl;
+    <li class="list-item real-game-pass">
+        <div class="store-card">
+            <a href="/catalog/@pass.AssetId/@slug" class="gear-passes-asset">
+                <img src="@thumbUrl">
+            </a>
+            <div class="store-card-caption">
+                <div class="text-overflow store-card-name" title="@pass.Name">@pass.Name</div>
+                <div class="store-card-price">
+                    <span class="icon-robux-16x16"></span> <span class="text-robux">@pass.Price</span>
+                </div>
+                <div class="store-card-footer">
+                    @if (pass.IsOwned)
+                    {
+                        <span class="btn-full-width rbx-purchased"><span>Owned</span></span>
+                    }
+                    else
+                    {
+                        <button class="PurchaseButton btn-buy-md btn-full-width rbx-gear-passes-purchase"
+                                data-item-id="@pass.AssetId"
+                                data-item-name="@pass.Name"
+                                data-expected-price="@pass.Price"
+                                data-asset-type="Game Pass"
+                                data-bc-requirement=""
+                                data-expected-seller-id="@pass.OwnerUserId"
+                                data-seller-name="@pass.SellerName"
+                                data-expected-currency="1">
+                            <span>Buy</span>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </li>
+}

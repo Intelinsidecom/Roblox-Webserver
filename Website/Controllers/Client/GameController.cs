@@ -9,6 +9,7 @@ using Assets;
 using System.IO;
 using System.Net.Http;
 using Website.Services;
+using Users;
 using Npgsql;
 using System.Security.Claims;
 
@@ -429,15 +430,19 @@ namespace Website.Controllers.Client
             }
 
             var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
+            var apiBaseUrl = _configuration["PublicAPIBaseUrl"]?.TrimEnd('/') ?? baseUrl;
             var placeIdStr = placeId > 0 ? placeId.ToString() : "0";
 
             var roblosecurityCookie = Request.Cookies[".ROBLOSECURITY"] ?? Request.Cookies["RBXSessionTracker"] ?? "";
             var luaSafeCookie = roblosecurityCookie.Replace("\\", "\\\\").Replace("\"", "\\\"");
 
-            var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl.Replace("://www.", "://data.").Replace("://assetgame.", "://data.");
+            var dataBaseUrl = _configuration["DataBaseUrl"] ?? baseUrl
+                .Replace("https://www.", "http://data.")
+                .Replace("http://www.", "http://data.")
+                .Replace("://assetgame.", "://data.");
             var uploadUrl = $"{dataBaseUrl}/Data/Upload.ashx?assetid={placeId}";
 
-            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {uploadUrl}; %5% = {universeId}";
+            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {uploadUrl}; %5% = {universeId}; %apiUrl% = {apiBaseUrl}";
             var script = _scriptTemplateService.Render("edit", replacement);
 
             var data = "\r\n" + script;
@@ -454,6 +459,7 @@ namespace Website.Controllers.Client
             }
 
             var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
+            var apiBaseUrl = _configuration["PublicAPIBaseUrl"]?.TrimEnd('/') ?? baseUrl;
 
             var roblosecurityCookie = Request.Cookies[".ROBLOSECURITY"] ?? Request.Cookies["RBXSessionTracker"] ?? "";
             var luaSafeCookie = roblosecurityCookie.Replace("\\", "\\\\").Replace("\"", "\\\"");
@@ -509,11 +515,143 @@ namespace Website.Controllers.Client
             var isInStudio = userAgent.Contains("Roblox", StringComparison.OrdinalIgnoreCase) ? "true" : "false";
 
             var placeIdStr = placeId > 0 ? placeId.ToString() : "0";
-            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {universeId}; %5% = {userId}; %6% = {userName}; %7% = {isUnder13}; %8% = {membershipType}; %9% = {accountAge}; %10% = {isPlaySoloStr}; %11% = {isInStudio}";
+            var replacement = $"%1% = {luaSafeCookie}; %2% = {placeIdStr}; %3% = {baseUrl}; %4% = {universeId}; %5% = {userId}; %6% = {userName}; %7% = {isUnder13}; %8% = {membershipType}; %9% = {accountAge}; %10% = {isPlaySoloStr}; %11% = {isInStudio}; %apiUrl% = {apiBaseUrl}";
             var script = _scriptTemplateService.Render("visit", replacement);
 
             var data = "\r\n" + script;
             await WriteSignedScript(data);
+        }
+
+        [HttpGet("/Game/GamePass/GamePassHandler.ashx")]
+        public async Task<IActionResult> GamePassHandler(string? Action, long? UserID, long? PassID)
+        {
+            if (string.IsNullOrEmpty(Action))
+                return Content("<Value>Type=\"boolean\">false</Value>", "application/xml");
+
+            if (string.Equals(Action, "HasPass", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!UserID.HasValue || !PassID.HasValue)
+                    return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
+
+                var connStr = _configuration.GetConnectionString("Default");
+                if (string.IsNullOrEmpty(connStr))
+                    return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
+
+                var owns = await new UserAssetsRepository().UserOwnsAssetAsync(connStr, UserID.Value, PassID.Value);
+                var xml = owns
+                    ? "<Value Type=\"boolean\">true</Value>"
+                    : "<Value Type=\"boolean\">false</Value>";
+                return Content(xml, "application/xml");
+            }
+
+            return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
+        }
+
+        [HttpGet("/Game/LoadPlaceInfo.ashx")]
+        public async Task<IActionResult> LoadPlaceInfo([FromQuery] long? PlaceId)
+        {
+            var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/') ?? $"{Request.Scheme}://{Request.Host}";
+            var apiBaseUrl = _configuration["PublicAPIBaseUrl"]?.TrimEnd('/') ?? baseUrl;
+
+            long creatorId = 1;
+            int placeVersion = 1;
+
+            if (PlaceId.HasValue && PlaceId.Value > 0)
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                if (!string.IsNullOrEmpty(connStr))
+                {
+                    try
+                    {
+                        await using var conn = new NpgsqlConnection(connStr);
+                        await conn.OpenAsync();
+                        await using var cmd = new NpgsqlCommand(
+                            "SELECT owner_user_id FROM assets WHERE asset_id = @placeId AND is_place = true LIMIT 1", conn);
+                        cmd.Parameters.AddWithValue("placeId", PlaceId.Value);
+                        var result = await cmd.ExecuteScalarAsync();
+                        if (result != null && result != DBNull.Value)
+                            creatorId = Convert.ToInt64(result);
+                    }
+                    catch { }
+                }
+            }
+
+            var replacement = $"%1% = {baseUrl}; %2% = {apiBaseUrl}; %creatorId% = {creatorId}; %placeVersion% = {placeVersion}";
+            var script = _scriptTemplateService.Render("loadplaceinfo", replacement);
+            var data = "\r\n" + script;
+            await WriteSignedScript(data);
+            return new EmptyResult();
+        }
+
+        [HttpGet("/Games/GetGamePassesPaged")]
+        public async Task<IActionResult> GetGamePassesPaged(
+            [FromQuery] long placeId,
+            [FromQuery] int startIndex = 0,
+            [FromQuery] int maxRows = 12,
+            CancellationToken cancellationToken = default)
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrEmpty(connStr))
+                return Json(new { PlaceId = placeId, totalItems = 0, IsViewerPlaceOwner = false, data = Array.Empty<object>() });
+
+            var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, placeId, cancellationToken);
+            if (!universeId.HasValue)
+                return Json(new { PlaceId = placeId, totalItems = 0, IsViewerPlaceOwner = false, data = Array.Empty<object>() });
+
+            var totalCount = await GamesRepository.GetGamePassCountForUniverseAsync(connStr, universeId.Value, cancellationToken);
+            var passes = await GamesRepository.GetGamePassesForUniverseAsync(connStr, universeId.Value, startIndex, maxRows, cancellationToken);
+
+            long currentUserId = 0;
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userIdClaim))
+                long.TryParse(userIdClaim, out currentUserId);
+
+            bool isOwner = false;
+            if (currentUserId > 0)
+                isOwner = await UserOwnsPlaceAsync(currentUserId, placeId);
+
+            var userAssetsRepo = new UserAssetsRepository();
+            var data = new List<object>();
+            foreach (var pass in passes)
+            {
+                var sellerName = await UserQueries.GetUserNameByIdAsync(connStr, pass.OwnerUserId, cancellationToken).ConfigureAwait(false) ?? "Unknown";
+                bool userOwns = false;
+                if (currentUserId > 0)
+                    userOwns = await userAssetsRepo.UserOwnsAssetAsync(connStr, currentUserId, pass.AssetId, cancellationToken).ConfigureAwait(false);
+
+                data.Add(new
+                {
+                    Name = pass.Name,
+                    Description = "",
+                    PriceInRobux = pass.Price,
+                    PriceInTickets = 0,
+                    ProductID = pass.AssetId,
+                    AssetID = pass.AssetId,
+                    TotalSales = 0,
+                    UserOwns = userOwns,
+                    SellerID = pass.OwnerUserId,
+                    SellerName = sellerName,
+                    ItemUrl = "",
+                    IsRentable = false,
+                    PromotionID = 0,
+                    BCRequirement = 0,
+                    IsForSale = true,
+                    TotalUpVotes = 0,
+                    TotalDownVotes = 0,
+                    UserVote = (bool?)null,
+                    TotalFavorites = 0,
+                    IsFavoritedByUser = false,
+                    AffiliateSalePlaceId = 0,
+                });
+            }
+
+            return Json(new
+            {
+                PlaceId = placeId,
+                totalItems = totalCount,
+                IsViewerPlaceOwner = isOwner,
+                data,
+            });
         }
 
         private async Task WriteSignedScript(string data)

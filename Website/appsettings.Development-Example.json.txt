@@ -93,6 +93,10 @@
     "Host": "localhost",
     "Port": "5000"
   },
+  "Badge": {
+    "UploadCost": 0,
+    "SubtractCreatorFromTotalWon": true
+  },
   "Setup": {
     "SetupServicePublicHost": "https://setup.freblx.xyz",
     "UWPClientDownloadLocation": "https://www.freblx.xyz/Appx.zip"

@@ -83,15 +83,6 @@ namespace RobloxWebserver.Controllers
             return View("~/Views/Pages/ide/login.cshtml");
         }
 
-        [HttpPost("ide/login")]
-        public IActionResult IDELoginPost(string? returnUrl = null)
-        {
-            if (User?.Identity?.IsAuthenticated == true)
-                return Redirect("/ide/welcome");
-            ViewBag.ReturnUrl = returnUrl;
-            return View("~/Views/Pages/ide/login.cshtml");
-        }
-
         [HttpGet("newlogin")]
         public IActionResult NewLogin(int? failureReason, string? returnUrl = null)
         {
