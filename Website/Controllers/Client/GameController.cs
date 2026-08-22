@@ -150,7 +150,7 @@ namespace Website.Controllers.Client
         }
 
         [HttpPost("/Game/Joined")]
-        public async Task<IActionResult> PlayerJoined([FromForm] long userId, [FromForm] long placeId, [FromForm] string jobId, [FromForm] string token)
+        public async Task<IActionResult> PlayerJoined([FromForm] long userId, [FromForm] long placeId, [FromForm] string jobId, [FromForm] string token, [FromForm] string? privateServerId)
         {
             if (!ValidateArbiterToken(token))
             {
@@ -191,7 +191,7 @@ namespace Website.Controllers.Client
         }
 
         [HttpPost("/Game/Left")]
-        public async Task<IActionResult> PlayerLeft([FromForm] long userId, [FromForm] long placeId, [FromForm] string jobId, [FromForm] string token)
+        public async Task<IActionResult> PlayerLeft([FromForm] long userId, [FromForm] long placeId, [FromForm] string jobId, [FromForm] string token, [FromForm] string? privateServerId)
         {
             if (!ValidateArbiterToken(token))
             {

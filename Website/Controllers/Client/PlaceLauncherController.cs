@@ -64,6 +64,7 @@ namespace Website.Controllers.Client
                 return request switch
                 {
                     "RequestGame" or "RequestGameJob" or "RequestFollowUser" => await HandleRequestGame(placeId.Value, request, jobid, serverPort, requestId),
+                    "RequestPrivateGame" => await HandleRequestPrivateGame(placeId.Value, Request.Query["accessCode"].ToString(), requestId),
                     "CloudEdit" => await HandleCloudEdit(placeId.Value, requestId),
                     "AuthenticateTicket" => await HandleAuthenticateTicket(),
                     "LogJoinClick" => Ok(new { status = 1, message = "Logged" }),
@@ -297,6 +298,118 @@ namespace Website.Controllers.Client
                 authenticationTicket = ticketToken ?? guestToken, // guest token for guests
                 message = null
             });
+        }
+
+        /// <summary>
+        /// Handles VIP server joins: validates the access code, checks that the
+        /// caller is the owner or whitelisted and the subscription is active,
+        /// then reuses or starts a dedicated Arbiter instance tagged with the
+        /// privateServerId. Bypasses paid access per legacy VIP behavior.
+        /// </summary>
+        private async Task<IActionResult> HandleRequestPrivateGame(long placeId, string? accessCode, string requestId)
+        {
+            long userId = await GetCurrentUserIdAsync();
+            if (userId <= 0)
+            {
+                return Ok(new PlaceLauncherResponse { status = 3, message = "You must be logged in to join a VIP server" });
+            }
+
+            var connectionString = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrEmpty(connectionString) || string.IsNullOrWhiteSpace(accessCode))
+            {
+                return Ok(new PlaceLauncherResponse { status = 4, message = "Invalid VIP server link" });
+            }
+
+            var privateServer = await PrivateServersRepository.GetByAccessCodeAsync(connectionString, accessCode);
+            if (privateServer == null || privateServer.PlaceId != placeId)
+            {
+                return Ok(new PlaceLauncherResponse { status = 4, message = "This VIP server link is invalid" });
+            }
+
+            if (!privateServer.Active || privateServer.ExpiresAt <= DateTime.UtcNow)
+            {
+                return Ok(new PlaceLauncherResponse { status = 4, message = "This VIP server is no longer active" });
+            }
+
+            if (!await PrivateServersRepository.CanJoinAsync(connectionString, privateServer, userId))
+            {
+                return Ok(new PlaceLauncherResponse { status = 3, message = "You do not have access to this VIP server" });
+            }
+
+            string gameId;
+            int serverPort;
+
+            var (existingAlive, existingPort, existingGameId) = await FindArbiterServerByPrivateServerIdAsync(privateServer.PrivateServerId);
+            if (existingAlive && !string.IsNullOrEmpty(existingGameId))
+            {
+                gameId = existingGameId;
+                serverPort = existingPort;
+            }
+            else
+            {
+                try
+                {
+                    var maxPlayers = await GameCreationService.GetPlaceMaxPlayersAsync(placeId, connectionString);
+                    var (jobId, port) = await GameCreationService.CreateGameServerAsync(
+                        (int)placeId, maxPlayers, _configuration, connectionString,
+                        privateServerId: privateServer.PrivateServerId);
+                    gameId = jobId;
+                    serverPort = port;
+                }
+                catch (Exception ex)
+                {
+                    return Ok(new PlaceLauncherResponse { status = 4, message = $"Error creating VIP server instance: {ex.Message}" });
+                }
+            }
+
+            var ticketToken = await _tokenService.CreateGameTicketAsync(userId, placeId, gameId);
+
+            var baseUrl = _configuration["PublicBaseUrl"]?.TrimEnd('/');
+            var joinScriptUrl = $"{baseUrl}/game/join.ashx?serverPort={serverPort}&gameid={placeId}&jobid={gameId}";
+            var authenticationUrl = $"{baseUrl}/Login/Negotiate.ashx";
+            
+            return Ok(new PlaceLauncherResponse
+            {
+                jobId = gameId,
+                status = 2,
+                joinScriptUrl = joinScriptUrl,
+                authenticationUrl = authenticationUrl,
+                authenticationTicket = ticketToken,
+                message = null
+            });
+        }
+
+        private async Task<(bool Alive, int Port, string? GameId)> FindArbiterServerByPrivateServerIdAsync(long privateServerId)
+        {
+            try
+            {
+                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-private-server/{privateServerId}");
+                if (!response.IsSuccessStatusCode)
+                    return (false, 0, null);
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                var status = root.TryGetProperty("status", out var st) ? st.GetString() : null;
+                if (status == "stopped" || status == "expired")
+                    return (false, 0, null);
+
+                var gameId = root.TryGetProperty("gameId", out var gid) ? gid.GetString() : null;
+                var port = root.TryGetProperty("port", out var p) && p.TryGetInt32(out var pv) ? pv : 0;
+
+                return (!string.IsNullOrEmpty(gameId), port, gameId);
+            }
+            catch
+            {
+                return (false, 0, null);
+            }
         }
 
         private async Task<IActionResult> HandleCloudEdit(long placeId, string requestId)

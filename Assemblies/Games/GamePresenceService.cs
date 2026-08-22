@@ -429,6 +429,44 @@ namespace Games
                 throw new InvalidOperationException($"Failed to get paginated players for place {placeId}: {ex.Message}", ex);
             }
         }
+
+        /// <summary>
+        /// Returns which of the given friends are currently in the specified place, and which server (jobid) they are in.
+        /// </summary>
+        public static async Task<List<FriendServerEntry>> GetFriendsInPlaceAsync(
+            string connectionString, long placeId, List<long> friendIds,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString) || friendIds == null || friendIds.Count == 0)
+                return new List<FriendServerEntry>();
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(@"
+                SELECT gp.uid, gp.jobid
+                FROM game_presence gp
+                WHERE gp.placeid = @placeId
+                  AND gp.uid = ANY(@friendIds)
+                  AND (gp.last_ping + INTERVAL '30 seconds') > NOW()
+                ORDER BY gp.updated_at DESC", conn);
+
+            cmd.Parameters.AddWithValue("placeId", placeId);
+            cmd.Parameters.AddWithValue("friendIds", friendIds.ToArray());
+
+            var results = new List<FriendServerEntry>();
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                results.Add(new FriendServerEntry
+                {
+                    UserId = reader.GetInt64(0),
+                    JobId = reader.GetString(1)
+                });
+            }
+
+            return results;
+        }
     }
 
     public class GamePresenceInfo
@@ -449,5 +487,11 @@ namespace Games
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public string UserName { get; set; } = string.Empty;
+    }
+
+    public class FriendServerEntry
+    {
+        public long UserId { get; set; }
+        public string JobId { get; set; } = string.Empty;
     }
 }

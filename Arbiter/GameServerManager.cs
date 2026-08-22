@@ -611,7 +611,11 @@ namespace RCCArbiter
             var list = new List<PlayerInfo>();
             foreach (var p in players)
             {
-                if (p is Dictionary<string, object> dict)
+                if (p is PlayerInfo existing)
+                {
+                    list.Add(existing);
+                }
+                else if (p is Dictionary<string, object> dict)
                 {
                     var player = new PlayerInfo
                     {
@@ -645,6 +649,30 @@ namespace RCCArbiter
 
                 server.LastActivityTime = DateTime.UtcNow;
 
+                if (string.Equals(eventType, "Join", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!server.AuthenticatedPlayers.Any(p => p.UserId == userId))
+                    {
+                        server.AuthenticatedPlayers.Add(new PlayerInfo
+                        {
+                            UserId = userId,
+                            Name = "",
+                            DisplayName = "",
+                            JoinTime = DateTime.UtcNow
+                        });
+                        server.AuthenticatedPlayerCount = server.AuthenticatedPlayers.Count;
+                        server.PlayerCount = server.AuthenticatedPlayerCount + server.GuestPlayerCount;
+                    }
+                }
+                else if (string.Equals(eventType, "Leave", StringComparison.OrdinalIgnoreCase))
+                {
+                    var removed = server.AuthenticatedPlayers.RemoveAll(p => p.UserId == userId);
+                    if (removed > 0)
+                    {
+                        server.AuthenticatedPlayerCount = server.AuthenticatedPlayers.Count;
+                        server.PlayerCount = server.AuthenticatedPlayerCount + server.GuestPlayerCount;
+                    }
+                }
             }
         }
 

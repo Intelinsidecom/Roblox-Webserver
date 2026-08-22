@@ -836,6 +836,32 @@ namespace Users
             return new Dictionary<string, object?> { ["success"] = true };
         }
 
+        public static async Task<List<long>> GetFriendIdsAsync(
+            string connectionString, long userId,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString) || userId <= 0)
+                return new List<long>();
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(@"
+                SELECT friend_user_id
+                FROM user_friends
+                WHERE user_id = @userId", conn);
+            cmd.Parameters.AddWithValue("userId", userId);
+
+            var results = new List<long>();
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                results.Add(reader.GetInt64(0));
+            }
+
+            return results;
+        }
+
         public static async Task<List<long>> GetOnlineFriendsAsync(
             string connectionString, long userId,
             CancellationToken cancellationToken = default)

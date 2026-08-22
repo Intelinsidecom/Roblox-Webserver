@@ -189,6 +189,9 @@ pcall(function()
     postData.Memory = memoryUsage
     postData.Ping = avgPing
     
+    local authPlayerJson = HttpService:JSONEncode(authenticatedPlayers)
+    local guestPlayerJson = HttpService:JSONEncode(guestPlayers)
+    
     local postData = string.format(
         "CallbackToken=%s&ServerId=%s&PlaceId=%d&PlayerCount=%d&AuthenticatedCount=%d&GuestCount=%d&FPS=%f&Memory=%d&Ping=%f&Timestamp=%f",
         callbackToken,
@@ -202,6 +205,9 @@ pcall(function()
         avgPing or 0,
         tick()
     )
+    
+    postData = postData .. "&AuthenticatedPlayers=" .. HttpService:UrlEncode(authPlayerJson)
+    postData = postData .. "&GuestPlayers=" .. HttpService:UrlEncode(guestPlayerJson)
     
     local httpSuccess, httpResult = pcall(function()
         return game:HttpPost(callbackUrl, postData, false, "application/x-www-form-urlencoded")

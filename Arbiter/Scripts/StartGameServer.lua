@@ -19,6 +19,7 @@
 	local url = "%baseUrl%"
 	local accessKey = "%accessKey%"
 	local jobId = "%gameId%"
+	local privateServerId = "%privateServerId%"
 	
 	local assetId = placeId -- might be able to remove this now
 	local apiUrl = string.gsub(url, "www%.", "api.")
@@ -79,7 +80,7 @@
 		if player.userId > 0 then
 			pcall(function()
 				local postUrl = url .. "/Game/Joined"
-				local postData = "userId=" .. tostring(player.userId) .. "&placeId=" .. tostring(placeId) .. "&jobId=" .. jobId .. "&token=" .. accessKey
+				local postData = "userId=" .. tostring(player.userId) .. "&placeId=" .. tostring(placeId) .. "&jobId=" .. jobId .. "&privateServerId=" .. privateServerId .. "&token=" .. accessKey
 				game:HttpPost(postUrl, postData, false, "application/x-www-form-urlencoded")
 			end)
 		end
@@ -91,7 +92,7 @@
 		if player.userId > 0 then
 			pcall(function()
 				local postUrl = url .. "/Game/Left"
-				local postData = "userId=" .. tostring(player.userId) .. "&placeId=" .. tostring(placeId) .. "&jobId=" .. jobId .. "&token=" .. accessKey
+				local postData = "userId=" .. tostring(player.userId) .. "&placeId=" .. tostring(placeId) .. "&jobId=" .. jobId .. "&privateServerId=" .. privateServerId .. "&token=" .. accessKey
 				game:HttpPost(postUrl, postData, false, "application/x-www-form-urlencoded")
 			end)
 		end

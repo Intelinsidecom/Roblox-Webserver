@@ -1,0 +1,184 @@
+@{
+    Layout = "_Layout";
+    var server = ViewBag.Server as Games.PrivateServerInfo;
+    var statusType = (int)ViewBag.StatusType;
+    var whitelist = ViewBag.Whitelist as List<(long UserId, string UserName)> ?? new List<(long, string)>();
+    var gameName = ViewBag.GameName as string ?? "Unknown Game";
+    var maxPlayers = (int)ViewBag.MaxPlayers;
+    var price = (int)ViewBag.Price;
+    var message = ViewBag.Message as string;
+    var error = ViewBag.Error as string;
+
+    string statusText;
+    string statusClass;
+    switch (statusType)
+    {
+        case 1: statusText = "Active"; statusClass = "text-green"; break;
+        case 2: statusText = "Inactive"; statusClass = "text-error"; break;
+        default: statusText = "Cancelled"; statusClass = "text-error"; break;
+    }
+}
+
+<title>Configure VIP Server - @server.Name</title>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="~/CSS/Base/CSS/StyleGuide.css">
+<link rel="stylesheet" href="~/CSS/Pages/PrivateServers/PrivateServers.css">
+<style>
+    .ps-configure-container {
+        max-width: 970px;
+        margin: 0 auto 40px auto;
+        padding-top: 20px;
+    }
+    .ps-section {
+        background: #fff;
+        border: 1px solid #b8b8b8;
+        margin-bottom: 20px;
+    }
+    .ps-section-header {
+        font-size: 18px;
+        font-weight: 400;
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+        background: #f2f2f2;
+    }
+    .ps-section-content {
+        padding: 15px;
+    }
+    .ps-detail-row {
+        margin-bottom: 10px;
+    }
+    .ps-detail-label {
+        display: inline-block;
+        width: 120px;
+        color: #757575;
+        font-size: 14px;
+    }
+    .ps-alert {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    .ps-alert-success { background: #e2f0d5; border: 1px solid #9dc983; color: #3c763d; }
+    .ps-alert-error { background: #ffdddd; border: 1px solid #dda0a0; color: #a94442; }
+    .ps-whitelist-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .ps-whitelist-row:last-child { border-bottom: none; }
+    .ps-inline-form { display: inline; }
+</style>
+
+<div class="ps-configure-container">
+    <div class="container-header">
+        <h2>Configure VIP Server</h2>
+        <div class="text-label">For <a class="text-link" href="/games/@(server.PlaceId)/@(System.Net.WebUtility.UrlEncode(gameName))">@gameName</a></div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="ps-alert ps-alert-success">@message</div>
+    }
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="ps-alert ps-alert-error">@error</div>
+    }
+
+    <div class="ps-section">
+        <div class="ps-section-header">Server Details</div>
+        <div class="ps-section-content">
+            <form class="ps-inline-form" method="post" action="/private-server/configure/rename">
+                <input type="hidden" name="privateServerId" value="@server.PrivateServerId" />
+                <div class="ps-detail-row">
+                    <span class="ps-detail-label">Server Name</span>
+                    <input type="text" name="name" class="form-control input-field" style="display:inline-block;width:300px;" maxlength="50" value="@server.Name" required />
+                    <button type="submit" class="btn-secondary-xs">Save Name</button>
+                </div>
+            </form>
+            <div class="ps-detail-row"><span class="ps-detail-label">Status</span><span class="@statusClass">@statusText</span></div>
+            <div class="ps-detail-row"><span class="ps-detail-label">Max Players</span>@maxPlayers</div>
+            <div class="ps-detail-row"><span class="ps-detail-label">Expires</span>@server.ExpiresAt.ToString("M/d/yyyy")</div>
+            <div class="ps-detail-row">
+                <span class="ps-detail-label">Renewal Price</span>
+                @if (price > 0)
+                {
+                    <span>R$ @price every 30 days</span>
+                }
+                else
+                {
+                    <span>Free</span>
+                }
+            </div>
+            @if (statusType != 1)
+            {
+                <button type="button" id="renew-button" class="btn-primary-md" data-server-id="@server.PrivateServerId" data-price="@price">Renew VIP Server</button>
+            }
+            else if (server.Active)
+            {
+                <form class="ps-inline-form" method="post" action="/private-server/configure/cancel"
+                      onsubmit="return confirm('Are you sure you want to cancel this VIP server? It will stop renewing and become inactive when it expires.');">
+                    <input type="hidden" name="privateServerId" value="@server.PrivateServerId" />
+                    <button type="submit" class="btn-control-md">Cancel Subscription</button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <div class="ps-section">
+        <div class="ps-section-header">Allowed Users (@whitelist.Count)</div>
+        <div class="ps-section-content">
+            <p class="text-label">These users can join your VIP server without an invite link.</p>
+            <form method="post" action="/private-server/configure/whitelist-add" style="margin-bottom:15px;">
+                <input type="hidden" name="privateServerId" value="@server.PrivateServerId" />
+                <input type="text" name="username" class="form-control input-field" style="display:inline-block;width:250px;" placeholder="Username to invite" required />
+                <button type="submit" class="btn-primary-xs">Invite User</button>
+            </form>
+            @if (whitelist.Count == 0)
+            {
+                <p class="section-content-off">You have not invited anyone to this VIP server yet.</p>
+            }
+            else
+            {
+                foreach (var entry in whitelist)
+                {
+                    <div class="ps-whitelist-row">
+                        <a class="text-name" href="/users/@entry.UserId/profile">@entry.UserName</a>
+                        <form class="ps-inline-form" method="post" action="/private-server/configure/whitelist-remove">
+                            <input type="hidden" name="privateServerId" value="@server.PrivateServerId" />
+                            <input type="hidden" name="userId" value="@entry.UserId" />
+                            <button type="submit" class="btn-control-xs">Remove</button>
+                        </form>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('renew-button')?.addEventListener('click', function () {
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        var body = new URLSearchParams();
+        body.set('privateServerId', btn.getAttribute('data-server-id'));
+        body.set('expectedPrice', btn.getAttribute('data-price'));
+        fetch('/private-server/renew', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        }).then(function (r) { return r.json(); }).then(function (data) {
+            if (data.success) {
+                window.location.href = '/private-server/configure?privateServerId=' + btn.getAttribute('data-server-id') + '&msg=VIP+server+renewed.';
+            } else {
+                window.location.href = '/private-server/configure?privateServerId=' + btn.getAttribute('data-server-id') + '&err=' + encodeURIComponent(data.error || 'Renewal failed.');
+            }
+        }).catch(function () {
+            btn.disabled = false;
+            btn.textContent = 'Renew VIP Server';
+        });
+    });
+</script>

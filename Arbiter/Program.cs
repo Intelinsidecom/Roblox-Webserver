@@ -511,8 +511,10 @@ namespace RCCArbiter
             }
             
             builder.Services.AddHostedService<RCCCleanupService>();
+            builder.Services.AddRequestDecompression();
             
             var app = builder.Build();
+            app.UseRequestDecompression();
 
             var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
             var jsonRoot = Path.Combine(Directory.GetCurrentDirectory(), "Json");
@@ -1185,10 +1187,20 @@ namespace RCCArbiter
                             gameId = s.GameId,
                             port = s.Port,
                             playerCount = s.PlayerCount,
+                            authenticatedPlayerCount = s.AuthenticatedPlayerCount,
+                            guestPlayerCount = s.GuestPlayerCount,
                             status = s.Status,
                             startTime = s.StartTime,
                             maxPlayers = s.MaxPlayers,
                             baseUrl = s.BaseUrl,
+                            privateServerId = s.PrivateServerId,
+                            players = s.AuthenticatedPlayers.Select(p => new
+                            {
+                                userId = p.UserId,
+                                name = p.Name,
+                                displayName = p.DisplayName,
+                                joinTime = p.JoinTime
+                            }).ToList(),
                             connectionUrl = $"roblox://localhost:{s.Port}?gameId={s.GameId}&placeId={placeId}"
                         })
                         .OrderByDescending(s => s.startTime)
@@ -1199,6 +1211,106 @@ namespace RCCArbiter
                         placeId = placeId,
                         serverCount = servers.Count,
                         servers = servers
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/by-gameids", (string ids) =>
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(ids))
+                        return Results.Ok(new { servers = Array.Empty<object>() });
+
+                    var gameIdArray = ids.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    var servers = new List<object>();
+
+                    foreach (var gameId in gameIdArray)
+                    {
+                        var info = gameServerManager.GetGameServerInfo(gameId);
+                        if (info == null || info.Status == "stopped" || info.Status == "expired")
+                            continue;
+
+                        var players = info.AuthenticatedPlayers.Select(p => new
+                        {
+                            userId = p.UserId,
+                            name = p.Name,
+                            displayName = p.DisplayName,
+                            joinTime = p.JoinTime
+                        }).ToList();
+
+                        servers.Add(new
+                        {
+                            gameId = info.GameId,
+                            placeId = info.PlaceId,
+                            port = info.Port,
+                            playerCount = info.PlayerCount,
+                            authenticatedPlayerCount = info.AuthenticatedPlayerCount,
+                            guestPlayerCount = info.GuestPlayerCount,
+                            maxPlayers = info.MaxPlayers,
+                            status = info.Status,
+                            startTime = info.StartTime,
+                            expiration = info.Expiration,
+                            baseUrl = info.BaseUrl,
+                            privateServerId = info.PrivateServerId,
+                            players = players,
+                            connectionUrl = $"roblox://localhost:{info.Port}?gameId={info.GameId}&placeId={info.PlaceId}"
+                        });
+                    }
+
+                    return Results.Ok(new
+                    {
+                        serverCount = servers.Count,
+                        servers = servers
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            app.MapGet("/api/gameservers/by-private-server/{privateServerId}", (string privateServerId) =>
+            {
+                try
+                {
+                    if (string.IsNullOrWhiteSpace(privateServerId))
+                        return Results.NotFound(new { error = "privateServerId is required" });
+
+                    var server = gameServerManager.GetAllGameServers()
+                        .Where(s => s.PrivateServerId == privateServerId && s.Status != "stopped" && s.Status != "expired")
+                        .OrderByDescending(s => s.StartTime)
+                        .FirstOrDefault();
+
+                    if (server == null)
+                        return Results.NotFound(new { error = $"No active server found for private server {privateServerId}" });
+
+                    return Results.Ok(new
+                    {
+                        gameId = server.GameId,
+                        placeId = server.PlaceId,
+                        port = server.Port,
+                        playerCount = server.PlayerCount,
+                        authenticatedPlayerCount = server.AuthenticatedPlayerCount,
+                        guestPlayerCount = server.GuestPlayerCount,
+                        maxPlayers = server.MaxPlayers,
+                        status = server.Status,
+                        startTime = server.StartTime,
+                        expiration = server.Expiration,
+                        baseUrl = server.BaseUrl,
+                        privateServerId = server.PrivateServerId,
+                        players = server.AuthenticatedPlayers.Select(p => new
+                        {
+                            userId = p.UserId,
+                            name = p.Name,
+                            displayName = p.DisplayName,
+                            joinTime = p.JoinTime
+                        }).ToList(),
+                        connectionUrl = $"roblox://localhost:{server.Port}?gameId={server.GameId}&placeId={server.PlaceId}"
                     });
                 }
                 catch (Exception ex)
@@ -1733,6 +1845,62 @@ namespace RCCArbiter
                     var memory = int.TryParse(form["Memory"], out var m) ? m : 0;
                     var ping = double.TryParse(form["Ping"], out var p) ? p : 0;
                     var timestamp = double.TryParse(form["Timestamp"], out var t) ? t : 0;
+                    
+                    var authenticatedPlayersList = new List<object>();
+                    var guestPlayersList = new List<object>();
+                    
+                    var authPlayersJson = form["AuthenticatedPlayers"].ToString();
+                    if (!string.IsNullOrWhiteSpace(authPlayersJson))
+                    {
+                        try
+                        {
+                            var parsed = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(authPlayersJson);
+                            if (parsed != null)
+                            {
+                                foreach (var entry in parsed)
+                                {
+                                    var pi = new GameServerManager.PlayerInfo
+                                    {
+                                        Name = entry.TryGetValue("Name", out var na) ? na?.ToString() ?? "" : "",
+                                        UserId = entry.TryGetValue("UserId", out var uid) ? Convert.ToInt64(uid) : 0,
+                                        DisplayName = entry.TryGetValue("DisplayName", out var dn) ? dn?.ToString() ?? "" : "",
+                                        CharacterLoaded = entry.TryGetValue("CharacterLoaded", out var cl) && Convert.ToBoolean(cl),
+                                        Ping = entry.TryGetValue("Ping", out var pg) ? Convert.ToDouble(pg) : 0,
+                                        JoinTime = DateTime.UtcNow
+                                    };
+                                    authenticatedPlayersList.Add(pi);
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                    
+                    var guestPlayersJson = form["GuestPlayers"].ToString();
+                    if (!string.IsNullOrWhiteSpace(guestPlayersJson))
+                    {
+                        try
+                        {
+                            var parsed = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(guestPlayersJson);
+                            if (parsed != null)
+                            {
+                                foreach (var entry in parsed)
+                                {
+                                    var pi = new GameServerManager.PlayerInfo
+                                    {
+                                        Name = entry.TryGetValue("Name", out var na) ? na?.ToString() ?? "" : "",
+                                        UserId = entry.TryGetValue("UserId", out var uid) ? Convert.ToInt64(uid) : 0,
+                                        DisplayName = entry.TryGetValue("DisplayName", out var dn) ? dn?.ToString() ?? "" : "",
+                                        CharacterLoaded = entry.TryGetValue("CharacterLoaded", out var cl) && Convert.ToBoolean(cl),
+                                        Ping = entry.TryGetValue("Ping", out var pg) ? Convert.ToDouble(pg) : 0,
+                                        JoinTime = DateTime.UtcNow
+                                    };
+                                    guestPlayersList.Add(pi);
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                    
                     var statusData = new Dictionary<string, object>
                     {
                         ["gameId"] = serverId,
@@ -1744,7 +1912,9 @@ namespace RCCArbiter
                             ["total"] = playerCount,
                             ["authenticatedCount"] = authenticatedCount,
                             ["guestCount"] = guestCount,
-                            ["maxPlayers"] = 10
+                            ["maxPlayers"] = 10,
+                            ["authenticated"] = authenticatedPlayersList.ToArray(),
+                            ["guests"] = guestPlayersList.ToArray()
                         },
                         ["performance"] = new Dictionary<string, object>
                         {

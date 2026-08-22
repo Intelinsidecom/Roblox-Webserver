@@ -870,5 +870,109 @@ namespace RobloxWebserver.Controllers
         {
             return Common.StringUtilities.GenerateRandomString(length);
         }
+
+        [HttpGet("GetFriendsGameInstances")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetFriendsGameInstances(
+            [FromQuery] long placeId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                long userId = 0;
+                bool isAuth = !string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out userId) && userId > 0;
+
+                if (!isAuth)
+                {
+                    return Json(new { Collection = Array.Empty<object>(), ShowShutdownAllButton = true, TotalCollectionSize = 0 });
+                }
+
+                var friendIds = await UserQueries.GetFriendIdsAsync(connStr, userId, cancellationToken)
+                    .ConfigureAwait(false);
+
+                var result = await GamesQueries.GetFriendsGameInstancesAsync(
+                    connStr, arbiterUrl, placeId, friendIds, cancellationToken);
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading friends game instances for place {PlaceId}", placeId);
+                return Json(new { Collection = Array.Empty<object>(), ShowShutdownAllButton = true, TotalCollectionSize = 0 });
+            }
+        }
+
+        [HttpGet("getgameinstancesjson")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetGameInstancesJson(
+            [FromQuery] long placeId,
+            [FromQuery] int startindex = 0,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
+
+                var result = await GamesQueries.GetGameInstancesJsonAsync(
+                    connStr, arbiterUrl, placeId, startindex, cancellationToken);
+
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading game instances for place {PlaceId}", placeId);
+                return Json(new { Collection = Array.Empty<object>(), ShowShutdownAllButton = true, TotalCollectionSize = 0 });
+            }
+        }
+
+        [HttpPost("~/game-instances/shutdown")]
+        [Authorize]
+        public async Task<IActionResult> ShutdownInstance(
+            [FromForm] long placeId,
+            [FromForm] string gameId,
+            [FromForm] string? privateServerId = null,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                    return Unauthorized();
+
+                var connStr = _configuration.GetConnectionString("Default");
+                var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
+
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, placeId, cancellationToken);
+                if (!universeId.HasValue)
+                    return NotFound();
+
+                var universe = await GamesRepository.GetUniverseAsync(connStr, universeId.Value, cancellationToken);
+                if (universe == null)
+                    return NotFound();
+
+                bool isOwner = universe.CreatorUserId == userId;
+                if (!isOwner)
+                {
+                    var isAdmin = User.IsInRole("Admin");
+                    if (!isAdmin)
+                        return Forbid();
+                }
+
+                using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                var killUrl = $"{arbiterUrl}/api/gameservers/{Uri.EscapeDataString(gameId)}";
+                var response = await httpClient.DeleteAsync(killUrl, cancellationToken);
+                return Ok(new { success = response.IsSuccessStatusCode });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error shutting down game instance {GameId}", gameId);
+                return StatusCode(500);
+            }
+        }
     }
 }

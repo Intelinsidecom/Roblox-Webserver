@@ -12,12 +12,12 @@ Roblox.GameLaunchLogger=function() {
             i=="Windows" &&(i="Win32"),
             n=n.replace("<os>", i),
             n=n.replace("<launchmethod>", t),
-            EventTracker&&EventTracker.fireEvent&&EventTracker.fireEvent(n)
+            window.EventTracker && window.EventTracker.fireEvent && window.EventTracker.fireEvent(n)
         }
     }
 
     function e(n, t, i, u) {
-        r.logToGAEnabled&&GoogleAnalyticsEvents&&GoogleAnalyticsEvents.FireEvent&&GoogleAnalyticsEvents.FireEvent([n, t, i, u])
+        r.logToGAEnabled&&window.GoogleAnalyticsEvents&&window.GoogleAnalyticsEvents.FireEvent&&window.GoogleAnalyticsEvents.FireEvent([n, t, i, u])
     }
 
     function o(r, o) {

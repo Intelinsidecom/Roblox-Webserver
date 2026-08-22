@@ -93,6 +93,10 @@
         .carousel .flex-video {
             padding-bottom: 52.25%;
         }
+
+        [data-toggle="popover-dynamic"] .icon-more {
+            pointer-events: none;
+        }
     </style>
     <link rel="stylesheet" href="~/CSS/Pages/Notifications/NotificationStream.css">
 
@@ -451,7 +455,7 @@
                                                     onAccept: function() {
                                                         window.location.href = '/premium/membership?ctx=bc-only-game';
                                                     },
-                                                    imageUrl: 'https://images.rbxcdn.com/43ac54175f3f3cd403536fedd9170c10.png'
+                                                    imageUrl: '/images/43ac54175f3f3cd403536fedd9170c10.png'
                                                 };
                                                 Roblox.GenericConfirmation.open(options);
                                             };
@@ -533,7 +537,7 @@
                     <div class="col-xs-12 rbx-tabs-horizontal" data-place-id=370731277>
                         <ul id=horizontal-tabs class="nav nav-tabs" role=tablist>
                             <li id=tab-about class="rbx-tab tab-about active"><a class=rbx-tab-heading href=#about> <span class=text-lead>About</span> </a>
-                            <li id=tab-store class="rbx-tab tab-store" style="@((ViewBag.GamePassCount ?? 0) == 0 ? "display:none" : "")"><a class=rbx-tab-heading href=#store> <span class=text-lead>Store</span> </a>
+                            <li id=tab-store class="rbx-tab tab-store"><a class=rbx-tab-heading href=#store> <span class=text-lead>Store</span> </a>
                             <li id=tab-leaderboards class="rbx-tab tab-leaderboards"><a class=rbx-tab-heading href=#leaderboards> <span class=text-lead>Leaderboards</span> </a>
                             <li id=tab-game-instances class="rbx-tab tab-game-instances"><a class=rbx-tab-heading href=#game-instances> <span class=text-lead>Servers</span> </a>
                         </ul>
@@ -755,7 +759,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            <div class="tab-pane store" id=store style="@((ViewBag.GamePassCount ?? 0) == 0 ? "display:none" : "")">
+                            <div class="tab-pane store" id=store>
                                 <div id=rbx-game-passes class="container-list game-dev-store game-passes">
                                     <div class=container-header>
                                         <h3>Passes for this game</h3>
@@ -994,7 +998,7 @@
                                 </div>
                                 <p class="section-content-off">This game does not support <a class="text-link" href="http://wiki.roblox.com/index.php?title=VIP_server">VIP Servers</a>.</p>
                                 }
-                                <div id=rbx-friends-running-games class=stack data-placeid=370731277 data-showshutdown>
+                                <div id=rbx-friends-running-games class=stack data-placeid="@ViewBag.Id" data-showshutdown>
                                     <div class=container-header>
                                         <h3>Servers My Friends Are In</h3>
                                     </div>
@@ -1010,6 +1014,28 @@
                                                 <div class=rbx-friends-game-server-alert><span class=icon-remove></span>Slow Game</div><a class="btn-full-width btn-control-xs rbx-friends-game-server-join" href=# data-placeid>Join</a>
                                             </div>
                                             <div class="section-right rbx-friends-game-server-players"></div>
+                                        </li>
+                                    </div>
+                                </div>
+                                <div id=rbx-running-games class=stack data-placeid="@ViewBag.Id" data-maximumrows=10 data-showshutdown>
+                                    <div class=container-header>
+                                        <h3>Other Servers</h3>
+                                    </div>
+                                    <ul id=rbx-game-server-item-container class="section rbx-game-server-item-container stack-list"></ul>
+                                    <div class=rbx-running-games-footer>
+                                        <button type=button class="btn-control-sm btn-full-width rbx-running-games-load-more hidden">Load More</button>
+                                    </div>
+                                    <div class=rbx-game-server-template>
+                                        <li class="stack-row rbx-game-server-item">
+                                            <div class=section-header>
+                                                <div class="link-menu rbx-game-server-menu"></div>
+                                            </div>
+                                            <div class="section-left rbx-game-server-details">
+                                                <div class="text-info rbx-game-status rbx-game-server-status"></div>
+                                                <div class=rbx-game-server-alert><span class=icon-remove></span>Slow Server</div>
+                                                <a class="btn-full-width btn-control-xs rbx-game-server-join" href=# data-placeid>Join</a>
+                                            </div>
+                                            <div class="section-right rbx-game-server-players"></div>
                                         </li>
                                     </div>
                                 </div>
@@ -1485,8 +1511,7 @@
     <script src="~/JS/PrivateServers/PrivateServer.js"></script>
     <script src="~/JS/StringTruncator.js"></script>
     <script src="~/JS/GameItemCard.js"></script>
-    <script src="~/JS/Game/GameLeaderboardView.js"></script>
-    <script src="~/JS/GameInstances/FriendsRunningGameInstances.js"></script>
+    <script src="~/JS/GameInstances/CombinedRunningGameInstances.js"></script>
     <script src="~/JS/GenericModal.js"></script>
     <script src="~/JS/utilities/popover.js"></script>
     <script src="~/JS/Navigation/ShopAmazon.js"></script>

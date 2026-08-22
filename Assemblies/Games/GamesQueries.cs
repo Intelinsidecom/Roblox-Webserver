@@ -1208,4 +1208,204 @@ public static class GamesQueries
         }
         return ids;
     }
+
+    public class GameServerInstanceResponse
+    {
+        public List<GameServerInstanceEntry> Collection { get; set; } = new();
+        public bool ShowShutdownAllButton { get; set; } = true;
+        public int TotalCollectionSize { get; set; } = 0;
+    }
+
+    public class GameServerInstanceEntry
+    {
+        public string Guid { get; set; } = "";
+        public long PlaceId { get; set; }
+        public int Capacity { get; set; }
+        public List<GameServerPlayer> CurrentPlayers { get; set; } = new();
+        public bool ShowShutdownAllButton { get; set; }
+        public string FriendsMouseover { get; set; } = "";
+        public string FriendsDescription { get; set; } = "";
+        public string JoinScript { get; set; } = "";
+        public bool ShowSlowGameMessage { get; set; }
+    }
+
+    public class GameServerPlayer
+    {
+        public long Id { get; set; }
+        public string Username { get; set; } = "";
+        public ThumbnailData Thumbnail { get; set; } = new();
+    }
+
+    public class ThumbnailData
+    {
+        public string Url { get; set; } = "";
+        public bool IsFinal { get; set; }
+    }
+
+    /// <summary>
+    /// Builds a Roblox-compatible game instances JSON response from Arbiter server data.
+    /// Used by both friends' servers and all-servers endpoints.
+    /// </summary>
+    private static GameServerInstanceResponse BuildInstancesResponse(
+        List<JsonElement> servers, long placeId,
+        Dictionary<long, string> friendNames, bool showShutdownAll = true)
+    {
+        var collection = new List<GameServerInstanceEntry>();
+
+        foreach (var server in servers)
+        {
+            var gameId = server.TryGetProperty("gameId", out var gid) ? gid.GetString() ?? "" : "";
+            var maxPlayers = server.TryGetProperty("maxPlayers", out var mp) ? mp.GetInt32() : 20;
+            var serverPlayers = new List<GameServerPlayer>();
+
+            if (server.TryGetProperty("players", out var playersArr) && playersArr.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var p in playersArr.EnumerateArray())
+                {
+                    var uid = p.TryGetProperty("userId", out var uidProp) ? uidProp.GetInt64() : 0;
+                    var name = p.TryGetProperty("name", out var nameProp) ? nameProp.GetString() ?? "" : "";
+                    serverPlayers.Add(new GameServerPlayer
+                    {
+                        Id = uid,
+                        Username = name,
+                        Thumbnail = new ThumbnailData
+                        {
+                            Url = $"/headshot-thumbnail/json?userId={uid}&width=48&height=48&format=PNG",
+                            IsFinal = true
+                        }
+                    });
+                }
+            }
+
+            string friendsMouseover = "";
+            string friendsDescription = "";
+            if (friendNames.Count > 0)
+            {
+                foreach (var player in serverPlayers)
+                {
+                    if (friendNames.TryGetValue(player.Id, out var fname))
+                    {
+                        friendsMouseover = $"{fname} is playing";
+                        friendsDescription = $"Your friend {fname}";
+                        break;
+                    }
+                }
+            }
+
+            collection.Add(new GameServerInstanceEntry
+            {
+                Guid = gameId,
+                PlaceId = placeId,
+                Capacity = maxPlayers,
+                CurrentPlayers = serverPlayers,
+                ShowShutdownAllButton = showShutdownAll,
+                FriendsMouseover = friendsMouseover,
+                FriendsDescription = friendsDescription,
+                JoinScript = $"RobloxGameLauncher.joinGameInstance('{gameId}', '{placeId}')",
+                ShowSlowGameMessage = false
+            });
+        }
+
+        return new GameServerInstanceResponse
+        {
+            Collection = collection,
+            ShowShutdownAllButton = showShutdownAll,
+            TotalCollectionSize = collection.Count
+        };
+    }
+
+    /// <summary>
+    /// Gets servers where the given friends are playing in the given place.
+    /// Uses game_presence table for efficient lookup instead of scanning all servers.
+    /// </summary>
+    public static async Task<GameServerInstanceResponse> GetFriendsGameInstancesAsync(
+        string connectionString, string arbiterBaseUrl, long placeId, List<long> friendIds,
+        CancellationToken cancellationToken = default)
+    {
+        var emptyResponse = new GameServerInstanceResponse();
+
+        if (string.IsNullOrWhiteSpace(connectionString) || friendIds == null || friendIds.Count == 0 || placeId <= 0)
+            return emptyResponse;
+
+        var friendsInPlace = await GamePresenceService.GetFriendsInPlaceAsync(
+            connectionString, placeId, friendIds, cancellationToken).ConfigureAwait(false);
+        if (friendsInPlace.Count == 0)
+            return emptyResponse;
+
+        var jobIds = friendsInPlace.Select(f => f.JobId).Distinct().ToList();
+        var friendNames = new Dictionary<long, string>();
+
+        await using (var conn = new NpgsqlConnection(connectionString))
+        {
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand(@"
+                SELECT user_id, user_name FROM users WHERE user_id = ANY(@ids)", conn);
+            cmd.Parameters.AddWithValue("ids", friendIds.ToArray());
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                friendNames[reader.GetInt64(0)] = reader.GetString(1);
+            }
+        }
+
+        try
+        {
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            var idsParam = string.Join(",", jobIds);
+            var url = $"{arbiterBaseUrl}/api/gameservers/by-gameids?ids={Uri.EscapeDataString(idsParam)}";
+            var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return emptyResponse;
+
+            var content = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(content);
+
+            if (!doc.RootElement.TryGetProperty("servers", out var serversArr) || serversArr.ValueKind != JsonValueKind.Array)
+                return emptyResponse;
+
+            var servers = serversArr.EnumerateArray().ToList();
+            return BuildInstancesResponse(servers, placeId, friendNames);
+        }
+        catch
+        {
+            return emptyResponse;
+        }
+    }
+
+    /// <summary>
+    /// Gets all public game instances for a place, paginated.
+    /// </summary>
+    public static async Task<GameServerInstanceResponse> GetGameInstancesJsonAsync(
+        string connectionString, string arbiterBaseUrl, long placeId, int startIndex,
+        CancellationToken cancellationToken = default)
+    {
+        var emptyResponse = new GameServerInstanceResponse();
+
+        if (placeId <= 0)
+            return emptyResponse;
+
+        try
+        {
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            var url = $"{arbiterBaseUrl}/api/gameservers/by-place/{placeId}";
+            var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return emptyResponse;
+
+            var content = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(content);
+
+            if (!doc.RootElement.TryGetProperty("servers", out var serversArr) || serversArr.ValueKind != JsonValueKind.Array)
+                return emptyResponse;
+
+            var allServers = serversArr.EnumerateArray().ToList();
+            var pagedServers = allServers.Skip(startIndex).Take(10).ToList();
+
+            return BuildInstancesResponse(pagedServers, placeId, new Dictionary<long, string>());
+        }
+        catch
+        {
+            return emptyResponse;
+        }
+    }
 }

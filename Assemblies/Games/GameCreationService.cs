@@ -685,6 +685,7 @@ where user_id = @uid;";
     /// <param name="maxPlayers">Maximum number of players for the server</param>
     /// <param name="configuration">Configuration containing Arbiter settings</param>
     /// <param name="connectionString">Database connection string</param>
+    /// <param name="privateServerId">Optional VIP server id used to tag dedicated instances</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Tuple containing jobId and port</returns>
     public static async Task<(string jobId, int port)> CreateGameServerAsync(
@@ -692,7 +693,8 @@ where user_id = @uid;";
         int maxPlayers,
         IConfiguration configuration,
         string? connectionString = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        long privateServerId = 0)
     {
         if (placeId <= 0)
             throw new ArgumentOutOfRangeException(nameof(placeId));
@@ -717,6 +719,10 @@ where user_id = @uid;";
         using var httpClient = new HttpClient();
         httpClient.Timeout = TimeSpan.FromSeconds(30);
         var startRequestUrl = $"{arbiterUrl}/api/gameservers/start?placeId={placeId}&maxPlayers={maxPlayers}&maxInactive=0&baseUrl={Uri.EscapeDataString(webUrl)}";
+        if (privateServerId > 0)
+        {
+            startRequestUrl += $"&privateServerId={privateServerId}";
+        }
         var response = await httpClient.GetAsync(startRequestUrl, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
