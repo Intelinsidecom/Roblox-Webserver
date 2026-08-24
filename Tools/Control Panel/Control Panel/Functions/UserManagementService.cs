@@ -104,7 +104,7 @@ namespace ControlPanel.Functions
 
                     string query = @"
                         SELECT 
-                            user_id, user_name, email, gender, user_created, last_activity,
+                            user_id, user_name, email, gender::text, user_created, last_activity,
                             avatar_thumbnail_url, headshot_thumbnail_url,
                             robux_balance, tix_balance,
                             email_verified,
