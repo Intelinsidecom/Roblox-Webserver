@@ -32,14 +32,9 @@ Release/
 *.a
 *.so
 *.dylib
-*.dll
 # Executables
-*.exe
 *.app
 # Packages
-*.zip
-*.tar.gz
-*.7z
 
 # ========================
 # User-specific config
@@ -65,4 +60,4 @@ packages/
 obj/
 bin/
 *.pfx
-Setup\wwwroot
+Setup/wwwroot

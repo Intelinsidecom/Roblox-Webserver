@@ -131,9 +131,9 @@ namespace Control_Panel
                 mainWindow?.ViewLoader.UpdateStatus("Database export: Selecting export location...");
                 var saveFileDialog = new Microsoft.Win32.SaveFileDialog
                 {
-                    Filter = "SQL files (*.sql)|*.sql|All files (*.*)|*.*",
+                    Filter = "Database backups (*.backup)|*.backup|All files (*.*)|*.*",
                     Title = "Export Database",
-                    FileName = $"database_export_{DateTime.Now:yyyyMMdd_HHmmss}.sql"
+                    FileName = $"database_export_{DateTime.Now:yyyyMMdd_HHmmss}.backup"
                 };
 
                 if (saveFileDialog.ShowDialog() != true)
@@ -221,7 +221,7 @@ namespace Control_Panel
                 ImportStatusText.Text = "Selecting import file...";
                 var openFileDialog = new Microsoft.Win32.OpenFileDialog
                 {
-                    Filter = "SQL dump files (*.sql)|*.sql",
+                    Filter = "Database backups (*.backup)|*.backup|SQL dump files (*.sql)|*.sql|All files (*.*)|*.*",
                     Title = "Import Database",
                     CheckFileExists = true,
                     CheckPathExists = true

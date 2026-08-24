@@ -780,22 +780,61 @@ namespace Control_Panel
 
                 startInfo.EnvironmentVariables["PGPASSWORD"] = builder.Password;
 
+                LogMessageSafe("Running pg_dump command...", "Database Export");
+
                 using (var process = System.Diagnostics.Process.Start(startInfo))
                 {
+                    var errorBuilder = new System.Text.StringBuilder();
+
+                    var outputTask = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        string line;
+                        while ((line = process.StandardOutput.ReadLine()) != null)
+                        {
+                            var captured = line;
+                            if (!string.IsNullOrEmpty(captured))
+                            {
+                                LogMessageSafe(captured, "Database Export");
+                            }
+                        }
+                    });
+
+                    var errorTask = System.Threading.Tasks.Task.Run(() =>
+                    {
+                        string line;
+                        while ((line = process.StandardError.ReadLine()) != null)
+                        {
+                            var captured = line;
+                            if (string.IsNullOrEmpty(captured))
+                            {
+                                continue;
+                            }
+
+                            lock (errorBuilder)
+                            {
+                                errorBuilder.AppendLine(captured);
+                            }
+                            LogMessageSafe($"pg_dump: {captured}", "Database Export");
+                        }
+                    });
+
                     process.WaitForExit();
-                    
+
+                    System.Threading.Tasks.Task.WaitAll(outputTask, errorTask);
+
                     if (process.ExitCode == 0)
                     {
+                        LogMessageSafe("Database export completed successfully", "Database Export");
                         return true;
                     }
                     else
                     {
-                        var error = process.StandardError.ReadToEnd();
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        string error;
+                        lock (errorBuilder)
                         {
-                            var exportConsole = ConsoleWindowManager.GetReservedConsole("Database Export");
-                            exportConsole.WriteError($"Database export failed with exit code {process.ExitCode}: {error}");
-                        });
+                            error = errorBuilder.ToString().Trim();
+                        }
+                        LogErrorSafe($"Database export failed with exit code {process.ExitCode}: {error}", "Database Export");
                         return false;
                     }
                 }
@@ -857,27 +896,37 @@ namespace Control_Panel
 
                 using (var process = System.Diagnostics.Process.Start(startInfo))
                 {
+                    var errorBuilder = new System.Text.StringBuilder();
+
                     var outputTask = System.Threading.Tasks.Task.Run(() =>
                     {
-                        while (!process.StandardOutput.EndOfStream)
+                        string line;
+                        while ((line = process.StandardOutput.ReadLine()) != null)
                         {
-                            var line = process.StandardOutput.ReadLine();
-                            if (!string.IsNullOrEmpty(line))
+                            var captured = line;
+                            if (!string.IsNullOrEmpty(captured))
                             {
-                                LogMessageSafe(line);
+                                LogMessageSafe(captured);
                             }
                         }
                     });
 
                     var errorTask = System.Threading.Tasks.Task.Run(() =>
                     {
-                        while (!process.StandardError.EndOfStream)
+                        string line;
+                        while ((line = process.StandardError.ReadLine()) != null)
                         {
-                            var line = process.StandardError.ReadLine();
-                            if (!string.IsNullOrEmpty(line))
+                            var captured = line;
+                            if (string.IsNullOrEmpty(captured))
                             {
-                                LogMessageSafe($"pg_restore: {line}");
+                                continue;
                             }
+
+                            lock (errorBuilder)
+                            {
+                                errorBuilder.AppendLine(captured);
+                            }
+                            LogMessageSafe($"pg_restore: {captured}");
                         }
                     });
 
@@ -892,7 +941,11 @@ namespace Control_Panel
                     }
                     else
                     {
-                        var error = process.StandardError.ReadToEnd();
+                        string error;
+                        lock (errorBuilder)
+                        {
+                            error = errorBuilder.ToString().Trim();
+                        }
                         LogErrorSafe($"Database import failed with exit code {process.ExitCode}: {error}");
                         return false;
                     }
