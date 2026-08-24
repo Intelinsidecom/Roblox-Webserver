@@ -29,6 +29,7 @@ namespace Website.Middleware
             var isApiRequest = path.StartsWith("/api/") || 
                                path.StartsWith("/v1/") ||
                                path.StartsWith("/game/") ||
+                               path.StartsWith("/gs/") ||
                                path.StartsWith("/login/") ||
                                context.Request.Headers.ContainsKey("X-Requested-With") ||
                                context.Request.ContentType?.Contains("application/json") == true;
@@ -46,7 +47,8 @@ namespace Website.Middleware
                 {
                     context.Response.StatusCode = 302;
                     context.Response.Headers["Location"] = "/login?returnUrl=" + Uri.EscapeDataString(context.Request.Path.Value + context.Request.QueryString.Value);
-                    context.Response.Body.Close();
+                    context.Response.ContentLength = null;
+                    context.Response.ContentType = null;
                 }
             }
             else if (statusCode == 400)
@@ -55,7 +57,8 @@ namespace Website.Middleware
                 {
                     context.Response.StatusCode = 302;
                     context.Response.Headers["Location"] = "/404";
-                    context.Response.Body.Close();
+                    context.Response.ContentLength = null;
+                    context.Response.ContentType = null;
                 }
             }
         }

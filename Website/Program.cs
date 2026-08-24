@@ -95,6 +95,7 @@ builder.Services.AddHostedService<ToolboxService>(sp => sp.GetRequiredService<To
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<Assets.AssetService>();
 builder.Services.AddHttpClient();
+builder.Services.AddRequestDecompression();
 builder.Services.AddHttpClient("RobloxAssetDelivery", client =>
 {
     client.Timeout = TimeSpan.FromSeconds(5);
@@ -175,6 +176,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseForwardedHeaders();
+
+// Decompress gzip-encoded request bodies (RCC game-server callbacks) before any middleware reads the body
+app.UseRequestDecompression();
  
 // Commented out HTTPS redirection to allow HTTP for development
 
