@@ -99,7 +99,8 @@
   },
   "Setup": {
     "SetupServicePublicHost": "https://setup.freblx.xyz",
-    "UWPClientDownloadLocation": "https://www.freblx.xyz/Appx.zip"
+    "UWPClientDownloadLocation": "https://www.freblx.xyz/Appx.zip",
+    "UWPAppStoreUrl": "https://store.live.net.co/game/417"
   },
   "Social": {
     "DiscordServerInviteURL": "https://discord.com/invite/9ypw3ytK4t",

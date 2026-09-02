@@ -49,7 +49,7 @@ Release/
 
 
 ## Webserver Related Stuff
-
+!Properties/*.json
 appsettings.json
 appsettings.Development.json
 CDN/Assets/thumbnails/

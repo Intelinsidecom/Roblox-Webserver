@@ -8943,7 +8943,7 @@ textarea.form-control {
 	border-color: #00A2FF;
 }
 
-.input-field.rbx-placeholder {
+.input-field.fbx-placeholder {
 	color: #B8B8B8;
 }
 
@@ -8951,25 +8951,25 @@ textarea.form-control {
 	box-shadow: none;
 }
 
-.rbx-select-group {
+.fbx-select-group {
 	position: relative;
 }
 
-.rbx-select-group:hover {
+.fbx-select-group:hover {
 	cursor: pointer;
 }
 
-.rbx-select-group:hover .icon-down {
+.fbx-select-group:hover .icon-down {
 	background-position: -16px -464px;
 }
 
-.rbx-select-group:hover .rbx-select {
+.fbx-select-group:hover .fbx-select {
 	background-color: #00A2FF;
 	color: #fff;
 	cursor: pointer;
 }
 
-.rbx-select-group .rbx-select {
+.fbx-select-group .fbx-select {
 	border-radius: 3px;
 	margin: 0;
 	padding: 0;
@@ -8984,24 +8984,24 @@ textarea.form-control {
 	background: url(../../images/Upgrades/Purchase/icon_downarrow.svg) no-repeat scroll 98% 3px #fff;
 }
 
-.rbx-select-group .rbx-select::-ms-expand {
+.fbx-select-group .fbx-select::-ms-expand {
 	display: none;
 }
 
-.rbx-select-group .rbx-select:hover {
+.fbx-select-group .fbx-select:hover {
 	background-color: #00A2FF;
 	background-image: url(../../images/Upgrades/Purchase/icon_downarrow_on.svg);
 	color: #fff;
 }
 
-.rbx-select-group .rbx-select option {
+.fbx-select-group .fbx-select option {
 	background-color: #fff;
 	color: #191919;
 	padding: 10px 12px;
 	white-space: nowrap;
 }
 
-.rbx-select-group span[class^="icon"] {
+.fbx-select-group span[class^="icon"] {
 	position: absolute;
 	top: 6px;
 	right: 12px;
@@ -9349,7 +9349,7 @@ textarea.form-control {
 	background-position: -16px -464px;
 }
 
-.input-group-btn .input-dropdown-btn .rbx-selection-label {
+.input-group-btn .input-dropdown-btn .fbx-selection-label {
 	float: left;
 	text-align: left;
 	font-size: 16px;
@@ -9382,7 +9382,7 @@ textarea.form-control {
 .icon-outrageous-builders-club,
 .icon-administrator,
 .icon-veteran {
-	background-image: url(images/Badges/roblox_badges.svg);
+	background-image: url(images/Badges/freebloxia_badges.svg);
 	background-repeat: no-repeat;
 	background-size: 280px auto;
 	width: 140px;
@@ -9935,7 +9935,7 @@ a:hover .icon-dislike {
 }
 
 .icon-default-generic-16x16,
-.rbx-select-group:hover .icon-down,
+.fbx-select-group:hover .icon-down,
 .input-group-btn .input-dropdown-btn:hover .icon-down,
 .input-group-btn .input-dropdown-btn:focus .icon-down,
 .icon-edit-16x16,
@@ -10465,7 +10465,7 @@ a:hover .icon-checkmark-blue {
 
 .icon-default-logo,
 .icon-logo {
-	background-image: url(images/Logo/roblox_logo.svg);
+	background-image: url(images/Logo/freebloxia_logo.svg);
 	background-repeat: no-repeat;
 	background-size: auto auto;
 	width: 118px;
@@ -11786,7 +11786,7 @@ h3 {
 	position: relative;
 }
 
-.robloxLogo {
+.freebloxiaLogo {
 	width: 36px;
 	height: 36px;
 }
@@ -11867,7 +11867,7 @@ h3 {
 	margin-right: 20px;
 }
 
-.roblox-captcha-modal {
+.freebloxia-captcha-modal {
 	width: 320px;
 	margin: 0 auto;
 }
@@ -11876,25 +11876,25 @@ h3 {
 	text-align: center;
 }
 
-#WhatsRobloxContainer .inner-full-height-section {
+#WhatsFreebloxiaContainer .inner-full-height-section {
 	padding: 0;
 	margin-top: 5px;
 	overflow: hidden;
 }
 
-#WhatIsRobloxTextBg {
+#WhatIsFreebloxiaTextBg {
 	top: 25%;
 }
 
-#WhatIsRobloxTextBg p {
+#WhatIsFreebloxiaTextBg p {
 	margin: 12px;
 }
 
-#RobloxDeviceText {
+#FreebloxiaDeviceText {
 	padding-top: 110px;
 }
 
-#InnerWhatsRobloxContainer2 {
+#InnerWhatsFreebloxiaContainer2 {
 	height: 30%;
 	margin-top: 5px;
 }
@@ -11983,7 +11983,7 @@ h3 {
 }
 
 @media(max-width:1199px) {
-	#WhatIsRobloxTextBg {
+	#WhatIsFreebloxiaTextBg {
 		top: 10%;
 	}
 }
@@ -12040,7 +12040,7 @@ h3 {
 }
 
 @media(min-width:767px) {
-	#WhatIsRobloxTextBg {
+	#WhatIsFreebloxiaTextBg {
 		margin-left: 42%;
 		width: 50%;
 	}
@@ -12067,12 +12067,12 @@ h3 {
 		margin-left: 5px;
 	}
 
-	#WhatIsRobloxTextBg {
+	#WhatIsFreebloxiaTextBg {
 		background-color: #000;
 		background: rgba(0, 0, 0, 0.7);
 	}
 
-	#InnerWhatsRobloxContainer1 {
+	#InnerWhatsFreebloxiaContainer1 {
 		background-size: cover;
 		background-position: 20% center;
 	}
