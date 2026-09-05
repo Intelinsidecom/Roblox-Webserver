@@ -2,7 +2,7 @@
 local fileExtension= %fileExtension%
 local x = %x%
 local y = %y%
-local baseUrl = "http://www.freblx.xyz"
+local baseUrl = "http://www.freblx.com"
 local assetUrl =%assetUrl%
 
 pcall(function() game:GetService("ContentProvider"):SetBaseUrl(baseUrl) end)

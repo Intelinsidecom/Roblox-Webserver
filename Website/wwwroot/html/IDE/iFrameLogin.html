@@ -44,7 +44,7 @@
 <body data-parent-url="/ide/welcome" data-captchaon="false" data-clientipaddress="207.241.226.216" data-redirecttohttp="true">
  
 
-<div id="TwoStepVerificationApiPaths" data-request-code-unauthenticated="https://api.freblx.xyz/twostepverification/request-unauthenticated" data-request-code="https://api.freblx.xyz/twostepverification/request" data-verify-code-unauthenticated="https://api.freblx.xyz/twostepverification/verify-unauthenticated" data-verify-code="https://api.freblx.xyz/twostepverification/verify">
+<div id="TwoStepVerificationApiPaths" data-request-code-unauthenticated="@Configuration["PublicBaseUrl"]/twostepverification/request-unauthenticated" data-request-code="https://api.freblx.com/twostepverification/request" data-verify-code-unauthenticated="https://api.freblx.com/twostepverification/verify-unauthenticated" data-verify-code="https://api.freblx.com/twostepverification/verify">
 </div>
  <div id="NotLoggedInPanel" class="rbx-login-form">
 	<form name="FacebookLoginForm" method="post" action="/Login/iFrameLogin.aspx?loginRedirect=True&amp;parentUrl=http%3a%2f%2fwww.roblox.com%2fide%2fwelcome" id="FacebookLoginForm" class="rbx-form-horizontal" role="form">
@@ -150,8 +150,8 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'FacebookLoginForm'
 	            //</sl:translate>
 	            useSignOnApi: true,
 	            signOnApiPath: '/Services/Secure/LoginService.asmx/ValidateLogin',
-	            requestCodeUnauthenticatedPath: 'https://api.freblx.xyz/twostepverification/request-unauthenticated',
-                verifyCodeUnauthenticatedPath: 'https://api.freblx.xyz/twostepverification/verify-unauthenticated',
+	            requestCodeUnauthenticatedPath: 'https://api.freblx.com/twostepverification/request-unauthenticated',
+                verifyCodeUnauthenticatedPath: 'https://api.freblx.com/twostepverification/verify-unauthenticated',
 	            enterTwoStepCodeMessage: 'Enter your two step verification code.',
 	            invalidCodeMessage: 'Sorry, but the code you entered was invalid or has expired.',
 	            floodedTwoStepMessage: 'Too many unsuccessful attempts. Please try again later.',

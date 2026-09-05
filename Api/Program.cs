@@ -23,12 +23,12 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AuthCors", policy =>
     {
         policy.WithOrigins(
-                "https://www.freblx.xyz",
-                "https://freblx.xyz",
-                "https://api.freblx.xyz",
-                "http://www.freblx.xyz",
-                "http://freblx.xyz",
-                "http://api.freblx.xyz",
+                "https://www.freblx.com",
+                "https://freblx.com",
+                "https://api.freblx.com",
+                "http://www.freblx.com",
+                "http://freblx.com",
+                "http://api.freblx.com",
                 "http://localhost:5077",
                 "http://localhost:3000",
                 "http://127.0.0.1:5077",

@@ -205,7 +205,7 @@ namespace Control_Panel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://cdn.freblx.xyz/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://cdn.freblx.com/")]
         public string ThumbnailUrl {
             get {
                 return ((string)(this["ThumbnailUrl"]));
@@ -241,7 +241,7 @@ namespace Control_Panel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://www.freblx.xyz")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.freblx.com")]
         public string PublicBaseUrl {
             get {
                 return ((string)(this["PublicBaseUrl"]));

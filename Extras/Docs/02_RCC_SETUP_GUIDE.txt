@@ -146,7 +146,7 @@ Source: RCCService/RCCServiceSoapServiceImpl.cpp
            <name>StartServer</name>
            <script><![CDATA[
              -- Server initialization script
-             local baseUrl = "https://www.freblx.xyz"
+             local baseUrl = "https://www.freblx.com"
              
              -- Configure services
              game:GetService("InsertService"):SetAssetUrl(baseUrl .. "/asset/?id=%d")
@@ -184,7 +184,7 @@ Source: RCCService/RCCServiceSoapServiceImpl.cpp
    
    Players.PlayerAdded:Connect(function(player)
        player.UserId = PLAYER_USER_ID
-       player.CharacterAppearance = "https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=" .. player.UserId
+       player.CharacterAppearance = "https://www.freblx.com/Asset/CharacterFetch.ashx?userId=" .. player.UserId
        
        wait(1) -- Give time for replication
        player:LoadCharacter()
@@ -379,7 +379,7 @@ Your Arbiter project acts as a middleware between your web application and RCC.
                local Players = game:GetService('Players')
                local player = Players:CreateLocalPlayer({request.UserId})
                player.Name = '{request.Username}'
-               player.CharacterAppearance = 'https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId={request.UserId}'
+               player.CharacterAppearance = 'https://www.freblx.com/Asset/CharacterFetch.ashx?userId={request.UserId}'
                player:LoadCharacter(true)
            "
        };
@@ -414,7 +414,7 @@ local type = %type%
 local format = "PNG"
 local x = %x%
 local y = %y%
-local baseUrl = "https://www.freblx.xyz"
+local baseUrl = "https://www.freblx.com"
 local assetId = %assetId%
 local userId = %userId%  -- Add this parameter
 
@@ -492,7 +492,7 @@ SOLUTION 2: Pre-fetch in C# Arbiter
 public async Task<IActionResult> RenderAvatar(int userId, int assetId)
 {
     // Pre-fetch character appearance
-    var appearanceUrl = $"https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId={userId}";
+    var appearanceUrl = $"https://www.freblx.com/Asset/CharacterFetch.ashx?userId={userId}";
     string appearanceData;
     
     using (var httpClient = new HttpClient())
@@ -556,17 +556,17 @@ public async Task<IActionResult> RenderAvatar(int userId, int assetId)
 8.3 TEST 3: Character Fetch
    Test your CharacterFetch endpoint:
    ```
-   GET https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1
+   GET https://www.freblx.com/Asset/CharacterFetch.ashx?userId=1
    ```
    
    Expected response:
    ```
-   https://www.freblx.xyz/asset/bodycolors.ashx?userId=1
+   https://www.freblx.com/asset/bodycolors.ashx?userId=1
    ```
    
    Or with multiple assets:
    ```
-   https://www.freblx.xyz/asset/bodycolors.ashx?userId=1;https://www.freblx.xyz/Asset/?id=123;https://www.freblx.xyz/Asset/?id=456
+   https://www.freblx.com/asset/bodycolors.ashx?userId=1;https://www.freblx.com/Asset/?id=123;https://www.freblx.com/Asset/?id=456
    ```
 
 ================================================================================

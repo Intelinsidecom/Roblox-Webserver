@@ -516,7 +516,7 @@ where user_id = @uid;";
 
     private static string GetThumbnailBaseUrl(IConfiguration? configuration)
     {
-        var baseUrl = configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+        var baseUrl = configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
         return baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/";
     }
 

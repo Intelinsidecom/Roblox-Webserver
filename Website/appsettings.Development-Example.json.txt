@@ -8,8 +8,13 @@
   },
   "AllowedHosts": "*",
   "BaseUrl": "http://localhost:5077",
-  "PublicBaseUrl": "https://www.freblx.xyz",
-  "PublicAPIBaseUrl": "https://api.freblx.xyz",
+  "PublicBaseUrl": "https://www.freblx.com",
+  "PublicAPIBaseUrl": "https://api.freblx.com",
+  "DataBaseUrl": "http://data.freblx.com",
+  "BaseUrlName": "localhost:5077",
+  "PublicBaseUrlName": "www.freblx.com",
+  "PublicAPIBaseUrlName": "api.freblx.com",
+  "DataBaseUrlName": "data.freblx.com",
   "Auth": {
     "CookieDomain": ""
   },
@@ -27,7 +32,7 @@
   },
   "Thumbnails": {
     "OutputDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails",
-    "ThumbnailUrl" : "https://cdn.freblx.xyz/",
+    "ThumbnailUrl" : "https://cdn.freblx.com/",
     "ArbiterUrl": "http://localhost:5000",
     "TshirtTemplatePath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png",
     "TshirtTemplateHighResPath": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png",
@@ -46,7 +51,7 @@
 },
   "Assets": {
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets",
-    "PublicBaseUrl": "http://www.freblx.xyz"
+    "PublicBaseUrl": "http://www.freblx.com"
   },
   "Chat": {
     "ToggleChatBarEnabled": true,
@@ -88,6 +93,7 @@
     "Directory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\XML"
   },
   "LocalhostMode": false,
+  "LauncherRegisteredUrl": "freebloxia-player",
   "MachineAddress": "26.74.59.137",
   "Arbiter": {
     "Host": "localhost",
@@ -98,8 +104,8 @@
     "SubtractCreatorFromTotalWon": true
   },
   "Setup": {
-    "SetupServicePublicHost": "https://setup.freblx.xyz",
-    "UWPClientDownloadLocation": "https://www.freblx.xyz/Appx.zip",
+    "SetupServicePublicHost": "https://setup.freblx.com",
+    "UWPClientDownloadLocation": "https://www.freblx.com/Appx.zip",
     "UWPAppStoreUrl": "https://store.live.net.co/game/417"
   },
   "Social": {

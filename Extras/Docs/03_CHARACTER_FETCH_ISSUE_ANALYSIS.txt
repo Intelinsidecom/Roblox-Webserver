@@ -143,7 +143,7 @@ local type = %type%
 local format = "PNG"
 local x = %x%
 local y = %y%
-local baseUrl = "https://www.freblx.xyz"
+local baseUrl = "https://www.freblx.com"
 local assetId = %assetId%
 local userId = %userId%  -- IMPORTANT: Add this parameter
 
@@ -285,7 +285,7 @@ public class RenderAvatarEndpoint : ICompiledEndpoint
     public async Task<IActionResult> Execute(int userId, int assetId)
     {
         // Pre-fetch character appearance
-        var appearanceUrl = $"https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId={userId}";
+        var appearanceUrl = $"https://www.freblx.com/Asset/CharacterFetch.ashx?userId={userId}";
         string appearanceData;
         
         try
@@ -339,7 +339,7 @@ public class RenderAvatarEndpoint : ICompiledEndpoint
         
         return $@"
             local jobId = 'render_{Guid.NewGuid()}'
-            local baseUrl = 'https://www.freblx.xyz'
+            local baseUrl = 'https://www.freblx.com'
             local userId = {userId}
             local assetIds = {{{assetIdsLua}}}
             
@@ -399,7 +399,7 @@ Make CharacterFetch.ashx return asset IDs directly:
 
 Current response:
 ```
-https://www.freblx.xyz/asset/bodycolors.ashx?userId=1
+https://www.freblx.com/asset/bodycolors.ashx?userId=1
 ```
 
 Modified response (asset IDs only):
@@ -467,7 +467,7 @@ STEP 3: Verify CharacterFetch.ashx Endpoint
 Ensure it returns proper format:
 
 ```
-https://www.freblx.xyz/asset/bodycolors.ashx?userId=1;https://www.freblx.xyz/Asset/?id=123
+https://www.freblx.com/asset/bodycolors.ashx?userId=1;https://www.freblx.com/Asset/?id=123
 ```
 
 STEP 4: Test
@@ -487,16 +487,16 @@ Check logs for:
 If character appearance still doesn't load:
 
 □ Verify CharacterFetch.ashx returns data
-  Test: curl https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1
+  Test: curl https://www.freblx.com/Asset/CharacterFetch.ashx?userId=1
   
 □ Check RCC can make HTTP requests
-  Test: Add print(HttpService:GetAsync("https://www.freblx.xyz/")) to script
+  Test: Add print(HttpService:GetAsync("https://www.freblx.com/")) to script
   
 □ Verify asset IDs are valid
   Test: Try loading assets manually via InsertService:LoadAsset(123)
   
 □ Check asset endpoints work
-  Test: curl https://www.freblx.xyz/Asset/?id=123
+  Test: curl https://www.freblx.com/Asset/?id=123
   
 □ Review RCC console output
   Look for: Error messages, HTTP failures, Lua errors
@@ -508,7 +508,7 @@ If character appearance still doesn't load:
   Use known-good asset ID (e.g., classic shirt)
   
 □ Verify BodyColors endpoint
-  Test: curl https://www.freblx.xyz/Asset/BodyColors.ashx?userId=1
+  Test: curl https://www.freblx.com/Asset/BodyColors.ashx?userId=1
   Should return valid XML
 
 ================================================================================
@@ -533,11 +533,11 @@ When the fix is implemented correctly:
 Console output should show:
 ```
 [render_xxx] Started RenderJob for type 'avatar' with assetId 0 ...
-CharacterAppearance URL: https://www.freblx.xyz/Asset/CharacterFetch.ashx?userId=1
+CharacterAppearance URL: https://www.freblx.com/Asset/CharacterFetch.ashx?userId=1
 Manually loading character appearance...
-Fetched appearance data: https://www.freblx.xyz/asset/bodycolors.ashx?userId=1;https://www.freblx.xyz/Asset/?id=123
-Found asset URL: https://www.freblx.xyz/asset/bodycolors.ashx?userId=1
-Found asset URL: https://www.freblx.xyz/Asset/?id=123
+Fetched appearance data: https://www.freblx.com/asset/bodycolors.ashx?userId=1;https://www.freblx.com/Asset/?id=123
+Found asset URL: https://www.freblx.com/asset/bodycolors.ashx?userId=1
+Found asset URL: https://www.freblx.com/Asset/?id=123
 Loading asset ID: 123
 Applying: Shirt - Cool Shirt
 Character appearance loaded successfully

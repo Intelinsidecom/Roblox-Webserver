@@ -100,7 +100,7 @@ public class AvatarThumbnail3DController : ControllerBase
                 var (found, entry) = await cacheRepo.TryGetAsync(connStr!, configHash!, default);
                 if (found && entry != null)
                 {
-                    var cdnBaseCached = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+                    var cdnBaseCached = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
                     var objRelCached = $"3DAvatar/{entry.ModelHash}/{entry.ObjFileName}";
                     var mtlRelCached = $"3DAvatar/{entry.ModelHash}/{entry.MtlFileName}";
 
@@ -117,7 +117,7 @@ public class AvatarThumbnail3DController : ControllerBase
         }
 
         var cached = await _thumbnailService.RenderAvatar3DAndCacheAsync(userId, w, h, force: true);
-        var cdnBase = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+        var cdnBase = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
         var objRelative = $"3DAvatar/{cached.Hash}/{cached.ObjFileName}";
         var mtlRelative = $"3DAvatar/{cached.Hash}/{cached.MtlFileName}";
         var objUrl = CombineCdnUrl(cdnBase, objRelative);

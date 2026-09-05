@@ -1,7 +1,7 @@
 {
   "BootstrapperVersion": "1.0.0",
   "MinimumClientVersion": "0.269.1.95156",
-  "DownloadBaseUrl": "http://setup.freblx.xyz/version",
+  "DownloadBaseUrl": "http://setup.freblx.com/version",
   "ManifestFileName": "rbxPkgManifest.txt",
   "InstallerFileName": "RobloxStudioLauncherBeta.exe",
   "ExecutableFileName": "RobloxStudioBeta.exe",
@@ -18,7 +18,7 @@
   "MaxDownloadRetries": 3,
   "ConnectionTimeout": 30,
   "UserAgent": "RobloxStudioBootstrapper/1.0",
-  "BaseUrl": "freblx.xyz",
+  "BaseUrl": "freblx.com",
   "Environment": "production",
   "UseSSL": true,
   "ValidateSSL": false,

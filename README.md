@@ -44,7 +44,7 @@ Documentation will be made in github Wiki Form.
 6. Check manually if everything works by setting up fully using the documentation from wiki.
 7. Profit
 
-Note: If you dont have an domain but want to test it out, change the hosts file to redirect freblx.xyz or whatever url you want like and then make change client urls accordingly and also set the localhost mode to true in website project.
+Note: If you dont have an domain but want to test it out, change the hosts file to redirect freblx.com or whatever url you want like and then make change client urls accordingly and also set the localhost mode to true in website project.
 
 # Project is not affiliated with Roblox in any way
 Roblox assets from Pre 2021 era are only used for the core aesthetic of the project, project is mean for self hosting. in production its recommended to remake or change the JS, CSS, image assets to avoid any legal action from Roblox Corporation.

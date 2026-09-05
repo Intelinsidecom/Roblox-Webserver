@@ -317,7 +317,7 @@ public sealed class ThumbnailService : IThumbnailService
                         var mtlPath = Path.Combine(dir, mtlFileName);
                         if (File.Exists(mtlPath))
                         {
-                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
                             cdnBase = cdnBase.TrimEnd('/') + "/";
                             var cdnPrefix = cdnBase + "3DAvatar/" + hash + "/";
 
@@ -865,7 +865,7 @@ public sealed class ThumbnailService : IThumbnailService
                         var mtlPath = Path.Combine(dir, mtlFileName);
                         if (File.Exists(mtlPath))
                         {
-                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
                             cdnBase = cdnBase.TrimEnd('/') + "/";
                             var cdnPrefix = cdnBase + "3DAsset/" + hash + "/";
 
@@ -1201,7 +1201,7 @@ public sealed class ThumbnailService : IThumbnailService
                         var mtlPath = Path.Combine(dir, mtlFileName);
                         if (File.Exists(mtlPath))
                         {
-                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+                            var cdnBase = _configuration?["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
                             cdnBase = cdnBase.TrimEnd('/') + "/";
                             var cdnPrefix = cdnBase + "3DAsset/" + hash + "/";
 

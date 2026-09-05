@@ -294,6 +294,10 @@
 </head>
 <body class="@(isApp && User.Identity.IsAuthenticated ? "no-header-nav" : "")">
     <div id="wrap" style="display:none" data-gutter-ads-enabled="false"></div>
+    @if (!string.IsNullOrWhiteSpace(Configuration["Thumbnails:ThumbnailUrl"]))
+    {
+        <div obj-loader-cdn-url="@Configuration["Thumbnails:ThumbnailUrl"]" style="display:none"></div>
+    }
     @if (!(isApp && User.Identity.IsAuthenticated))
     {
         <partial name="_Header" />
@@ -440,7 +444,7 @@
     </div>
 </div>
 
-<div id=push-notification-registrar-settings data-notificationshost=https://freblx.xyz data-reregistrationinterval=0 data-registrationpath=register-firefox data-shoulddeliveryendpointbesentduringregistration=True data-platformtype=FirefoxOnDesktop></div>
+<div id=push-notification-registrar-settings data-notificationshost=@Configuration["PublicBaseUrl"] data-reregistrationinterval=0 data-registrationpath=register-firefox data-shoulddeliveryendpointbesentduringregistration=True data-platformtype=FirefoxOnDesktop></div>
     <div id=push-notification-registration-ui-settings data-noncontextualpromptallowed=true data-promptonfriendrequestsentenabled=true data-promptonprivatemessagesentenabled=false data-promptintervals=[604800000,1209600000,2419200000] data-notificationsdomain=https://notifications.roblox.com data-userid=62022330></div>
     <script type=text/template id=push-notifications-initial-global-prompt-template>
         <div class="push-notifications-global-prompt">

@@ -3,7 +3,7 @@ local type = %type%
 local format = "PNG"
 local x = %x%
 local y = %y%
-local baseUrl = "http://www.freblx.xyz"
+local baseUrl = "http://www.freblx.com"
 local userId = %userId%
 print(("[%s] Started RenderJob for type '%s' with userId %d ..."):format(jobId, type, userId))
 

@@ -48,7 +48,7 @@ namespace RCCArbiter
             Console.WriteLine($"[CloudEdit] Starting cloud edit server for place {placeId}, gameId={gameId}");
 
             if (string.IsNullOrWhiteSpace(baseUrl))
-                baseUrl = "http://www.freblx.xyz";
+                baseUrl = "http://www.freblx.com";
 
             var rccReservation = _rccManager.ReserveForCloudEdit(gameId);
             if (rccReservation == null)

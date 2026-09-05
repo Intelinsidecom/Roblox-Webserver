@@ -21,6 +21,6 @@
   "Thumbnails": {
     "ArbiterUrl": "http://localhost:5000",
     "OutputDirectory": "C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails\\",
-    "ThumbnailUrl": "http://cdn.freblx.xyz"
+    "ThumbnailUrl": "http://cdn.freblx.com"
   }
 }

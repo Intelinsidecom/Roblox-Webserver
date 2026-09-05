@@ -89,7 +89,7 @@ namespace RCCArbiter
             var gameId = Guid.NewGuid().ToString();
             
             if (string.IsNullOrWhiteSpace(baseUrl))
-                baseUrl = "http://www.freblx.xyz";
+                baseUrl = "http://www.freblx.com";
 
             var rccReservation = _rccManager.ReserveForGameServer(gameId);
             if (rccReservation == null)

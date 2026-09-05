@@ -509,7 +509,7 @@
     "SFFlagGuid64Bit": "False",
     "FIntValidateLauncherPercent": "100",
     "FFlagCSGDataLossFixEnabled": "True",
-    "DFStringRobloxAnalyticsURL": "https://www.freblx.xyz/",
+    "DFStringRobloxAnalyticsURL": "https://www.freblx.com/",
     "DFFlagRobloxAnalyticsTrackingEnabled": "True",
     "FFlagStudioOpenFirstPlace": "False",
     "FFlagStudioOpenLastSaved": "False",

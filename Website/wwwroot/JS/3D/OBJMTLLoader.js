@@ -3,8 +3,11 @@ THREE.OBJMTLLoader = function() {}, THREE.OBJMTLLoader.prototype = {
     constructor: THREE.OBJMTLLoader,
     getHashUrl: function(n) {
         if (!n || n.length !== 32 || n.indexOf("/") >= 0) return n;
+        var e = document.querySelector("[obj-loader-cdn-url]"),
+            d = e && e.getAttribute("obj-loader-cdn-url");
+        if (d) return d.replace(/\/+$/, "") + "/" + n;
         for (var i = 31, t = 0; t < 32; t++) i ^= n.charCodeAt(t);
-        return "https://t" + (i % 8).toString() + ".cdn.freblx.xyz/" + n
+        return "https://t" + (i % 8).toString() + ".cdn.freblx.com/" + n
     },
     loadWithRetries: function(n, t, i, r, u) {
         function h() {

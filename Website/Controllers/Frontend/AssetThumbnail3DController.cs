@@ -92,7 +92,7 @@ public class AssetThumbnail3DController : ControllerBase
                 var (found, entry) = await cacheRepo.TryGetAsync(connStr!, assetId, default);
                 if (found && entry != null)
                 {
-                    var cdnBase = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+                    var cdnBase = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
                     var objRel = $"3DAsset/{entry.ModelHash}/{entry.ObjFileName}";
                     var mtlRel = $"3DAsset/{entry.ModelHash}/{entry.MtlFileName}";
 
@@ -118,7 +118,7 @@ public class AssetThumbnail3DController : ControllerBase
         {
             cached = await _thumbnailService.RenderAsset3DAndCacheAsync(assetId, w, h, force: true);
         }
-        var cdnBaseFinal = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.xyz/";
+        var cdnBaseFinal = _configuration["Thumbnails:ThumbnailUrl"] ?? "https://cdn.freblx.com/";
         var objRelative = $"3DAsset/{cached.Hash}/{cached.ObjFileName}";
         var mtlRelative = $"3DAsset/{cached.Hash}/{cached.MtlFileName}";
         var objUrlFinal = CombineCdnUrl(cdnBaseFinal, objRelative);

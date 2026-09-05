@@ -11,7 +11,6 @@ using Avatar;
 namespace Website.Controllers
 {
     [ApiController]
-    [Host("freblx.xyz")]
     [Route("v1/avatar-fetch")]
     public class AvatarFetchV10Controller : ControllerBase
     {
@@ -168,7 +167,7 @@ namespace Website.Controllers
             if (string.IsNullOrWhiteSpace(publicBaseUrl))
             {
                 var scheme = string.IsNullOrWhiteSpace(Request.Scheme) ? "https" : Request.Scheme;
-                publicBaseUrl = $"{scheme}://freblx.xyz";
+                publicBaseUrl = $"{scheme}://freblx.com";
             }
 
             var bodyColorsUrl = $"{publicBaseUrl}/Asset/BodyColors.ashx?userId={effectiveUserId}";

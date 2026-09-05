@@ -112,4 +112,4 @@ function start(placeId, port, url)
 	
 	end
 	
-start(1, 50000, "http://www.freblx.xyz")	
+start(1, 50000, "http://www.freblx.com")	

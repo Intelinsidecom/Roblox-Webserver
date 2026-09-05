@@ -3,7 +3,7 @@
 local assetId = %assetId%
 
 local assetUrl = "rbxassetid://" .. assetId
-local baseUrl = "https://freblx.xyz"
+local baseUrl = "https://freblx.com"
 local fileExtension = "%fileExtension%"
 local x, y = 1024, 1024
 

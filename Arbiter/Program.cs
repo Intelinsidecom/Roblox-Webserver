@@ -438,7 +438,7 @@ namespace RCCArbiter
                 {
                     ["reportType"] = "ping",
                     ["callbackToken"] = token,
-                    ["arbiterUrl"] = "https://www.freblx.xyz"
+                    ["arbiterUrl"] = "https://www.freblx.com"
                 };
                 
                 var renderedScript = renderer.Render(template, parameters);
@@ -983,7 +983,7 @@ namespace RCCArbiter
                         
                         var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
                         var privateServerId = req.Query["privateServerId"].FirstOrDefault() ?? "";
-                        var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.xyz";
+                        var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.com";
                         var maxInactive = int.TryParse(req.Query["maxInactive"], out var mi) ? mi : 0;
 
                         var gameId = await gameServerManager.StartGameServerAsync(
@@ -1029,7 +1029,7 @@ namespace RCCArbiter
                     var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 15;
                     var port = StartGameServerEndpoint.GenerateAvailablePort();
                     var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
-                    var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.xyz";
+                    var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.com";
                     var universeId = int.TryParse(req.Query["universeId"], out var uid) ? uid : 0;
 
                     var gameId = await cloudEditManager.StartCloudEditServerAsync(
@@ -1691,7 +1691,7 @@ namespace RCCArbiter
                     {
                         ["reportType"] = reportType,
                         ["callbackToken"] = token,
-                        ["arbiterUrl"] = "https://www.freblx.xyz"
+                        ["arbiterUrl"] = "https://www.freblx.com"
                     };
                     
                     var renderedScript = renderer.Render(template, parameters);

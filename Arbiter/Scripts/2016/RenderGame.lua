@@ -1,9 +1,9 @@
 local format = "PNG"
 local x = 400
 local y = 400
-local baseUrl = "http://www.freblx.xyz"
+local baseUrl = "http://www.freblx.com"
 universeId = 1
-local assetUrl = "http://www.freblx.xyz/asset/?id=%placeId%"
+local assetUrl = "http://www.freblx.com/asset/?id=%placeId%"
 local HttpService = game:GetService('HttpService')
 HttpService.HttpEnabled = true
 pcall(function() game:GetService("ContentProvider"):SetBaseUrl(baseUrl) end)
