@@ -179,7 +179,7 @@ namespace Assets
             // If no Arbiter base URL is configured, fall back to a default HTTP endpoint.
             try
             {
-                using var http = new HttpClient();
+                using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
                 var baseUrlToUse = string.IsNullOrWhiteSpace(arbiterBaseUrl)
                     ? "http://localhost:5000"
                     : arbiterBaseUrl!.TrimEnd('/', '\\');

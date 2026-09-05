@@ -1,8 +1,10 @@
 using Data.Middleware;
+using Common;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+Common.HttpClientDefaults.Initialize(builder.Configuration);
 var currentDirectory = Directory.GetCurrentDirectory();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

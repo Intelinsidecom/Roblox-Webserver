@@ -20,7 +20,7 @@ public class UploadController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, HttpContext.RequestAborted);
-        timeoutCts.CancelAfter(TimeSpan.FromSeconds(90));
+        timeoutCts.CancelAfter(Common.HttpClientDefaults.Timeout);
         var ct = timeoutCts.Token;
 
         try

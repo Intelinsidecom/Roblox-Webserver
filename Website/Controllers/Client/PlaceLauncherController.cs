@@ -89,7 +89,7 @@ namespace Website.Controllers.Client
                 var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-place/{placeId}");
                 if (!response.IsSuccessStatusCode)
                 {
@@ -168,7 +168,7 @@ namespace Website.Controllers.Client
                 var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/{jobId}/status");
                 if (!response.IsSuccessStatusCode)
                     return (false, 0);
@@ -388,7 +388,7 @@ namespace Website.Controllers.Client
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
 
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-private-server/{privateServerId}");
                 if (!response.IsSuccessStatusCode)
                     return (false, 0, null);
@@ -450,7 +450,7 @@ namespace Website.Controllers.Client
             try
             {
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(30);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync(
                     $"{arbiterUrl}/api/gameservers/start-cloudedit?placeId={placeId}&maxPlayers=10&baseUrl={Uri.EscapeDataString(baseUrl)}&universeId={universeId}");
 
@@ -531,7 +531,7 @@ namespace Website.Controllers.Client
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
                 
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 
                 try
                 {

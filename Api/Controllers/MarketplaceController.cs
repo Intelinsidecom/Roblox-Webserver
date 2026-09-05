@@ -18,7 +18,7 @@ namespace Api.Controllers
         private readonly AppDbContext _dbContext;
         private readonly IConfiguration _configuration;
         private readonly Api.Services.CurrentUserService _currentUserService;
-        private static readonly HttpClient _httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        private static readonly HttpClient _httpClient = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
 
         public MarketplaceController(AppDbContext dbContext, IConfiguration configuration, Api.Services.CurrentUserService currentUserService)
         {

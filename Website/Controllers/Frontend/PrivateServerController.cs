@@ -62,7 +62,7 @@ namespace RobloxWebserver.Controllers.Frontend
         {
             try
             {
-                using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+                using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
                 using var resp = await http.GetAsync($"{ArbiterUrl}/api/gameservers/by-private-server/{privateServerId}", ct);
                 if (!resp.IsSuccessStatusCode)
                     return null;

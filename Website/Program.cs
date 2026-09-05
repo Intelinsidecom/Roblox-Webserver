@@ -15,8 +15,11 @@ using Website.Middleware;
 using Games;
 using Website.Hubs;
 using WebMarkupMin.AspNetCore8;
+using Common;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Common.HttpClientDefaults.Initialize(builder.Configuration);
 
 // Add services to the container.
 builder.Services
@@ -98,7 +101,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddRequestDecompression();
 builder.Services.AddHttpClient("RobloxAssetDelivery", client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(5);
+    client.Timeout = Common.HttpClientDefaults.Timeout;
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Roblox-Webserver/1.0");
 }).ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
 {

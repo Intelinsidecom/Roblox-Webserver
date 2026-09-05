@@ -316,7 +316,7 @@ order by awa.asset_id";
 
             try
             {
-                using var http = new HttpClient();
+                using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
                 using var response = await http.GetAsync(requestUri, cancellationToken).ConfigureAwait(false);
                 
                 if (!response.IsSuccessStatusCode)

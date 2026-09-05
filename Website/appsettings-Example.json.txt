@@ -7,6 +7,9 @@
     }
   },
   "AllowedHosts": "*",
+  "HttpClient": {
+    "TimeoutSeconds": 120
+  },
   "BaseUrl": "http://localhost:5077",
   "PublicBaseUrl": "https://www.freblx.com",
   "PublicAPIBaseUrl": "https://api.freblx.com",

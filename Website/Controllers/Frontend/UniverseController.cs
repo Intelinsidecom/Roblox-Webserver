@@ -1443,7 +1443,7 @@ namespace RobloxWebserver.Controllers
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
 
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(10);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
 
                 var stoppedGameIds = new List<string>();
                 foreach (var placeId in placeIds)

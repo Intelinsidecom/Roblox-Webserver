@@ -161,7 +161,7 @@ namespace Api.Controllers
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
 
                 using var httpClient = new HttpClient();
-                httpClient.Timeout = TimeSpan.FromSeconds(5);
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
 
                 var response = await httpClient.GetAsync(
                     $"{arbiterUrl}/api/cloudedit/sessions?universeId={universeId}");

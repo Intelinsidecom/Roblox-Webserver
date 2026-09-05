@@ -6,6 +6,9 @@
       "Microsoft.AspNetCore.HttpsRedirection": "Warning"
     }
   },
+  "HttpClient": {
+    "TimeoutSeconds": 120
+  },
   "ConnectionStrings": {
     "Default": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root",
     "PublicBaseUrl": "https://www.freblx.com"

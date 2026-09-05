@@ -963,7 +963,7 @@ namespace RobloxWebserver.Controllers
                         return Forbid();
                 }
 
-                using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+                using var httpClient = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
                 var killUrl = $"{arbiterUrl}/api/gameservers/{Uri.EscapeDataString(gameId)}";
                 var response = await httpClient.DeleteAsync(killUrl, cancellationToken);
                 return Ok(new { success = response.IsSuccessStatusCode });

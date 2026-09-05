@@ -122,7 +122,7 @@ public sealed class ThumbnailService : IThumbnailService
 
         var requestUri = arbiterUrl.TrimEnd('/') + route + qb.ToString();
 
-        using var http = new HttpClient();
+        using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
 
@@ -465,7 +465,7 @@ public sealed class ThumbnailService : IThumbnailService
 
         var requestUri = arbiterUrl.TrimEnd('/') + "/renderavatar3d?" + qb.ToString();
 
-        using var http = new HttpClient();
+        using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();
@@ -577,7 +577,7 @@ public sealed class ThumbnailService : IThumbnailService
 
         var requestUri = arbiterUrl.TrimEnd('/') + "/rendergame?" + qb.ToString();
 
-        using var http = new HttpClient();
+        using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
 
@@ -676,7 +676,7 @@ public sealed class ThumbnailService : IThumbnailService
 
         var requestUri = arbiterUrl.TrimEnd('/') + "/renderasset3d?" + qb.ToString();
 
-        using var http = new HttpClient();
+        using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();
@@ -1013,7 +1013,7 @@ public sealed class ThumbnailService : IThumbnailService
 
         var requestUri = arbiterUrl.TrimEnd('/') + "/rendermodel3d?" + qb.ToString();
 
-        using var http = new HttpClient();
+        using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
         using var resp = await http.SendAsync(req, cancellationToken).ConfigureAwait(false);
         resp.EnsureSuccessStatusCode();

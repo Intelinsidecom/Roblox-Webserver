@@ -170,7 +170,7 @@ namespace Assets
 
             try
             {
-                using var http = new HttpClient();
+                using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
                 var baseUrlToUse = string.IsNullOrWhiteSpace(arbiterBaseUrl)
                     ? "http://localhost:5000"
                     : arbiterBaseUrl!.TrimEnd('/', '\\');

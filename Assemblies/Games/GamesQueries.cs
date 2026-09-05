@@ -847,8 +847,7 @@ public static class GamesQueries
     {
         try
         {
-            using var httpClient = new HttpClient();
-            httpClient.Timeout = TimeSpan.FromSeconds(10);
+            using var httpClient = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
 
             var url = $"{arbiterBaseUrl}/api/gameservers/players/{placeId}?live={useLiveData}";
             var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -1350,7 +1349,7 @@ public static class GamesQueries
 
         try
         {
-            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            using var httpClient = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
             var idsParam = string.Join(",", jobIds);
             var url = $"{arbiterBaseUrl}/api/gameservers/by-gameids?ids={Uri.EscapeDataString(idsParam)}";
             var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
@@ -1386,7 +1385,7 @@ public static class GamesQueries
 
         try
         {
-            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            using var httpClient = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
             var url = $"{arbiterBaseUrl}/api/gameservers/by-place/{placeId}";
             var response = await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)

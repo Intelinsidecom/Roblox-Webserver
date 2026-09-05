@@ -5,8 +5,11 @@ using Api.Middleware;
 using Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Api.Data;
+using Common;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Common.HttpClientDefaults.Initialize(builder.Configuration);
 
 // Add services to the container.
 

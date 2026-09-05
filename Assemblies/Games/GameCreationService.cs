@@ -716,8 +716,7 @@ where user_id = @uid;";
             }
         }
 
-        using var httpClient = new HttpClient();
-        httpClient.Timeout = TimeSpan.FromSeconds(30);
+        using var httpClient = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         var startRequestUrl = $"{arbiterUrl}/api/gameservers/start?placeId={placeId}&maxPlayers={maxPlayers}&maxInactive=0&baseUrl={Uri.EscapeDataString(webUrl)}";
         if (privateServerId > 0)
         {

@@ -313,7 +313,7 @@ public class OutfitsV1Controller : ControllerBase
 
         try
         {
-            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
             var imageBytes = await http.GetByteArrayAsync(thumbnailUrl).ConfigureAwait(false);
             return File(imageBytes, "image/png", $"Outfit-{userOutfitId}.png");
         }
