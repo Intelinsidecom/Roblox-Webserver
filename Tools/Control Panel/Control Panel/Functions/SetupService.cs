@@ -271,7 +271,7 @@ namespace ControlPanel.Functions
         {
             try
             {
-                var historyPath = Path.Combine(_clientsInputFolder, "DeployHistory.txt");
+                var historyPath = Path.Combine(GetSetupServiceLocation(), "wwwroot", "DeployHistory.txt");
                 
                 if (!File.Exists(historyPath))
                 {
@@ -290,13 +290,13 @@ namespace ControlPanel.Functions
         }
         
         /// <summary>
-        /// Reverts client to specific version by deleting version files if not current
+        /// Un-publishes the currently live client version by deleting its files from wwwroot
+        /// and pointing the database back to the most recent previously deployed version
         /// </summary>
         public async Task<RevertResult> RevertClientAsync(string clientType, string targetHash)
         {
             try
             {
-
                 var dbClientType = MapClientType(clientType);
                 if (string.IsNullOrEmpty(dbClientType))
                 {
@@ -307,14 +307,25 @@ namespace ControlPanel.Functions
                     };
                 }
                 
-                await _dbConnection.OpenAsync();
-                
-                using var getCurrentCommand = _dbConnection.CreateCommand();
-                getCurrentCommand.CommandText = "SELECT get_client_version(@clientType)";
-                getCurrentCommand.Parameters.Add(new NpgsqlParameter("@clientType", dbClientType));
-                
-                var currentVersionResult = await getCurrentCommand.ExecuteScalarAsync();
-                var currentVersion = currentVersionResult?.ToString();
+                string currentVersion;
+                try
+                {
+                    await _dbConnection.OpenAsync();
+                    
+                    using var getCurrentCommand = _dbConnection.CreateCommand();
+                    getCurrentCommand.CommandText = "SELECT get_client_version(@clientType)";
+                    getCurrentCommand.Parameters.Add(new NpgsqlParameter("@clientType", dbClientType));
+                    
+                    var currentVersionResult = await getCurrentCommand.ExecuteScalarAsync();
+                    currentVersion = currentVersionResult?.ToString();
+                }
+                finally
+                {
+                    if (_dbConnection.State == System.Data.ConnectionState.Open)
+                    {
+                        await _dbConnection.CloseAsync();
+                    }
+                }
                 
                 if (string.IsNullOrEmpty(currentVersion))
                 {
@@ -325,12 +336,12 @@ namespace ControlPanel.Functions
                     };
                 }
                 
-                if (currentVersion == targetHash)
+                if (currentVersion != targetHash)
                 {
                     return new RevertResult
                     {
                         Success = false,
-                        Error = $"Cannot revert to {targetHash} - it's already the current version"
+                        Error = $"{targetHash} is not the current version (current is {currentVersion}). Revert only applies to the currently-live version."
                     };
                 }
                 
@@ -347,6 +358,35 @@ namespace ControlPanel.Functions
                 }
                 
                 var filesToDelete = Directory.GetFiles(wwwrootPath, $"version-{targetHash}*");
+                if (filesToDelete.Length == 0)
+                {
+                    return new RevertResult
+                    {
+                        Success = false,
+                        Error = $"No files found for current version {targetHash}"
+                    };
+                }
+                
+                var previousVersion = await FindPreviousVersionAsync(dbClientType, currentVersion, wwwrootPath);
+                
+                if (string.IsNullOrEmpty(previousVersion))
+                {
+                    return new RevertResult
+                    {
+                        Success = false,
+                        Error = "No previous version found to fall back to; cannot unpublish."
+                    };
+                }
+                
+                if (Directory.GetFiles(wwwrootPath, $"version-{previousVersion}*").Length == 0)
+                {
+                    return new RevertResult
+                    {
+                        Success = false,
+                        Error = $"Previous version {previousVersion} files not found in wwwroot"
+                    };
+                }
+                
                 var deletedFiles = new List<string>();
                 
                 foreach (var file in filesToDelete)
@@ -362,22 +402,14 @@ namespace ControlPanel.Functions
                     }
                 }
                 
-                if (deletedFiles.Count == 0)
-                {
-                    return new RevertResult
-                    {
-                        Success = false,
-                        Error = $"No files found for version {targetHash}"
-                    };
-                }
-                
-                await WriteToDeploymentHistoryAsync($"Revert {clientType} version-{targetHash} at {DateTime.Now:dd/MM/yyyy h:mm:ss tt}");
+                await UpdateClientVersionInDatabaseAsync(dbClientType, previousVersion);
+                await WriteToDeploymentHistoryAsync($"Revert {clientType} version-{targetHash} (unpublished, fell back to version-{previousVersion}) at {DateTime.Now:dd/MM/yyyy h:mm:ss tt}");
                 
                 return new RevertResult
                 {
                     Success = true,
                     RevertedHash = targetHash,
-                    Message = $"Successfully reverted {clientType} to {targetHash}, deleted {deletedFiles.Count} files",
+                    Message = $"Successfully unpublished {clientType} version {targetHash}, fell back to {previousVersion}, deleted {deletedFiles.Count} files",
                     RevertedFiles = deletedFiles
                 };
             }
@@ -390,13 +422,77 @@ namespace ControlPanel.Functions
                     Error = $"Revert failed: {ex.Message}"
                 };
             }
-            finally
+        }
+        
+        /// <summary>
+        /// Finds the most recent previously deployed version to fall back to after un-publishing the current version
+        /// </summary>
+        private async Task<string> FindPreviousVersionAsync(string dbClientType, string currentVersion, string wwwrootPath)
+        {
+            var historyPrefix = dbClientType switch
             {
-                if (_dbConnection.State == System.Data.ConnectionState.Open)
+                "WindowsPlayer" => "New WindowsPlayer version-",
+                "Studio" => "New Studio version-",
+                "RCC" => "New RCC version-",
+                _ => null
+            };
+            
+            if (historyPrefix != null)
+            {
+                try
                 {
-                    await _dbConnection.CloseAsync();
+                    var historyPath = Path.Combine(wwwrootPath, "DeployHistory.txt");
+                    if (File.Exists(historyPath))
+                    {
+                        var historyText = await File.ReadAllTextAsync(historyPath);
+                        var lines = historyText.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                        
+                        for (var i = lines.Length - 1; i >= 0; i--)
+                        {
+                            var line = lines[i];
+                            var index = line.IndexOf(historyPrefix, StringComparison.OrdinalIgnoreCase);
+                            if (index < 0)
+                            {
+                                continue;
+                            }
+                            
+                            var valuePart = line.Substring(index + historyPrefix.Length).Trim();
+                            var hash = new string(valuePart.TakeWhile(char.IsLetterOrDigit).ToArray());
+                            
+                            if (hash.Length > 0 && hash != currentVersion)
+                            {
+                                return hash;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning($"Failed to parse deploy history for revert: {ex.Message}");
                 }
             }
+            
+            var markerFileName = dbClientType == "Studio" ? "RobloxStudio.zip" : "RobloxApp.zip";
+            var newestFile = Directory.GetFiles(wwwrootPath, $"version-*-{markerFileName}")
+                .Where(file => !Path.GetFileName(file).StartsWith($"version-{currentVersion}-", StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(File.GetLastWriteTimeUtc)
+                .Select(Path.GetFileName)
+                .FirstOrDefault();
+            
+            if (string.IsNullOrEmpty(newestFile))
+            {
+                return null;
+            }
+            
+            const string prefix = "version-";
+            var suffix = $"-{markerFileName}";
+            
+            if (newestFile.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && newestFile.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+            {
+                return newestFile.Substring(prefix.Length, newestFile.Length - prefix.Length - suffix.Length);
+            }
+            
+            return null;
         }
         
         /// <summary>
@@ -538,12 +634,15 @@ namespace ControlPanel.Functions
                     (Path.Combine(folderPath, "RobloxProxy64.dll"), "RobloxProxy64.dll")
                 };
                 
+                EnsureZipSourcesExist($"version-{version}-RobloxProxy.zip", proxyFiles);
+                
                 var existingProxyFiles = proxyFiles.Where(f => File.Exists(f.sourcePath)).ToList();
                 if (existingProxyFiles.Count > 0)
                 {
                     var proxyZipFileName = $"version-{version}-RobloxProxy.zip";
                     var proxyZipFilePath = Path.Combine(wwwrootPath, proxyZipFileName);
                     var packagedProxyFiles = await CreateZipPackage(proxyZipFilePath, existingProxyFiles);
+                    EnsureZipFileCreated(proxyZipFileName, proxyZipFilePath);
                     packagedFiles.AddRange(packagedProxyFiles.Select(f => $"proxy/{f}"));
                 }
                 
@@ -553,12 +652,15 @@ namespace ControlPanel.Functions
                     (Path.Combine(folderPath, "NPRobloxProxy64.dll"), "NPRobloxProxy64.dll")
                 };
                 
+                EnsureZipSourcesExist($"version-{version}-NPRobloxProxy.zip", npProxyFiles);
+                
                 var existingNpProxyFiles = npProxyFiles.Where(f => File.Exists(f.sourcePath)).ToList();
                 if (existingNpProxyFiles.Count > 0)
                 {
                     var npProxyZipFileName = $"version-{version}-NPRobloxProxy.zip";
                     var npProxyZipFilePath = Path.Combine(wwwrootPath, npProxyZipFileName);
                     var packagedNpProxyFiles = await CreateZipPackage(npProxyZipFilePath, existingNpProxyFiles);
+                    EnsureZipFileCreated(npProxyZipFileName, npProxyZipFilePath);
                     packagedFiles.AddRange(packagedNpProxyFiles.Select(f => $"proxy/{f}"));
                 }
                 
@@ -620,12 +722,15 @@ namespace ControlPanel.Functions
                     (Path.Combine(folderPath, "openvr_api.dll"), "openvr_api.dll")
                 };
                 
+                EnsureZipSourcesExist($"version-{version}-Libraries.zip", requiredDlls);
+                
                 var existingDlls = requiredDlls.Where(f => File.Exists(f.sourcePath)).ToList();
                 if (existingDlls.Count > 0)
                 {
                     var dllZipFileName = $"version-{version}-Libraries.zip";
                     var dllZipFilePath = Path.Combine(wwwrootPath, dllZipFileName);
                     var packagedDllFiles = await CreateZipPackage(dllZipFilePath, existingDlls);
+                    EnsureZipFileCreated(dllZipFileName, dllZipFilePath);
                     packagedFiles.AddRange(packagedDllFiles.Select(f => $"libs/{f}"));
                 }
                 
@@ -1075,12 +1180,15 @@ namespace ControlPanel.Functions
 
                 };
                 
+                EnsureZipSourcesExist($"version-{version}-Libraries.zip", requiredDlls);
+                
                 var existingDlls = requiredDlls.Where(f => File.Exists(f.sourcePath)).ToList();
                 if (existingDlls.Count > 0)
                 {
                     var dllZipFileName = $"version-{version}-Libraries.zip";
                     var dllZipFilePath = Path.Combine(wwwrootPath, dllZipFileName);
                     var packagedDllFiles = await CreateZipPackage(dllZipFilePath, existingDlls);
+                    EnsureZipFileCreated(dllZipFileName, dllZipFilePath);
                     packagedFiles.AddRange(packagedDllFiles.Select(f => $"libs/{f}"));
                 }
                 
@@ -1345,6 +1453,23 @@ namespace ControlPanel.Functions
                 Success = false,
                 Error = "RCC client upload not implemented yet"
             };
+        }
+        
+        private void EnsureZipSourcesExist(string zipFileName, List<(string sourcePath, string entryName)> files)
+        {
+            var missingFiles = files.Where(f => !File.Exists(f.sourcePath)).Select(f => f.entryName).ToList();
+            if (missingFiles.Count == files.Count)
+            {
+                throw new FileNotFoundException($"Cannot package {zipFileName}: none of the required files exist ({string.Join(", ", missingFiles)})");
+            }
+        }
+        
+        private void EnsureZipFileCreated(string zipFileName, string zipFilePath)
+        {
+            if (!File.Exists(zipFilePath))
+            {
+                throw new IOException($"Cannot package {zipFileName}: archive was not created at {zipFilePath}");
+            }
         }
         
         private async Task<List<string>> CreateZipPackage(string zipFilePath, List<(string sourcePath, string entryName)> files)

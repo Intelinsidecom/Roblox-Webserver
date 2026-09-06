@@ -14,3 +14,6 @@ New Studio version-c4ae7b5f95d507f5 at 22/06/2026 11:49:46 AM, file version: 1, 
 New Studio version-c4ae7b5f95d507f5 at 22/06/2026 11:52:21 AM, file version: 1, 6, 3, 172...Done!
 New Studio version-c4ae7b5f95d507f5 at 22/06/2026 12:02:50 PM, file version: 1, 6, 3, 172...Done!
 New Studio version-c4ae7b5f95d507f5 at 22/06/2026 12:07:00 PM, file version: 1, 6, 3, 172...Done!
+New WindowsPlayer version-c69dd7a97028338d at 06/09/2026 10:07:26 AM, file version: 1, 6, 3, 172...Done!
+Revert Player version-c69dd7a97028338d (unpublished, fell back to version-f7a902918f28044b) at 06/09/2026 10:53:47 AM...Done!
+New WindowsPlayer version-c69dd7a97028338d at 06/09/2026 11:16:36 AM, file version: 1, 6, 3, 172...Done!
