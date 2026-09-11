@@ -94,5 +94,36 @@ namespace Api.Controllers
                 return StatusCode(500, $"Error retrieving version: {ex.Message}");
             }
         }
+
+        [HttpGet]
+        [Route("/v1/settings/application")]
+        public async Task<IActionResult> ApplicationSettings([FromQuery] string? applicationName)
+        {
+            if (string.IsNullOrEmpty(applicationName))
+                return NotFound();
+
+            var fflagDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "FFLAG");
+            var applicationNamePath = Path.Combine(fflagDirectory, $"{applicationName}.json");
+
+            if (string.IsNullOrEmpty(applicationName))
+            {
+                applicationNamePath = Path.Combine(fflagDirectory, $"UWPApp.json");
+                if (System.IO.File.Exists(applicationNamePath))
+                {
+
+                }
+                    // do nothing, proceed
+            }
+
+            try
+            {
+                var jsonContent = await System.IO.File.ReadAllTextAsync(applicationNamePath, Encoding.UTF8);
+                return Content(jsonContent, "application/json", Encoding.UTF8);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
     }
 }
