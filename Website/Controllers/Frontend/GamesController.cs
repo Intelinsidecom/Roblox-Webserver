@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Assets;
@@ -595,7 +598,9 @@ namespace RobloxWebserver.Controllers
 
                 var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
 
-                var recommendedGames = await GamesQueries.GetRecommendedGamesAsync(7, connStr, cancellationToken);
+                long? recommendedUserId = isUserAuthenticated ? userId : null;
+                var recommendedGames = await GameRecommendations.GetPersonalizedRecommendedGamesAsync(
+                    recommendedUserId, id, 4, connStr, cancellationToken);
 
                 if (recommendedGames.Count > 0)
                 {
@@ -928,6 +933,171 @@ namespace RobloxWebserver.Controllers
                 _logger.LogError(ex, "Error loading game instances for place {PlaceId}", placeId);
                 return Json(new { Collection = Array.Empty<object>(), ShowShutdownAllButton = true, TotalCollectionSize = 0 });
             }
+        }
+
+        [HttpGet("GetRecommendedGamesJson")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetRecommendedGamesJson(
+            [FromQuery(Name = "currentPlaceId")] long currentPlaceId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (currentPlaceId <= 0)
+                    return Content("[]", "application/json");
+
+                var connStr = _configuration.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connStr))
+                    return Content("[]", "application/json");
+
+                long? userId = null;
+                var userIdClaim = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out var parsedUserId) && parsedUserId > 0)
+                    userId = parsedUserId;
+
+                var games = await GameRecommendations.GetPersonalizedRecommendedGamesAsync(
+                    userId, currentPlaceId, 4, connStr, cancellationToken).ConfigureAwait(false);
+
+                var payload = games.Select(g =>
+                {
+                    var slug = System.Text.RegularExpressions.Regex.Replace((g.Name ?? "").ToLower(), @"[^a-z0-9\s-]", "").Trim();
+                    slug = System.Text.RegularExpressions.Regex.Replace(slug, @"\s+", "-");
+                    var seoUrl = string.IsNullOrWhiteSpace(slug) ? $"/games/{g.PlaceId}" : $"/games/{g.PlaceId}/{slug}";
+                    var iconFinal = !string.IsNullOrEmpty(g.IconUrl) && !g.IconUrl.Contains("blocked.png");
+                    return new
+                    {
+                        PlaceId = g.PlaceId,
+                        GameName = g.Name,
+                        GameSeoUrl = seoUrl,
+                        Creator = new
+                        {
+                            CreatorName = g.CreatorName,
+                            CreatorTargetId = g.CreatorUserId,
+                            CreatorType = 1
+                        },
+                        GameThumbnail = new
+                        {
+                            Url = g.IconUrl,
+                            IsFinal = iconFinal,
+                            AssetId = g.PlaceId,
+                            AssetType = 9,
+                            AssetHash = (string?)null
+                        },
+                        ImageId = g.PlaceId
+                    };
+                }).ToList();
+
+                var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
+                return Content(json, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading recommended games for place {PlaceId}", currentPlaceId);
+                return Content("[]", "application/json");
+            }
+        }
+
+        [HttpGet("list-json")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ListJson(
+            [FromQuery] int sortFilter = 1,
+            [FromQuery] int StartRows = 0,
+            [FromQuery] int MaxRows = 20,
+            [FromQuery] bool searchAllGames = false,
+            [FromQuery] bool filterByDeviceType = true,
+            [FromQuery] int? timeFilter = null,
+            [FromQuery] string? keyword = null,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connStr))
+                    return Content("[]", "application/json");
+
+                if (StartRows < 0) StartRows = 0;
+                if (MaxRows <= 0 || MaxRows > 100) MaxRows = Math.Min(Math.Max(MaxRows, 1), 100);
+
+                List<long> universeIds;
+                switch (sortFilter)
+                {
+                    case 11: // TopRated
+                        universeIds = await GamesQueries.GetTopRatedUniverseIdsAsync(200, connStr, cancellationToken).ConfigureAwait(false);
+                        break;
+                    case 3: // Featured
+                        try
+                        {
+                            var featured = await GamesQueries.GetFeaturedGameUniverseIdsAsync(connStr, cancellationToken).ConfigureAwait(false);
+                            universeIds = featured.Count > 0
+                                ? featured
+                                : await GamesQueries.GetPopularUniverseIdsAsync(200, connStr, cancellationToken).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            universeIds = await GamesQueries.GetPopularUniverseIdsAsync(200, connStr, cancellationToken).ConfigureAwait(false);
+                        }
+                        break;
+                    case 1: // Popular
+                    case 8: // TopEarning (no revenue data — fall back to popular)
+                    default:
+                        universeIds = await GamesQueries.GetPopularUniverseIdsAsync(200, connStr, cancellationToken).ConfigureAwait(false);
+                        break;
+                }
+
+                var pageIds = universeIds.Skip(StartRows).Take(MaxRows).ToList();
+                if (pageIds.Count == 0)
+                    return Content("[]", "application/json");
+
+                var games = await GamesQueries.GetGameEntriesByUniverseIdsAsync(pageIds, connStr, cancellationToken).ConfigureAwait(false);
+                var byUniverse = games.ToDictionary(g => g.UniverseId);
+                var ordered = pageIds.Where(id => byUniverse.ContainsKey(id)).Select(id => byUniverse[id]).ToList();
+
+                var payload = ordered.Select(g => new
+                {
+                    PlaceID = g.PlaceId,
+                    Name = g.Name,
+                    CreatorName = g.CreatorName,
+                    CreatorID = g.CreatorUserId,
+                    ImageId = g.PlaceId,
+                    TotalUpVotes = g.UpVotes,
+                    TotalDownVotes = g.DownVotes
+                }).ToList();
+
+                var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
+                return Content(json, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading list-json sort {SortFilter}", sortFilter);
+                return Content("[]", "application/json");
+            }
+        }
+
+        [HttpGet("default-sorts")]
+        [AllowAnonymous]
+        public IActionResult DefaultSorts()
+        {
+            var sorts = new object[]
+            {
+                new { Id = 1, Name = "Popular" },
+                new { Id = 3, Name = "Featured" },
+                new { Id = 8, Name = "Top Earning" },
+                new { Id = 11, Name = "Top Rated" }
+            };
+            var json = JsonSerializer.Serialize(sorts, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = null,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            });
+            return Content(json, "application/json");
         }
 
         [HttpPost("~/game-instances/shutdown")]

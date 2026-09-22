@@ -304,6 +304,11 @@ order by awa.asset_id";
                 return await RenderDecalThumbnailAsync(assetId, connStr, thumbnailsRoot, thumbnailBaseUrl, cancellationToken).ConfigureAwait(false);
             }
 
+            if (assetTypeId == 16)
+            {
+                return await RenderDecalThumbnailAsync(assetId, connStr, thumbnailsRoot, thumbnailBaseUrl, cancellationToken).ConfigureAwait(false);
+            }
+
             if (assetTypeId == 38)
             {
                 return await SetDefaultPluginThumbnailAsync(assetId, connStr, cancellationToken).ConfigureAwait(false);
@@ -527,6 +532,7 @@ order by awa.asset_id";
                 11 => "/renderavatarasset",     // Shirt
                 12 => "/renderavatarasset",     // Pants
                 2 => "/renderavatarasset",      // T-Shirt
+                16 => "/renderavatarasset",                  // Face
                 _ => "/renderavatarasset"       // Default
             };
         }
