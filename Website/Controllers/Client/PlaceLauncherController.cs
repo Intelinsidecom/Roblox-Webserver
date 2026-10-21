@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 
 namespace Website.Controllers.Client
 {
@@ -543,13 +544,11 @@ namespace Website.Controllers.Client
                             var connectionString = _configuration.GetConnectionString("Default");
                             var maxPlayers = await GameCreationService.GetPlaceMaxPlayersAsync(gameid, connectionString);
                             var (newJobId, newPort) = await GameCreationService.CreateGameServerAsync((int)gameid, maxPlayers, _configuration, connectionString);
-                            Console.WriteLine($"[join.ashx] Job {jobid} no longer available; started replacement server {newJobId} on port {newPort}");
                             jobid = newJobId;
                             serverPort = newPort;
                         }
                         catch (Exception createEx)
                         {
-                            Console.WriteLine($"[join.ashx] Failed to start replacement server for place {gameid}: {createEx.Message}");
                             return StatusCode(410, "This game server is no longer available. Please try joining again.");
                         }
                     }
@@ -577,6 +576,13 @@ namespace Website.Controllers.Client
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] Error getting server port from Arbiter: {ex.Message}");
+                }
+
+                var joinPortWaitSeconds = _configuration.GetValue<int?>("GameServer:JoinPortWaitSeconds") ?? 30;
+                if (joinPortWaitSeconds > 0 &&
+                    !await WaitForGameServerPortAsync(serverPort, TimeSpan.FromSeconds(joinPortWaitSeconds), HttpContext.RequestAborted))
+                {
+                    return StatusCode(503, "Game server is not ready yet. Please try again.");
                 }
 
                 long userId;
@@ -690,7 +696,6 @@ namespace Website.Controllers.Client
                         if (!string.IsNullOrEmpty(ticketToken))
                         {
                             await _gamePresenceService.RecordGameJoinAsync(userId, gameid, jobid, ticketToken);
-                            Console.WriteLine($"[join.ashx] Created game presence for user {userId} in place {gameid}, job {jobid}");
                         }
                     }
                     catch (Exception ex)
@@ -743,6 +748,93 @@ namespace Website.Controllers.Client
                 Console.WriteLine($"Join script error: {ex.Message}");
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
+        }
+
+        private static readonly byte[] RakNetOfflineMessageDataId =
+        {
+            0x00, 0xFF, 0xFF, 0x00, 0xFE, 0xFE, 0xFE, 0xFE,
+            0xFD, 0xFD, 0xFD, 0xFD, 0x12, 0x34, 0x56, 0x78
+        };
+
+        private static async Task<bool> WaitForGameServerPortAsync(int port, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (port <= 0 || port > 65535)
+            {
+                return false;
+            }
+
+            using var udp = new UdpClient();
+            try
+            {
+                udp.Connect(IPAddress.Loopback, port);
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+
+            var ping = CreateRakNetUnconnectedPing();
+            var deadline = DateTime.UtcNow + timeout;
+
+            while (DateTime.UtcNow < deadline)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
+
+                try
+                {
+                    await udp.SendAsync(ping, ping.Length);
+
+                    using var receiveCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    receiveCts.CancelAfter(TimeSpan.FromMilliseconds(250));
+
+                    var response = await udp.ReceiveAsync(receiveCts.Token);
+                    if (IsRakNetPong(response.Buffer))
+                    {
+                        return true;
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return false;
+                    }
+                }
+                catch (SocketException)
+                {
+                }
+
+                try
+                {
+                    await Task.Delay(250, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        private static byte[] CreateRakNetUnconnectedPing()
+        {
+            var packet = new byte[1 + sizeof(ulong) + RakNetOfflineMessageDataId.Length];
+            packet[0] = 0x01;
+            BitConverter.TryWriteBytes(packet.AsSpan(1, sizeof(ulong)), (ulong)Environment.TickCount64);
+            RakNetOfflineMessageDataId.CopyTo(packet, 1 + sizeof(ulong));
+            return packet;
+        }
+
+        private static bool IsRakNetPong(byte[] data)
+        {
+            const int magicOffset = 1 + sizeof(ulong) + 8;
+            return data.Length >= magicOffset + 16 &&
+                   data[0] == 0x1C &&
+                   data.AsSpan(magicOffset, 16).SequenceEqual(RakNetOfflineMessageDataId);
         }
 
         private async Task<IActionResult> HandleAuthenticateTicket()

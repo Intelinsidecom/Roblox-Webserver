@@ -389,6 +389,57 @@ namespace Thumbnails
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        public static async Task<string?> GetAssetThumbnailUrlAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand("SELECT thumbnail_url FROM assets WHERE asset_id = @assetId", conn);
+            cmd.Parameters.AddWithValue("assetId", assetId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result is string url && !string.IsNullOrWhiteSpace(url) ? url : null;
+        }
+
+        public static async Task<AssetThumbnailVariants?> GetAssetThumbnailVariantsAsync(string connectionString, long assetId, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            if (assetId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(assetId));
+
+            const string sql = @"
+select thumbnail_url, high_res_thumbnail_url,
+       place_generated_icon_url, place_generated_icon_high_res_url,
+       place_custom_icon_url, place_custom_icon_high_res_url
+from assets where asset_id = @id";
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("id", assetId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                return null;
+
+            return new AssetThumbnailVariants
+            {
+                ThumbnailUrl = reader.IsDBNull(0) ? null : reader.GetString(0),
+                HighResThumbnailUrl = reader.IsDBNull(1) ? null : reader.GetString(1),
+                GeneratedIconUrl = reader.IsDBNull(2) ? null : reader.GetString(2),
+                GeneratedIconHighResUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
+                CustomIconUrl = reader.IsDBNull(4) ? null : reader.GetString(4),
+                CustomIconHighResUrl = reader.IsDBNull(5) ? null : reader.GetString(5)
+            };
+        }
+
         public static async Task<string?> GetFirstPlaceThumbnailUrlAsync(string connectionString, long placeId, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -411,5 +462,15 @@ namespace Thumbnails
             var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
             return result is string url && !string.IsNullOrWhiteSpace(url) ? url : null;
         }
+    }
+
+    public sealed class AssetThumbnailVariants
+    {
+        public string? ThumbnailUrl { get; set; }
+        public string? HighResThumbnailUrl { get; set; }
+        public string? GeneratedIconUrl { get; set; }
+        public string? GeneratedIconHighResUrl { get; set; }
+        public string? CustomIconUrl { get; set; }
+        public string? CustomIconHighResUrl { get; set; }
     }
 }

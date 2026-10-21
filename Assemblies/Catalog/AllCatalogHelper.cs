@@ -36,7 +36,7 @@ namespace RobloxWebserver.Assemblies.Catalog
 
                 case 3: // Clothing
                     if (!subcategory.HasValue || subcategory.Value == 3)
-                        return new[] { 2, 11, 12, 32 };
+                        return new[] { 2, 8, 11, 12, 32, 41, 42, 43 };
                     switch (subcategory.Value)
                     {
                         case 12: return new[] { 11 };            // Shirts
@@ -44,7 +44,7 @@ namespace RobloxWebserver.Assemblies.Catalog
                         case 14: return new[] { 12 };            // Pants
                         case 9:  return new[] { 8, 41, 42, 43 }; // Hats
                         case 11: return new[] { 32 };            // Packages
-                        default: return new[] { 2, 11, 12, 32 };
+                        default: return new[] { 2, 8, 11, 12, 32, 41, 42, 43 };
                     }
 
                 case 4: // Body Parts

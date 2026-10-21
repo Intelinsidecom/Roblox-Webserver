@@ -48,6 +48,7 @@ namespace Control_Panel.Functions
         private readonly AudioAssetService _audioService;
         private readonly MeshAssetService _meshService;
         private readonly ModelAssetService _modelService;
+        private readonly HatAssetService _hatService;
         private readonly AssetsRepository _repository;
         private readonly AssetManagementService _managementService;
         private readonly IConfiguration _configuration;
@@ -103,6 +104,8 @@ namespace Control_Panel.Functions
 
             _configuration = configuration;
             
+            _hatService = new HatAssetService(configuration);
+
             _managementService = new AssetManagementService(configuration, universalConfig);
 
             var services = new ServiceCollection();
@@ -361,7 +364,8 @@ namespace Control_Panel.Functions
             string assetName,
             byte[] fileBytes,
             int assetTypeId,
-            string cdnAssetsRoot)
+            string cdnAssetsRoot,
+            string? fileName = null)
         {
             switch (assetTypeId)
             {
@@ -379,6 +383,9 @@ namespace Control_Panel.Functions
                 case 10: // Model
                     return await _modelService.CreateModelAsync(
                         connectionString, ownerUserId, assetName, fileBytes, cdnAssetsRoot, CancellationToken.None);
+                case 8: // Hat
+                    return await _hatService.CreateHatAsync(
+                        connectionString, ownerUserId, assetName, fileName ?? string.Empty, fileBytes, cdnAssetsRoot, CancellationToken.None);
                 default:
                     throw new NotSupportedException($"Unsupported non-image asset type: {assetTypeId}");
             }
@@ -473,7 +480,7 @@ namespace Control_Panel.Functions
             bool makeFree = false)
         {
             var assetTypeId = _managementService.GetAssetTypeIdFromText(assetTypeText);
-            if (assetTypeId == 3 || assetTypeId == 4 || assetTypeId == 10 || assetTypeId == 13)
+            if (assetTypeId == 3 || assetTypeId == 4 || assetTypeId == 8 || assetTypeId == 10 || assetTypeId == 13)
             {
                 var validation = _managementService.ValidateAssetUpload(
                     selectedFilePath, assetName, assetIdText, robuxPriceText, tixPriceText, assetTypeText);
@@ -502,7 +509,7 @@ namespace Control_Panel.Functions
                 {
                     newAssetId = await UploadNonImageAssetAsync(
                         config.ConnectionString, finalOwnerUserId, validation.AssetName, fileBytes,
-                        assetTypeId, config.AssetsDirectory);
+                        assetTypeId, config.AssetsDirectory, Path.GetFileName(selectedFilePath));
                 }
 
                 if (makeFree)

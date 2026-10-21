@@ -316,6 +316,7 @@
                                      <ComboBoxItem Content="Model (10)"/>
                                      <ComboBoxItem Content="Shirt (11)"/>
                                      <ComboBoxItem Content="Pants (12)"/>
+                                     <ComboBoxItem Content="Hat (8)"/>
                                 </ComboBox>
                                 <StackPanel x:Name="PriceFieldsPanel" Margin="0,0,0,15" Visibility="Collapsed">
                                     <TextBlock Text="Price:" Style="{StaticResource LabelText}" 
@@ -605,6 +606,7 @@
                                         <ComboBoxItem Content="Model"/>
                                         <ComboBoxItem Content="Shirt"/>
                                         <ComboBoxItem Content="Pants"/>
+                                        <ComboBoxItem Content="Hat"/>
                                     </ComboBox>
                                     <ComboBox Grid.Column="1" x:Name="DateFilter" 
                                               Height="30" Margin="2.5,0" Width="100"

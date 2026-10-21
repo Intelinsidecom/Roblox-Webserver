@@ -660,7 +660,7 @@ public sealed class ThumbnailService : IThumbnailService
         return saveResult;
     }
 
-    public async Task<string> RenderAsset3DBase64Async(long assetId, int? x = null, int? y = null, CancellationToken cancellationToken = default)
+    public async Task<string> RenderAsset3DBase64Async(long assetId, int? x = null, int? y = null, string? route = null, CancellationToken cancellationToken = default)
     {
         var arbiterUrl = _configuration?["Thumbnails:ArbiterUrl"] ?? "http://localhost:5000";
 
@@ -674,7 +674,8 @@ public sealed class ThumbnailService : IThumbnailService
             qb.Append("&baseUrl=").Append(Uri.EscapeDataString(websiteBase));
         }
 
-        var requestUri = arbiterUrl.TrimEnd('/') + "/renderasset3d?" + qb.ToString();
+        var routePath = string.IsNullOrWhiteSpace(route) ? "/renderasset3d" : route.TrimStart('/');
+        var requestUri = arbiterUrl.TrimEnd('/') + "/" + routePath + "?" + qb.ToString();
 
         using var http = new HttpClient { Timeout = Common.HttpClientDefaults.Timeout };
         using var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
@@ -725,7 +726,7 @@ public sealed class ThumbnailService : IThumbnailService
         return base64!;
     }
 
-    public async Task<Avatar3DCacheResult> RenderAsset3DAndCacheAsync(long assetId, int? x = null, int? y = null, bool force = false, CancellationToken cancellationToken = default)
+    public async Task<Avatar3DCacheResult> RenderAsset3DAndCacheAsync(long assetId, int? x = null, int? y = null, bool force = false, string? route = null, CancellationToken cancellationToken = default)
     {
         // Determine 3D asset output root directory (shared with avatar3d but under 3DAsset subfolder)
         var baseDir = _configuration?["Thumbnails:Asset3DDirectory"];
@@ -774,7 +775,7 @@ public sealed class ThumbnailService : IThumbnailService
             }
         }
 
-        var base64 = await RenderAsset3DBase64Async(assetId, x, y, cancellationToken).ConfigureAwait(false);
+        var base64 = await RenderAsset3DBase64Async(assetId, x, y, route, cancellationToken).ConfigureAwait(false);
         if (string.IsNullOrWhiteSpace(base64))
             throw new InvalidOperationException("Base64 payload for 3D asset was empty.");
 

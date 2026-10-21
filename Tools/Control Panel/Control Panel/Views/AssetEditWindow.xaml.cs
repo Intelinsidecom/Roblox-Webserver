@@ -263,6 +263,9 @@ namespace Control_Panel
                 case 9:
                     filter = "Roblox Place Files (*.rbxl)|*.rbxl|All files (*.*)|*.*";
                     break;
+                case 8:
+                    filter = "Hat Files (*.rbxm;*.rbxmx)|*.rbxm;*.rbxmx|All files (*.*)|*.*";
+                    break;
                 default:
                     filter = "All files (*.*)|*.*";
                     break;

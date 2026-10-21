@@ -61,15 +61,27 @@ namespace Api.Controllers
             {
                 long outfitId = 0;
 
-                if (Request.HasFormContentType)
+                if (long.TryParse(Request.Query["id"].FirstOrDefault(), out var queryOutfitId) && queryOutfitId > 0)
+                {
+                    outfitId = queryOutfitId;
+                }
+                else if (long.TryParse(Request.Query["outfitId"].FirstOrDefault(), out var queryOutfitId2) && queryOutfitId2 > 0)
+                {
+                    outfitId = queryOutfitId2;
+                }
+                else if (Request.HasFormContentType)
                 {
                     long.TryParse(Request.Form["outfitId"].FirstOrDefault(), out outfitId);
+                    if (outfitId <= 0)
+                        long.TryParse(Request.Form["id"].FirstOrDefault(), out outfitId);
                 }
-                else
+                else if (Request.Body.CanSeek && Request.Body.Length > 0)
                 {
                     using var body = await JsonDocument.ParseAsync(Request.Body);
                     if (body.RootElement.TryGetProperty("outfitId", out var oid))
                         oid.TryGetInt64(out outfitId);
+                    else if (body.RootElement.TryGetProperty("id", out var idProp))
+                        idProp.TryGetInt64(out outfitId);
                 }
 
                 if (outfitId <= 0)
@@ -105,11 +117,19 @@ namespace Api.Controllers
             {
                 long assetId = 0;
 
-                if (Request.HasFormContentType)
+                if (long.TryParse(Request.Query["assetIds"].FirstOrDefault(), out var queryAssetId) && queryAssetId > 0)
+                {
+                    assetId = queryAssetId;
+                }
+                else if (long.TryParse(Request.Query["assetId"].FirstOrDefault(), out var queryAssetId2) && queryAssetId2 > 0)
+                {
+                    assetId = queryAssetId2;
+                }
+                else if (Request.HasFormContentType)
                 {
                     long.TryParse(Request.Form["assetId"].FirstOrDefault(), out assetId);
                 }
-                else
+                else if (Request.Body.CanSeek && Request.Body.Length > 0)
                 {
                     using var body = await JsonDocument.ParseAsync(Request.Body);
                     if (body.RootElement.TryGetProperty("assetId", out var aid))

@@ -335,6 +335,10 @@ namespace Control_Panel
                     filter = "Model Files (*.rbxm;*.rbxmx)|*.rbxm;*.rbxmx|All files (*.*)|*.*";
                     title = "Select Model File";
                     break;
+                case "Hat (8)":
+                    filter = "Hat Files (*.rbxm;*.rbxmx)|*.rbxm;*.rbxmx|All files (*.*)|*.*";
+                    title = "Select Hat File";
+                    break;
                 default:
                     title = "Select File";
                     break;

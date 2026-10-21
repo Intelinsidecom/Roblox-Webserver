@@ -925,13 +925,7 @@ Thanks,
             if (!ok) return StatusCode(403);
             try
             {
-                await using var conn = new NpgsqlConnection(ConnStr());
-                await conn.OpenAsync();
-                await using var cmd = new NpgsqlCommand(
-                    "select xbox_user from users where user_id = @uid", conn);
-                cmd.Parameters.AddWithValue("uid", uid);
-                var v = await cmd.ExecuteScalarAsync();
-                var has = v != null && v != DBNull.Value && (bool)v;
+                var has = await UserQueries.IsXboxLinkedAsync(ConnStr(), uid);
                 return Json(new { hasConnectedXboxAccount = has });
             }
             catch { return Json(new { hasConnectedXboxAccount = false }); }
@@ -944,13 +938,8 @@ Thanks,
             if (!ok) return StatusCode(403);
             try
             {
-                await using var conn = new NpgsqlConnection(ConnStr());
-                await conn.OpenAsync();
-                await using var cmd = new NpgsqlCommand(
-                    "update users set xbox_user = false where user_id = @uid", conn);
-                cmd.Parameters.AddWithValue("uid", uid);
-                await cmd.ExecuteNonQueryAsync();
-                return Json(new { success = true });
+                var success = await UserQueries.UnlinkXboxForUserAsync(ConnStr(), uid);
+                return Json(new { success });
             }
             catch { return Json(new { success = false }); }
         }

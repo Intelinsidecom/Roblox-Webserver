@@ -114,6 +114,10 @@ public class AssetThumbnail3DController : ControllerBase
         {
             cached = await _thumbnailService.RenderModel3DAndCacheAsync(assetId, w, h, force: true);
         }
+        else if (assetTypeId == 8)
+        {
+            cached = await _thumbnailService.RenderAsset3DAndCacheAsync(assetId, w, h, force: true, route: "/renderitemasset3d");
+        }
         else
         {
             cached = await _thumbnailService.RenderAsset3DAndCacheAsync(assetId, w, h, force: true);

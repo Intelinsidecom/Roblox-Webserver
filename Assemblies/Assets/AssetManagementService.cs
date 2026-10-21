@@ -330,6 +330,8 @@ namespace Assets
                     return 10;
                 case "Mesh (4)":
                     return 4;
+                case "Hat (8)":
+                    return 8;
                 case "Place (9)":
                     return 9;
                 case "Shirt (11)":
@@ -383,6 +385,7 @@ namespace Assets
                 
                 case 10:  // Model
                 case 38:  // Plugin
+                case 8:   // Hat
                     var modelExt = Path.GetExtension(filePath).ToLowerInvariant();
                     return modelExt == ".rbxm" || modelExt == ".rbxmx";
                 
@@ -627,6 +630,10 @@ namespace Assets
                         replacementSuccess = await ReplaceModelAsset(
                             connection, assetId, fileBytes, contentType, fileName, _config);
                         break;
+                    case 8: // Hat
+                        replacementSuccess = await ReplaceHatAsset(
+                            connection, assetId, fileBytes, contentType, fileName, _config);
+                        break;
                     default:
                         throw new NotSupportedException($"Asset replacement not supported for type {assetTypeId}");
                 }
@@ -866,6 +873,7 @@ namespace Assets
                 "Mesh" => 4,
                 "Shirt" => 11,
                 "Pants" => 12,
+                "Hat" => 8,
                 "Audio" => 3,
                 "Plugin" => 38,
                 _ => 0
@@ -915,6 +923,7 @@ namespace Assets
                 3 => "Audio",
                 10 => "Model",
                 4 => "Mesh",
+                8 => "Hat",
                 9 => "Place",
                 11 => "Shirt",
                 12 => "Pants",
@@ -965,6 +974,7 @@ namespace Assets
                     return "PNG, JPG, JPEG, BMP, GIF, TIFF, ICO";
                 case 3:
                 case 38:
+                case 8:
                     return ".rbxm, .rbxmx";
                 case 4:
                     return ".mesh";
@@ -1155,6 +1165,80 @@ namespace Assets
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error replacing Model asset: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> ReplaceHatAsset(NpgsqlConnection connection, long assetId, byte[] fileBytes, string contentType, string fileName, AssetUploadConfiguration config)
+        {
+            try
+            {
+                var (isValid, errorMessage) = AssetValidationHelper.ValidateHatContent(fileBytes);
+                if (!isValid)
+                    throw new InvalidOperationException(errorMessage ?? "Hat validation failed.");
+
+                string contentHash;
+                using (var sha = SHA256.Create())
+                {
+                    var hashBytes = sha.ComputeHash(fileBytes);
+                    var sb = new StringBuilder(hashBytes.Length * 2);
+                    foreach (var b in hashBytes)
+                        sb.Append(b.ToString("x2"));
+                    contentHash = sb.ToString();
+                }
+
+                var uploadedExtension = Path.GetExtension(fileName ?? string.Empty).ToLowerInvariant();
+                var ext = uploadedExtension == ".rbxmx" ? ".rbxmx" : ".rbxm";
+                var assetFilePath = Path.Combine(config.AssetsDirectory, "asset", contentHash + ext);
+
+                var dir = Path.GetDirectoryName(assetFilePath);
+                if (!string.IsNullOrWhiteSpace(dir))
+                    Directory.CreateDirectory(dir);
+
+                await Task.Run(() => File.WriteAllBytes(assetFilePath, fileBytes));
+
+                string? oldHash = null;
+                const string getHashSql = "SELECT content_hash FROM assets WHERE asset_id = @assetId";
+                using (var getHashCmd = new NpgsqlCommand(getHashSql, connection))
+                {
+                    getHashCmd.Parameters.AddWithValue("@assetId", assetId);
+                    var hashResult = await getHashCmd.ExecuteScalarAsync();
+                    oldHash = hashResult == null || hashResult == DBNull.Value ? null : Convert.ToString(hashResult);
+                }
+
+                if (!string.IsNullOrWhiteSpace(oldHash))
+                {
+                    try
+                    {
+                        var repo = new AssetsRepository();
+                        await repo.AppendVersionHistoryAsync(config.ConnectionString, assetId, oldHash);
+                    }
+                    catch
+                    {
+                        // Version history failure should not block upload
+                    }
+                }
+
+                const string sql = @"
+                    UPDATE assets 
+                    SET content_hash = @contentHash,
+                        file_extension = @fileExtension,
+                        content_type = @contentType,
+                        last_updated = CURRENT_TIMESTAMP
+                    WHERE asset_id = @assetId";
+
+                using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@contentHash", contentHash);
+                cmd.Parameters.AddWithValue("@fileExtension", ext);
+                cmd.Parameters.AddWithValue("@contentType", contentType);
+                cmd.Parameters.AddWithValue("@assetId", assetId);
+
+                int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error replacing Hat asset: {ex.Message}");
                 return false;
             }
         }

@@ -19,6 +19,8 @@ namespace Assets
                     return "Model";
                 case 4:
                     return "Mesh";
+                case 8:
+                    return "Hat";
                 case 9:
                     return "Game";
                 case 11:

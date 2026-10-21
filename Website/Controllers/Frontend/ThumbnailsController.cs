@@ -5,7 +5,6 @@ using Thumbnails;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using Npgsql;
 using Users;
 using System.IO;
 using Avatar;
@@ -13,6 +12,10 @@ using System.Security.Cryptography;
 using Assets;
 using System.Data;
 using Common;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Website.Controllers;
 
@@ -574,14 +577,7 @@ public class ThumbnailsController : ControllerBase
         if (string.IsNullOrWhiteSpace(connStr))
             return Redirect("/images/default.png");
 
-        await using var conn = new NpgsqlConnection(connStr);
-        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
-
-        await using var cmd = new NpgsqlCommand("SELECT thumbnail_url FROM assets WHERE asset_id = @assetId", conn);
-        cmd.Parameters.AddWithValue("assetId", assetId);
-        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
-
-        var thumbnailUrl = result?.ToString();
+        var thumbnailUrl = await ThumbnailQueries.GetAssetThumbnailUrlAsync(connStr, assetId, cancellationToken).ConfigureAwait(false);
         if (!string.IsNullOrWhiteSpace(thumbnailUrl))
         {
             if (!thumbnailUrl.StartsWith("http://") && !thumbnailUrl.StartsWith("https://") && !thumbnailUrl.StartsWith("/"))
@@ -985,6 +981,222 @@ public class ThumbnailsController : ControllerBase
 
         return Redirect(fullUrl);
     }
+
+    [HttpGet("Thumbs/Asset.ashx")]
+    public async Task<IActionResult> AssetLegacy(
+        [FromQuery] long assetId,
+        [FromQuery] long asset,
+        [FromQuery] int? width,
+        [FromQuery] int? height,
+        [FromQuery] int? x,
+        [FromQuery] int? y,
+        [FromQuery] string? format,
+        CancellationToken cancellationToken = default)
+    {
+        var id = assetId > 0 ? assetId : asset;
+        var w = Math.Clamp(width ?? x ?? 0, 0, 2048);
+        var h = Math.Clamp(height ?? y ?? 0, 0, 2048);
+        var wantPng = string.Equals(format, "png", StringComparison.OrdinalIgnoreCase);
+
+        var defaultThumb = _configuration["Thumbnails:DefaultThumbnailUrl"] ?? "/images/default.png";
+        if (id <= 0)
+            return Redirect(defaultThumb);
+
+        var variantUrl = await GetThumbnailVariantUrlAsync(id, w, h, cancellationToken).ConfigureAwait(false);
+        if (string.IsNullOrWhiteSpace(variantUrl))
+            return Redirect(defaultThumb);
+
+        if (!variantUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+            !variantUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return Redirect(variantUrl.StartsWith("/") ? variantUrl : "/" + variantUrl);
+        }
+
+        if (!Uri.TryCreate(variantUrl, UriKind.Absolute, out var variantUri))
+            return Redirect(defaultThumb);
+
+        var localPath = TryResolveLocalCdnPath(variantUri);
+        if (localPath == null || !System.IO.File.Exists(localPath))
+            return Redirect(variantUri.AbsoluteUri);
+
+        try
+        {
+            var info = new FileInfo(localPath);
+            var cacheKey = $"thumb:{id}:{w}:{h}:{(wantPng ? "png" : "jpg")}:{info.Name}";
+            var etag = $"\"{info.LastWriteTimeUtc.Ticks:x}-{info.Length:x}-{w}x{h}\"";
+            Response.Headers.ETag = etag;
+            Response.Headers.CacheControl = "public, max-age=604800";
+
+            if (Request.Headers.IfNoneMatch.Any(m => string.Equals(m, etag, StringComparison.Ordinal)))
+                return StatusCode(304);
+
+            var contentType = CDNUtilities.GetContentType(wantPng ? "png" : "jpeg");
+            var cacheKey2 = $"{cacheKey}:{contentType}";
+            if (_thumbCache.TryGetValue(cacheKey2, out byte[]? cached) && cached != null)
+                return File(cached, contentType);
+
+            var source = await System.IO.File.ReadAllBytesAsync(localPath, cancellationToken).ConfigureAwait(false);
+            byte[] output;
+
+            if (w <= 0 || h <= 0)
+            {
+                output = source;
+                contentType = SniffContentType(source) ?? contentType;
+            }
+            else
+            {
+                using (var ms = new MemoryStream(source, writable: false))
+                using (var img = Image.FromStream(ms, false, false))
+                {
+                    if (img.Width == w && img.Height == h)
+                    {
+                        output = source;
+                        contentType = SniffContentType(source) ?? contentType;
+                    }
+                    else
+                    {
+                        output = ResizeTo(source, w, h, wantPng);
+                    }
+                }
+            }
+
+            _thumbCache.Set(cacheKey2, output, new MemoryCacheEntryOptions
+            {
+                Size = 1,
+                SlidingExpiration = TimeSpan.FromMinutes(10)
+            });
+            return File(output, contentType);
+        }
+        catch
+        {
+            return Redirect(variantUri.AbsoluteUri);
+        }
+    }
+
+    private async Task<string?> GetThumbnailVariantUrlAsync(long assetId, int w, int h, CancellationToken cancellationToken)
+    {
+        var cacheKey = $"thumbvar:{assetId}";
+        if (!_thumbCache.TryGetValue(cacheKey, out AssetThumbnailVariants? variants))
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr))
+                return null;
+
+            var storedVariants = await ThumbnailQueries.GetAssetThumbnailVariantsAsync(connStr, assetId, cancellationToken).ConfigureAwait(false);
+            if (storedVariants == null)
+                return null;
+
+            variants = new AssetThumbnailVariants
+            {
+                ThumbnailUrl = NormalizeVariant(storedVariants.ThumbnailUrl),
+                HighResThumbnailUrl = NormalizeVariant(storedVariants.HighResThumbnailUrl),
+                GeneratedIconUrl = NormalizeVariant(storedVariants.GeneratedIconUrl),
+                GeneratedIconHighResUrl = NormalizeVariant(storedVariants.GeneratedIconHighResUrl),
+                CustomIconUrl = NormalizeVariant(storedVariants.CustomIconUrl),
+                CustomIconHighResUrl = NormalizeVariant(storedVariants.CustomIconHighResUrl)
+            };
+
+            _thumbCache.Set(cacheKey, variants, new MemoryCacheEntryOptions
+            {
+                Size = 1,
+                SlidingExpiration = TimeSpan.FromMinutes(5)
+            });
+        }
+
+        return PickVariant(variants, w, h);
+    }
+
+    private static string? NormalizeVariant(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+        url = url.Trim();
+        if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
+            url.StartsWith("/"))
+            return url;
+        return "https://" + url;
+    }
+
+    private static string? PickVariant(AssetThumbnailVariants v, int w, int h)
+    {
+        var nativeLow = w <= 110 && h <= 110;
+        var sized = w > 0 || h > 0;
+
+        if (!sized)
+        {
+            return First(
+                v.GeneratedIconHighResUrl, v.CustomIconHighResUrl, v.HighResThumbnailUrl,
+                v.GeneratedIconUrl, v.CustomIconUrl, v.ThumbnailUrl);
+        }
+
+        if (nativeLow)
+        {
+            return First(
+                v.GeneratedIconUrl, v.CustomIconUrl, v.ThumbnailUrl,
+                v.GeneratedIconHighResUrl, v.CustomIconHighResUrl, v.HighResThumbnailUrl);
+        }
+
+        return First(
+            v.GeneratedIconHighResUrl, v.CustomIconHighResUrl, v.HighResThumbnailUrl,
+            v.GeneratedIconUrl, v.CustomIconUrl, v.ThumbnailUrl);
+    }
+
+    private static string? First(params string?[] candidates)
+    {
+        foreach (var c in candidates)
+        {
+            if (!string.IsNullOrWhiteSpace(c))
+                return c;
+        }
+        return null;
+    }
+
+    private static string? TryResolveLocalCdnPath(Uri uri)
+    {
+        var rel = uri.AbsolutePath.TrimStart('/');
+        if (string.IsNullOrWhiteSpace(rel) || rel.Contains("..", StringComparison.Ordinal))
+            return null;
+
+        return Path.Combine(CdnAssetsRootLazy.Value, rel.Replace('/', Path.DirectorySeparatorChar));
+    }
+
+    private static string? SniffContentType(byte[] bytes)
+    {
+        if (bytes.Length >= 4 && bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47)
+            return "image/png";
+        if (bytes.Length >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
+            return "image/jpeg";
+        if (bytes.Length >= 6 && bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46)
+            return "image/gif";
+        return null;
+    }
+
+    private static byte[] ResizeTo(byte[] source, int w, int h, bool png)
+    {
+        using var ms = new MemoryStream(source, writable: false);
+        using var img = Image.FromStream(ms, false, false);
+        using var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
+        using (var g = Graphics.FromImage(bmp))
+        {
+            g.InterpolationMode = InterpolationMode.Bilinear;
+            g.PixelOffsetMode = PixelOffsetMode.Half;
+            g.SmoothingMode = SmoothingMode.None;
+            g.CompositingMode = CompositingMode.SourceCopy;
+            g.DrawImage(img, 0, 0, w, h);
+        }
+
+        using var outMs = new MemoryStream();
+        bmp.Save(outMs, png ? ImageFormat.Png : ImageFormat.Jpeg);
+        return outMs.ToArray();
+    }
+
+    private static readonly Lazy<string> CdnAssetsRootLazy = new(() => CDNUtilities.GetCDNAssetsPath());
+    private static readonly MemoryCache _thumbCache = new(new MemoryCacheOptions
+    {
+        SizeLimit = 4096,
+        CompactionPercentage = 0.25
+    });
 
     // GET /game-icons/image
     [HttpGet("game-icons/image")]

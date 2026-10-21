@@ -527,6 +527,7 @@ order by awa.asset_id";
             return assetTypeId switch
             {
                 4 => "/rendermesh",            // Mesh
+                8 => "/renderitemasset",        // Hat
                 9 => "/rendergame",           // Place
                 10 => "/rendermodel",           // Model
                 11 => "/renderavatarasset",     // Shirt

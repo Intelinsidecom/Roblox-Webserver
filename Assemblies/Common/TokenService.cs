@@ -155,6 +155,36 @@ namespace Games
         }
 
         /// <summary>
+        /// Returns the number of consecutive UTC calendar days (ending today or
+        /// yesterday) on which the user had at least one session row.
+        /// </summary>
+        public async Task<int> GetConsecutiveLoginDaysAsync(long userId)
+        {
+            if (userId <= 0)
+                return 0;
+
+            using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync();
+
+            using var cmd = new NpgsqlCommand(@"
+WITH days AS (
+    SELECT DISTINCT (created_at AT TIME ZONE 'utc')::date AS d
+    FROM sessions
+    WHERE user_id = @uid
+),
+streak AS (
+    SELECT d, (d - (ROW_NUMBER() OVER (ORDER BY d DESC))::int) AS grp
+    FROM days
+)
+SELECT count(*) FROM streak
+WHERE grp = (SELECT grp FROM streak ORDER BY d DESC LIMIT 1)", conn);
+
+            cmd.Parameters.AddWithValue("uid", userId);
+            var result = await cmd.ExecuteScalarAsync();
+            return result == null || result is DBNull ? 0 : Convert.ToInt32(result);
+        }
+
+        /// <summary>
         /// Revokes a session token immediately.
         /// </summary>
         public async Task RevokeSessionAsync(string token)

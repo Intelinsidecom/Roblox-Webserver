@@ -33,6 +33,30 @@ namespace Avatar
             return results.ToArray();
         }
 
+        public async Task<long> GetCurrentlyWornPackageAssetIdAsync(string connectionString, long userId, int packageAssetTypeId = 32, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId));
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select w.asset_id
+                                 from avatar_worn_assets w
+                                 join assets a on a.asset_id = w.asset_id
+                                 where w.user_id = @uid and a.asset_type_id = @typeId
+                                 order by w.asset_id desc
+                                 limit 1";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+            cmd.Parameters.AddWithValue("typeId", packageAssetTypeId);
+
+            var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+            return result == null || result is DBNull ? 0 : Convert.ToInt64(result);
+        }
+
         public async Task SetWornAssetIdsAsync(string connectionString, long userId, IReadOnlyCollection<long> assetIds, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
