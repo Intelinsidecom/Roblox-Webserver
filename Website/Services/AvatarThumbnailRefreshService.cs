@@ -178,7 +178,7 @@ public sealed class AvatarThumbnailRefreshService
                 try
                 {
                     var cacheRepo = new AvatarThumbnailCacheRepository();
-                    await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, avatarSave.Hash, avatarSave.FileName, "avatar", 420, 420, cancellationToken).ConfigureAwait(false);
+                    await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, avatarSave.Hash, avatarSave.FileName, "avatar", 420, 420, userId, cancellationToken).ConfigureAwait(false);
                 }
                 catch { }
             }
@@ -200,7 +200,7 @@ public sealed class AvatarThumbnailRefreshService
                 try
                 {
                     var cacheRepo = new AvatarThumbnailCacheRepository();
-                    await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, headshotSave.Hash, headshotSave.FileName, "headshot", 352, 352, cancellationToken).ConfigureAwait(false);
+                    await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, headshotSave.Hash, headshotSave.FileName, "headshot", 352, 352, userId, cancellationToken).ConfigureAwait(false);
                 }
                 catch { }
             }

@@ -286,7 +286,7 @@ public class AvatarV1Controller : ControllerBase
                         try
                         {
                             var cacheRepo = new AvatarThumbnailCacheRepository();
-                            await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, save.Hash, save.FileName, "avatar", 420, 420, cancellationToken);
+                            await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, save.Hash, save.FileName, "avatar", 420, 420, targetUserId, cancellationToken);
                         }
                         catch { }
                     }
@@ -303,7 +303,7 @@ public class AvatarV1Controller : ControllerBase
                             try
                             {
                                 var cacheRepo = new AvatarThumbnailCacheRepository();
-                                await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, headshotSave.Hash, headshotSave.FileName, "headshot", 352, 352, cancellationToken);
+                                await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, headshotSave.Hash, headshotSave.FileName, "headshot", 352, 352, targetUserId, cancellationToken);
                             }
                             catch { }
                         }
@@ -321,7 +321,7 @@ public class AvatarV1Controller : ControllerBase
                         try
                         {
                             var cacheRepo = new AvatarThumbnailCacheRepository();
-                            await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, save.Hash, save.FileName, "headshot", 352, 352, cancellationToken);
+                            await cacheRepo.UpsertAsync(connStr!, headshotConfigHash, save.Hash, save.FileName, "headshot", 352, 352, targetUserId, cancellationToken);
                         }
                         catch { }
                     }
@@ -337,7 +337,7 @@ public class AvatarV1Controller : ControllerBase
                             try
                             {
                                 var cacheRepo = new AvatarThumbnailCacheRepository();
-                                await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, avatarSave.Hash, avatarSave.FileName, "avatar", 420, 420, cancellationToken);
+                                await cacheRepo.UpsertAsync(connStr!, avatarConfigHash, avatarSave.Hash, avatarSave.FileName, "avatar", 420, 420, targetUserId, cancellationToken);
                             }
                             catch { }
                         }
@@ -369,18 +369,33 @@ public class AvatarV1Controller : ControllerBase
                 if (!string.IsNullOrWhiteSpace(avatar3dDir))
                 {
                     var mapsDir = Path.Combine(avatar3dDir, "maps");
-                    var mapPath = Path.Combine(mapsDir, $"{targetUserId}_352x352.txt");
-                    if (System.IO.File.Exists(mapPath))
+                    if (System.IO.Directory.Exists(mapsDir))
                     {
-                        var oldHash = await System.IO.File.ReadAllTextAsync(mapPath, cancellationToken).ConfigureAwait(false);
-                        oldHash = oldHash.Trim();
-                        if (!string.IsNullOrWhiteSpace(oldHash))
+                        var prefix = $"{targetUserId}_";
+                        foreach (var mapFile in System.IO.Directory.GetFiles(mapsDir, prefix + "*.txt"))
                         {
-                            var oldDir = Path.Combine(avatar3dDir, oldHash);
-                            if (System.IO.Directory.Exists(oldDir))
-                                System.IO.Directory.Delete(oldDir, true);
+                            try
+                            {
+                                var oldHash = await System.IO.File.ReadAllTextAsync(mapFile, cancellationToken).ConfigureAwait(false);
+                                oldHash = oldHash.Trim();
+                                if (!string.IsNullOrWhiteSpace(oldHash))
+                                {
+                                    var oldDir = Path.Combine(avatar3dDir, oldHash);
+                                    if (System.IO.Directory.Exists(oldDir))
+                                        System.IO.Directory.Delete(oldDir, true);
+                                }
+                            }
+                            catch
+                            {
+                            }
+                            try
+                            {
+                                System.IO.File.Delete(mapFile);
+                            }
+                            catch
+                            {
+                            }
                         }
-                        System.IO.File.Delete(mapPath);
                     }
                 }
 
@@ -435,6 +450,8 @@ public class AvatarV1Controller : ControllerBase
             LeftLegColorId = bodyColorsModel.leftLegColorId
         };
         await repo.SetBodyColorsAsync(connStr, userId, colors, cancellationToken);
+        var outputDir = _configuration["Thumbnails:OutputDirectory"];
+        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
         _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
 
@@ -522,6 +539,9 @@ public class AvatarV1Controller : ControllerBase
 
         await repo.SetWornAssetIdsAsync(connStr, userId, filteredIds, cancellationToken);
 
+        var outputDir = _configuration["Thumbnails:OutputDirectory"];
+        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
+
         // Keep avatar_state_hash in sync with current body colors and
         // worn assets so downstream systems can see configuration changes.
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
@@ -585,6 +605,9 @@ public class AvatarV1Controller : ControllerBase
 
         await repo.SetWornAssetIdsAsync(connStr, userId, wearResult.AssetIds, cancellationToken).ConfigureAwait(false);
 
+        var outputDir = _configuration["Thumbnails:OutputDirectory"];
+        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
+
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
 
         // Warm thumbnails so wear operations immediately reflect in
@@ -615,6 +638,9 @@ public class AvatarV1Controller : ControllerBase
         var updated = current.Where(id => id != assetId).ToList();
 
         await repo.SetWornAssetIdsAsync(connStr, userId, updated, cancellationToken).ConfigureAwait(false);
+
+        var outputDir = _configuration["Thumbnails:OutputDirectory"];
+        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
 
         await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
 

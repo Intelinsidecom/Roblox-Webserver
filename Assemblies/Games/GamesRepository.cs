@@ -242,7 +242,8 @@ public static class GamesRepository
 
         const string sql = @"SELECT u.universe_id, u.name, u.creator_user_id, u.place_ids, u.privacy_level, u.Studio_Access_To_APIs, u.root_place_id, 
                                     COALESCE(u.visit_count, 0) as visit_count,
-                                    u.team_create_enabled
+                                    u.team_create_enabled,
+                                    u.created_at
                                FROM universes u
                                WHERE u.universe_id = @universeId";
 
@@ -267,7 +268,8 @@ public static class GamesRepository
                 VisitCount = reader.GetInt32(7),
                 PlayingCount = 0,
                 Description = null,
-                TeamCreateEnabled = reader.IsDBNull(8) ? false : reader.GetBoolean(8)
+                TeamCreateEnabled = reader.IsDBNull(8) ? false : reader.GetBoolean(8),
+                CreatedAt = reader.IsDBNull(9) ? null : reader.GetDateTime(9)
             };
         }
         

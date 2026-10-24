@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace Avatar
 {
@@ -45,7 +47,6 @@ namespace Avatar
     public sealed class AvatarRepository
     {
         private readonly BodyColorsRepository _bodyColorsRepository = new BodyColorsRepository();
-        private readonly AvatarWornAssetsRepository _wornAssetsRepository = new AvatarWornAssetsRepository();
 
         public async Task<AvatarState> GetAvatarAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
         {
@@ -66,29 +67,62 @@ namespace Avatar
             state.BodyColors.leftArmColorId = bodyColors.LeftArmColorId;
             state.BodyColors.rightLegColorId = bodyColors.RightLegColorId;
             state.BodyColors.leftLegColorId = bodyColors.LeftLegColorId;
-
-            // Load worn assets so the avatar API exposes currently equipped items (e.g., T-shirts).
-            var wornIds = await _wornAssetsRepository
-                .GetWornAssetIdsAsync(connectionString, userId, cancellationToken)
-                .ConfigureAwait(false);
-
-            state.Assets = wornIds
-                .Select(id => new AvatarAssetState
-                {
-                    id = id,
-                    name = string.Empty,
-                    assetType = new AvatarAssetTypeState
-                    {
-                        id = 0,
-                        name = string.Empty
-                    }
-                })
-                .ToArray();
-
-            // Scales are not yet stored in the database in this project
-            // and are therefore returned with conservative defaults.
+            state.Assets = await GetWornAssetStatesAsync(connectionString, userId, cancellationToken).ConfigureAwait(false);
 
             return state;
+        }
+
+        private async Task<AvatarAssetState[]> GetWornAssetStatesAsync(string connectionString, long userId, CancellationToken cancellationToken)
+        {
+            var states = new List<AvatarAssetState>();
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            const string sql = @"select w.asset_id, a.name, a.asset_type_id
+from avatar_worn_assets w
+left join assets a on a.asset_id = w.asset_id
+where w.user_id = @uid
+order by w.asset_id";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var assetTypeId = reader.IsDBNull(2) ? 0 : reader.GetInt32(2);
+                states.Add(new AvatarAssetState
+                {
+                    id = reader.GetInt64(0),
+                    name = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    assetType = new AvatarAssetTypeState
+                    {
+                        id = assetTypeId,
+                        name = GetAssetTypeName(assetTypeId)
+                    }
+                });
+            }
+
+            return states.ToArray();
+        }
+
+        private static string GetAssetTypeName(int assetTypeId)
+        {
+            return assetTypeId switch
+            {
+                2 => "T-Shirt",
+                8 => "Hat",
+                11 => "Shirt",
+                12 => "Pants",
+                16 => "Face",
+                17 => "Head",
+                21 => "Face Accessory",
+                24 or 27 => "Gear",
+                32 => "Package",
+                41 => "Hair",
+                42 or 43 => "Hat",
+                _ => "Asset",
+            };
         }
     }
 }

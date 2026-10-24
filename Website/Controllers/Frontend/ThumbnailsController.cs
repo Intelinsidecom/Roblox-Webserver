@@ -344,10 +344,6 @@ public class ThumbnailsController : ControllerBase
         var exists = await UserQueries.UserExistsAsync(connStr, userId, cancellationToken);
         if (!exists) return NotFound(new { error = "User not found" });
 
-        var url = await ThumbnailQueries.GetUserHeadshotUrlAsync(connStr, userId, cancellationToken);
-        if (!string.IsNullOrWhiteSpace(url))
-            return Redirect(url);
-
         var targetWidth = width.GetValueOrDefault(352);
         var targetHeight = height.GetValueOrDefault(352);
         var configBuilder = new AvatarRenderConfigBuilder();
@@ -372,6 +368,10 @@ public class ThumbnailsController : ControllerBase
         {
         }
 
+        var url = await ThumbnailQueries.GetUserHeadshotUrlAsync(connStr, userId, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(url))
+            return Redirect(url);
+
         var save = await _thumbnailService.RenderAvatarAsync("headshot", userId, targetWidth, targetHeight, cancellationToken);
         var hash = save.Hash;
         var baseUrl = _configuration["Thumbnails:ThumbnailUrl"];
@@ -386,7 +386,7 @@ public class ThumbnailsController : ControllerBase
         try
         {
             var cacheRepo = new AvatarThumbnailCacheRepository();
-            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "headshot", targetWidth, targetHeight, cancellationToken);
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "headshot", targetWidth, targetHeight, userId, cancellationToken);
         }
         catch
         {
@@ -442,7 +442,7 @@ public class ThumbnailsController : ControllerBase
         try
         {
             var cacheRepo = new AvatarThumbnailCacheRepository();
-            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, cancellationToken);
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, userId, cancellationToken);
         }
         catch
         {
@@ -559,7 +559,7 @@ public class ThumbnailsController : ControllerBase
         try
         {
             var cacheRepo = new AvatarThumbnailCacheRepository();
-            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, cancellationToken);
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, userId, cancellationToken);
         }
         catch
         {
@@ -757,7 +757,7 @@ public class ThumbnailsController : ControllerBase
             try
             {
                 var cacheRepo = new AvatarThumbnailCacheRepository();
-                await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, cancellationToken);
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", targetWidth, targetHeight, userId, cancellationToken);
             }
             catch
             {
@@ -946,7 +946,7 @@ public class ThumbnailsController : ControllerBase
     }
 
     [HttpGet("Thumbs/Avatar.ashx")]
-    public async Task<IActionResult> AvatarLegacy([FromQuery] int x, [FromQuery] int y, [FromQuery] long userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> AvatarLegacy([FromQuery] int x, [FromQuery] int y, [FromQuery] int width, [FromQuery] int height, [FromQuery] long userId, CancellationToken cancellationToken)
     {
         if (userId <= 0)
             return NotFound();
@@ -959,23 +959,60 @@ public class ThumbnailsController : ControllerBase
         if (!exists)
             return NotFound();
 
-        var url = await ThumbnailQueries.GetUserThumbnailUrlAsync(connStr, userId, cancellationToken);
+        var w = Math.Clamp(x > 0 ? x : width, 1, 2048);
+        var h = Math.Clamp(y > 0 ? y : height, 1, 2048);
+        var configBuilder = new AvatarRenderConfigBuilder();
+        var config = await configBuilder
+            .BuildAvatarRenderConfigAsync(connStr, userId, "avatar", w, h, cancellationToken)
+            .ConfigureAwait(false);
+        var configHash = config.configHash;
 
-        if (!string.IsNullOrWhiteSpace(url))
+        try
         {
-            var fileName = Path.GetFileName(new Uri(url).AbsolutePath);
-            var outputDir = _configuration["Thumbnails:OutputDirectory"];
-            if (!string.IsNullOrWhiteSpace(outputDir))
+            var cacheRepo = new AvatarThumbnailCacheRepository();
+            var (found, fileName) = await cacheRepo.TryGetAsync(connStr, configHash, cancellationToken);
+            if (found && !string.IsNullOrWhiteSpace(fileName))
             {
-                var filePath = Path.Combine(outputDir, fileName);
-                if (System.IO.File.Exists(filePath))
-                    return Redirect(url);
+                var baseCachedUrl = GetCdnBaseUrl();
+                var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
+                await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr, userId, cachedFullUrl, cancellationToken);
+                return Redirect(cachedFullUrl);
+            }
+        }
+        catch
+        {
+        }
+
+        var hasExplicitDimensions = x > 0 || y > 0 || width > 0 || height > 0;
+        if (!hasExplicitDimensions)
+        {
+            var url = await ThumbnailQueries.GetUserThumbnailUrlAsync(connStr, userId, cancellationToken);
+
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                var fileName = Path.GetFileName(new Uri(url).AbsolutePath);
+                var outputDir = _configuration["Thumbnails:OutputDirectory"];
+                if (!string.IsNullOrWhiteSpace(outputDir))
+                {
+                    var filePath = Path.Combine(outputDir, fileName);
+                    if (System.IO.File.Exists(filePath))
+                        return Redirect(url);
+                }
             }
         }
 
-        var save = await _thumbnailService.RenderAvatarAsync("avatar", userId, cancellationToken: cancellationToken);
+        var save = await _thumbnailService.RenderAvatarAsync("avatar", userId, w, h, cancellationToken);
         var baseUrl = GetCdnBaseUrl();
         var fullUrl = CombineUrl(baseUrl, save.FileName);
+
+        try
+        {
+            var cacheRepo = new AvatarThumbnailCacheRepository();
+            await cacheRepo.UpsertAsync(connStr, configHash, save.Hash, save.FileName, "avatar", w, h, userId, cancellationToken);
+        }
+        catch
+        {
+        }
 
         await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr, userId, fullUrl, cancellationToken);
 

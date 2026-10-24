@@ -44,6 +44,19 @@ public class ThumbnailsApiController : ControllerBase
         var size = Request.Query["size"].FirstOrDefault();
         var format = Request.Query["format"].FirstOrDefault();
 
+        int targetWidth = 100, targetHeight = 100;
+        if (!string.IsNullOrWhiteSpace(size))
+        {
+            var parts = size.Split('x', 'X');
+            if (parts.Length == 2 && 
+                int.TryParse(parts[0], out var w) && 
+                int.TryParse(parts[1], out var h))
+            {
+                targetWidth = Math.Clamp(w, 1, 1024);
+                targetHeight = Math.Clamp(h, 1, 1024);
+            }
+        }
+
         var allUserIds = new List<string>();
         foreach (var kv in Request.Query.Where(kv => kv.Key == "userIds"))
             allUserIds.AddRange(kv.Value);
@@ -74,7 +87,7 @@ public class ThumbnailsApiController : ControllerBase
 
                 if (string.IsNullOrWhiteSpace(headshotUrl))
                 {
-                    var result = await _thumbnailService.RenderAvatarAsync("headshot", userId, 100, 100, cancellationToken)
+                    var result = await _thumbnailService.RenderAvatarAsync("headshot", userId, targetWidth, targetHeight, cancellationToken)
                         .ConfigureAwait(false);
                     var baseUrl = _configuration["Thumbnails:ThumbnailUrl"];
                     if (string.IsNullOrWhiteSpace(baseUrl))
@@ -163,5 +176,130 @@ public class ThumbnailsApiController : ControllerBase
         }
 
         return Content(Serialize(new { data }), "application/json");
+    }
+
+    /// <summary>
+    /// GET /thumbnail/place-thumbnails?placeId=
+    /// </summary>
+    [HttpGet("thumbnail/place-thumbnails")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPlaceThumbnails(
+        [FromQuery] long placeId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var connStr = _configuration.GetConnectionString("Default");
+            if (string.IsNullOrWhiteSpace(connStr) || placeId <= 0)
+            {
+                return Content(Serialize(new
+                {
+                    IsMobile = false,
+                    IsVideoAutoplayedOnReady = false,
+                    thumbnailCount = 0,
+                    thumbnails = new object[] { }
+                }), "application/json");
+            }
+
+            var universeId = await Games.GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, placeId, cancellationToken);
+            if (!universeId.HasValue)
+            {
+                return Content(Serialize(new
+                {
+                    IsMobile = false,
+                    IsVideoAutoplayedOnReady = false,
+                    thumbnailCount = 0,
+                    thumbnails = new object[] { }
+                }), "application/json");
+            }
+
+            var placeThumbnails = await Thumbnails.PlaceThumbnail.GetPlaceThumbnailsAsync(connStr, universeId.Value, cancellationToken);
+            
+            var thumbnails = new List<object>();
+            foreach (var thumb in placeThumbnails)
+            {
+                var thumbnailType = thumb.GetType().GetProperty("type")?.GetValue(thumb)?.ToString();
+                var url = thumb.GetType().GetProperty("url")?.GetValue(thumb)?.ToString();
+                var videoUrl = thumb.GetType().GetProperty("videoUrl")?.GetValue(thumb)?.ToString();
+                var assetId = thumb.GetType().GetProperty("id")?.GetValue(thumb);
+                var sortOrder = thumb.GetType().GetProperty("sortOrder")?.GetValue(thumb);
+                
+                if (thumbnailType == "image" && !string.IsNullOrWhiteSpace(url))
+                {
+                    thumbnails.Add(new
+                    {
+                        AssetId = assetId != null ? Convert.ToInt64(assetId) : placeId,
+                        AssetTypeId = 1, // Image
+                        Url = url,
+                        IsFinal = true,
+                        AssetHash = (string?)null
+                    });
+                }
+                else if (thumbnailType == "video" && !string.IsNullOrWhiteSpace(videoUrl))
+                {
+                    thumbnails.Add(new
+                    {
+                        AssetId = assetId != null ? Convert.ToInt64(assetId) : placeId,
+                        AssetTypeId = 33, // Video
+                        Url = videoUrl,
+                        IsFinal = true,
+                        AssetHash = (string?)null
+                    });
+                }
+            }
+
+            // If no custom thumbnails, add auto-generated thumbnail
+            if (thumbnails.Count == 0)
+            {
+                var assetRepo = new Assets.AssetMetadataRepository();
+                var placeAsset = await assetRepo.GetPlaceByIdAsync(connStr, universeId.Value, cancellationToken);
+                
+                if (placeAsset != null && !string.IsNullOrWhiteSpace(placeAsset.PlaceGeneratedThumbnailUrl))
+                {
+                    thumbnails.Add(new
+                    {
+                        AssetId = placeId,
+                        AssetTypeId = 1,
+                        Url = placeAsset.PlaceGeneratedThumbnailUrl,
+                        IsFinal = true,
+                        AssetHash = (string?)null
+                    });
+                }
+            }
+
+            // Default fallback
+            if (thumbnails.Count == 0)
+            {
+                thumbnails.Add(new
+                {
+                    AssetId = placeId,
+                    AssetTypeId = 1,
+                    Url = "/images/DefaultPlaceIcon.png",
+                    IsFinal = true,
+                    AssetHash = (string?)null
+                });
+            }
+
+            var payload = new
+            {
+                IsMobile = false,
+                IsVideoAutoplayedOnReady = false,
+                thumbnailCount = thumbnails.Count,
+                thumbnails = thumbnails
+            };
+
+            return Content(Serialize(payload), "application/json");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] GetPlaceThumbnails placeId={placeId}: {ex}");
+            return Content(Serialize(new
+            {
+                IsMobile = false,
+                IsVideoAutoplayedOnReady = false,
+                thumbnailCount = 0,
+                thumbnails = new object[] { }
+            }), "application/json");
+        }
     }
 }

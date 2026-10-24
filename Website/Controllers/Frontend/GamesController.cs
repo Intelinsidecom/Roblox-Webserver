@@ -1100,6 +1100,230 @@ namespace RobloxWebserver.Controllers
             return Content(json, "application/json");
         }
 
+        /// <summary>
+        /// GET /games/list-users-games-json?userid=&startIndex=&pageSize=
+        /// </summary>
+        [HttpGet("games/list-users-games-json")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ListUserGamesJson(
+            [FromQuery] long userid,
+            [FromQuery] int startIndex = 0,
+            [FromQuery] int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connStr) || userid <= 0)
+                    return Content("[]", "application/json");
+
+                if (startIndex < 0) startIndex = 0;
+                if (pageSize <= 0 || pageSize > 100) pageSize = Math.Min(Math.Max(pageSize, 1), 100);
+
+                var games = await GamesQueries.GetUserPublicGamesAsync(
+                    userid, 1, startIndex, pageSize, 1, connStr, cancellationToken).ConfigureAwait(false);
+
+                var payload = games.Select(g => new
+                {
+                    PlaceID = g.PlaceId,
+                    Name = g.Name,
+                    CreatorName = g.CreatorName,
+                    CreatorID = g.CreatorUserId,
+                    ImageId = g.PlaceId,
+                    TotalUpVotes = g.UpVotes,
+                    TotalDownVotes = g.DownVotes,
+                    UniverseID = g.UniverseId,
+                    HasErrorOcurred = false
+                }).ToList();
+
+                var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
+                return Content(json, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading list-users-games-json for user {UserId}", userid);
+                return Content("[]", "application/json");
+            }
+        }
+
+        /// <summary>
+        /// GET /PlaceItem/GameDetailsVotingPanelJson?placeId=
+        /// </summary>
+        [HttpGet("~/PlaceItem/GameDetailsVotingPanelJson")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GameDetailsVotingPanelJson(
+            [FromQuery] long placeId,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connStr) || placeId <= 0)
+                    return Content("{}", "application/json");
+
+                var votingService = new Games.VotingService(connStr);
+                var (upVotes, downVotes) = await votingService.GetAssetVotesAsync(placeId, cancellationToken);
+
+                long userId = 0;
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                bool isUserAuthenticated = !string.IsNullOrWhiteSpace(userIdClaim) && long.TryParse(userIdClaim, out userId) && userId > 0;
+
+                bool? userVote = null;
+                string reasonForNotVoteable = null;
+                bool canVote = false;
+
+                if (isUserAuthenticated)
+                {
+                    userVote = await votingService.GetUserVoteAsync(userId, placeId, cancellationToken);
+                    
+                    var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, placeId, cancellationToken);
+                    if (universeId.HasValue)
+                    {
+                        var hasVisited = await VisitTracking.HasVisitedAsync(userId, universeId.Value, connStr);
+                        if (hasVisited)
+                        {
+                            canVote = true;
+                            reasonForNotVoteable = "";
+                        }
+                        else
+                        {
+                            canVote = false;
+                            reasonForNotVoteable = "PlayGame";
+                        }
+                    }
+                    else
+                    {
+                        canVote = false;
+                        reasonForNotVoteable = "PlayGame";
+                    }
+                }
+                else
+                {
+                    canVote = false;
+                    reasonForNotVoteable = "GuestUser";
+                }
+
+                var payload = new
+                {
+                    ShowVotes = true,
+                    VotingModel = new
+                    {
+                        UpVotes = upVotes,
+                        DownVotes = downVotes,
+                        CanVote = canVote,
+                        UserVote = userVote,
+                        ReasonForNotVoteable = reasonForNotVoteable
+                    }
+                };
+
+                var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
+                return Content(json, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading GameDetailsVotingPanelJson for place {PlaceId}", placeId);
+                return Content("{}", "application/json");
+            }
+        }
+
+        /// <summary>
+        /// GET /games/moreresultsuncached-json?sortFilter=MyRecent|MyFavorite&StartRows=&MaxRows=
+        /// </summary>
+        [HttpGet("~/games/moreresultsuncached-json")]
+        [AllowAnonymous]
+        public async Task<IActionResult> MoreResultsUncachedJson(
+            [FromQuery] string sortFilter,
+            [FromQuery] int StartRows = 0,
+            [FromQuery] int MaxRows = 15,
+            [FromQuery] bool searchAllGames = true,
+            [FromQuery] bool filterByDeviceType = true,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var connStr = _configuration.GetConnectionString("Default");
+                if (string.IsNullOrWhiteSpace(connStr))
+                    return Content("[]", "application/json");
+
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrWhiteSpace(userIdClaim) || !long.TryParse(userIdClaim, out var userId) || userId <= 0)
+                    return Content("[]", "application/json");
+
+                if (StartRows < 0) StartRows = 0;
+                if (MaxRows <= 0 || MaxRows > 100) MaxRows = Math.Min(Math.Max(MaxRows, 1), 100);
+
+                List<long> universeIds;
+
+                if (string.Equals(sortFilter, "MyRecent", StringComparison.OrdinalIgnoreCase))
+                {
+                    universeIds = await GamesQueries.GetRecentlyVisitedUniverseIdsAsync(userId, connStr, cancellationToken).ConfigureAwait(false);
+                }
+                else if (string.Equals(sortFilter, "MyFavorite", StringComparison.OrdinalIgnoreCase))
+                {
+                    universeIds = await GamesQueries.GetFavoritePlaceUniverseIdsAsync(userId, connStr, cancellationToken).ConfigureAwait(false);
+                }
+                else
+                {
+                    return Content("[]", "application/json");
+                }
+
+                universeIds = universeIds.Skip(StartRows).Take(MaxRows).ToList();
+
+                if (universeIds.Count > 3)
+                    universeIds = universeIds.Take(3).ToList();
+
+                if (universeIds.Count == 0)
+                    return Content("[]", "application/json");
+
+                var games = await GamesQueries.GetGameEntriesByUniverseIdsAsync(universeIds, connStr, cancellationToken).ConfigureAwait(false);
+                var byUniverse = games.ToDictionary(g => g.UniverseId);
+                var ordered = universeIds.Where(id => byUniverse.ContainsKey(id)).Select(id => byUniverse[id]).ToList();
+
+                var arbiterUrl = _configuration["ArbiterUrl"] ?? "http://localhost:5000";
+                var liveCounts = await GamesQueries.GetLivePlayerCountsForUniverseIdsAsync(
+                    ordered.Select(g => g.UniverseId).Distinct().ToList(), connStr, arbiterUrl, cancellationToken).ConfigureAwait(false);
+
+                foreach (var game in ordered)
+                {
+                    if (liveCounts.TryGetValue(game.UniverseId, out var count))
+                        game.Playing = count;
+                }
+
+                var payload = ordered.Select(g => new
+                {
+                    PlaceID = g.PlaceId,
+                    Name = g.Name,
+                    CreatorName = g.CreatorName,
+                    CreatorID = g.CreatorUserId,
+                    ImageId = g.PlaceId,
+                    TotalUpVotes = g.UpVotes,
+                    TotalDownVotes = g.DownVotes,
+                    UniverseID = g.UniverseId,
+                    HasErrorOcurred = false
+                }).ToList();
+
+                var json = JsonSerializer.Serialize(payload, new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = null,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
+                return Content(json, "application/json");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading moreresultsuncached-json sort {SortFilter}", sortFilter);
+                return Content("[]", "application/json");
+            }
+        }
+
         [HttpPost("~/game-instances/shutdown")]
         [Authorize]
         public async Task<IActionResult> ShutdownInstance(
