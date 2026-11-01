@@ -46,6 +46,16 @@ namespace Avatar
                 renderType = renderType,
                 width = width,
                 height = height,
+                playerAvatarType = avatarStateFull.PlayerAvatarType,
+                scales = new
+                {
+                    height = avatarStateFull.Scales.height,
+                    width = avatarStateFull.Scales.width,
+                    head = avatarStateFull.Scales.head,
+                    depth = avatarStateFull.Scales.depth,
+                    proportion = avatarStateFull.Scales.proportion,
+                    bodyType = avatarStateFull.Scales.bodyType
+                },
                 bodyColors = new
                 {
                     head = avatarStateFull.BodyColors.headColorId,

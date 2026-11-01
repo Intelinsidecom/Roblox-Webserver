@@ -1,0 +1,14 @@
+{
+  "Mode": "Thumbnail",
+  "Settings": {
+    "Type": "Avatar_R15_Action",
+    "Arguments": [
+      "%baseUrl%",
+      "%baseUrl%/v1.1/avatar-fetch?placeId=0&userId=%userId%",
+      "PNG",
+      %x%,
+      %y%
+    ]
+  },
+  "Arguments": {}
+}

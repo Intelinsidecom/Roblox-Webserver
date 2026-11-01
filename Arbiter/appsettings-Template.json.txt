@@ -65,5 +65,23 @@
     "UploadUrl": "http://localhost:5077/api/thumbnails/upload",
     "AccessKey": "ChangeMe",
     "WebsiteUrl": "http://localhost:5077"
+  },
+  "RccConfigs": {
+    "2016": {
+      "ScriptsDir": "Scripts/2016",
+      "ForceJson": false
+    },
+    "2017": {
+      "ScriptsDir": "Scripts/2017",
+      "ForceJson": false
+    },
+    "2018": {
+      "ScriptsDir": "Scripts/2018",
+      "ForceJson": true
+    },
+    "2020": {
+      "ScriptsDir": "Scripts/2020",
+      "ForceJson": true
+    }
   }
 }

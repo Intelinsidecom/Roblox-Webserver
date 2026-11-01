@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace RCCArbiter
         {
             public RCCProcessManager Proc { get; set; } = default!;
             public string GameId { get; set; } = string.Empty;
+            public string Year { get; set; } = string.Empty;
             public DateTime CreatedUtc;
             public DateTime LastUsedUtc;
         }
@@ -31,13 +33,73 @@ namespace RCCArbiter
             _cleanupTimer = new Timer(_ => Program.RunGuarded("GameServerRccManager.CleanupExpired", () => CleanupExpired(null)), null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
         }
 
+        public string ResolveYear(string? requestedYear)
+        {
+            var defaultYear = _config["RCCService:Year"];
+            if (string.IsNullOrWhiteSpace(defaultYear))
+                defaultYear = "2016";
+
+            var candidate = requestedYear?.Trim();
+            if (string.IsNullOrWhiteSpace(candidate))
+                return defaultYear;
+
+            if (!IsSafeYearFolderName(candidate))
+            {
+                return defaultYear;
+            }
+
+            if (!IsYearInstalled(candidate))
+            {
+                return defaultYear;
+            }
+
+            return candidate;
+        }
+
+        public bool IsForceJson(string year)
+        {
+            return string.Equals(_config[$"RccConfigs:{year}:ForceJson"], "true", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public string DefaultYear => string.IsNullOrWhiteSpace(_config["RCCService:Year"]) ? "2016" : _config["RCCService:Year"]!;
+        private static bool IsSafeYearFolderName(string year)
+        {
+            if (year == "." || year == "..")
+                return false;
+
+            foreach (var c in year)
+            {
+                if (!char.IsLetterOrDigit(c) && c != '.' && c != '-' && c != '_')
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsYearInstalled(string year)
+        {
+            var executable = _config["RCCService:Executable"];
+            if (string.IsNullOrWhiteSpace(executable))
+                executable = "RCCService.exe";
+
+            var rccRoot = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "RCC"));
+            var yearDir = Path.GetFullPath(Path.Combine(rccRoot, year));
+
+            if (!yearDir.StartsWith(rccRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            return Directory.Exists(yearDir) && File.Exists(Path.Combine(yearDir, executable));
+        }
+
         /// <summary>
         /// Reserve a dedicated RCC instance for a game server
         /// </summary>
-        public (string url, IDisposable lease)? ReserveForGameServer(string gameId)
+        public (string url, IDisposable lease)? ReserveForGameServer(string gameId, string? year = null)
         {
             if (string.IsNullOrWhiteSpace(gameId))
                 return null;
+
+            var effectiveYear = ResolveYear(year);
 
             lock (_lock)
             {
@@ -51,9 +113,9 @@ namespace RCCArbiter
                 try
                 {
                     int port = FindFreePort();
-                    Console.WriteLine($"Creating RCC instance for game {gameId} on port {port}");
+                    Console.WriteLine($"Creating RCC instance ({effectiveYear}) for game {gameId} on port {port}");
                     
-                    var proc = new RCCProcessManager(_config, "RCCService", port);
+                    var proc = new RCCProcessManager(_config, "RCCService", port, effectiveYear);
                     
                     
                     proc.Start();
@@ -67,6 +129,7 @@ namespace RCCArbiter
                     { 
                         Proc = proc, 
                         GameId = gameId,
+                        Year = effectiveYear,
                         CreatedUtc = DateTime.UtcNow,
                         LastUsedUtc = DateTime.UtcNow
                     };
@@ -95,6 +158,19 @@ namespace RCCArbiter
                     instance.LastUsedUtc = DateTime.UtcNow;
                     return instance.Proc.ServiceUrl;
                 }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get the RCC year a game server instance is running on
+        /// </summary>
+        public string? GetGameServerYear(string gameId)
+        {
+            lock (_lock)
+            {
+                if (_reservedInstances.TryGetValue(gameId, out var instance))
+                    return instance.Year;
                 return null;
             }
         }

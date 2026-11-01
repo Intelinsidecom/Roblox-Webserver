@@ -49,6 +49,12 @@ namespace Website.Controllers.Client
             return Ok("success");
         }
 
+        [HttpGet("games/start")]
+        public IActionResult StartGame()
+        {
+            return Ok();
+        }
+
         [HttpPost("/game/validate-machine")]
         public IActionResult ValidateMachine()
         {

@@ -1,0 +1,14 @@
+{
+  "Mode": "Thumbnail",
+  "Settings": {
+    "Type": "Place",
+    "Arguments": [
+      "%baseUrl%/asset/?id=%placeId%",
+      "PNG",
+      %x%,
+      %y%,
+      "%baseUrl%"
+    ]
+  },
+  "Arguments": {}
+}

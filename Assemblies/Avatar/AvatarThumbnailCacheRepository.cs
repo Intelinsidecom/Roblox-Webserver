@@ -156,6 +156,24 @@ where user_id = @uid";
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes the 3D cache rows matching the given hashes (no-op when empty).
+        /// </summary>
+        public async Task Delete3DCacheByHashesAsync(string connectionString, string[] hashes, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("connectionString is required", nameof(connectionString));
+            if (hashes == null || hashes.Length == 0)
+                return;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+            using var cmd = new NpgsqlCommand("delete from avatar_3d_cache where config_hash = any(@hashes)", conn);
+            cmd.Parameters.AddWithValue("hashes", hashes);
+            await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task WipeUserCacheAsync(string connectionString, long userId, string? outputDirectory = null, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

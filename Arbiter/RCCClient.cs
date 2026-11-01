@@ -13,11 +13,15 @@ namespace RCCArbiter
         private IRCCServiceSoap? _channel;
         private readonly object _channelLock = new();
         private readonly string _serviceUrl;
+        private readonly string? _year;
+        private readonly bool _forceJson;
 
-        public RCCClient(string serviceUrl)
+        public RCCClient(string serviceUrl, string? year = null, bool forceJson = false)
         {
             _serviceUrl = serviceUrl;
-            
+            _year = year;
+            _forceJson = forceJson;
+
             var binding = new BasicHttpBinding
             {
                 MaxReceivedMessageSize = 2147483647,
@@ -93,31 +97,42 @@ namespace RCCArbiter
 
         public bool IsJsonPreferred(bool forceJson)
         {
-            // 1) Per-call override always wins
+            // 1) Per-instance flag always wins
+            if (_forceJson)
+                return true;
+
+            // 2) Per-call override
             if (forceJson)
                 return true;
 
             try
             {
-                // 2) AppSettings override: RCCService:ForceJson and Rendering:Year
+                // 3) AppSettings override: check RccConfigs first, then legacy keys
                 var config = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                     .Build();
 
-                var forceJsonConfig = config["RCCService:ForceJson"];
-                if (string.Equals(forceJsonConfig, "true", StringComparison.OrdinalIgnoreCase))
+                var yearToUse = !string.IsNullOrWhiteSpace(_year) ? _year : config["RCCService:Year"];
+
+                if (!string.IsNullOrWhiteSpace(yearToUse))
+                {
+                    var forceJsonVal = config[$"RccConfigs:{yearToUse}:ForceJson"];
+                    if (forceJsonVal != null)
+                        return string.Equals(forceJsonVal, "true", StringComparison.OrdinalIgnoreCase);
+                }
+
+                var forceJsonLegacy = config["RCCService:ForceJson"];
+                if (string.Equals(forceJsonLegacy, "true", StringComparison.OrdinalIgnoreCase))
                     return true;
 
                 var renderingYear = config["Rendering:Year"];
                 if (!string.IsNullOrWhiteSpace(renderingYear) && int.TryParse(renderingYear, out var cfgYear))
                 {
-                    // If a year is configured, trust it as the RCC vintage.
-                    // Treat 2018 and newer RCC as JSON-capable: prefer JSON when available.
                     return cfgYear >= 2018;
                 }
 
-                // 3) Fallback: probe RCC version string over SOAP
+                // 4) Fallback: probe RCC version string over SOAP
                 var version = GetVersion();
                 if (string.IsNullOrWhiteSpace(version))
                     return false;

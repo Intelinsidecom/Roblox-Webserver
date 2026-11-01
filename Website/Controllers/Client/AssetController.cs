@@ -31,15 +31,38 @@ namespace Website.Controllers
             _templateService = templateService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAsset(
-            [FromQuery] long? id,
+        [HttpGet("/v1/asset")]
+        public async Task<IActionResult> GetAssetV1(
+            [FromQuery(Name = "id")] long? id,
+            [FromQuery(Name = "assetversionid")] long? assetVersionId,
             [FromQuery] long? universeId,
             [FromQuery] string? assetName,
             [FromQuery(Name = "serverplaceid")] long? serverPlaceId = null,
             [FromQuery(Name = "ApiKey")] string? apiKey = null,
             [FromQuery(Name = "skipSigningScripts")] string? skipSigningScripts = null)
         {
+            return await GetAsset(
+                id,
+                assetVersionId,
+                universeId,
+                assetName,
+                serverPlaceId,
+                apiKey,
+                skipSigningScripts);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAsset(
+            [FromQuery(Name = "id")] long? id,
+            [FromQuery(Name = "assetversionid")] long? assetVersionId,
+            [FromQuery] long? universeId,
+            [FromQuery] string? assetName,
+            [FromQuery(Name = "serverplaceid")] long? serverPlaceId = null,
+            [FromQuery(Name = "ApiKey")] string? apiKey = null,
+            [FromQuery(Name = "skipSigningScripts")] string? skipSigningScripts = null)
+        {
+            if (!id.HasValue && assetVersionId.HasValue)
+                id = assetVersionId;
             if (universeId.HasValue && !string.IsNullOrWhiteSpace(assetName))
             {
                 long actualUniverseId = universeId.Value;

@@ -14,6 +14,24 @@ namespace Website.Controllers
     [Route("v1/avatar-fetch")]
     public class AvatarFetchV10Controller : ControllerBase
     {
+        private static readonly Dictionary<int, string> AnimationTypeMap = new()
+        {
+            { 48, "climb" },
+            { 49, "death" },
+            { 50, "fall" },
+            { 51, "idle" },
+            { 52, "jump" },
+            { 53, "run" },
+            { 54, "swim" },
+            { 55, "walk" },
+            { 56, "pose" },
+        };
+
+        private static string GetAnimationKey(int assetTypeId)
+        {
+            return AnimationTypeMap.TryGetValue(assetTypeId, out var key) ? key : null;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAvatarFetch(
             [FromQuery] long? userId,
@@ -77,51 +95,38 @@ namespace Website.Controllers
                 return StatusCode(403);
             }
 
-            var wornIds = state.Assets.Select(a => a.id).ToArray();
             var assetAndTypeList = new List<object>();
             var gearIds = new List<long>();
+            var animationAssetIds = new Dictionary<string, long>();
 
-            if (wornIds.Length > 0)
+            foreach (var asset in state.Assets)
             {
-                try
+                var assetId = asset.id;
+                var assetTypeId = asset.assetType.id;
+
+                var animationKey = GetAnimationKey(assetTypeId);
+                if (animationKey != null)
                 {
-                    await using var conn = new NpgsqlConnection(connectionString);
-                    await conn.OpenAsync();
-
-                    const string sql = "select asset_id, asset_type_id from assets where asset_id = any(@ids)";
-                    await using var cmd = new NpgsqlCommand(sql, conn);
-                    cmd.Parameters.AddWithValue("ids", wornIds);
-
-                    await using var reader = await cmd.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
+                    if (!animationAssetIds.ContainsKey(animationKey))
                     {
-                        var assetId = reader.GetInt64(0);
-                        var assetTypeId = reader.IsDBNull(1) ? 0 : reader.GetInt32(1);
-
-                        var entry = new
-                        {
-                            assetId,
-                            assetTypeId
-                        };
-
-                        assetAndTypeList.Add(entry);
-
-                        if (assetTypeId == 19)
-                        {
-                            gearIds.Add(assetId);
-                        }
+                        animationAssetIds[animationKey] = assetId;
                     }
+                    continue;
                 }
-                catch
+
+                if (assetTypeId == 61)
+                    continue;
+
+                assetAndTypeList.Add(new { assetId, assetTypeId });
+
+                if (assetTypeId == 19)
                 {
-                    assetAndTypeList = wornIds
-                        .Select(id => (object)new { assetId = id, assetTypeId = 0 })
-                        .ToList();
-                    gearIds.Clear();
+                    gearIds.Add(assetId);
                 }
             }
 
-            var accessoryVersionIds = wornIds
+            var accessoryVersionIds = state.Assets
+                .Select(a => a.id)
                 .Where(id => !gearIds.Contains(id))
                 .ToArray();
 
@@ -142,6 +147,13 @@ namespace Website.Controllers
 
             var bodyColors = new
             {
+                headColorId = state.BodyColors.headColorId,
+                leftArmColorId = state.BodyColors.leftArmColorId,
+                leftLegColorId = state.BodyColors.leftLegColorId,
+                rightArmColorId = state.BodyColors.rightArmColorId,
+                rightLegColorId = state.BodyColors.rightLegColorId,
+                torsoColorId = state.BodyColors.torsoColorId,
+
                 HeadColor = state.BodyColors.headColorId,
                 LeftArmColor = state.BodyColors.leftArmColorId,
                 LeftLegColor = state.BodyColors.leftLegColorId,
@@ -155,12 +167,11 @@ namespace Website.Controllers
                 Height = state.Scales.height,
                 Width = state.Scales.width,
                 Head = state.Scales.head,
-                Depth = 1.0,
-                Proportion = 0.0,
-                BodyType = 0.0
+                Depth = state.Scales.depth,
+                Proportion = state.Scales.proportion,
+                BodyType = state.Scales.bodyType
             };
 
-            var animationAssetIds = new { };
             var emotes = Array.Empty<object>();
 
             var publicBaseUrl = config["PublicBaseUrl"]?.TrimEnd('/') ?? string.Empty;
@@ -174,13 +185,13 @@ namespace Website.Controllers
 
             var response = new
             {
-                resolvedAvatarType = "R6",
+                resolvedAvatarType = state.PlayerAvatarType,
                 accessoryVersionIds,
                 equippedGearVersionIds,
                 assetAndAssetTypeIds = assetAndTypeList.ToArray(),
                 backpackGearVersionIds,
                 animationAssetIds,
-                playerAvatarType = "R6",
+                playerAvatarType = state.PlayerAvatarType,
                 scales,
                 bodyColorsUrl,
                 bodyColors,

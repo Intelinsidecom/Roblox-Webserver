@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,7 +21,7 @@ namespace Avatar
             if (userId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(userId));
 
-            // Load current avatar state (body colors + worn assets)
+            // Load current avatar state (body colors + scales + body type + worn assets)
             var repo = new AvatarRepository();
             var state = await repo.GetAvatarAsync(connectionString, userId, cancellationToken).ConfigureAwait(false);
 
@@ -62,6 +63,18 @@ namespace Avatar
 
             sb.Append("assets:");
             sb.Append(string.Join(",", assetIds));
+
+            // Scales and body type change how the avatar is built, so they must invalidate
+            // the cached hash too. "R" keeps 1.0 distinct from 1 without churn.
+            var s = state.Scales ?? new ScalesState();
+            sb.Append("|scales:");
+            sb.Append("height=").Append(s.height.ToString("R", CultureInfo.InvariantCulture)).Append(';');
+            sb.Append("width=").Append(s.width.ToString("R", CultureInfo.InvariantCulture)).Append(';');
+            sb.Append("head=").Append(s.head.ToString("R", CultureInfo.InvariantCulture)).Append(';');
+            sb.Append("depth=").Append(s.depth.ToString("R", CultureInfo.InvariantCulture)).Append(';');
+            sb.Append("proportion=").Append(s.proportion.ToString("R", CultureInfo.InvariantCulture)).Append(';');
+            sb.Append("bodyType=").Append(s.bodyType.ToString("R", CultureInfo.InvariantCulture)).Append('|');
+            sb.Append("type:").Append(state.PlayerAvatarType ?? AvatarConfigRepository.DefaultPlayerAvatarType);
 
             using var sha = SHA256.Create();
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());

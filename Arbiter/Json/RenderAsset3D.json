@@ -1,0 +1,16 @@
+{
+  "Mode": "Thumbnail",
+  "Settings": {
+    "Type": "BodyPart",
+    "Arguments": [
+      "%baseUrl%/asset/?id=%assetId%",
+      "%baseUrl%",
+      "OBJ",
+      %x%,
+      %y%,
+      "%baseUrl%/v1/asset/?id=1785197",
+      ""
+    ]
+  },
+  "Arguments": {}
+}

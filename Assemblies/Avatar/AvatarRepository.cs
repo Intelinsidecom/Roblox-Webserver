@@ -12,6 +12,11 @@ namespace Avatar
         public BodyColorsState BodyColors { get; set; } = new BodyColorsState();
         public ScalesState Scales { get; set; } = new ScalesState();
         public AvatarAssetState[] Assets { get; set; } = Array.Empty<AvatarAssetState>();
+
+        /// <summary>
+        /// The body type the avatar is built with: "R6" or "R15".
+        /// </summary>
+        public string PlayerAvatarType { get; set; } = AvatarConfigRepository.DefaultPlayerAvatarType;
     }
 
     public sealed class BodyColorsState
@@ -26,9 +31,14 @@ namespace Avatar
 
     public sealed class ScalesState
     {
-        public double height { get; set; } = 1.0;
-        public double width { get; set; } = 1.0;
-        public double head { get; set; } = 1.0;
+        public double height { get; set; } = AvatarConfigRepository.DefaultHeight;
+        public double width { get; set; } = AvatarConfigRepository.DefaultWidth;
+        public double head { get; set; } = AvatarConfigRepository.DefaultHead;
+
+        // Only meaningful for R15 avatars; kept so avatar-fetch can report the full set
+        public double depth { get; set; } = AvatarConfigRepository.DefaultDepth;
+        public double proportion { get; set; } = AvatarConfigRepository.DefaultProportion;
+        public double bodyType { get; set; } = AvatarConfigRepository.DefaultBodyType;
     }
 
     public sealed class AvatarAssetState
@@ -47,6 +57,7 @@ namespace Avatar
     public sealed class AvatarRepository
     {
         private readonly BodyColorsRepository _bodyColorsRepository = new BodyColorsRepository();
+        private readonly AvatarConfigRepository _avatarConfigRepository = new AvatarConfigRepository();
 
         public async Task<AvatarState> GetAvatarAsync(string connectionString, long userId, CancellationToken cancellationToken = default)
         {
@@ -67,6 +78,19 @@ namespace Avatar
             state.BodyColors.leftArmColorId = bodyColors.LeftArmColorId;
             state.BodyColors.rightLegColorId = bodyColors.RightLegColorId;
             state.BodyColors.leftLegColorId = bodyColors.LeftLegColorId;
+
+            var config = await _avatarConfigRepository
+                .GetAvatarConfigAsync(connectionString, userId, cancellationToken)
+                .ConfigureAwait(false);
+
+            state.Scales.height = config.Height;
+            state.Scales.width = config.Width;
+            state.Scales.head = config.Head;
+            state.Scales.depth = config.Depth;
+            state.Scales.proportion = config.Proportion;
+            state.Scales.bodyType = config.BodyType;
+            state.PlayerAvatarType = config.PlayerAvatarType;
+
             state.Assets = await GetWornAssetStatesAsync(connectionString, userId, cancellationToken).ConfigureAwait(false);
 
             return state;

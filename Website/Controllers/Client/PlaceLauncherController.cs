@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using Common;
 
 namespace Website.Controllers.Client
 {
@@ -89,7 +90,7 @@ namespace Website.Controllers.Client
                 var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
                 var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
-                using var httpClient = new HttpClient();
+                using var httpClient = HttpClientDefaults.CreateLocalClient();
                 httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-place/{placeId}");
                 if (!response.IsSuccessStatusCode)
@@ -168,7 +169,7 @@ namespace Website.Controllers.Client
                 var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
                 var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
-                using var httpClient = new HttpClient();
+                using var httpClient = HttpClientDefaults.CreateLocalClient();
                 httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/{jobId}/status");
                 if (!response.IsSuccessStatusCode)
@@ -388,7 +389,7 @@ namespace Website.Controllers.Client
                 var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
 
-                using var httpClient = new HttpClient();
+                using var httpClient = HttpClientDefaults.CreateLocalClient();
                 httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync($"{arbiterUrl}/api/gameservers/by-private-server/{privateServerId}");
                 if (!response.IsSuccessStatusCode)
@@ -450,7 +451,7 @@ namespace Website.Controllers.Client
 
             try
             {
-                using var httpClient = new HttpClient();
+                using var httpClient = HttpClientDefaults.CreateLocalClient();
                 httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 var response = await httpClient.GetAsync(
                     $"{arbiterUrl}/api/gameservers/start-cloudedit?placeId={placeId}&maxPlayers=10&baseUrl={Uri.EscapeDataString(baseUrl)}&universeId={universeId}");
@@ -531,7 +532,7 @@ namespace Website.Controllers.Client
                 var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
                 var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
                 
-                using var httpClient = new HttpClient();
+                using var httpClient = HttpClientDefaults.CreateLocalClient();
                 httpClient.Timeout = Common.HttpClientDefaults.Timeout;
                 
                 try
@@ -634,35 +635,17 @@ namespace Website.Controllers.Client
                     machineAddress = _configuration["MachineAddress"] ?? "127.0.0.1";
                 }
 
-                var clientTicket = userId != 0 
-                    ? ""
-                    : $"guest-{userName}";
-                
-                if (userId > 0)
-                {
-                    var connStr = _configuration.GetConnectionString("Default");
-                    if (!string.IsNullOrWhiteSpace(connStr))
-                    {
-                        try
-                        {
-                            membership = await UserQueries.GetMembershipTypeAsync(connStr, userId).ConfigureAwait(false);
-                        }
-                        catch
-                        {
-                            // fallback to None
-                        }
-                    }
-                }
-
                 var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_configuration.GetConnectionString("Default"), gameid);
 
+                // Create a ticket for this join
+                string? ticketToken = null;
                 if (userId > 0)
                 {
                     if (universeId.HasValue)
                     {
                         await VisitTracking.RecordVisitAsync(userId, universeId.Value, gameid, _configuration);
                     }
-                    
+
                     // Create game presence for alternative ping tracking
                     // This is for clients that don't call ClientPresence.ashx
                     try
@@ -673,7 +656,7 @@ namespace Website.Controllers.Client
                             // User was in a different place, remove from old one
                             await _gamePresenceService.RemoveFromGameAsync(userId);
                         }
-                        
+
                         // Validate place exists before creating ticket
                         var placeExists = false;
                         try
@@ -690,7 +673,7 @@ namespace Website.Controllers.Client
 
 
                         // Create a ticket for this join
-                        var ticketToken = placeExists
+                        ticketToken = placeExists
                             ? await _tokenService.CreateGameTicketAsync(userId, gameid, jobid)
                             : null;
                         if (!string.IsNullOrEmpty(ticketToken))
@@ -704,6 +687,26 @@ namespace Website.Controllers.Client
                         Console.WriteLine($"[join.ashx] Failed to create game presence: {ex.Message}");
                     }
                 }
+
+                var clientTicket = !string.IsNullOrEmpty(ticketToken)
+                    ? ticketToken
+                    : $"guest-{userName}";
+
+                if (userId > 0)
+                {
+                    var connStr = _configuration.GetConnectionString("Default");
+                    if (!string.IsNullOrWhiteSpace(connStr))
+                    {
+                        try
+                        {
+                            membership = await UserQueries.GetMembershipTypeAsync(connStr, userId).ConfigureAwait(false);
+                        }
+                        catch
+                        {
+                            // fallback to None
+                        }
+                    }
+                }
                 
                 var joinScript = new JoinScriptData
                 {
@@ -711,6 +714,7 @@ namespace Website.Controllers.Client
                     ServerPort = serverPort,
                     ServerConnections = new[] { new ServerConnection { Address = machineAddress, Port = serverPort } },
                     PingUrl = $"{baseUrl}Game/ClientPresence.ashx?PlaceID={gameid}&userID={userId}&jobId={jobid}",
+                    ClientPresence = $"{baseUrl}Game/ClientPresence.ashx?PlaceID={gameid}&userID={userId}&jobId={jobid}",
                     UserName = userName,
                     DisplayName = displayName,
                     UserId = userId,
@@ -976,6 +980,7 @@ namespace Website.Controllers.Client
             public int ServerPort { get; set; }
             public ServerConnection[] ServerConnections { get; set; } = Array.Empty<ServerConnection>();
             public string PingUrl { get; set; } = "";
+            public string ClientPresence { get; set; } = "";
             public int PingInterval { get; set; } = 30;
             public string UserName { get; set; } = "";
             public string DisplayName { get; set; } = "";

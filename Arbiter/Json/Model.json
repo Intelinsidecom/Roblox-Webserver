@@ -1,0 +1,14 @@
+{
+  "Mode": "Thumbnail",
+  "Settings": {
+    "Type": "Model",
+    "Arguments": [
+      "%assetUrl%",
+      "%fileExtension%",
+      %x%,
+      %y%,
+      "%baseUrl%"
+    ]
+  },
+  "Arguments": {}
+}

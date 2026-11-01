@@ -17,6 +17,13 @@ namespace Website.Controllers.Client
             return Ok("OK");
         }
 
+        [HttpGet("mobile/pde")]
+        public IActionResult MobilePde()
+        {
+            return Ok("OK");
+        }
+
+
         [HttpPost("ephemeralcounters/v1.1/Counters/Increment")]
         public IActionResult IncrementCounter([FromQuery] string apiKey, [FromQuery] string counterName, [FromQuery] int amount = 1)
         {

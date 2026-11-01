@@ -137,6 +137,25 @@ namespace RCCArbiter
         private static GameServerManager? _gameServerManager;
         private static CloudEditManager? _cloudEditManager;
 
+        /// <summary>
+        /// Resolves year and forceJson for a given config section (e.g. "RCCService" or "Rendering").
+        /// Reads from root-level RccConfigs section, falling back to the section's own Year key.
+        /// </summary>
+        private static (string? year, bool forceJson) GetRccYearConfig(IConfiguration config, string section)
+        {
+            var year = config[$"{section}:Year"];
+            bool forceJson = false;
+
+            if (!string.IsNullOrWhiteSpace(year))
+            {
+                var forceJsonVal = config[$"RccConfigs:{year}:ForceJson"];
+                if (string.Equals(forceJsonVal, "true", StringComparison.OrdinalIgnoreCase))
+                    forceJson = true;
+            }
+
+            return (year, forceJson);
+        }
+
         static void Main(string[] args)
         {
             Console.WriteLine("=== RCC Service Arbiter ===");
@@ -403,7 +422,7 @@ namespace RCCArbiter
                 {
                     return null;
                 }
-                
+
                 string urlToUse = rccUrl;
                 var dedicatedRccUrl = gameServerManager.GetGameServerRccUrl(gameId);
                 if (!string.IsNullOrWhiteSpace(dedicatedRccUrl))
@@ -411,9 +430,13 @@ namespace RCCArbiter
                     urlToUse = dedicatedRccUrl;
                 }
 
+                var (year, forceJson) = _configuration != null
+                    ? GetRccYearConfig(_configuration, "Rendering")
+                    : (null, false);
+
                 try
                 {
-                    using var healthClient = new RCCClient(urlToUse);
+                    using var healthClient = new RCCClient(urlToUse, year, forceJson);
                     healthClient.GetVersion();
                 }
                 catch (Exception ex)
@@ -422,27 +445,27 @@ namespace RCCArbiter
                     gameServerManager.RecordFailedReport(gameId);
                     return null;
                 }
-                
+
                 var (token, completionTask) = callbackManager.CreateCallback(gameId);
                 var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
-                var provider = new FileScriptProvider(scriptsRoot);
+                var provider = new FileScriptProvider(scriptsRoot, year);
                 var renderer = new ScriptRenderer();
-                
+
                 if (!provider.TryGetScript("CollectGameServerStatus", out var template))
                 {
                     callbackManager.CancelCallback(token, "Script not found");
                     return null;
                 }
-                
+
                 var parameters = new Dictionary<string, string>
                 {
                     ["reportType"] = "ping",
                     ["callbackToken"] = token,
                     ["arbiterUrl"] = "https://www.freblx.com"
                 };
-                
+
                 var renderedScript = renderer.Render(template, parameters);
-                using var client = new RCCClient(urlToUse);
+                using var client = new RCCClient(urlToUse, year, forceJson);
                 var script = new ScriptExecution
                 {
                     name = "CollectGameServerStatus",
@@ -518,7 +541,8 @@ namespace RCCArbiter
 
             var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
             var jsonRoot = Path.Combine(Directory.GetCurrentDirectory(), "Json");
-            var provider = new FileScriptProvider(scriptsRoot);
+            var (renderingYear, renderingForceJson) = GetRccYearConfig(builder.Configuration, "Rendering");
+            var provider = new FileScriptProvider(scriptsRoot, renderingYear);
             var renderer = new ScriptRenderer();
             _renderMgr = new RenderingRccManager(builder.Configuration);
             var callbackManager = new ReportCallbackManager();
@@ -668,7 +692,7 @@ namespace RCCArbiter
                         using (lease)
                         {
                             var parameters = await Functions.ExtractParametersAsync(req, fn);
-                            var results = Functions.Run(urlToUse, provider, renderer, fn, parameters);
+                            var results = Functions.Run(urlToUse, provider, renderer, fn, parameters, renderingYear, renderingForceJson);
                             var formatted = FormatLuaValues(results);
                             return Results.Json(formatted);
                         }
@@ -697,7 +721,7 @@ namespace RCCArbiter
                         using (lease)
                         {
                             var parameters = await Functions.ExtractParametersAsync(req, fn);
-                            var results = Functions.Run(urlToUse, provider, renderer, fn, parameters);
+                            var results = Functions.Run(urlToUse, provider, renderer, fn, parameters, renderingYear, renderingForceJson);
                             var formatted = FormatLuaValues(results);
                             return Results.Json(formatted);
                         }
@@ -733,7 +757,7 @@ namespace RCCArbiter
                     using (lease)
                     {
                         var parameters = await Functions.ExtractParametersAsync(req, fn);
-                        var results = Functions.Run(urlToUse, provider, renderer, fn, parameters);
+                        var results = Functions.Run(urlToUse, provider, renderer, fn, parameters, renderingYear, renderingForceJson);
                         var formatted = FormatLuaValues(results);
                         return Results.Json(formatted);
                     }
@@ -785,9 +809,9 @@ namespace RCCArbiter
                             {
                                 try
                                 {
-                                    using var client = new RCCClient(urlToUse);
+                                    using var client = new RCCClient(urlToUse, renderingYear, renderingForceJson);
 
-                                    bool forceJson = false;
+                                    bool forceJson = renderingForceJson;
                                     if (req.Query.TryGetValue("ForceJson", out var fq) || req.Query.TryGetValue("forceJson", out fq))
                                     {
                                         var raw = fq.ToString();
@@ -812,12 +836,13 @@ namespace RCCArbiter
                                                 return Results.NotFound(new { error = $"Script '{endpoint.ScriptName}.lua' or JSON template '{endpoint.ScriptName}.json' not found" });
                                             }
 
+                                            Console.WriteLine($"[JSON] '{endpoint.ScriptName}.json' not found in '{jsonRoot}', falling back to '{endpoint.ScriptName}.lua'");
                                             results = runner.RunScript(endpoint.ScriptName, luaTemplateFallback, mapped);
                                         }
                                         else
                                         {
                                             var jsonTemplate = File.ReadAllText(jsonPath, Encoding.UTF8);
-                                            var renderedJson = renderer.Render(jsonTemplate, mapped);
+                                            var renderedJson = renderer.Render(jsonTemplate, mapped, ScriptRenderer.RenderMode.Json);
                                             var scriptName = endpoint.ScriptName + "JsonPayload";
                                             results = runner.RunRawScript(scriptName, renderedJson ?? string.Empty);
                                         }
@@ -927,7 +952,10 @@ namespace RCCArbiter
                             request.MaxPlayers, 
                             request.PrivateServerId ?? "", 
                             request.BaseUrl ?? "",
-                            request.MaxInactive ?? 0
+                            request.MaxInactive ?? 0,
+                            request.Year,
+                            request.UniverseId,
+                            request.CreatorId
                         );
                         
                         _ = Task.Run(async () =>
@@ -943,7 +971,7 @@ namespace RCCArbiter
                             }
                         });
                         
-                        return Results.Ok(new { gameId = gameId, status = "started" });
+                        return Results.Ok(new { gameId = gameId, status = "started", rccYear = gameServerManager.GetGameServerRccYear(gameId) });
                     }
                 }
                 catch (Exception ex)
@@ -985,6 +1013,9 @@ namespace RCCArbiter
                         var privateServerId = req.Query["privateServerId"].FirstOrDefault() ?? "";
                         var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.com";
                         var maxInactive = int.TryParse(req.Query["maxInactive"], out var mi) ? mi : 0;
+                        var rccYear = req.Query["year"].FirstOrDefault();
+                        var universeId = long.TryParse(req.Query["universeId"], out var ui) ? (long?)ui : null;
+                        var creatorId = long.TryParse(req.Query["creatorId"], out var ci) ? (long?)ci : null;
 
                         var gameId = await gameServerManager.StartGameServerAsync(
                             placeId, 
@@ -992,7 +1023,10 @@ namespace RCCArbiter
                             maxPlayers, 
                             privateServerId, 
                             baseUrl,
-                            maxInactive
+                            maxInactive,
+                            rccYear,
+                            universeId,
+                            creatorId
                         );
                         
                         _ = Task.Run(async () =>
@@ -1013,7 +1047,7 @@ namespace RCCArbiter
                             }
                         });
                         
-                        return Results.Ok(new { gameId = gameId, status = "started" });
+                        return Results.Ok(new { gameId = gameId, status = "started", rccYear = gameServerManager.GetGameServerRccYear(gameId) });
                     }
                 }
                 catch (Exception ex)
@@ -1193,6 +1227,7 @@ namespace RCCArbiter
                             startTime = s.StartTime,
                             maxPlayers = s.MaxPlayers,
                             baseUrl = s.BaseUrl,
+                            rccYear = s.RccYear,
                             privateServerId = s.PrivateServerId,
                             players = s.AuthenticatedPlayers.Select(p => new
                             {
@@ -1256,6 +1291,7 @@ namespace RCCArbiter
                             startTime = info.StartTime,
                             expiration = info.Expiration,
                             baseUrl = info.BaseUrl,
+                            rccYear = info.RccYear,
                             privateServerId = info.PrivateServerId,
                             players = players,
                             connectionUrl = $"roblox://localhost:{info.Port}?gameId={info.GameId}&placeId={info.PlaceId}"
@@ -1678,24 +1714,27 @@ namespace RCCArbiter
                     
                     var (token, completionTask) = callbackManager.CreateCallback(gameId);
                     var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
-                    var provider = new FileScriptProvider(scriptsRoot);
+                    var (year, forceJson) = _configuration != null
+                        ? GetRccYearConfig(_configuration, "Rendering")
+                        : (null, false);
+                    var provider = new FileScriptProvider(scriptsRoot, year);
                     var renderer = new ScriptRenderer();
-                    
+
                     if (!provider.TryGetScript("CollectGameServerStatus", out var template))
                     {
                         callbackManager.CancelCallback(token, "Script not found");
                         return Results.NotFound(new { error = "Status collection script not found" });
                     }
-                    
+
                     var parameters = new Dictionary<string, string>
                     {
                         ["reportType"] = reportType,
                         ["callbackToken"] = token,
                         ["arbiterUrl"] = "https://www.freblx.com"
                     };
-                    
+
                     var renderedScript = renderer.Render(template, parameters);
-                    using var client = new RCCClient(urlToUse);
+                    using var client = new RCCClient(urlToUse, year, forceJson);
                     var script = new ScriptExecution
                     {
                         name = "CollectGameServerStatus",
@@ -2188,6 +2227,9 @@ public class StartGameServerRequest
     public string? PrivateServerId { get; set; }
     public string? BaseUrl { get; set; }
     public int? MaxInactive { get; set; }
+    public string? Year { get; set; }
+    public long? UniverseId { get; set; }
+    public long? CreatorId { get; set; }
 }
 
 public class RenewLeaseRequest

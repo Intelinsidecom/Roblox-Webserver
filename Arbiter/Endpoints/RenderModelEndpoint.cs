@@ -50,6 +50,9 @@ namespace RCCArbiter.Endpoints
             p["x"] = x;
             p["y"] = y;
             p["baseUrl"] = baseUrl;
+            p["fileExtension"] = req.Query.TryGetValue("fileExtension", out var fe) && !string.IsNullOrWhiteSpace(fe)
+                ? fe.ToString()
+                : "PNG";
 
             Console.WriteLine($"[RenderModel] assetId={assetId}, x={x}, y={y}, assetUrl={assetUrl}");
 

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +39,7 @@ namespace RCCArbiter
             public int PlayerCount { get; set; }
             public string Status { get; set; } = "starting";
             public string BaseUrl { get; set; } = string.Empty;
+            public string RccYear { get; set; } = string.Empty;
             public Dictionary<string, object> LastStatus { get; set; } = new();
             public DateTime LastActivityTime { get; set; }
             public TimeSpan InactivityTimeout { get; set; } = TimeSpan.FromMinutes(30);
@@ -51,6 +54,7 @@ namespace RCCArbiter
             public string? ShutdownReason { get; set; }
             public int FailedReportCount { get; set; } = 0;
             public int ConsecutiveZeroPlayerReports { get; set; } = 0;
+            public bool UsesJsonLifecycle { get; set; } = false;
         }
 
         public class PlayerInfo
@@ -84,14 +88,17 @@ namespace RCCArbiter
             _rccUrl = newRccUrl;
         }
 
-        public async Task<string> StartGameServerAsync(int placeId, int port = 0, int maxPlayers = 10, string privateServerId = "", string baseUrl = "", int maxInactive = 0)
+        public async Task<string> StartGameServerAsync(int placeId, int port = 0, int maxPlayers = 10, string privateServerId = "", string baseUrl = "", int maxInactive = 0, string? rccYear = null, long? universeId = null, long? creatorId = null)
         {
             var gameId = Guid.NewGuid().ToString();
             
             if (string.IsNullOrWhiteSpace(baseUrl))
                 baseUrl = "http://www.freblx.com";
 
-            var rccReservation = _rccManager.ReserveForGameServer(gameId);
+            var year = _rccManager.ResolveYear(rccYear);
+            var forceJson = _rccManager.IsForceJson(year);
+
+            var rccReservation = _rccManager.ReserveForGameServer(gameId, year);
             if (rccReservation == null)
             {
                 throw new InvalidOperationException("Failed to reserve RCC instance for game server");
@@ -114,18 +121,24 @@ namespace RCCArbiter
                 ["maxPlayers"] = maxPlayers.ToString(),
                 ["privateServerId"] = privateServerId,
                 ["baseUrl"] = baseUrl,
+                ["baseHost"] = ResolveBaseHost(baseUrl),
                 ["gameId"] = gameId,
                 ["arbiterUrl"] = "http://localhost:5000", // Default Arbiter URL
-                ["accessKey"] = accessKey
+                ["accessKey"] = accessKey,
+                ["universeId"] = universeId?.ToString() ?? placeId.ToString(),
+                ["creatorId"] = creatorId?.ToString() ?? "0",
+                ["jobId"] = gameId,
+                ["matchmakingContextId"] = "1",
+                ["machineAddress"] = ResolveMachineAddress(baseUrl),
             };
-            
+
             try
             {
-                using var client = new RCCClient(dedicatedRccUrl);
-                
+                using var client = new RCCClient(dedicatedRccUrl, year, forceJson);
+
                 int maxRetries = 6;
                 int retryDelayMs = 2000;
-                
+
                 for (int attempt = 1; attempt <= maxRetries; attempt++)
                 {
                     try
@@ -138,29 +151,57 @@ namespace RCCArbiter
                     catch (Exception testEx)
                     {
                         Console.WriteLine($"RCC connection test failed (attempt {attempt}/{maxRetries}): {testEx.Message}");
-                        
+
                         if (attempt == maxRetries)
                         {
                             throw new InvalidOperationException($"Cannot connect to RCC at {dedicatedRccUrl} after {maxRetries} attempts: {testEx.Message}", testEx);
                         }
-                        
+
                         Console.WriteLine($"Waiting {retryDelayMs}ms before retry...");
                         await Task.Delay(retryDelayMs);
                     }
                 }
-                
+
                 var scriptRenderer = new ScriptRenderer();
-                var scriptTemplate = LoadScriptTemplate("StartGameServer");
-                var renderedScript = scriptRenderer.Render(scriptTemplate, parameters);
-                var lines = renderedScript.Split('\n');
-                
-                var script = new ScriptExecution
+                ScriptExecution script;
+                bool usedJson = false;
+
+                if (client.IsJsonPreferred(forceJson))
                 {
-                    name = "StartGameServer",
-                    script = renderedScript,
-                    arguments = null
-                };
-                
+                    var jsonPath = Path.Combine(Directory.GetCurrentDirectory(), "Json", "StartGameServer.json");
+                    if (File.Exists(jsonPath))
+                    {
+                        var renderedJson = scriptRenderer.Render(File.ReadAllText(jsonPath), parameters, ScriptRenderer.RenderMode.Json);
+                        script = new ScriptExecution
+                        {
+                            name = "StartGameServer",
+                            script = renderedJson,
+                            arguments = null
+                        };
+                        usedJson = true;
+                    }
+                    else
+                    {
+                        var luaTemplate = LoadScriptTemplate("StartGameServer", year);
+                        script = new ScriptExecution
+                        {
+                            name = "StartGameServer",
+                            script = scriptRenderer.Render(luaTemplate, parameters),
+                            arguments = null
+                        };
+                    }
+                }
+                else
+                {
+                    var luaTemplate = LoadScriptTemplate("StartGameServer", year);
+                    script = new ScriptExecution
+                    {
+                        name = "StartGameServer",
+                        script = scriptRenderer.Render(luaTemplate, parameters),
+                        arguments = null
+                    };
+                }
+
                 var results = client.OpenJobEx(job, script);
 
                 lock (_serversLock)
@@ -176,11 +217,13 @@ namespace RCCArbiter
                         Expiration = job.expirationInSeconds > 0 ? DateTime.UtcNow.AddSeconds(job.expirationInSeconds) : DateTime.MaxValue,
                         Status = "running",
                         BaseUrl = baseUrl,
+                        RccYear = year,
                         LastStatus = ParseLuaResults(results),
                         LastActivityTime = DateTime.UtcNow,
                         InactivityTimeout = maxInactive > 0 ? TimeSpan.FromMinutes(maxInactive) : TimeSpan.FromMinutes(1),
                         AutoKillEnabled = true,
-                        MaxInactiveMinutes = maxInactive
+                        MaxInactiveMinutes = maxInactive,
+                        UsesJsonLifecycle = usedJson,
                     };
                     
                 }
@@ -197,13 +240,61 @@ namespace RCCArbiter
             }
         }
 
-        private string LoadScriptTemplate(string scriptName)
+        private string LoadScriptTemplate(string scriptName, string? year = null)
         {
-            var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "Scripts", $"{scriptName}.lua");
-            if (!File.Exists(scriptPath))
-                throw new FileNotFoundException($"Script '{scriptName}.lua' not found");
+            var provider = new FileScriptProvider(Path.Combine(Directory.GetCurrentDirectory(), "Scripts"), year);
+            if (provider.TryGetScript(scriptName, out var content))
+                return content;
 
-            return File.ReadAllText(scriptPath);
+            throw new FileNotFoundException($"Script '{scriptName}.lua' not found");
+        }
+        private string ResolveMachineAddress(string baseUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(baseUrl))
+            {
+                try
+                {
+                    var uri = new Uri(baseUrl);
+                    if (!string.IsNullOrEmpty(uri.Host))
+                        return uri.Host;
+                }
+                catch (UriFormatException) { }
+            }
+
+            var configured = _configuration["Arbiter:MachineAddress"];
+            if (!string.IsNullOrWhiteSpace(configured))
+                return configured!.Trim();
+
+            try
+            {
+                return Dns.GetHostEntry(Dns.GetHostName())
+                          .AddressList
+                          .FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?
+                          .ToString() ?? "localhost";
+            }
+            catch
+            {
+                return "localhost";
+            }
+        }
+        private string ResolveBaseHost(string baseUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(baseUrl))
+            {
+                try
+                {
+                    var uri = new Uri(baseUrl);
+                    if (!string.IsNullOrEmpty(uri.Host))
+                        return uri.Host;
+                }
+                catch (UriFormatException) { }
+            }
+
+            var configured = _configuration["Arbiter:BaseHost"];
+            if (!string.IsNullOrWhiteSpace(configured))
+                return configured!.Trim();
+
+            return ResolveMachineAddress(baseUrl);
         }
 
         public async Task<GameServerInfo> GetGameServerStatusAsync(string gameId, string? overrideRccUrl = null)
@@ -375,6 +466,9 @@ namespace RCCArbiter
                 foreach (var kvp in _activeServers)
                 {
                     var server = kvp.Value;
+                    if (server.UsesJsonLifecycle)
+                        continue;
+
                     if (server.AutoKillEnabled && server.PlayerCount == 0)
                     {
                         var inactiveDuration = now - server.LastActivityTime;
@@ -419,6 +513,21 @@ namespace RCCArbiter
         public string? GetGameServerRccUrl(string gameId)
         {
             return _rccManager.GetGameServerUrl(gameId);
+        }
+
+        public string? GetGameServerRccYear(string gameId)
+        {
+            var year = _rccManager.GetGameServerYear(gameId);
+            if (!string.IsNullOrWhiteSpace(year))
+                return year;
+
+            lock (_serversLock)
+            {
+                if (_activeServers.TryGetValue(gameId, out var server) && !string.IsNullOrWhiteSpace(server.RccYear))
+                    return server.RccYear;
+            }
+
+            return _rccManager.DefaultYear;
         }
 
         public void UpdateGameServerStatus(string gameId, Dictionary<string, object> data)

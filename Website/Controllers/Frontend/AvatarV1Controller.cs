@@ -31,6 +31,60 @@ public class AvatarV1Controller : ControllerBase
         _avatarThumbnailRefreshService = avatarThumbnailRefreshService;
     }
 
+    /// <summary>
+    /// After a write to avatar state, computes the new hash, prunes stale cache entries
+    /// for the old hash (if it changed), and then warms the thumbnail. This preserves
+    /// cache hits when the user toggles back to a previously-seen configuration (e.g.
+    /// R15 -> R6 -> R15) instead of nuking everything on every write.
+    /// </summary>
+    private async Task InvalidateAndWarmAsync(string connStr, long userId, CancellationToken ct)
+    {
+        var cacheRepo = new AvatarThumbnailCacheRepository();
+
+        // Read the current (old) hash before we overwrite it.
+        string? oldHash = null;
+        await using (var conn = new NpgsqlConnection(connStr))
+        {
+            await conn.OpenAsync(ct).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand("select avatar_state_hash from users where user_id = @uid", conn);
+            cmd.Parameters.AddWithValue("uid", userId);
+            var result = await cmd.ExecuteScalarAsync(ct).ConfigureAwait(false);
+            if (result != null && result != DBNull.Value)
+                oldHash = Convert.ToString(result);
+        }
+
+        // Compute and store the new hash.
+        var newHash = await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, ct).ConfigureAwait(false);
+
+        // Only prune cache entries when the hash actually changed.
+        if (!string.IsNullOrEmpty(oldHash) && !string.Equals(oldHash, newHash, StringComparison.Ordinal))
+        {
+            await cacheRepo.DeleteByConfigHashAsync(connStr, oldHash!, ct).ConfigureAwait(false);
+            await cacheRepo.Delete3DCacheByHashesAsync(connStr, new[] { oldHash! }, ct).ConfigureAwait(false);
+
+            // Clear cached thumbnail URLs so the frontend picks up the fresh value
+            // (either from cache or a fresh render) instead of serving a stale file.
+            await using (var conn = new NpgsqlConnection(connStr))
+            {
+                await conn.OpenAsync(ct).ConfigureAwait(false);
+                using var cmd = new NpgsqlCommand(@"
+                    update users
+                    set avatar_render_urls    = (coalesce(avatar_render_urls, '{}'::jsonb) - 'headshot' - 'avatar'),
+                        thumbnail_url         = null,
+                        avatar_thumbnail_url  = null,
+                        headshot_url          = null,
+                        headshot_thumbnail_url = null
+                    where user_id = @id", conn);
+                cmd.Parameters.AddWithValue("id", userId);
+                await cmd.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
+            }
+        }
+
+        // Warm will either hit the cache (when toggling back to a known state) or
+        // render fresh and populate the cache.
+        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId, ct);
+    }
+
     // GET v1/avatar
     [Authorize]
     [HttpGet]
@@ -51,7 +105,8 @@ public class AvatarV1Controller : ControllerBase
         {
             bodyColors = state.BodyColors,
             scales = state.Scales,
-            assets = state.Assets
+            assets = state.Assets,
+            playerAvatarType = state.PlayerAvatarType
         });
     }
 
@@ -93,9 +148,9 @@ public class AvatarV1Controller : ControllerBase
             },
             scales = new
             {
-                height = new { min = 0.90, max = 1.05, increment = 0.01 },
-                width  = new { min = 0.70, max = 1.00, increment = 0.01 },
-                head   = new { min = 0.95, max = 1.00, increment = 0.01 }
+                height = new { min = AvatarScaleRules.Height.Min, max = AvatarScaleRules.Height.Max, increment = AvatarScaleRules.Height.Increment },
+                width = new { min = AvatarScaleRules.Width.Min, max = AvatarScaleRules.Width.Max, increment = AvatarScaleRules.Width.Increment },
+                head = new { min = AvatarScaleRules.Head.Min, max = AvatarScaleRules.Head.Max, increment = AvatarScaleRules.Head.Increment }
             },
             bodyColorsPalette = new object[]
             {
@@ -450,12 +505,76 @@ public class AvatarV1Controller : ControllerBase
             LeftLegColorId = bodyColorsModel.leftLegColorId
         };
         await repo.SetBodyColorsAsync(connStr, userId, colors, cancellationToken);
-        var outputDir = _configuration["Thumbnails:OutputDirectory"];
-        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
-        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
-        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+        await InvalidateAndWarmAsync(connStr, userId, cancellationToken);
 
         return Ok(new { success = true });
+    }
+
+    // POST v1/avatar/set-scales
+    // Partial update: the 2017 client omits "head" when the head slider is hidden, so
+    // missing keys must keep their stored value instead of being reset.
+    [Authorize]
+    [HttpPost("set-scales")]
+    public async Task<IActionResult> SetScales([FromBody] AvatarScalesModel model, CancellationToken cancellationToken)
+    {
+        var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "Authentication required" });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        if (model == null)
+            return BadRequest(new { errors = new[] { new { message = "A scales object is required." } } });
+
+        var errors = AvatarScaleRules.Validate(model);
+        if (errors.Count > 0)
+            return BadRequest(new { errors = errors.Select(message => new { message }).ToArray() });
+
+        var repo = new AvatarConfigRepository();
+        await repo.UpdateAvatarConfigAsync(connStr, userId, new AvatarConfigRepository.AvatarConfigPatch
+        {
+            Height = model.height,
+            Width = model.width,
+            Head = model.head,
+            Depth = model.depth,
+            Proportion = model.proportion,
+            BodyType = model.bodyType
+        }, cancellationToken);
+
+        await InvalidateAndWarmAsync(connStr, userId, cancellationToken);
+
+        var state = await new AvatarRepository().GetAvatarAsync(connStr, userId, cancellationToken);
+        return Ok(new { success = true, scales = state.Scales, playerAvatarType = state.PlayerAvatarType });
+    }
+
+    // POST v1/avatar/set-player-avatar-type
+    [Authorize]
+    [HttpPost("set-player-avatar-type")]
+    public async Task<IActionResult> SetPlayerAvatarType([FromBody] SetPlayerAvatarTypeModel model, CancellationToken cancellationToken)
+    {
+        var idStr = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrWhiteSpace(idStr) || !long.TryParse(idStr, out var userId) || userId <= 0)
+            return Unauthorized(new { error = "Authentication required" });
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return Problem("Database not configured");
+
+        var avatarType = AvatarConfigRepository.NormalizeAvatarType(model?.playerAvatarType ?? string.Empty);
+        if (avatarType == null)
+            return BadRequest(new { errors = new[] { new { message = "playerAvatarType must be either 'R6' or 'R15'." } } });
+
+        var repo = new AvatarConfigRepository();
+        await repo.UpdateAvatarConfigAsync(connStr, userId, new AvatarConfigRepository.AvatarConfigPatch
+        {
+            PlayerAvatarType = avatarType
+        }, cancellationToken);
+
+        await InvalidateAndWarmAsync(connStr, userId, cancellationToken);
+
+        return Ok(new { success = true, playerAvatarType = avatarType });
     }
 
     [Authorize]
@@ -539,17 +658,7 @@ public class AvatarV1Controller : ControllerBase
 
         await repo.SetWornAssetIdsAsync(connStr, userId, filteredIds, cancellationToken);
 
-        var outputDir = _configuration["Thumbnails:OutputDirectory"];
-        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
-
-        // Keep avatar_state_hash in sync with current body colors and
-        // worn assets so downstream systems can see configuration changes.
-        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken);
-
-        // Warm thumbnails after an outfit change so that subsequent
-        // avatar/headshot requests can use the pre-rendered URLs
-        // without triggering an additional render.
-        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+        await InvalidateAndWarmAsync(connStr, userId, cancellationToken);
 
         return Ok(new { success = true });
     }
@@ -605,14 +714,7 @@ public class AvatarV1Controller : ControllerBase
 
         await repo.SetWornAssetIdsAsync(connStr, userId, wearResult.AssetIds, cancellationToken).ConfigureAwait(false);
 
-        var outputDir = _configuration["Thumbnails:OutputDirectory"];
-        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
-
-        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
-
-        // Warm thumbnails so wear operations immediately reflect in
-        // avatar/headshot images without requiring an explicit redraw.
-        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+        await InvalidateAndWarmAsync(connStr, userId, cancellationToken);
 
         return Ok(new { success = true });
     }
@@ -639,15 +741,7 @@ public class AvatarV1Controller : ControllerBase
 
         await repo.SetWornAssetIdsAsync(connStr, userId, updated, cancellationToken).ConfigureAwait(false);
 
-        var outputDir = _configuration["Thumbnails:OutputDirectory"];
-        await new AvatarThumbnailCacheRepository().WipeUserCacheAsync(connStr, userId, outputDir, cancellationToken).ConfigureAwait(false);
-
-        await AvatarStateHasher.RecomputeAndStoreAvatarHashAsync(connStr, userId, cancellationToken).ConfigureAwait(false);
-
-        // Warm thumbnails after removing an asset so cached images stay
-        // in sync; await completion so consumers immediately see
-        // up-to-date avatar/headshot URLs.
-        _ = _avatarThumbnailRefreshService.WarmAvatarAndHeadshotAsync(userId);
+        await InvalidateAndWarmAsync(connStr, userId, cancellationToken);
 
         return Ok(new { success = true });
     }
@@ -673,5 +767,67 @@ public class AvatarV1Controller : ControllerBase
     public sealed class SetWearingAssetsModel
     {
         public long[] assetIds { get; set; } = Array.Empty<long>();
+    }
+
+    public sealed class AvatarScalesModel
+    {
+        public double? height { get; set; }
+        public double? width { get; set; }
+        public double? head { get; set; }
+        public double? depth { get; set; }
+        public double? proportion { get; set; }
+        public double? bodyType { get; set; }
+    }
+
+    public sealed class SetPlayerAvatarTypeModel
+    {
+        public string? playerAvatarType { get; set; }
+    }
+
+    /// <summary>
+    /// Single source of truth for the scale ranges advertised by /v1/avatar-rules and
+    /// enforced by POST /v1/avatar/set-scales, so the two cannot drift apart.
+    /// </summary>
+    internal static class AvatarScaleRules
+    {
+        public readonly record struct Range(double Min, double Max, double Increment);
+
+        public static readonly Range Height = new(0.90, 1.05, 0.01);
+        public static readonly Range Width = new(0.70, 1.00, 0.01);
+        public static readonly Range Head = new(0.95, 1.00, 0.01);
+        public static readonly Range Depth = new(0.70, 1.00, 0.01);
+        public static readonly Range Proportion = new(0.00, 1.00, 0.01);
+        public static readonly Range BodyType = new(0.00, 1.00, 0.01);
+
+        /// <summary>
+        /// Collects a human-readable message for every supplied value outside its range.
+        /// </summary>
+        public static List<string> Validate(AvatarScalesModel model)
+        {
+            var errors = new List<string>();
+
+            Check(errors, "height", model.height, Height);
+            Check(errors, "width", model.width, Width);
+            Check(errors, "head", model.head, Head);
+            Check(errors, "depth", model.depth, Depth);
+            Check(errors, "proportion", model.proportion, Proportion);
+            Check(errors, "bodyType", model.bodyType, BodyType);
+
+            return errors;
+        }
+
+        private static void Check(List<string> errors, string name, double? value, Range range)
+        {
+            if (!value.HasValue)
+                return;
+
+            var v = value.Value;
+            if (double.IsNaN(v) || double.IsInfinity(v) || v < range.Min || v > range.Max)
+            {
+                errors.Add($"{name} must be between {Fmt(range.Min)} and {Fmt(range.Max)}.");
+            }
+        }
+
+        private static string Fmt(double value) => value.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
     }
 }

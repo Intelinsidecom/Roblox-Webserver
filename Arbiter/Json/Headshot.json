@@ -1,0 +1,19 @@
+{
+  "Mode": "Thumbnail",
+  "Settings": {
+    "Type": "Closeup",
+    "Arguments": [
+       "%baseUrl%",
+       "%baseUrl%/v1.1/avatar-fetch?placeId=0&userId=%userId%",
+       "PNG",
+       "%x%",
+       "%y%",
+       true,
+       40,
+       60,
+       0,
+       0
+    ]
+  },
+  "Arguments": {}
+}

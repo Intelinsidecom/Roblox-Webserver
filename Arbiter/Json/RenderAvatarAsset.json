@@ -1,0 +1,15 @@
+{
+  "Mode": "Thumbnail",
+  "Settings": {
+    "Type": "Shirt",
+    "Arguments": [
+      "%baseUrl%/asset/?id=%assetId%",
+      "%fileExtension%",
+      %x%,
+      %y%,
+      "%baseUrl%",
+      1785197
+    ]
+  },
+  "Arguments": {}
+}

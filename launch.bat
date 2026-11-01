@@ -1,0 +1,7 @@
+start "Website" cmd /k call "Website\launch.bat"
+start "Api" cmd /k call "Api\launch.bat"
+start "Arbiter" cmd /k call "Arbiter\launch.bat"
+start "CDN" cmd /k call "CDN\launch.bat"
+start "Data" cmd /k call "Data\launch.bat"
+start "Setup" cmd /k call "Setup\launch.bat"
+start "Control Panel" cmd /k call "Tools\Control Panel\Control Panel\launch.bat"

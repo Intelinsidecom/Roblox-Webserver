@@ -20,44 +20,71 @@ namespace RCCArbiter
         private readonly string _arguments;
         private readonly string _workingDirectory;
         private readonly bool _separateWindow;
+        private readonly TimeSpan _startupTimeout;
         private bool _forceSeparateWindow;
         private Timer? _healthWatchdog;
         private readonly object _watchdogLock = new();
         private int _busyCount;
         private bool _disposed;
 
-        public RCCProcessManager(IConfiguration configuration, string configSection = "Rendering")
+        public RCCProcessManager(IConfiguration configuration, string configSection = "Rendering", string? yearOverride = null)
         {
-            _year = configuration[$"{configSection}:Year"] ?? "2016";
+            // An explicit year (e.g. requested by the start game server API) wins over the configured default
+            var configuredYear = configuration[$"{configSection}:Year"];
+            _year = !string.IsNullOrWhiteSpace(yearOverride) ? yearOverride! : (configuredYear ?? "2016");
             _port = int.Parse(configuration[$"{configSection}:Port"] ?? "64989");
             _executable = configuration[$"{configSection}:Executable"] ?? "RCCService.exe";
             _arguments = configuration[$"{configSection}:Arguments"] ?? "-console";
             _separateWindow = bool.TryParse(configuration[$"{configSection}:SeparateWindow"], out var sw) && sw;
+            _startupTimeout = TimeSpan.FromSeconds(ReadStartupTimeout(configuration, configSection));
 
             // Build path: RCC/{Year}/{Executable}
-            var baseDir = Directory.GetCurrentDirectory();
-            _workingDirectory = Path.Combine(baseDir, "RCC", _year);
+            _workingDirectory = ResolveWorkingDirectory(_year, _executable);
+        }
 
-            if (!Directory.Exists(_workingDirectory))
+        public RCCProcessManager(IConfiguration configuration, string configSection, int overridePort, string? yearOverride = null)
+            : this(configuration, configSection, yearOverride)
+        {
+            _port = overridePort;
+        }
+
+        /// <summary>
+        /// Builds and validates the RCC/{Year} working directory for the given year.
+        /// </summary>
+        private string ResolveWorkingDirectory(string year, string executable)
+        {
+            var baseDir = Directory.GetCurrentDirectory();
+            var workingDirectory = Path.Combine(baseDir, "RCC", year);
+
+            if (!Directory.Exists(workingDirectory))
             {
                 throw new DirectoryNotFoundException(
-                    $"RCC directory not found: {_workingDirectory}\n" +
-                    $"Please create the directory structure: RCC/{_year}/ and place the RCC binaries there.");
+                    $"RCC directory not found: {workingDirectory}\n" +
+                    $"Please create the directory structure: RCC/{year}/ and place the RCC binaries there.");
             }
 
-            var executablePath = Path.Combine(_workingDirectory, _executable);
+            var executablePath = Path.Combine(workingDirectory, executable);
             if (!File.Exists(executablePath))
             {
                 throw new FileNotFoundException(
                     $"RCC executable not found: {executablePath}\n" +
-                    $"Please place {_executable} in RCC/{_year}/");
+                    $"Please place {executable} in RCC/{year}/");
             }
+
+            return workingDirectory;
         }
 
-        public RCCProcessManager(IConfiguration configuration, string configSection, int overridePort)
-            : this(configuration, configSection)
+        /// <summary>
+        /// Reads the port-bind timeout for a config section. Older RCC builds (e.g. 2016) can
+        /// take well over 10 seconds to start listening, so this must be configurable.
+        /// </summary>
+        private static double ReadStartupTimeout(IConfiguration configuration, string configSection)
         {
-            _port = overridePort;
+            var raw = configuration[$"{configSection}:StartupTimeoutSeconds"]
+                      ?? configuration[$"GameServer:StartupTimeoutSeconds"];
+            if (double.TryParse(raw, out var seconds) && seconds >= 1)
+                return seconds;
+            return 60;
         }
 
         public string Year => _year;
@@ -179,7 +206,7 @@ namespace RCCArbiter
                     throw new Exception($"RCC process exited immediately with code: {_process.ExitCode}");
                 }
                 
-                if (!WaitForPort(_port, TimeSpan.FromSeconds(10)))
+                if (!WaitForPort(_port, _startupTimeout))
                 {
                     Stop();
                     throw new Exception($"RCC ({_year}) started but is not listening on port {_port} after verification timeout");

@@ -84,6 +84,41 @@ curl http://localhost:5000/status
 curl http://localhost:5000/version
 ```
 
+**Game server RCC year** - Run a game server on a specific RCC build
+
+`/api/gameservers/start` accepts an optional `year` parameter. When provided, the dedicated
+RCC instance is started from `RCC/<year>/` and the year also selects the script folder
+(`Scripts/<year>/StartGameServer.lua`, falling back to `Scripts/StartGameServer.lua`) and the
+JSON mode from `RccConfigs:<year>:ForceJson`.
+
+```bash
+# Specific RCC build
+curl "http://localhost:5000/api/gameservers/start?placeId=15&year=2017"
+
+# No year -> uses the RCCService:Year value from appsettings.json
+curl "http://localhost:5000/api/gameservers/start?placeId=15"
+```
+
+POST accepts the same value as a `Year` property in the JSON body. If the requested year is not
+installed under `RCC/` (or contains unsafe path characters), a warning is logged and the
+configured default year is used. The resolved value is returned as `rccYear` and reported by the
+game server list endpoints.
+
+**JSON game-server descriptors** — when `RccConfigs:<year>:ForceJson` is `true` (2018 and 2020
+are enabled by default), the arbiter renders `Json/StartGameServer.json` with
+`ScriptRenderer.RenderMode.Json` and sends it as a `ScriptExecution` through the existing
+`OpenJobEx` call — the same 1-year, `category = 2` job that the Lua path uses. The descriptor
+carries `Mode: "GameServer"` and `Settings.PlaceId/UniverseId/CreatorId/MaxPlayers/MachineAddress`
+etc. The renderer throws on any unresolved token, so a missing parameter fails loudly at start
+rather than shipping a malformed descriptor to RCC. If `StartGameServer.json` is absent the flow
+falls back to Lua with a log line.
+
+JSON-mode servers return no Lua results, so the arbiter never receives a player/activity report
+back from them. `CleanupInactiveServers` skips them (they're only stopped explicitly or when the
+RCC process dies); `CleanupZeroPlayerServers` already requires `HasReceivedReport`, so it was
+already safe. Optional `universeId` and `creatorId` query/body params are accepted and forwarded
+to the descriptor, falling back to `placeId` and `0` when not supplied.
+
 See [USAGE.md](USAGE.md) for complete API documentation.
 
 ### 2. Service Health Checks

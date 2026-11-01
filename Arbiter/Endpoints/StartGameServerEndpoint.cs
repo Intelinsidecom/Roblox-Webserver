@@ -65,6 +65,16 @@ namespace RCCArbiter.Endpoints
             p["baseUrl"] = baseUrl;
             p["maxInactive"] = maxInactive;
 
+            if (req.Query.TryGetValue("universeId", out var uiv) && long.TryParse(uiv, out var providedUniverseId))
+                p["universeId"] = providedUniverseId.ToString();
+            else
+                p["universeId"] = placeId;
+
+            if (req.Query.TryGetValue("creatorId", out var civ) && long.TryParse(civ, out var providedCreatorId))
+                p["creatorId"] = providedCreatorId.ToString();
+            else
+                p["creatorId"] = "0";
+
             return p;
         }
     }

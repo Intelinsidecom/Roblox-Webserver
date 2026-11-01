@@ -94,9 +94,11 @@ namespace RCCArbiter
             FileScriptProvider provider,
             ScriptRenderer renderer,
             ArbiterFunction fn,
-            IDictionary<string, string> parameters)
+            IDictionary<string, string> parameters,
+            string? year = null,
+            bool forceJson = false)
         {
-            using var client = new RCCClient(rccUrl);
+            using var client = new RCCClient(rccUrl, year, forceJson);
             if (!provider.TryGetScript(fn.ScriptName, out var template))
                 throw new InvalidOperationException($"Script '{fn.ScriptName}.lua' not found");
 

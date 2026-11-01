@@ -1,0 +1,39 @@
+local jobId = %jobId%
+local type = %type%
+local format = "PNG"
+local x = %x%
+local y = %y%
+local baseUrl = "http://www.freblx.com"
+local userId = %userId%
+print(("[%s] Started RenderJob for type '%s' with userId %d ..."):format(jobId, type, userId))
+
+
+
+local HttpService = game:GetService('HttpService')
+HttpService.HttpEnabled = true
+
+game:GetService("ContentProvider"):SetBaseUrl(baseUrl)
+game:GetService("ScriptContext").ScriptsDisabled = true
+
+local Player = game.Players:CreateLocalPlayer(0)
+Player.CharacterAppearance = ("%s/Asset/CharacterFetch.ashx?userId=%d"):format(baseUrl, userId)
+print(Player.CharacterAppearance)
+Player:LoadCharacterBlocking()
+
+
+game:GetService("RunService"):Run()
+
+Player.Character.Animate.Disabled = true
+
+local gear = Player.Backpack:GetChildren()[1]
+if gear then
+    gear.Parent = Player.Character
+    Player.Character.Torso["Right Shoulder"].CurrentAngle = math.rad(90)
+end
+
+
+print(("[%s] Rendering ..."):format(jobId))
+local result = game:GetService("ThumbnailGenerator"):Click(format, x, y, true)
+print(("[%s] Done!"):format(jobId))
+
+return result
