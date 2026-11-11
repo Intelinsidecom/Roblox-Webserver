@@ -418,10 +418,17 @@ namespace Api.Controllers
         }
 
         [HttpGet("validate-place-join")]
+        [HttpPost("validate-place-join")]
         public async Task<string> ValidatePlaceJoin(
             [FromQuery] long? originPlaceId,
             [FromQuery] long? destinationPlaceId)
         {
+            // Both zero means no specific places — treat as valid
+            if (originPlaceId == 0 && destinationPlaceId == 0)
+            {
+                return "true";
+            }
+
             var placeId = destinationPlaceId ?? originPlaceId;
             
             if (placeId == null || placeId <= 0)
@@ -477,6 +484,37 @@ namespace Api.Controllers
             {
                 return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
             }
+        }
+
+        /// <summary>
+        /// GET /v1/autolocalization/games/{universeId}
+        /// Returns supported locales for auto-localization.
+        /// Mirrors the Roblox autolocalization endpoint.
+        /// </summary>
+        [HttpGet("~/v1/autolocalization/games/{universeId:long}")]
+        public IActionResult GetAutoLocalization(long universeId)
+        {
+            return Ok(new
+            {
+                supportedLocales = new[]
+                {
+                    new
+                    {
+                        id = 1,
+                        locale = "en_us",
+                        name = "English(US)",
+                        nativeName = "English",
+                        language = new
+                        {
+                            id = 41,
+                            name = "English",
+                            nativeName = "English",
+                            languageCode = "en",
+                            isRightToLeft = false
+                        }
+                    }
+                }
+            });
         }
 
     }

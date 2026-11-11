@@ -1,5 +1,5 @@
 {
   "ConnectionStrings": {
-    "Default": "Host=localhost;Port=5432;Database=postgres;Username=postgres;Password=root"
+    "Default": "Host=localhost;Port=5432;Database=freblx;Username=postgres;Password=root"
   }
 }

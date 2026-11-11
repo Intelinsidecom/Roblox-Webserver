@@ -720,12 +720,52 @@ namespace RobloxWebserver.Controllers
                 ViewBag.theme = "";
                 ViewBag.privacyLevel = universeInfo.PrivacyLevel;
                 ViewBag.studioAccessToApis = universeInfo.Studio_Access_To_APIs;
-                
+
+                var gameYears = await FetchGameYearsFromArbiterAsync();
+                var currentGameYear = await GamesRepository.GetUniverseGameYearAsync(connectionString, universeId);
+                if (string.IsNullOrWhiteSpace(currentGameYear) || !gameYears.Contains(currentGameYear))
+                    currentGameYear = DefaultGameYear();
+                ViewBag.GameYears = gameYears;
+                ViewBag.CurrentGameYear = currentGameYear;
+
                 return View("~/Views/Pages/universes/configure.cshtml");
             }
             catch (Exception ex)
             {
                 return Redirect("/404");
+            }
+        }
+
+        private string DefaultGameYear()
+        {
+            var defaultGameYear = _configuration["Games:DefaultGameYear"];
+            if (string.IsNullOrWhiteSpace(defaultGameYear))
+                defaultGameYear = "2016";
+            return defaultGameYear;
+        }
+
+        private async Task<List<string>> FetchGameYearsFromArbiterAsync()
+        {
+            try
+            {
+                var arbiterHost = _configuration["Arbiter:Host"] ?? "localhost";
+                var arbiterPort = _configuration["Arbiter:Port"] ?? "5000";
+                var arbiterUrl = $"http://{arbiterHost}:{arbiterPort}";
+
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = Common.HttpClientDefaults.Timeout;
+
+                var response = await httpClient.GetAsync($"{arbiterUrl}/rcc/years");
+                if (!response.IsSuccessStatusCode)
+                    return new List<string>();
+
+                var body = await response.Content.ReadAsStringAsync();
+                var years = JsonSerializer.Deserialize<List<string>>(body);
+                return years ?? new List<string>();
+            }
+            catch
+            {
+                return new List<string>();
             }
         }
 
@@ -796,6 +836,11 @@ namespace RobloxWebserver.Controllers
                 {
                     return Json(new { success = false, message = "Failed to update universe - you may not have permission" });
                 }
+
+                var gameYear = Request.Form["GameYear"].FirstOrDefault()?.Trim();
+                if (string.IsNullOrWhiteSpace(gameYear))
+                    gameYear = DefaultGameYear();
+                await GamesRepository.SetUniverseGameYearAsync(connectionString, universeId, gameYear);
 
                 return Json(new { success = true, message = "Universe settings updated successfully" });
             }
@@ -1498,6 +1543,68 @@ namespace RobloxWebserver.Controllers
         private class ServerEntry
         {
             public string GameId { get; set; } = string.Empty;
+        }
+
+        /// <summary>
+        /// GET /v1/autolocalization/games/{universeId}
+        /// Returns supported locales for auto-localization.
+        /// Mirrors the Roblox autolocalization endpoint.
+        /// </summary>
+        [HttpGet("v1/autolocalization/games/{universeId:long}")]
+        public IActionResult GetAutoLocalization(long universeId)
+        {
+            return Ok(new
+            {
+                supportedLocales = new[]
+                {
+                    new
+                    {
+                        id = 1,
+                        locale = "en_us",
+                        name = "English(US)",
+                        nativeName = "English",
+                        language = new
+                        {
+                            id = 41,
+                            name = "English",
+                            nativeName = "English",
+                            languageCode = "en",
+                            isRightToLeft = false
+                        }
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// POST /v1/autolocalization/games/{universeId}/autolocalizationtable
+        /// Returns the auto-localization table for a game.
+        /// Mirrors the Roblox autolocalization endpoint.
+        /// </summary>
+        [HttpPost("v1/autolocalization/games/{universeId:long}/autolocalizationtable")]
+        public IActionResult GetAutoLocalizationTable(long universeId)
+        {
+            return Ok(new
+            {
+                supportedLocales = new[]
+                {
+                    new
+                    {
+                        id = 1,
+                        locale = "en_us",
+                        name = "English(US)",
+                        nativeName = "English",
+                        language = new
+                        {
+                            id = 41,
+                            name = "English",
+                            nativeName = "English",
+                            languageCode = "en",
+                            isRightToLeft = false
+                        }
+                    }
+                }
+            });
         }
     }
 }

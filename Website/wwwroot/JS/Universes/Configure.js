@@ -192,6 +192,7 @@ $(function () {
                 formData.AllowStudioAccessToApis = $('#AllowStudioAccessToApis').is(':checked');
                 formData.CharacterForce = $("input[name='CharacterForce']:checked").val();
                 formData.ScaleChoice = $("input[name='ScaleChoice']:checked").val();
+                formData.GameYear = $('#GameYear').val() || '';
             } else {
                 formData.Name = $("#Name").val() || "";
                 formData.Description = $("#Description").val() || "";

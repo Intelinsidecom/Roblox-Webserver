@@ -96,6 +96,7 @@ builder.Services.AddSingleton<AssetMetadataRepository>();
             builder.Services.AddSingleton<Website.Services.EmailSender>();
 builder.Services.AddHostedService<ToolboxService>(sp => sp.GetRequiredService<ToolboxService>());
 builder.Services.AddMemoryCache();
+builder.Services.Configure<RateLimitOptions>(builder.Configuration.GetSection("RateLimit"));
 builder.Services.AddSingleton<Assets.AssetService>();
 builder.Services.AddHttpClient();
 builder.Services.AddRequestDecompression();
@@ -180,6 +181,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseForwardedHeaders();
 
+app.UseRateLimiting();
+
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.HasValue)
@@ -260,11 +263,6 @@ app.UseRouting();
 app.UseWhen(
     context => !context.Request.Path.StartsWithSegments("/hubs"),
     appBuilder => appBuilder.UseSession()
-);
-
-app.UseWhen(
-    context => !context.Request.Path.StartsWithSegments("/hubs"),
-    appBuilder => appBuilder.UseRateLimiting()
 );
 
 if (enableRequestLogging)

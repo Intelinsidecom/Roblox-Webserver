@@ -17,6 +17,7 @@ using RCCArbiter.Scripting;
 using RCCArbiter.Endpoints;
 using System.Reflection;
 using System.Net.Sockets;
+using System.Globalization;
 
 namespace RCCArbiter
 {
@@ -431,13 +432,30 @@ namespace RCCArbiter
                 }
 
                 var (year, forceJson) = _configuration != null
-                    ? GetRccYearConfig(_configuration, "Rendering")
+                    ? GetRccYearConfig(_configuration, "RCCService")
                     : (null, false);
+
+                var serverYear = gameServerManager.GetGameServerRccYear(gameId);
+                var effectiveYear = !string.IsNullOrWhiteSpace(serverYear) ? serverYear : year;
+
+                var effectiveForceJson = _configuration != null
+                    ? string.Equals(_configuration[$"RccConfigs:{effectiveYear}:ForceJson"], "true", StringComparison.OrdinalIgnoreCase)
+                    : forceJson;
+
+                // Skip JSON-only RCCs (they can't execute Lua monitoring scripts).
+                // Use IsJsonPreferred instead of a hardcoded year range so Lua-capable
+                // RCCs in years 2018-2022 still receive the CollectGameServerStatus script.
 
                 try
                 {
-                    using var healthClient = new RCCClient(urlToUse, year, forceJson);
+                    using var healthClient = new RCCClient(urlToUse, effectiveYear, effectiveForceJson);
                     healthClient.GetVersion();
+
+                    if (healthClient.IsJsonPreferred(effectiveForceJson))
+                    {
+                        Console.WriteLine($"[AutoCollect] Skipping Lua script collection for JSON-only RCC at {urlToUse}");
+                        return null;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -448,7 +466,7 @@ namespace RCCArbiter
 
                 var (token, completionTask) = callbackManager.CreateCallback(gameId);
                 var scriptsRoot = Path.Combine(Directory.GetCurrentDirectory(), "Scripts");
-                var provider = new FileScriptProvider(scriptsRoot, year);
+                var provider = new FileScriptProvider(scriptsRoot, effectiveYear);
                 var renderer = new ScriptRenderer();
 
                 if (!provider.TryGetScript("CollectGameServerStatus", out var template))
@@ -461,11 +479,11 @@ namespace RCCArbiter
                 {
                     ["reportType"] = "ping",
                     ["callbackToken"] = token,
-                    ["arbiterUrl"] = "https://www.freblx.com"
+                    ["arbiterUrl"] = "http://freblx.com"
                 };
 
                 var renderedScript = renderer.Render(template, parameters);
-                using var client = new RCCClient(urlToUse, year, forceJson);
+                using var client = new RCCClient(urlToUse, effectiveYear, effectiveForceJson);
                 var script = new ScriptExecution
                 {
                     name = "CollectGameServerStatus",
@@ -521,6 +539,39 @@ namespace RCCArbiter
             {
                 Console.WriteLine($"[AutoCollect] Error collecting report from {gameId}: {ex.Message}");
                 return null;
+            }
+        }
+
+        private static async Task<IResult> HandleRefresh(Guid gameId, long clientCount, double gameTime)
+        {
+            var gameServerManager = _gameServerManager;
+            if (gameServerManager == null)
+                return Results.Problem("GameServerManager not initialized");
+
+            try
+            {
+                // Pekora kill logic: if no players AND gameTime > 50 seconds, shut down
+                var serverInfo = gameServerManager.GetGameServerInfo(gameId.ToString());
+                if (serverInfo == null)
+                {
+                    return Results.NotFound(new { error = "Game server not found" });
+                }
+
+                gameServerManager.UpdateServerActivity(gameId.ToString());
+                gameServerManager.UpdatePlayerCount(gameId.ToString(), (int)clientCount);
+
+                if (clientCount == 0 && gameTime > 50)
+                {
+                    Console.WriteLine($"[Refresh] Zero players after {gameTime}s, shutting down server {gameId}");
+                    gameServerManager.KillZeroPlayerServer(gameId.ToString());
+                    return Results.Ok(new { shutdown = true, reason = "zero_players_timeout" });
+                }
+
+                return Results.Ok(new { shutdown = false, serverId = gameId });
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message);
             }
         }
 
@@ -666,6 +717,24 @@ namespace RCCArbiter
                 };
 
                 return Results.Ok(status);
+            });
+
+            app.MapGet("/rcc/years", () =>
+            {
+                var baseDir = Directory.GetCurrentDirectory();
+                var rccDir = Path.Combine(baseDir, "RCC");
+                var years = new List<string>();
+
+                if (Directory.Exists(rccDir))
+                {
+                    years = Directory.GetDirectories(rccDir)
+                        .Select(Path.GetFileName)
+                        .Where(name => !string.IsNullOrEmpty(name))
+                        .OrderBy(name => name)
+                        .ToList()!;
+                }
+
+                return Results.Ok(years);
             });
 
             foreach (var kv in Functions.Registry)
@@ -1011,7 +1080,7 @@ namespace RCCArbiter
                         
                         var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
                         var privateServerId = req.Query["privateServerId"].FirstOrDefault() ?? "";
-                        var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.com";
+                        var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://freblx.com";
                         var maxInactive = int.TryParse(req.Query["maxInactive"], out var mi) ? mi : 0;
                         var rccYear = req.Query["year"].FirstOrDefault();
                         var universeId = long.TryParse(req.Query["universeId"], out var ui) ? (long?)ui : null;
@@ -1063,7 +1132,7 @@ namespace RCCArbiter
                     var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 15;
                     var port = StartGameServerEndpoint.GenerateAvailablePort();
                     var maxPlayers = int.TryParse(req.Query["maxPlayers"], out var mp) ? mp : 10;
-                    var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://www.freblx.com";
+                    var baseUrl = req.Query["baseUrl"].FirstOrDefault() ?? "http://freblx.com";
                     var universeId = int.TryParse(req.Query["universeId"], out var uid) ? uid : 0;
 
                     var gameId = await cloudEditManager.StartCloudEditServerAsync(
@@ -1717,6 +1786,14 @@ namespace RCCArbiter
                     var (year, forceJson) = _configuration != null
                         ? GetRccYearConfig(_configuration, "Rendering")
                         : (null, false);
+
+                    // Don't send the monitoring script to older RCC years (2018-2022)
+                    if (!string.IsNullOrWhiteSpace(year) && int.TryParse(year, out var rccYearInt2) && rccYearInt2 >= 2018 && rccYearInt2 <= 2022)
+                    {
+                        callbackManager.CancelCallback(token, "RCC year blocked");
+                        return Results.NotFound(new { error = "RCC year blocked" });
+                    }
+
                     var provider = new FileScriptProvider(scriptsRoot, year);
                     var renderer = new ScriptRenderer();
 
@@ -1730,7 +1807,7 @@ namespace RCCArbiter
                     {
                         ["reportType"] = reportType,
                         ["callbackToken"] = token,
-                        ["arbiterUrl"] = "https://www.freblx.com"
+                        ["arbiterUrl"] = "http://freblx.com"
                     };
 
                     var renderedScript = renderer.Render(template, parameters);
@@ -1855,6 +1932,84 @@ namespace RCCArbiter
             
             app.MapGet("/api/gameservers/report", HandleReportRequest);
             app.MapPost("/api/gameservers/report", HandleReportRequest);
+
+            // RCC's built-in game-instance heartbeat (v2/CreateOrUpdate). The Website controller
+            // forwards it here so the Arbiter can track live server state for builds that don't run
+            // the CollectGameServerStatus monitoring script.
+            IResult HandleInstanceHeartbeat(HttpRequest req)
+            {
+                try
+                {
+                    var gameId = req.Query["gameId"].FirstOrDefault() ?? "";
+                    if (string.IsNullOrWhiteSpace(gameId))
+                        return Results.BadRequest(new { error = "gameId is required" });
+
+                    var placeId = int.TryParse(req.Query["placeId"], out var pid) ? pid : 0;
+                    var clientCount = int.TryParse(req.Query["clientCount"], out var cc) ? cc : 0;
+                    var maxPlayers = int.TryParse(req.Query["gameCapacity"], out var gc) ? gc : 0;
+                    if (maxPlayers <= 0)
+                        maxPlayers = int.TryParse(req.Query["preferredPlayerCapacity"], out var ppc) ? ppc : 0;
+
+                    double ReadDouble(string name)
+                    {
+                        var raw = req.Query[name].FirstOrDefault();
+                        return double.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
+                    }
+
+                    long ReadLong(string name)
+                    {
+                        var raw = req.Query[name].FirstOrDefault();
+                        return long.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : 0;
+                    }
+
+                    var serverInfo = gameServerManager.GetGameServerInfo(gameId);
+                    if (serverInfo == null)
+                    {
+                        // Unknown/stale job: acknowledge so RCC does not treat monitoring as failed.
+                        return Results.Ok(new { received = true, tracked = false });
+                    }
+
+                    var fps = ReadDouble("fps");
+                    var ping = ReadDouble("ping");
+
+                    var statusData = new Dictionary<string, object>
+                    {
+                        ["gameId"] = gameId,
+                        ["placeId"] = placeId,
+                        ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        ["isAlive"] = true,
+                        ["source"] = "rcc-heartbeat",
+                        ["eventSource"] = req.Query["eventSource"].FirstOrDefault() ?? "",
+                        ["fps"] = fps,
+                        ["ping"] = ping,
+                        ["heartbeatRate"] = ReadDouble("heartbeatRate"),
+                        ["cpuUsage"] = ReadDouble("cpuUsage"),
+                        ["usedMemoryBytes"] = ReadLong("usedMemoryBytes"),
+                        ["seqNum"] = ReadLong("seqNum"),
+                        ["rccVersion"] = req.Query["rccVersion"].FirstOrDefault() ?? "",
+                        ["players"] = new Dictionary<string, object>
+                        {
+                            ["total"] = clientCount,
+                            ["authenticatedCount"] = clientCount,
+                            ["guestCount"] = 0,
+                            ["maxPlayers"] = maxPlayers
+                        }
+                    };
+
+                    gameServerManager.RecordHeartbeat(gameId, statusData, clientCount);
+                    Console.WriteLine($"[Heartbeat] {gameId} place={placeId} players={clientCount}/{maxPlayers} fps={fps:0.0}");
+
+                    return Results.Ok(new { received = true, tracked = true });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Heartbeat] Error: {ex.Message}");
+                    return Results.Ok(new { received = false, error = ex.Message });
+                }
+            }
+
+            app.MapGet("/api/gameservers/heartbeat", HandleInstanceHeartbeat);
+            app.MapPost("/api/gameservers/heartbeat", HandleInstanceHeartbeat);
             app.MapPost("/gs/callback", async (HttpRequest req) =>
             {
                 try
@@ -2054,6 +2209,119 @@ namespace RCCArbiter
                 {
                     return Results.Problem(ex.Message);
                 }
+            });
+
+            // Pekora-style endpoints for JSON-mode (2018/2020+) monitoring
+            // These replace the Lua MonitoringScript.lua that JSON-mode builds don't run
+
+            // Player joins the game server
+            app.MapPost("presence/register-game-presence", async (HttpRequest req) =>
+            {
+                try
+                {
+                    var query = req.Query;
+                    if (!query.TryGetValue("visitorId", out var visitorIdStr) ||
+                        !query.TryGetValue("placeId", out var placeIdStr) ||
+                        !query.TryGetValue("gameId", out var gameIdStr))
+                    {
+                        return Results.BadRequest(new { error = "visitorId, placeId, gameId required" });
+                    }
+
+                    if (!long.TryParse(visitorIdStr, out var visitorId) ||
+                        !int.TryParse(placeIdStr, out var placeId) ||
+                        !Guid.TryParse(gameIdStr, out var gameId))
+                    {
+                        return Results.BadRequest(new { error = "invalid parameter format" });
+                    }
+
+                    // Security: validate this is a real game server
+                    var serverInfo = gameServerManager.GetGameServerInfo(gameId.ToString());
+                    if (serverInfo == null || serverInfo.PlaceId != placeId)
+                    {
+                        return Results.Unauthorized();
+                    }
+
+                    gameServerManager.RecordPlayerEvent(gameId.ToString(), visitorId, "Join");
+                    gameServerManager.UpdateServerActivity(gameId.ToString());
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // Player leaves the game server
+            app.MapPost("presence/register-absence", async (HttpRequest req) =>
+            {
+                try
+                {
+                    var query = req.Query;
+                    if (!query.TryGetValue("visitorId", out var visitorIdStr))
+                    {
+                        return Results.BadRequest(new { error = "visitorId required" });
+                    }
+
+                    if (!long.TryParse(visitorIdStr, out var visitorId))
+                    {
+                        return Results.BadRequest(new { error = "invalid visitorId" });
+                    }
+
+                    // Find which server this user is on
+                    var allServers = gameServerManager.GetAllGameServers();
+                    string? targetGameId = null;
+                    int targetPlaceId = 0;
+                    foreach (var s in allServers)
+                    {
+                        if (s.AuthenticatedPlayers.Any(p => p.UserId == visitorId) || s.GuestPlayers.Any(p => p.UserId == visitorId))
+                        {
+                            targetGameId = s.GameId;
+                            targetPlaceId = s.PlaceId;
+                            break;
+                        }
+                    }
+
+                    if (targetGameId == null)
+                    {
+                        return Results.NotFound(new { error = "user not found in any server" });
+                    }
+
+                    gameServerManager.RecordPlayerEvent(targetGameId, visitorId, "Leave");
+                    gameServerManager.UpdateServerActivity(targetGameId);
+
+                    return Results.Ok();
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            });
+
+            // v1.0/Refresh and v2.0/Refresh - server heartbeat with player count & game time
+            // Pekora kills the server when clientCount == 0 && gameTime > 50
+            app.MapGet("v1.0/Refresh", async (Guid gameId, long clientCount, decimal gameTime) =>
+            {
+                return await HandleRefresh(gameId, clientCount, (double)gameTime);
+            });
+            app.MapPost("v1.0/Refresh", async (Guid gameId, long clientCount, decimal gameTime) =>
+            {
+                return await HandleRefresh(gameId, clientCount, (double)gameTime);
+            });
+            app.MapGet("v2.0/Refresh", async (Guid gameId, long clientCount, decimal gameTime) =>
+            {
+                return await HandleRefresh(gameId, clientCount, (double)gameTime);
+            });
+            app.MapPost("v2.0/Refresh", async (Guid gameId, long clientCount, decimal gameTime) =>
+            {
+                return await HandleRefresh(gameId, clientCount, (double)gameTime);
+            });
+
+            // Stub for telemetry endpoint the engine may call
+            app.MapPost("/game/report-stats", (HttpRequest req) =>
+            {
+                // Log telemetry if needed, just accept it
+                return Results.Ok(new { received = true });
             });
 
             var bound = string.IsNullOrWhiteSpace(urls) ? "default Kestrel URLs (e.g. http://localhost:5000)" : urls;

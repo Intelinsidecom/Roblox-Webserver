@@ -181,7 +181,7 @@ namespace Control_Panel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\GitHub\\Roblox-Webserver\\CDN\\Assets")]
         public string AssetsDirectory {
             get {
                 return ((string)(this["AssetsDirectory"]));
@@ -193,7 +193,7 @@ namespace Control_Panel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\GitHub\\Roblox-Webserver\\CDN\\Assets\\thumbnails")]
         public string ThumbnailsOutputDirectory {
             get {
                 return ((string)(this["ThumbnailsOutputDirectory"]));
@@ -217,7 +217,7 @@ namespace Control_Panel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplate.png")]
         public string TshirtTemplatePath {
             get {
                 return ((string)(this["TshirtTemplatePath"]));
@@ -229,7 +229,7 @@ namespace Control_Panel.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Users\\Intel\\Documents\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png")]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\GitHub\\Roblox-Webserver\\Website\\Images\\TeeShirtTemplateHighRes.png")]
         public string TshirtTemplateHighResPath {
             get {
                 return ((string)(this["TshirtTemplateHighResPath"]));

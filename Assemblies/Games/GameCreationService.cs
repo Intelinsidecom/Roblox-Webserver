@@ -718,10 +718,30 @@ where user_id = @uid;";
 
         using var httpClient = HttpClientDefaults.CreateLocalClient();
         httpClient.Timeout = Common.HttpClientDefaults.Timeout;
+
+        string? gameYear = null;
+        if (!string.IsNullOrWhiteSpace(connectionString))
+        {
+            try
+            {
+                var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connectionString, placeId, cancellationToken).ConfigureAwait(false);
+                if (universeId.HasValue)
+                    gameYear = await GamesRepository.GetUniverseGameYearAsync(connectionString, universeId.Value, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameCreationService] Could not resolve game year for place {placeId}: {ex.Message}");
+            }
+        }
+
         var startRequestUrl = $"{arbiterUrl}/api/gameservers/start?placeId={placeId}&maxPlayers={maxPlayers}&maxInactive=0&baseUrl={Uri.EscapeDataString(webUrl)}";
         if (privateServerId > 0)
         {
             startRequestUrl += $"&privateServerId={privateServerId}";
+        }
+        if (!string.IsNullOrWhiteSpace(gameYear))
+        {
+            startRequestUrl += $"&year={Uri.EscapeDataString(gameYear)}";
         }
         var response = await httpClient.GetAsync(startRequestUrl, cancellationToken);
 

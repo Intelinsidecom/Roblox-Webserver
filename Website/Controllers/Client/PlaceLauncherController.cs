@@ -637,6 +637,19 @@ namespace Website.Controllers.Client
 
                 var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(_configuration.GetConnectionString("Default"), gameid);
 
+                string? universeGameYear = null;
+                if (universeId.HasValue && !string.IsNullOrWhiteSpace(_configuration.GetConnectionString("Default")))
+                {
+                    try
+                    {
+                        universeGameYear = await GamesRepository.GetUniverseGameYearAsync(_configuration.GetConnectionString("Default"), universeId.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[join.ashx] Could not resolve universe game year: {ex.Message}");
+                    }
+                }
+
                 // Create a ticket for this join
                 string? ticketToken = null;
                 if (userId > 0)
@@ -743,7 +756,7 @@ namespace Website.Controllers.Client
                 var data = JsonSerializer.Serialize(joinScript, options);
 
                 var signature = SignData("\r\n" + data);
-                var result = $"--rbxsig%{signature}%\r\n{data}";
+                var result = RbxSig.Wrap(RbxSig.GetHeader(universeGameYear), signature, data);
 
                 return Content(result, "text/plain");
             }

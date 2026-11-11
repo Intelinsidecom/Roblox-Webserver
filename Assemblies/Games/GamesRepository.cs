@@ -205,6 +205,49 @@ public static class GamesRepository
         return Convert.ToInt64(result);
     }
 
+    public static async Task<string?> GetUniverseGameYearAsync(string connectionString, long universeId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"SELECT game_year FROM universes WHERE universe_id = @universeId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+
+        var result = await cmd.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+
+        if (result == null || result ==DBNull.Value)
+            return null;
+
+        return result.ToString();
+    }
+
+    public static async Task<bool> SetUniverseGameYearAsync(string connectionString, long universeId, string? gameYear, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("connectionString is required", nameof(connectionString));
+        if (universeId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(universeId));
+
+        using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        const string sql = @"UPDATE universes SET game_year = @gameYear WHERE universe_id = @universeId";
+
+        using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue("universeId", universeId);
+        cmd.Parameters.AddWithValue("gameYear", (object?)gameYear ??DBNull.Value);
+
+        var rows = await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+        return rows > 0;
+    }
+
     public static async Task<long?> GetUniverseOwnerAsync(string connectionString, long universeId, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(connectionString))

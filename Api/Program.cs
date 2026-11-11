@@ -1,6 +1,7 @@
  using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RequestDecompression;
 using Api.Middleware;
 using Api.Services;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddRequestDecompression();// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
@@ -66,6 +67,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddMemoryCache();
 
+builder.Services.Configure<RateLimitOptions>(builder.Configuration.GetSection("RateLimit"));
+builder.Services.Configure<SignupRateLimitOptions>(builder.Configuration.GetSection("SignupRateLimit"));
+
 builder.Services.AddSingleton<Games.AuthenticationTicketService>();
 builder.Services.AddSingleton<Games.TokenService>();
 builder.Services.AddHttpContextAccessor();
@@ -87,6 +91,9 @@ app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
 
 app.UseForwardedHeaders();
+
+app.UseSignupRateLimit();
+app.UseRateLimit();
 
 app.Use(async (context, next) =>
 {
@@ -128,6 +135,7 @@ app.UseRouting();
 
 app.UseCors("AuthCors");
 app.UseAuthorization();
+app.UseRequestDecompression();
 app.Use(async (context, next) =>
 {
     await next();

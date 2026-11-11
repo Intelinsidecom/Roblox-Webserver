@@ -75,6 +75,9 @@ namespace RCCArbiter.Endpoints
             else
                 p["creatorId"] = "0";
 
+            var gameYear = req.Query.TryGetValue("gameYear", out var gyv) ? gyv.ToString() : "";
+            p["gameYear"] = gameYear;
+
             return p;
         }
     }

@@ -64,7 +64,8 @@
     "BaseUrl": "http://localhost:5077",
     "UploadUrl": "http://localhost:5077/api/thumbnails/upload",
     "AccessKey": "ChangeMe",
-    "WebsiteUrl": "http://localhost:5077"
+    "WebsiteUrl": "http://localhost:5077",
+    "MachineAddress": "127.0.0.1"
   },
   "RccConfigs": {
     "2016": {

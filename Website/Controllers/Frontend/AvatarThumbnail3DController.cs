@@ -146,7 +146,7 @@ public class AvatarThumbnail3DController : ControllerBase
         var baseDir = _configuration["Thumbnails:Avatar3DDirectory"];
         if (string.IsNullOrWhiteSpace(baseDir))
         {
-            baseDir = @"C:\Users\Intel\Documents\GitHub\Roblox-Webserver\CDN\Assets\3DAvatar";
+            baseDir = @"D:\GitHub\Roblox-Webserver\CDN\Assets\3DAvatar";
         }
         var cameraPath = System.IO.Path.Combine(baseDir, modelHash, "camera.json");
         if (System.IO.File.Exists(cameraPath))

@@ -189,7 +189,7 @@ public sealed class ThumbnailService : IThumbnailService
         var baseDir = _configuration?["Thumbnails:Avatar3DDirectory"];
         if (string.IsNullOrWhiteSpace(baseDir))
         {
-            baseDir = @"C:\\Users\\Intel\\Documents\\GitHub\\RobloxWebserver\\CDN\\Assets\\3DAvatar";
+            baseDir = @"D:\\GitHub\\RobloxWebserver\\CDN\\Assets\\3DAvatar";
         }
 
         var w = x.GetValueOrDefault(0);
@@ -739,7 +739,7 @@ public sealed class ThumbnailService : IThumbnailService
             }
             else
             {
-                baseDir = @"C:\Users\Intel\Documents\GitHub\RobloxWebserver\CDN\Assets\3DAsset";
+                baseDir = @"D:\GitHub\Roblox-Webserver\CDN\Assets\3DAsset";
             }
         }
 
@@ -1075,7 +1075,7 @@ public sealed class ThumbnailService : IThumbnailService
             }
             else
             {
-                baseDir = @"C:\Users\Intel\Documents\GitHub\RobloxWebserver\CDN\Assets\3DAsset";
+                baseDir = @"D:\GitHub\Roblox-Webserver\CDN\Assets\3DAsset";
             }
         }
 

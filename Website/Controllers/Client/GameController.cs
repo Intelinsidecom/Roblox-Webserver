@@ -452,7 +452,7 @@ namespace Website.Controllers.Client
             var script = _scriptTemplateService.Render("edit", replacement);
 
             var data = "\r\n" + script;
-            await WriteSignedScript(data);
+            await WriteSignedScript(data, placeId);
         }
 
         [HttpGet("/Game/visit.ashx")]
@@ -525,25 +525,36 @@ namespace Website.Controllers.Client
             var script = _scriptTemplateService.Render("visit", replacement);
 
             var data = "\r\n" + script;
-            await WriteSignedScript(data);
+            await WriteSignedScript(data, placeId);
         }
 
         [HttpGet("/Game/GamePass/GamePassHandler.ashx")]
         public async Task<IActionResult> GamePassHandler(string? Action, long? UserID, long? PassID)
         {
             if (string.IsNullOrEmpty(Action))
-                return Content("<Value>Type=\"boolean\">false</Value>", "application/xml");
+                return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
 
             if (string.Equals(Action, "HasPass", StringComparison.OrdinalIgnoreCase))
             {
-                if (!UserID.HasValue || !PassID.HasValue)
+                // The client sends UserID=0 when the player is not authenticated.
+                if (!UserID.HasValue || !PassID.HasValue || UserID.Value <= 0 || PassID.Value <= 0)
                     return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
 
                 var connStr = _configuration.GetConnectionString("Default");
                 if (string.IsNullOrEmpty(connStr))
                     return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
 
-                var owns = await new UserAssetsRepository().UserOwnsAssetAsync(connStr, UserID.Value, PassID.Value);
+                bool owns;
+                try
+                {
+                    owns = await new UserAssetsRepository().UserOwnsAssetAsync(connStr, UserID.Value, PassID.Value);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[ERROR] GamePassHandler: {ex.Message}");
+                    return Content("<Value Type=\"boolean\">false</Value>", "application/xml");
+                }
+
                 var xml = owns
                     ? "<Value Type=\"boolean\">true</Value>"
                     : "<Value Type=\"boolean\">false</Value>";
@@ -585,7 +596,7 @@ namespace Website.Controllers.Client
             var replacement = $"%1% = {baseUrl}; %2% = {apiBaseUrl}; %creatorId% = {creatorId}; %placeVersion% = {placeVersion}";
             var script = _scriptTemplateService.Render("loadplaceinfo", replacement);
             var data = "\r\n" + script;
-            await WriteSignedScript(data);
+            await WriteSignedScript(data, PlaceId);
             return new EmptyResult();
         }
 
@@ -660,8 +671,25 @@ namespace Website.Controllers.Client
             });
         }
 
-        private async Task WriteSignedScript(string data)
+        private async Task WriteSignedScript(string data, long? placeId)
         {
+            // Resolve the universe's game year so the script is signed with the wrapper the client expects
+            string? universeYear = null;
+            var connStr = _configuration.GetConnectionString("Default");
+            if (placeId.HasValue && placeId.Value > 0 && !string.IsNullOrWhiteSpace(connStr))
+            {
+                try
+                {
+                    var universeId = await GamesRepository.GetUniverseIdFromPlaceIdAsync(connStr, placeId.Value);
+                    if (universeId.HasValue)
+                        universeYear = await GamesRepository.GetUniverseGameYearAsync(connStr, universeId.Value);
+                }
+                catch
+                {
+                    // fall back to the default wrapper
+                }
+            }
+
             var privateKeyPem = _configuration["RSA:PrivateKey"];
             if (string.IsNullOrWhiteSpace(privateKeyPem))
             {
@@ -679,7 +707,8 @@ namespace Website.Controllers.Client
                 var sigB64 = Convert.ToBase64String(sig);
                 Response.ContentType = "text/plain";
                 Response.Headers["X-Robots-Tag"] = "noindex";
-                await Response.WriteAsync("--rbxsig%" + sigB64 + "%" + data);
+                // data already starts with "\r\n", so no Wrap() here — header + sig + "%" + data
+                await Response.WriteAsync(RbxSig.GetHeader(universeYear) + sigB64 + "%" + data);
             }
         }
     }

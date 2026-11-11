@@ -90,6 +90,37 @@ namespace Thumbnails
             return result;
         }
 
+        /// <summary>
+        /// Gets the effective thumbnail URL (custom icon, generated icon, then fallback thumbnail)
+        /// for each of the supplied asset ids. Missing assets are omitted from the result.
+        /// </summary>
+        public static async Task<Dictionary<long, string?>> GetAssetThumbnailUrlsAsync(string connectionString, long[] assetIds, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new ArgumentException("Connection string is required", nameof(connectionString));
+            var result = new Dictionary<long, string?>();
+            if (assetIds == null || assetIds.Length == 0)
+                return result;
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+            using var cmd = new NpgsqlCommand(
+                @"select asset_id,
+                         coalesce(place_custom_icon_url, place_generated_icon_url, thumbnail_url) as url
+                  from assets
+                  where asset_id = ANY(@ids)",
+                conn);
+            cmd.Parameters.AddWithValue("ids", assetIds);
+            await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                var id = reader.GetInt64(0);
+                var url = reader.IsDBNull(1) ? null : reader.GetString(1);
+                result[id] = url;
+            }
+            return result;
+        }
+
         public static async Task SetUserHeadshotUrlAsync(string connectionString, long userId, string url, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(connectionString))

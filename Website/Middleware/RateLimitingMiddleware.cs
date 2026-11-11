@@ -1,97 +1,118 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using System.Net;
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Website.Middleware;
 
 /// <summary>
-/// Rate limiting middleware to prevent API abuse
+/// Global sliding-window rate limiter based on client IP.
+/// Applies to every non-healthcheck request. Returns 429 when the per-IP
+/// request budget for the current window is exhausted.
 /// </summary>
 public class RateLimitingMiddleware
 {
-    private readonly RequestDelegate _next;
-    private readonly IMemoryCache _cache;
-    private readonly ILogger<RateLimitingMiddleware> _logger;
-    private readonly int _defaultTimeWindowSeconds;
-    private readonly int _maxRequestsPerWindow = 100;
+    private static readonly string[] SkipPrefixes = { "/v2/CreateOrUpdate" };
 
-    public RateLimitingMiddleware(RequestDelegate next, IMemoryCache cache, ILogger<RateLimitingMiddleware> logger, IConfiguration configuration)
+    private readonly RequestDelegate _next;
+    private readonly RateLimitOptions _options;
+    private readonly ConcurrentDictionary<string, List<long>> _requestLogs = new();
+    private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new();
+    private readonly ILogger<RateLimitingMiddleware> _logger;
+
+    public RateLimitingMiddleware(
+        RequestDelegate next,
+        IOptions<RateLimitOptions> options,
+        ILogger<RateLimitingMiddleware> logger)
     {
         _next = next;
-        _cache = cache;
+        _options = options.Value;
         _logger = logger;
-        _defaultTimeWindowSeconds = configuration.GetValue<int>("Apis:DefaultApiRateLimitTimeInSeconds", 10);
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (!IsApiRoute(context.Request.Path))
+        // Never rate-limit the internal health/check endpoint itself, or RCC game-server heartbeats.
+        if (context.Request.Path.StartsWithSegments(_options.SkipPath, StringComparison.OrdinalIgnoreCase) ||
+            Array.Exists(SkipPrefixes, prefix => context.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase)))
         {
             await _next(context);
             return;
         }
 
-        var clientIdentifier = GetClientIdentifier(context);
-        var cacheKey = $"rate_limit_{clientIdentifier}_{context.Request.Path}";
-        
-        if (_cache.TryGetValue(cacheKey, out int requestCount))
+        var clientIp = GetClientIp(context);
+        if (string.IsNullOrEmpty(clientIp))
         {
-            if (requestCount >= _maxRequestsPerWindow)
+            await _next(context);
+            return;
+        }
+
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var windowStart = now - _options.WindowSeconds;
+
+        var semaphore = _semaphores.GetOrAdd(clientIp, _ => new SemaphoreSlim(1, 1));
+        await semaphore.WaitAsync();
+        try
+        {
+            var requests = _requestLogs.GetOrAdd(clientIp, _ => new List<long>());
+            requests.RemoveAll(ts => ts <= windowStart);
+
+            if (requests.Count >= _options.MaxRequests)
             {
-                _logger.LogWarning("Rate limit exceeded for {ClientIdentifier} on {Path}. Requests: {Count}", 
-                    clientIdentifier, context.Request.Path, requestCount);
-                
-                context.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-                await context.Response.WriteAsync("Rate limit exceeded. Please try again later.");
+                _logger.LogWarning(
+                    "Rate limit exceeded for {Ip} on {Path}. Requests in window: {Count}",
+                    clientIp, context.Request.Path, requests.Count);
+
+                context.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                context.Response.Headers.Append("Retry-After", _options.WindowSeconds.ToString());
+                await context.Response.WriteAsync("{\"errors\":[{\"code\":0,\"message\":\"Rate limit exceeded\"}]}");
                 return;
             }
-            
-            _cache.Set(cacheKey, requestCount + 1, TimeSpan.FromSeconds(_defaultTimeWindowSeconds));
+
+            requests.Add(now);
         }
-        else
+        finally
         {
-            _cache.Set(cacheKey, 1, TimeSpan.FromSeconds(_defaultTimeWindowSeconds));
+            semaphore.Release();
         }
 
         await _next(context);
     }
 
-    private static bool IsApiRoute(string path)
+    private static string? GetClientIp(HttpContext context)
     {
-        return path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/places/", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/thumbs/", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/item-thumbnails", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/avatar-thumbnails", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/headshot-thumbnail", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/bust-thumbnail", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/outfit-thumbnail", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/game-thumbnails", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/game-icons", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/thumbnail/", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/Thumbs/", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string GetClientIdentifier(HttpContext context)
-    {
-        var userIdClaim = context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-        if (userIdClaim != null && !string.IsNullOrWhiteSpace(userIdClaim.Value))
-        {
-            return $"user_{userIdClaim.Value}";
-        }
-
-        var ipAddress = context.Connection.RemoteIpAddress?.ToString();
-        return $"ip_{ipAddress ?? "unknown"}";
+        var headers = context.Request.Headers;
+        if (headers.TryGetValue("X-Forwarded-For", out var xfFor) && !string.IsNullOrEmpty(xfFor))
+            return xfFor.ToString().Split(',')[0].Trim();
+        if (headers.TryGetValue("X-Real-IP", out var xReal) && !string.IsNullOrEmpty(xReal))
+            return xReal.ToString();
+        if (headers.TryGetValue("CF-Connecting-IP", out var cfIp) && !string.IsNullOrEmpty(cfIp))
+            return cfIp.ToString();
+        if (headers.TryGetValue("True-Client-IP", out var tcIp) && !string.IsNullOrEmpty(tcIp))
+            return tcIp.ToString();
+        return context.Connection.RemoteIpAddress?.ToString();
     }
 }
 
+public class RateLimitOptions
+{
+    /// <summary>Maximum number of requests allowed per sliding window per IP.</summary>
+    public int MaxRequests { get; set; } = 60;
+
+    /// <summary>Sliding window size in seconds.</summary>
+    public int WindowSeconds { get; set; } = 60;
+
+    /// <summary>Path prefix to skip entirely (e.g. "/health").</summary>
+    public string SkipPath { get; set; } = "/health";
+}
+
 /// <summary>
-/// Extension method to register the rate limiting middleware
+/// Extension method to register the rate limiting middleware.
 /// </summary>
 public static class RateLimitingMiddlewareExtensions
 {
-    public static IApplicationBuilder UseRateLimiting(this IApplicationBuilder builder)
-    {
-        return builder.UseMiddleware<RateLimitingMiddleware>();
-    }
+    public static IApplicationBuilder UseRateLimiting(this IApplicationBuilder app, RateLimitOptions options)
+        => app.UseMiddleware<RateLimitingMiddleware>(Options.Create(options));
+
+    public static IApplicationBuilder UseRateLimiting(this IApplicationBuilder app)
+        => app.UseMiddleware<RateLimitingMiddleware>();
 }

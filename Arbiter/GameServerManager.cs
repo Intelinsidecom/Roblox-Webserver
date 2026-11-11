@@ -93,7 +93,17 @@ namespace RCCArbiter
             var gameId = Guid.NewGuid().ToString();
             
             if (string.IsNullOrWhiteSpace(baseUrl))
-                baseUrl = "http://www.freblx.com";
+            {
+                baseUrl = "http://freblx.com";
+            }
+            else
+            {
+                baseUrl = baseUrl.Trim();
+                // Ensure the URL always has a scheme before it is placed into the job settings.
+                if (!baseUrl.Contains("://", StringComparison.Ordinal))
+                    baseUrl = "http://" + baseUrl.TrimStart('/');
+                baseUrl = baseUrl.TrimEnd('/');
+            }
 
             var year = _rccManager.ResolveYear(rccYear);
             var forceJson = _rccManager.IsForceJson(year);
@@ -250,32 +260,22 @@ namespace RCCArbiter
         }
         private string ResolveMachineAddress(string baseUrl)
         {
-            if (!string.IsNullOrWhiteSpace(baseUrl))
-            {
-                try
-                {
-                    var uri = new Uri(baseUrl);
-                    if (!string.IsNullOrEmpty(uri.Host))
-                        return uri.Host;
-                }
-                catch (UriFormatException) { }
-            }
-
-            var configured = _configuration["Arbiter:MachineAddress"];
+            // MachineAddress must be an IP address, never a URL/hostname.
+            // Prefer an explicitly configured address (expected to be an IP).
+            var configured = _configuration?["Arbiter:MachineAddress"];
             if (!string.IsNullOrWhiteSpace(configured))
                 return configured!.Trim();
 
-            try
+            // If the base URL points directly at an IP, use that IP.
+            if (!string.IsNullOrWhiteSpace(baseUrl) &&
+                Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri) &&
+                IPAddress.TryParse(uri.Host, out var baseIp))
             {
-                return Dns.GetHostEntry(Dns.GetHostName())
-                          .AddressList
-                          .FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)?
-                          .ToString() ?? "localhost";
+                return baseIp.ToString();
             }
-            catch
-            {
-                return "localhost";
-            }
+
+            // RCC binds the game server locally, so default to loopback.
+            return "127.0.0.1";
         }
         private string ResolveBaseHost(string baseUrl)
         {
@@ -285,16 +285,28 @@ namespace RCCArbiter
                 {
                     var uri = new Uri(baseUrl);
                     if (!string.IsNullOrEmpty(uri.Host))
-                        return uri.Host;
+                        return StripWwwPrefix(uri.Host);
                 }
                 catch (UriFormatException) { }
             }
 
             var configured = _configuration["Arbiter:BaseHost"];
             if (!string.IsNullOrWhiteSpace(configured))
-                return configured!.Trim();
+                return StripWwwPrefix(configured!.Trim());
 
             return ResolveMachineAddress(baseUrl);
+        }
+
+        /// <summary>
+        /// RCC prefixes BaseUrl with "gameinstanceshapi.", so a "www." host would produce
+        /// gameinstanceshapi.www.example.com (not covered by a *.example.com certificate).
+        /// Strip the "www." so heartbeats land on gameinstanceshapi.example.com.
+        /// </summary>
+        private static string StripWwwPrefix(string host)
+        {
+            return host.StartsWith("www.", StringComparison.OrdinalIgnoreCase)
+                ? host.Substring(4)
+                : host;
         }
 
         public async Task<GameServerInfo> GetGameServerStatusAsync(string gameId, string? overrideRccUrl = null)
@@ -325,6 +337,38 @@ namespace RCCArbiter
                     server.PlayerCount = playerCount;
                     server.HasReceivedReport = true;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Applies an RCC built-in monitoring heartbeat. Unlike <see cref="UpdateGameServerStatus"/>
+        /// this never triggers the zero-player auto-kill: heartbeats keep arriving even while a
+        /// server is empty, so normal inactivity cleanup remains in charge of reaping it.
+        /// </summary>
+        public void RecordHeartbeat(string gameId, Dictionary<string, object> data, int playerCount)
+        {
+            lock (_serversLock)
+            {
+                if (!_activeServers.TryGetValue(gameId, out var server))
+                    return;
+
+                server.LastStatus = data;
+                server.PlayerCount = playerCount;
+                server.AuthenticatedPlayerCount = playerCount;
+                server.GuestPlayerCount = 0;
+                server.HasReceivedReport = true;
+                server.FailedReportCount = 0;
+
+                // Only touch LastActivityTime when players are present. With 0 players we
+                // want the clock to keep ticking so CleanupZeroPlayerServers can reap the
+                // server after the 30-second inactivity window.
+                if (playerCount > 0)
+                    server.LastActivityTime = DateTime.UtcNow;
+
+                if (playerCount == 0)
+                    server.ConsecutiveZeroPlayerReports++;
+                else
+                    server.ConsecutiveZeroPlayerReports = 0;
             }
         }
 

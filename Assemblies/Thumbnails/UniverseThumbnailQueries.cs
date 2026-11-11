@@ -1,5 +1,6 @@
 using Npgsql;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,6 +8,39 @@ namespace Thumbnails;
 
 public static class UniverseThumbnailQueries
 {
+    /// <summary>
+    /// Gets the thumbnail URL for each of the supplied universe ids.
+    /// Missing universes are omitted from the result.
+    /// </summary>
+    public static async Task<Dictionary<long, string?>> GetUniverseThumbnailUrlsAsync(
+        string connectionString,
+        long[] universeIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string is required", nameof(connectionString));
+        var result = new Dictionary<long, string?>();
+        if (universeIds == null || universeIds.Length == 0)
+            return result;
+
+        await using var conn = new NpgsqlConnection(connectionString);
+        await conn.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+        using var cmd = new NpgsqlCommand(
+            "select universe_id, thumbnail_url from universes where universe_id = ANY(@ids)",
+            conn);
+        cmd.Parameters.AddWithValue("ids", universeIds);
+
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false);
+        while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+        {
+            var id = reader.GetInt64(0);
+            var url = reader.IsDBNull(1) ? null : reader.GetString(1);
+            result[id] = url;
+        }
+        return result;
+    }
+
     /// <summary>
     /// Updates the thumbnail URL for a universe in the database.
     /// </summary>

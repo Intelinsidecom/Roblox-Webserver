@@ -35,7 +35,9 @@ namespace RCCArbiter
 
         public string ResolveYear(string? requestedYear)
         {
-            var defaultYear = _config["RCCService:Year"];
+            var defaultYear = _config["RCCService:DefaultGameYear"];
+            if (string.IsNullOrWhiteSpace(defaultYear))
+                defaultYear = _config["RCCService:Year"];
             if (string.IsNullOrWhiteSpace(defaultYear))
                 defaultYear = "2016";
 
@@ -61,7 +63,18 @@ namespace RCCArbiter
             return string.Equals(_config[$"RccConfigs:{year}:ForceJson"], "true", StringComparison.OrdinalIgnoreCase);
         }
 
-        public string DefaultYear => string.IsNullOrWhiteSpace(_config["RCCService:Year"]) ? "2016" : _config["RCCService:Year"]!;
+        public string DefaultYear
+        {
+            get
+            {
+                var y = _config["RCCService:DefaultGameYear"];
+                if (string.IsNullOrWhiteSpace(y))
+                    y = _config["RCCService:Year"];
+                if (string.IsNullOrWhiteSpace(y))
+                    y = "2016";
+                return y;
+            }
+        }
         private static bool IsSafeYearFolderName(string year)
         {
             if (year == "." || year == "..")

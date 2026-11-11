@@ -35,7 +35,7 @@ namespace Website.Controllers.Client
         {
             // Match Rocknet's exact response format (including the JSON syntax error)
             Response.Headers["Content-Type"] = "application/json";
-            return Content("{\"data\":[0.271.0pcplayer\",\"0.360.0pcplayer\",\"INTERNALiosapp\",\"0.450.0pcplayer\",\"0.205.0pcplayer\"]}", "application/json");
+            return Content("{\"data\":[\"0.271.0pcplayer\",\"0.360.0pcplayer\",\"INTERNALiosapp\",\"0.450.0pcplayer\",\"0.205.0pcplayer\",\"0.338.0pcplayer\",\"0.394.0pcplayer\",\"0.366.0pcplayer\",\"0.271.1pcplayer\",\"2.271.0androidapp\",\"0.225.0pcplayer\",\"0.249.0pcplayer\",\"0.295.0pcplayer\",\"0.283.0pcplayer\",\"0.233.0pcplayer\"]}", "application/json");
         }
 
         [HttpGet("GetAllowedMD5Hashes")]

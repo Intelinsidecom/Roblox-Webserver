@@ -296,6 +296,29 @@
                                                         @(ViewBag.studioAccessToApis == true ? "checked" : "") />
                                                 </span>
                                             </div>
+                                            <div class="universe-form-label rcc-year-label">
+                                                <span class="form-label">
+                                                    Year:
+                                                    <select id="GameYear" name="GameYear" class="text-box text-box-medium" style="width: 100px;">
+                                                        @foreach (var year in (ViewBag.GameYears as System.Collections.Generic.List<string>) ?? new System.Collections.Generic.List<string>())
+                                                        {
+                                                            if (year == ViewBag.CurrentGameYear)
+                                                            {
+                                                                <option value="@year" selected>@year</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@year">@year</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                    <img class="TipsyImg tooltip-right"
+                                                        src="/images/65cb6e4009a00247ca02800047aafb87.png"
+                                                        data-toggle="tooltip"
+                                                        alt="Choose which client from what period is this game designed for."
+                                                        title="Choose which client from what period is this game designed for." />
+                                                </span>
+                                            </div>
 
 
 

@@ -1294,6 +1294,120 @@ public class ThumbnailsController : ControllerBase
         return Redirect("/images/RobloxLogo.png");
     }
 
+    // GET /Thumbs/GameIcon.ashx
+    [HttpGet("Thumbs/GameIcon.ashx")]
+    public async Task<IActionResult> GameIconLegacy(
+        [FromQuery] long assetId,
+        [FromQuery] int? width,
+        [FromQuery] int? height,
+        [FromQuery] bool ignorePlaceMediaItems = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (assetId <= 0)
+            return NotFound();
+
+        var connStr = _configuration.GetConnectionString("Default");
+        if (string.IsNullOrWhiteSpace(connStr))
+            return NotFound();
+
+        var asset = await _assetMetadataRepository.GetAssetByIdAsync(connStr, assetId, cancellationToken);
+        if (asset == null)
+            return NotFound();
+
+        string? iconUrl = null;
+
+        if (ignorePlaceMediaItems)
+        {
+            if (!string.IsNullOrWhiteSpace(asset.ThumbnailUrl))
+                iconUrl = asset.ThumbnailUrl;
+        }
+        else
+        {
+            if (asset.CustomIcon && !string.IsNullOrWhiteSpace(asset.PlaceCustomIconUrl))
+                iconUrl = asset.PlaceCustomIconUrl;
+            else if (asset.GeneratedIcon && !string.IsNullOrWhiteSpace(asset.PlaceGeneratedIconUrl))
+                iconUrl = asset.PlaceGeneratedIconUrl;
+            else if (!string.IsNullOrWhiteSpace(asset.ThumbnailUrl))
+                iconUrl = asset.ThumbnailUrl;
+        }
+
+        if (string.IsNullOrWhiteSpace(iconUrl))
+            return Redirect("/images/RobloxLogo.png");
+
+        string? localPath = null;
+        if (Uri.TryCreate(iconUrl, UriKind.Absolute, out var iconUri))
+        {
+            localPath = TryResolveLocalCdnPath(iconUri);
+        }
+        else if (iconUrl.StartsWith("/"))
+        {
+            var rel = iconUrl.TrimStart('/');
+            if (!rel.Contains(".."))
+                localPath = Path.Combine(CdnAssetsRootLazy.Value, rel.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        if (localPath != null && System.IO.File.Exists(localPath))
+        {
+            try
+            {
+                var w = Math.Clamp(width ?? 0, 0, 2048);
+                var h = Math.Clamp(height ?? 0, 0, 2048);
+
+                if (w > 0 && h > 0)
+                {
+                    var resized = ResizeImageFromFile(localPath, w, h);
+                    if (resized != null)
+                    {
+                        var contentType = SniffContentType(resized) ?? CDNUtilities.GetContentType("png");
+                        Response.Headers.CacheControl = "public, max-age=604800";
+                        return File(resized, contentType);
+                    }
+                }
+
+                var source = await System.IO.File.ReadAllBytesAsync(localPath, cancellationToken);
+                var ct = SniffContentType(source) ?? CDNUtilities.GetContentType("png");
+                Response.Headers.CacheControl = "public, max-age=604800";
+                return File(source, ct);
+            }
+            catch
+            {
+            }
+        }
+
+        if (iconUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            iconUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return Redirect(iconUrl);
+        }
+
+        return Redirect(iconUrl.StartsWith("/") ? iconUrl : "/" + iconUrl);
+    }
+
+    private static byte[]? ResizeImageFromFile(string filePath, int w, int h)
+    {
+        try
+        {
+            using var ms = new MemoryStream(System.IO.File.ReadAllBytes(filePath));
+            using var img = Image.FromStream(ms, false, false);
+            using var bmp = new Bitmap(w, h, PixelFormat.Format24bppRgb);
+            using (var g = Graphics.FromImage(bmp))
+            {
+                g.InterpolationMode = InterpolationMode.Bilinear;
+                g.PixelOffsetMode = PixelOffsetMode.Half;
+                g.SmoothingMode = SmoothingMode.None;
+                g.CompositingMode = CompositingMode.SourceCopy;
+                g.DrawImage(img, 0, 0, w, h);
+            }
+            using var outMs = new MemoryStream();
+            bmp.Save(outMs, ImageFormat.Png);
+            return outMs.ToArray();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private string GetCdnBaseUrl()
     {
         var baseUrl = _configuration["Thumbnails:ThumbnailUrl"];
