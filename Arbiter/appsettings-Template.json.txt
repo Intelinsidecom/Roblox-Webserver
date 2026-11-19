@@ -15,16 +15,17 @@
       "Enabled": false
     },
     "Year": "2016",
+    "DefaultGameYear": "2016",
     "Port": 64989,
     "Executable": "RCCService.exe",
-    "Arguments": "-console -DebugLocalRccServerConnection",
+    "Arguments": "-console -Console -start -settingsfile Settings.json -SettingsKey 64989 -verbose",
     "SeparateWindow": true
   },
   "Rendering": {
-    "Year": "2016",
+    "Year": "2018",
     "Port": 64989,
     "Executable": "RCCService.exe",
-    "Arguments": "-console -start -SettingsKey 64989 -verbose -DebugLocalRccServerConnection",
+    "Arguments": "-console -Console -settingsfile Settings.json -start -SettingsKey 64989 -verbose -DebugLocalRccServerConnection",
     "AutoStart": false,
     "MaxPerInstance": 2,
     "IdleTimeoutMinutes": 5,
@@ -35,7 +36,14 @@
         "/thumbnails/render",
         "/renderheadshot",
         "/renderavatarasset",
+        "/renderitemasset",
+        "/renderitemasset3d",
         "/rendergame",
+        "/renderavatar3d",
+        "/renderasset3d",
+        "/rendermesh",
+        "/rendermodel",
+        "/rendermodel3d",
         "/gameserver/start",
         "/gameserver/status",
         "/gameserver/stop",
@@ -56,20 +64,23 @@
   },
   "PortRanges": {
     "GameServerMin": 52000,
-    "GameServerMax": 60000,
+    "GameServerMax": 52005,
     "RccMin": 50000,
     "RccMax": 51000
   },
+  "GameServer": {
+    "StartupTimeoutSeconds": 90
+  },
   "Arbiter": {
-    "BaseUrl": "http://localhost:5077",
-    "UploadUrl": "http://localhost:5077/api/thumbnails/upload",
+    "BaseUrl": "http://www.freblx.com",
+    "UploadUrl": "http://www.freblx.com/api/thumbnails/upload",
     "AccessKey": "ChangeMe",
-    "WebsiteUrl": "http://localhost:5077",
+    "WebsiteUrl": "http://www.freblx.com",
     "MachineAddress": "127.0.0.1"
   },
   "RccConfigs": {
     "2016": {
-      "ScriptsDir": "Scripts/2016",
+      "ScriptsDir": "Scripts",
       "ForceJson": false
     },
     "2017": {

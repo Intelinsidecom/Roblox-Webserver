@@ -361,7 +361,7 @@ public class ThumbnailsController : ControllerBase
                 var baseCachedUrl = GetCdnBaseUrl();
                 var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
                 await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr, userId, cachedFullUrl, cancellationToken);
-                return Redirect(cachedFullUrl);
+                return StreamThumbnail(ResolveThumbnailFilePath(fileName), cachedFullUrl);
             }
         }
         catch
@@ -370,7 +370,7 @@ public class ThumbnailsController : ControllerBase
 
         var url = await ThumbnailQueries.GetUserHeadshotUrlAsync(connStr, userId, cancellationToken);
         if (!string.IsNullOrWhiteSpace(url))
-            return Redirect(url);
+            return StreamThumbnail(ResolveThumbnailFilePath(GetFileNameFromUrl(url)), url);
 
         var save = await _thumbnailService.RenderAvatarAsync("headshot", userId, targetWidth, targetHeight, cancellationToken);
         var hash = save.Hash;
@@ -393,7 +393,7 @@ public class ThumbnailsController : ControllerBase
         }
 
         await ThumbnailQueries.SetUserHeadshotUrlAsync(connStr, userId, fullUrl, cancellationToken);
-        return Redirect(fullUrl);
+        return StreamThumbnail(save.FullPath, fullUrl);
     }
 
     // GET /bust-thumbnail/image
@@ -428,7 +428,7 @@ public class ThumbnailsController : ControllerBase
             {
                 var baseCachedUrl = GetCdnBaseUrl();
                 var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
-                return Redirect(cachedFullUrl);
+                return StreamThumbnail(ResolveThumbnailFilePath(fileName), cachedFullUrl);
             }
         }
         catch
@@ -457,7 +457,7 @@ public class ThumbnailsController : ControllerBase
             // continue even if update fails.
         }
 
-        return Redirect(fullUrl);
+        return StreamThumbnail(save.FullPath, fullUrl);
     }
 
     [HttpGet("outfit-thumbnail/json")]
@@ -545,7 +545,7 @@ public class ThumbnailsController : ControllerBase
             {
                 var baseCachedUrl = GetCdnBaseUrl();
                 var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
-                return Redirect(cachedFullUrl);
+                return StreamThumbnail(ResolveThumbnailFilePath(fileName), cachedFullUrl);
             }
         }
         catch
@@ -565,7 +565,7 @@ public class ThumbnailsController : ControllerBase
         {
         }
 
-        return Redirect(fullUrl);
+        return StreamThumbnail(save.FullPath, fullUrl);
     }
 
     [HttpGet("asset-thumbnail/image")]
@@ -976,7 +976,7 @@ public class ThumbnailsController : ControllerBase
                 var baseCachedUrl = GetCdnBaseUrl();
                 var cachedFullUrl = CombineUrl(baseCachedUrl, fileName!);
                 await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr, userId, cachedFullUrl, cancellationToken);
-                return Redirect(cachedFullUrl);
+                return StreamThumbnail(ResolveThumbnailFilePath(fileName), cachedFullUrl);
             }
         }
         catch
@@ -990,14 +990,12 @@ public class ThumbnailsController : ControllerBase
 
             if (!string.IsNullOrWhiteSpace(url))
             {
-                var fileName = Path.GetFileName(new Uri(url).AbsolutePath);
-                var outputDir = _configuration["Thumbnails:OutputDirectory"];
-                if (!string.IsNullOrWhiteSpace(outputDir))
-                {
-                    var filePath = Path.Combine(outputDir, fileName);
-                    if (System.IO.File.Exists(filePath))
-                        return Redirect(url);
-                }
+                var fileName = Uri.TryCreate(url, UriKind.Absolute, out var thumbUri)
+                    ? Path.GetFileName(thumbUri.AbsolutePath)
+                    : Path.GetFileName(url);
+                var filePath = ResolveThumbnailFilePath(fileName);
+                if (filePath != null && System.IO.File.Exists(filePath))
+                    return StreamThumbnail(filePath, url);
             }
         }
 
@@ -1016,7 +1014,7 @@ public class ThumbnailsController : ControllerBase
 
         await ThumbnailQueries.SetUserThumbnailUrlAsync(connStr, userId, fullUrl, cancellationToken);
 
-        return Redirect(fullUrl);
+        return StreamThumbnail(save.FullPath, fullUrl);
     }
 
     [HttpGet("Thumbs/Asset.ashx")]
@@ -1406,6 +1404,90 @@ public class ThumbnailsController : ControllerBase
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Resolves a thumbnail file name to an absolute path inside the configured
+    /// thumbnail output directory. Returns null when the name or directory is invalid.
+    /// </summary>
+    private string? ResolveThumbnailFilePath(string? fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            return null;
+
+        var outputDir = _configuration["Thumbnails:OutputDirectory"];
+        if (string.IsNullOrWhiteSpace(outputDir))
+            return null;
+
+        // Strip any directory components to avoid path traversal.
+        return Path.GetFullPath(Path.Combine(outputDir, Path.GetFileName(fileName)));
+    }
+
+    private static string? GetFileNameFromUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            return Path.GetFileName(uri.AbsolutePath);
+
+        return Path.GetFileName(url);
+    }
+
+    /// <summary>
+    /// Returns the thumbnail bytes directly from disk when the file exists, instead of
+    /// issuing a 302 redirect to the CDN (which some game clients fail to follow).
+    /// Falls back to a redirect when the local file is unavailable.
+    /// </summary>
+    private IActionResult StreamThumbnail(string? localPath, string? fallbackUrl = null)
+    {
+        if (!string.IsNullOrWhiteSpace(localPath) && System.IO.File.Exists(localPath))
+        {
+            try
+            {
+                var fullPath = Path.GetFullPath(localPath);
+                var info = new FileInfo(fullPath);
+                var etag = $"\"{info.LastWriteTimeUtc.Ticks:x}-{info.Length:x}\"";
+
+                Response.Headers.ETag = etag;
+                Response.Headers.CacheControl = "public, max-age=604800";
+
+                if (Request.Headers.IfNoneMatch.Any(m => string.Equals(m, etag, StringComparison.Ordinal)))
+                    return StatusCode(304);
+
+                return PhysicalFile(fullPath, ResolveImageContentType(fullPath), enableRangeProcessing: true);
+            }
+            catch
+            {
+                // Fall through to the redirect fallback below.
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(fallbackUrl))
+            return Redirect(fallbackUrl);
+
+        return NotFound();
+    }
+
+    private static string ResolveImageContentType(string path)
+    {
+        try
+        {
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var header = new byte[8];
+            var read = fs.Read(header, 0, header.Length);
+            if (read > 0)
+            {
+                var sniffed = SniffContentType(read == header.Length ? header : header[..read]);
+                if (sniffed != null)
+                    return sniffed;
+            }
+        }
+        catch
+        {
+        }
+
+        return CDNUtilities.GetContentType(Path.GetExtension(path).TrimStart('.'));
     }
 
     private string GetCdnBaseUrl()
